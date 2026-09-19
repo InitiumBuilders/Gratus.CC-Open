@@ -34,6 +34,10 @@ The whole app opens through one ritual: the doorway video plays until its light 
 
 A plant only grows on days you write about it. Sixty recipes live in `config/recipes.json`; a recipe is made when its two emojis share at least three entry days. You can add your own emojis and recipes in the Growth Book, and they stay on your device.
 
+**[IMAGINED.md](IMAGINED.md)** is the design notebook: what was imagined and has
+not been built. It is not a description of the app. Read it after the docs above,
+not instead of them.
+
 ## Run it
 
 No build step. Any static server at the repo root works:

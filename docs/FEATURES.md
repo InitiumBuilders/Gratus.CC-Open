@@ -13,7 +13,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 
 - Entering Grow plays his ring of light until the screen fills with white, holds it, and the page fades in. Tap to enter early.
 - Today's question, drawn from the question pool.
-- The entry: text, a photo (resized on the device and kept with the entry), and your voice. A recording is kept on the device (IndexedDB) and its words come back through ElevenLabs speech to text into the entry. If the words cannot come, the recording is still kept.
+- The entry: text, a photo (resized on the device and kept with the entry), and your voice. A recording is kept on the device (IndexedDB) and its words return through ElevenLabs speech to text into the entry. If the words cannot come, the recording is still kept.
 - The emoji you are planting, chosen from your palette; the first emoji is suggested by the engine.
 - Tags (Love, Support, Friendship, Gratitude, Health, Friends, Music, Family, Nature, Work, Home, Rest, and your own).
 - Plant My Gratus: the planting ceremony through the Gate's light, then the Planted moment.

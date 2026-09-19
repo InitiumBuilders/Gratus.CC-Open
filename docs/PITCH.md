@@ -6,7 +6,7 @@
 
 ## The problem
 
-Gratitude works and does not stick. People start a gratitude journal, feel the lift, and stop within weeks. The journal is a list; the list never changes; nothing in it points back at the person or out toward anyone else. Every gratitude app on the store is a text box with a streak counter.
+Gratitude works and does not stick. People start a gratitude journal, feel the lift, and stop within weeks. The journal is a list; the list never changes; nothing in it points back at the person or out toward anyone else. Every gratitude app on the store is a text box with a a day in a row counter.
 
 ## The idea
 

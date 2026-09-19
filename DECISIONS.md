@@ -15,7 +15,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 | 9 | The Pool without a server |: | **Not simulated for real users; the `?dev=1` panel simulates it, labeled *simulated* in the ledger** | Rule: never fake money. |
 | 10 | Gifts by link |. | **A link-only gift (no handle on either side) carries meaning: emoji, note, days, path. Money rides only between handles.** | The gift is the invite (§8.6) and must work with zero accounts. Money needs a ledger on both sides. |
 | 11 | Causes | verified nonprofits listed | **The list ships empty; the first entry will be a real organization the owner has checked** | Fabricating a charity to fill a demo would be a lie on a page about giving. Designed placeholders explain what will appear. |
-| 12 | Purchases, Dash rail, wrapped Dash, card | behind flags, MockRail | **All flags off; the Store shows each shelf with a waitlist; redeem "opens with the stablecoin"** | §9.6: counsel before any purchase flag. |
+| 12 | Purchases, Dash rail, wrapped Dash, card | behind flags, MockRail | **All flags off; the Store shows each shelf with a waitlist; redeem is marked as opening later** | §9.6: counsel before any purchase flag. |
 | 13 | Gratus Grace with AI | opt-in route to Claude | **Flag off; the rules engine runs everything; the Settings copy says it plainly** | Zero keys. The system prompt from §5.6 is kept verbatim in the spec for when the route opens. |
 | 14 | QR | BarcodeDetector + jsQR | **BarcodeDetector where present; jsQR and qrcode-generator loaded on demand from cdnjs** | Kept out of the shell so the journal stays under 300 ms. |
 | 15 | Codename | "Groundlight" never in UI | **Never in UI; the banned gate greps for it** |: |
@@ -107,7 +107,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 83. **The docs are part of the app.** README, pitch, architecture, features, guides, evolutions, and `Gratus-Next-Moves.MD` with the roadmap and the open questions.
 
 ## v12.1: RESTORE (2026-09-19)
-84. **The journal can come back.** Restore from a file sits beside Export everything. The file is checked (version, entries, plants) and the person confirms before anything on the device is replaced; the state object is replaced in place so nothing holds a stale reference.
+84. **The journal can be restored.** Restore from a file sits beside Export everything. The file is checked (version, entries, plants) and the person confirms before anything on the device is replaced; the state object is replaced in place so nothing holds a stale reference.
 85. **The empty garden reads.** His three lines stand on a dark pool inside the scene, with the scene still around them.
 
 ## v13: THE LOGO IS THE CORE · VOICE · THE JOURNAL'S ROOMS · THE DESKTOP PAINTING · MIT (2026-09-19)
@@ -136,7 +136,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 102. **The first seed a project ever receives is marked, not rewarded.** It blooms 🫶 and the ceremony says "I see you." The leverage is the lane that finds those projects, not the mark.
 103. **Responsiveness is a reading, shown to the project first.** Seeds received, share watered, median days to answer. It orders nobody against anybody, there is no list, and the house gate refuses the words that would make it one. The gate caught me writing one of those words in a comment that was denying it; the comment changed, not the gate.
 104. **A mark needs both halves of a person.** Harmonic alchemy: twelve marks, each requiring something given and something tended. Checked on the device, sent nowhere, and an unmade mark shows its own progress in plain words.
-105. **The circular flow ships as a prompt, and the person signs.** A steward passes it on by naming a project they are grateful for; the donor sees it inside their bloom and continues the flow. Routing a share of GIVbacks yield automatically would need custody, which this app does not do and will not.
+105. **The circular flow ships as a prompt, and the person signs.** A steward passes it on by naming a project they are grateful for; the donor sees it inside their bloom and continues the flow. Routing a share of what GIVbacks return automatically would need custody, which this app does not do and will not.
 106. **Sunlight is read, never connected.** A public address, read through Giveth's own `userByAddress` for GIVpower boosting, gifts and likes. Gratus never asks anyone to connect a wallet, never asks for a key or a seed phrase, and never signs anything.
 107. **A confirmed gift is a lookup, not a proof.** A transaction hash checked against that project's recent gifts on Giveth records what arrived. A hash is public, so it says nothing about who sent it, and the docs say exactly that.
 
@@ -222,7 +222,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 158. **A Passage sounds the chord as far as the furthest plant it shows.** What grew is the whole point of the page, and the chord is how this app says what grew. From a shared link it is silent, because the browser has had no gesture, and arriving somewhere you were invited should be quiet anyway.
 
 ## v32 · THE RETURN (2026-09-19)
-159. **A gift may come back, and it may only ever be offered.** Every return is a tap the person who received the gift chooses, once per event. Saying no is silent and final for that event, and nothing is sent on its own. A delivery receipt would have been easier and it would have turned a gift into surveillance.
+159. **A gift may return, and it may only ever be offered.** Every return is a tap the person who received the gift chooses, once per event. Saying no is silent and final for that event, and nothing is sent on its own. A delivery receipt would have been easier and it would have turned a gift into surveillance.
 160. **What travels back is a phase and an emoji.** No name, no words, no journal, and the day rather than the clock. When someone tapped is their business.
 161. **The name is assembled on the phone, never on the server.** The giver typed who they gave it to, and that note never leaves their device. The store holds a phase against a random number and nothing in it can be read backwards into a person.
 162. **The giver hears the chord for a plant that is no longer theirs.** This is the deepest thing the sound can do and it was the reason to build the sound at all.

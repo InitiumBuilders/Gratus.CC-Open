@@ -1,4 +1,4 @@
-// Gate 5 — THE SLOP GATE.
+// Gate 5: THE SLOP GATE.
 //
 // A language model writes whatever is most likely to come next, so left alone it
 // reaches for the phrasing that fits the widest range of subjects. That is the

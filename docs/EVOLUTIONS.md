@@ -7,7 +7,7 @@ Every version of Gratus.CC, what changed and why. The full working record is in 
 - **The writing box was below the fold on the tab whose only job is writing.** A first visit from the landing page goes straight to Grow, and on arrival you saw a painting and a question while the box sat 124 pixels under the edge of the screen, with the card explaining what to do four fifths hidden behind it. Give had the same shape: its first door was under the fold too.
 - **The hero on those two tabs is 52svh instead of 82svh.** Still half the screen and still a painting. The box and the doors are now on it. Home and the rooms keep the heights they had.
 - **The standing carries one line, so it stands one line tall.** Its third line said what the label under it already said, and it was what pushed the box off the screen.
-- **A gift says it can come back.** The Return shipped in v32 and nothing told the person sending a gift that it existed. The share sheet says so now, at the moment it matters.
+- **A gift says it can return.** The Return shipped in v32 and nothing told the person sending a gift that it existed. The share sheet says so now, at the moment it matters.
 
 ## v33 · What the Return keeps (2026-09-19)
 
@@ -15,7 +15,7 @@ Every version of Gratus.CC, what changed and why. The full working record is in 
 
 ## v32 · The Return (2026-09-19)
 
-- **A gift can come back.** Giving has always been one way here. A gift travels inside its own link, grows in someone else's garden, and the person who gave it never finds out. The Return is the other half.
+- **A gift can return.** Giving has always been one way here. A gift travels inside its own link, grows in someone else's garden, and the person who gave it never finds out. The Return is the other half.
 - **It is offered, never taken.** Every gift link carries a random sixteen character number made on the giver's device. When the person who received the gift chooses to, one tap sends back that it landed, or that the plant reached a phase. Saying no is silent and final for that event, and nothing is ever sent on its own.
 - **What goes back is a phase and an emoji.** No name, no words, nothing from a journal, and the day rather than the clock. The giver's own note of who they gave it to never leaves their device, so the sentence they read is assembled out of one thing the server knows and one thing only their phone knows.
 - **The giver hears it.** A return arrives as a held screen and the chord as far as the phase it reached. You hear a chord that someone else's care completed, for a plant that is no longer yours.

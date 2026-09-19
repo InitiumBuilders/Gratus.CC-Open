@@ -23,8 +23,8 @@ These are the pieces worth knowing before building anything on top.
 | **Verified** | A project reviewed by Giveth's team. | Trust signal we show, never invent. |
 | **GIVbacks Eligible** | A verified project that is also a public good. Its donors get GIV back. Approved on **action and impact**, **reputation**, and being a **public good**; the badge lapses after three months of project silence. | The default lane in our room. A lapsing badge is itself a feedback loop: it rewards projects that keep talking, which is exactly what the TRACE asks them to do. |
 | **GIVbacks** | Give to a GIVbacks-eligible project and a share of GIV flows back to you. | Giving is already circular there. Our Circular Gratus Flow (below) extends it. |
-| **GIVpower** | Stake GIV to boost a project: it ranks higher and its donors earn more GIVbacks. | The `boosted` lane in our room sorts by GIVPower. |
-| **GIVstream / GIVfarm** | A continuous flow of GIV to people who take part, running to 23 December 2026, and staking rewards. | Context for anyone arriving from Gratus. |
+| **GIVpower** | Stake GIV to boost a project: it rises in the listing and its donors receive more GIVbacks. | The `boosted` lane in our room sorts by GIVPower. |
+| **GIVstream / GIVfarm** | A continuous flow of GIV to people who take part, running to 23 December 2026, and a return for locking GIV up. | Context for anyone arriving from Gratus. |
 | **GIVgarden** | Where GIV holders steer the commons. | The cross-pollination idea below. |
 | **Quadratic funding rounds** | Many small gifts attract more matching than a few large ones. | Makes small, sincere giving structurally powerful. That is the shape of Gratus. |
 | **DeVouch** | Vouching for projects through on-chain attestations, so verification does not rest on one team. | The natural home for a Gratus reputation signal later. |

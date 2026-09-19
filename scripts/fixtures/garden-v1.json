@@ -1,0 +1,191 @@
+{
+  "v": 1,
+  "name": "August",
+  "entries": [
+    {
+      "id": "e_a1",
+      "day": "2026-09-09",
+      "at": "2026-09-09T07:12:00.000Z",
+      "text": "The first cup, before anyone else was awake.",
+      "emoji": "☕",
+      "tags": [
+        "Rest",
+        "Home"
+      ],
+      "photo": null,
+      "voice": null,
+      "folder": "f_morning",
+      "star": true
+    },
+    {
+      "id": "e_a2",
+      "day": "2026-09-10",
+      "at": "2026-09-10T07:20:00.000Z",
+      "text": "Same chair, same light, and it still worked.",
+      "emoji": "☕",
+      "tags": [
+        "Rest"
+      ],
+      "photo": null,
+      "voice": {
+        "mime": "audio/webm",
+        "dur": 11
+      },
+      "folder": null
+    },
+    {
+      "id": "e_b1",
+      "day": "2026-09-11",
+      "at": "2026-09-11T21:40:00.000Z",
+      "text": "My sister rang for no reason at all.",
+      "emoji": "❤️",
+      "tags": [
+        "Family",
+        "Love"
+      ],
+      "photo": null,
+      "voice": null,
+      "folder": null
+    }
+  ],
+  "plants": [
+    {
+      "id": "p_a",
+      "emoji": "☕",
+      "planted": "2026-09-09",
+      "kept": [
+        "2026-09-09",
+        "2026-09-10",
+        "2026-09-11",
+        "2026-09-12",
+        "2026-09-13",
+        "2026-09-14",
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17"
+      ],
+      "carried": 0,
+      "origin": "planted",
+      "from": null
+    },
+    {
+      "id": "p_b",
+      "emoji": "❤️",
+      "planted": "2026-09-11",
+      "kept": [
+        "2026-09-11",
+        "2026-09-12"
+      ],
+      "carried": 0,
+      "origin": "planted",
+      "from": null
+    },
+    {
+      "id": "p_c",
+      "emoji": "🌻",
+      "planted": "2026-09-14",
+      "kept": [
+        "2026-09-14"
+      ],
+      "carried": 21,
+      "origin": "gift",
+      "from": "Natalie",
+      "echo": "a1b2c3d4e5f60718",
+      "told": [
+        "landed"
+      ],
+      "private": false
+    }
+  ],
+  "gifts": {
+    "given": [
+      {
+        "id": "gift_1",
+        "echo": "d79f735d575dd674",
+        "seen": 2,
+        "emoji": "☕",
+        "to": "Natalie",
+        "at": "2026-09-18",
+        "days": 13,
+        "link": "https://www.gratus.cc/gift#eyJ2IjoxfQ"
+      }
+    ],
+    "received": [
+      {
+        "id": "gift_r1",
+        "echo": "a1b2c3d4e5f60718",
+        "emoji": "🌻",
+        "from": "Natalie",
+        "at": "2026-09-14",
+        "days": 21,
+        "message": "For the week you carried more than your share.",
+        "choice": "garden"
+      }
+    ]
+  },
+  "my": {
+    "emojis": [
+      "🌻"
+    ],
+    "recipes": []
+  },
+  "wishes": [],
+  "goals": [
+    {
+      "id": "g_1",
+      "text": "Write one line every morning this month.",
+      "name": "August",
+      "emoji": "☕",
+      "at": "2026-09-12T08:00:00.000Z",
+      "synced": true
+    }
+  ],
+  "sound": true,
+  "made": {
+    "r_dawn": "2026-09-14"
+  },
+  "opens": 37,
+  "migrated": true,
+  "folders": [
+    {
+      "id": "f_morning",
+      "name": "Mornings"
+    }
+  ],
+  "milestones": {
+    "first": "2026-09-09",
+    "bloomed": "2026-09-17"
+  },
+  "seeds": [
+    {
+      "id": "0123456789abcdef",
+      "slug": "the-giveth-community-of-makers",
+      "project": "the-giveth-community-of-makers",
+      "title": "The Giveth Community of Makers",
+      "bloom": "🌸",
+      "status": "bloomed",
+      "at": "2026-09-15",
+      "mine": "0f1e2d3c4b5a6978",
+      "water": {
+        "from": "Giveth",
+        "reply": "Thank you for saying why."
+      }
+    }
+  ],
+  "alch": {
+    "a_first_light": "2026-09-16"
+  },
+  "sun": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "usd": 42,
+    "at": "2026-09-16"
+  },
+  "vibes": [
+    {
+      "code": "FND2WX",
+      "name": "Unread Test",
+      "emoji": "✦",
+      "seen": 2
+    }
+  ]
+}
