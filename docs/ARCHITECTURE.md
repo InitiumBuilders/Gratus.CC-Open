@@ -47,6 +47,10 @@ One object in `localStorage` under `gratus.galaxy.v1`:
 
 Planting, reaching a phase, making a recipe and harvesting each open through the Gate's light: the ceremony plays the doorway video from its seventeenth second, and when the light floods (at 24.6 seconds, or nine seconds in as a fallback) the moment is revealed behind a flash.
 
+## Gratus Vibes
+
+`api/vibes.js` keeps one JSON document per room in Vercel Blob at `gratus/vibes/<code>.json`: a name, a line about it, a mark, and the posts. A code is six characters from a 32-letter alphabet with no ambiguous glyphs, because it is read aloud and typed by hand. `make` returns the code and a keeper key, shown once, whose sha-256 is stored; the keeper can take a post down. `post` writes a short gratitude with a name and an emoji, capped at 400 a day and 400 kept, with a two-minute dedupe. On the device, `S.vibes` holds the rooms a person has joined. A vibe link is `/app/vibes?code=XXXXXX`.
+
 ## The Passage
 
 `/passage#<code>` shows a garden from outside. The whole page is base64url-encoded into the link, exactly like a Gratus Gift: the name, each plant's emoji and day count and dedication, the seeds that bloomed, the milestones and the alchemy marks, and four counts. **No journal text is ever included**, and nothing is uploaded, so there is nothing to delete later; the link simply stops being shared.

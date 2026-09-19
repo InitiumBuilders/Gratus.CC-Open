@@ -17,6 +17,7 @@ let C = {}, S = null, tab = 'gratus', sub = null, room = null, installEvt = null
 
 // ── his scenes, by screen. A name starting with v is a video (poster beside it). ──
 const SCENES = {
+  guides: ['g29', 'g30', 'dlong', 'g20', 'g07'], vibes: ['g36', 'g15', 'v2', 'g05', 'g32'],
   home: ['g31', 'g32', 'g37', 'dlong', 'g29', 'g33', 'v2', 'g15', 'g36', 'd2'], grow: ['g37', 'g33', 'v3', 'g08', 'd2', 'v1', 'g06', 'g10', 'g16', 'g09'], give: ['g34', 'g35', 'g13', 'd2', 'g14', 'g30', 'dhold', 'g09', 'g12'],
   book: ['g31', 'v1', 'g16', 'g03', 'g20', 'v3', 'g07', 'g24', 'g26', 'g25', 'g27'], galaxy: ['g36', 'g15', 'v2', 'g05'], vault: ['g17', 'v2', 'g18'], earth: ['g38', 'g23', 'v3', 'g19', 'g21'], world: ['dlong', 'g14', 'g23'], projects: ['g23', 'v1', 'g19'], goals: ['g14', 'g23', 'g04'],
   journey: ['g13', 'dhold', 'g13', 'dlong', 'g20', 'g07', 'g19', 'v2'], ceremony: ['g22', 'g05', 'g03'], garden: ['g33', 'g11', 'g27', 'g24', 'g25'],
@@ -57,11 +58,11 @@ const I = {
 // ── time and state ──
 const pad2 = (n) => String(n).padStart(2, '0');
 function today() { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false, folders: [], milestones: {}, seeds: [], alch: {}, sun: null }; }
+function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false, folders: [], milestones: {}, seeds: [], alch: {}, sun: null, vibes: [] }; }
 function load() {
   try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
   if (!S || S.v !== 1) S = fresh();
-  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true; if (!Array.isArray(S.folders)) S.folders = []; if (!Array.isArray(S.seeds)) S.seeds = []; if (!S.alch || typeof S.alch !== 'object') S.alch = {}; if (!S.milestones || typeof S.milestones !== 'object') S.milestones = {};
+  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true; if (!Array.isArray(S.folders)) S.folders = []; if (!Array.isArray(S.seeds)) S.seeds = []; if (!Array.isArray(S.vibes)) S.vibes = []; if (!S.alch || typeof S.alch !== 'object') S.alch = {}; if (!S.milestones || typeof S.milestones !== 'object') S.milestones = {};
   if (!S.migrated) { S.migrated = true; try { migrate(); } catch (e) {} }
   S.opens = (S.opens || 0) + 1; save();
 }
@@ -138,6 +139,8 @@ function render() {
   else if (sub === 'vault') s = topBar({ back: true }) + viewVault();
   else if (sub === 'earth') s = topBar({ back: true }) + viewEarth();
   else if (sub === 'galaxy') s = topBar({ back: true }) + viewGalaxy();
+  else if (sub === 'guides') s = topBar({ back: true }) + viewGuides();
+  else if (sub === 'vibes') s = topBar({ back: true }) + viewVibes();
   else if (sub === 'giveth') s = topBar({ back: true }) + viewGiveth();
   else if (sub === 'console') s = topBar({ back: true }) + viewConsole();
   else if (tab === 'grow') s = topBar() + viewGrow();
@@ -152,6 +155,103 @@ function render() {
   wire();
 }
 
+// ══ GRATUS GUIDES · what this is for, and how it works ══════════════════════════════════════
+function viewGuides() {
+  const ph = C.book.phases;
+  const guide = (ico, title, body) => '<div class="glass guide"><span class="g-ico">' + ico + '</span><div><b>' + title + '</b><span class="body">' + body + '</span></div></div>';
+  return hero(scene('guides'), { cls: 'room-hero', h1: 'Gratus Guides', k1: 'Why any of this exists.', k2: 'And how to walk it.' }) +
+    '<div class="page">' +
+    '<div class="glass card creed"><span class="kicker gold">The mission</span>' +
+    '<p class="statement">Gratitude, grown daily, and given away.</p>' +
+    '<p class="body">Gratitude works and does not stick. People start, feel the lift, and stop, because a list of good things never changes and never points anywhere. Gratus makes gratitude grow, and then lets you give it away, so the practice has somewhere to go.</p></div>' +
+    '<div class="glass card creed"><span class="kicker gold">The vision</span>' +
+    '<p class="statement">A kinder world grows from here.</p>' +
+    '<p class="body">A world where noticing something good is the first move of a chain: you keep it, it grows, you give it, someone receives it, and it grows again in their hands. Gratitude as a thing in motion rather than a feeling that fades by lunchtime.</p></div>' +
+    '<div class="eyebrow"><h2>The loop</h2><span class="more">five steps</span></div>' +
+    '<div class="loopline">' + [['✍️', 'Write', 'One honest line about today.'], ['🌱', 'Plant', 'An emoji carries it.'], ['↩︎', 'Return', 'It grows on the days you write about it.'], ['✨', 'Make', 'Two threads together make a recipe.'], ['🎁', 'Give', 'When it is ready, it can leave your hands.']].map(([i2, n, l]) => '<div class="loopstep"><span class="ls-ico">' + i2 + '</span><b>' + n + '</b><span>' + l + '</span></div>').join('<i class="ls-join" aria-hidden="true"></i>') + '</div>' +
+    '<div class="eyebrow"><h2>How a Gratus grows</h2></div>' +
+    '<div class="rows">' + ph.map((p, k) => '<div class="glass phase"><span class="ico' + (k === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.meaning) + '</span></span><span class="day">day ' + p.day + '</span></div>').join('') + '</div>' +
+    '<div class="eyebrow"><h2>What we promise</h2></div>' +
+    '<div class="rows">' +
+    guide('🔒', 'Your journal never leaves this device.', 'Not to us, not to anyone. The only things that travel are what you choose to give: a gift, a goal, a seed, a vibe.') +
+    guide('🫱', 'Nothing to buy, ever.', 'No tiers, no ranks, no upgrade. A gate refuses those words in the code before anything ships.') +
+    guide('🌾', 'No one is compared with anyone.', 'Days in a row, marks on your own road. Never a score against another person.') +
+    guide('🕯️', 'A quiet day is still a day.', 'Nothing here counts what you did not do, and nothing here asks you to hurry.') +
+    guide('📖', 'Open, all of it.', 'Code, art, video, song and words, MIT. Read it, take it, build on it.') +
+    '</div>' +
+    '<div class="eyebrow"><h2>Where to start</h2></div>' +
+    '<div class="rows">' +
+    '<button class="glass opt" id="gd-write"><span class="ico">🌱</span><span class="grow"><b>Write today</b><span>One line. It takes a minute and it starts everything.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="gd-book"><span class="ico">📖</span><span class="grow"><b>The Growth Book</b><span>Your journal by day, the phases, the emojis, the recipes.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="gd-vibes"><span class="ico">✦</span><span class="grow"><b>Gratus Vibes</b><span>The small rooms: a few people, one feed, gratitude out loud.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="gd-giveth"><span class="ico gold">🤝</span><span class="grow"><b>Give with Giveth</b><span>Real projects, zero fees. Your words ride with the gift.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="gd-laws"><span class="ico">⚖️</span><span class="grow"><b>The twelve laws</b><span>The whole thing, one line at a time.</span></span><span class="arrow">›</span></button>' +
+    '</div>' +
+    '<p class="statement quiet" style="text-align:center">\u201cGratus means honor.\u201d</p>' +
+    '</div>';
+}
+// ══ GRATUS VIBES · the small rooms ══════════════════════════════════════════════════════════
+let vibeNow = null, vibeState = 'idle';
+async function loadVibe(code, quiet) {
+  if (!code) return; vibeState = 'loading'; if (!quiet && sub === 'vibes') render();
+  try {
+    const r = await fetch('/api/vibes?code=' + encodeURIComponent(code), { cache: 'no-store' });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.vibe) throw new Error(d.error || 'no answer');
+    vibeNow = d.vibe; vibeState = 'live';
+    const mine = S.vibes.find((v) => v.code === code); if (mine) { mine.name = d.vibe.name; save(); }
+  } catch (e) { vibeState = 'offline'; }
+  if (sub === 'vibes') render();
+}
+function viewVibes() {
+  const v = vibeNow;
+  return hero(scene('vibes'), { cls: 'room-hero', h1: 'Gratus Vibes', k1: 'The small rooms.', k2: 'A few people. One feed. Gratitude out loud.' }) +
+    '<div class="page">' +
+    (S.vibes.length ? '<div class="chips row">' + S.vibes.map((x) => '<button class="chip' + (v && v.code === x.code ? ' on' : '') + '" data-vopen="' + esc(x.code) + '">' + esc(x.emoji || '✦') + ' ' + esc(x.name || x.code) + '</button>').join('') + '</div>' : '') +
+    (!v ? '<div class="glass card"><span class="kicker mint">What a Vibe is</span><p class="body">A small room with a name and a code. Anyone holding the code is in it. People post short gratitudes there with an emoji from their own garden, and that is all that travels: your journal stays on your device.</p>' +
+      '<div class="two"><input class="field" id="vb-code" maxlength="12" placeholder="a code, e.g. K7M2QP" aria-label="a vibe code"><button class="btn" id="vb-join">Go in</button></div>' +
+      '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' : '') +
+    (vibeState === 'loading' ? '<p class="cap">Opening the room...</p>' : '') +
+    (vibeState === 'offline' && !v ? '<p class="cap">No vibe answered on that code. Check it and try again.</p>' : '') +
+    (v ? '<div class="glass card vibehead"><span class="v-ico">' + esc(v.emoji) + '</span><div><b>' + esc(v.name) + '</b>' + (v.about ? '<span class="body">' + esc(v.about) + '</span>' : '') +
+        '<span class="cap">' + plural(v.count, 'gratitude') + ' · ' + plural(v.voices, 'voice') + ' · code <b class="mono">' + esc(v.code) + '</b></span></div>' +
+        '<div class="actions"><button class="btn sm" id="vb-share">Share the code</button><button class="btn sm quiet" id="vb-leave">Leave this room</button></div></div>' +
+      '<div class="glass card"><span class="kicker mint">Say one true thing</span>' +
+      '<textarea class="field" id="vb-text" rows="2" maxlength="280" placeholder="What are you grateful for, right now..." aria-label="your gratitude"></textarea>' +
+      '<div class="pick">' + palette().slice(0, 8).map((e) => '<button class="orb" data-vpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
+      '<button class="btn mint wide" id="vb-post">Say it ✦</button>' +
+      '<p class="cap">Everyone with the code can read this. Write what you would say out loud in the room.</p></div>' +
+      (v.posts.length ? '<div class="eyebrow"><h2>The room</h2><span class="more">' + plural(v.posts.length, 'shown') + '</span></div><div class="rows">' +
+        v.posts.map((p) => '<div class="glass vpost"><span class="orb sm"><span>' + esc(p.emoji) + '</span></span><span class="grow"><span class="kicker">' + esc(p.name) + ' · ' + esc(fmtDay(String(p.at).slice(0, 10))) + '</span><b>' + esc(p.text) + '</b></span></div>').join('') + '</div>'
+        : '<p class="cap">Nobody has said anything here yet. Be the first; it makes the room exist.</p>') : '') +
+    '<p class="cap">A Vibe holds what people choose to say in it. It is not your journal, and your journal never comes here.</p>' +
+    '</div>';
+}
+function makeVibeSheet() {
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>✦</span></span><h2>Start a Vibe</h2><span class="kicker mint">A small room with a name</span></div>' +
+    '<input class="field" id="mv-name" maxlength="40" placeholder="name it: Sunday People, The Studio, Mum and me" aria-label="the name">' +
+    '<input class="field" id="mv-about" maxlength="200" placeholder="what it is for, in a line" aria-label="what it is for">' +
+    '<span class="kicker mint">A mark for the room</span>' +
+    '<div class="pick">' + palette().slice(0, 10).map((e) => '<button class="orb" data-mvpick="' + esc(e) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
+    '<button class="btn mint wide" id="mv-go">Open the room</button>' +
+    '<p class="cap">You get a code. Anyone you give it to can come in and read what is said there, so share it with the people you mean.</p>', { autofocus: true });
+  let emoji = '✦';
+  $$('[data-mvpick]', sh.el).forEach((b) => b.addEventListener('click', () => { emoji = b.dataset.mvpick; $$('[data-mvpick]', sh.el).forEach((x) => x.classList.toggle('on', x === b)); }));
+  $('#mv-go', sh.el).addEventListener('click', async () => {
+    const name = $('#mv-name', sh.el).value.trim(); if (!name) { toast('A name for the room.'); return; }
+    const b = $('#mv-go', sh.el); b.disabled = true; b.textContent = 'Opening...';
+    try {
+      const r = await fetch('/api/vibes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'make', name, about: $('#mv-about', sh.el).value.trim(), emoji }) });
+      const d = await r.json().catch(() => ({})); if (!r.ok || !d.vibe) throw new Error(d.error || 'refused');
+      S.vibes.push({ code: d.vibe.code, name: d.vibe.name, emoji: d.vibe.emoji, keeper: d.keeper || null }); save();
+      vibeNow = d.vibe; vibeState = 'live'; sh.close(); render();
+      sheet('<div class="hero-sm"><span class="orb xl lit"><span>' + esc(emoji) + '</span></span><h2>' + esc(name) + '</h2><span class="kicker mint">The room is open</span></div>' +
+        '<p class="body">This is the code. Anyone who has it can come in.</p><p class="lead mono" style="font-size:34px;letter-spacing:.14em;text-align:center;background:rgba(5,9,18,.6);padding:16px;border-radius:16px">' + esc(d.vibe.code) + '</p>' +
+        '<button class="btn mint wide" id="mv-share">Share the code</button>');
+      const s2 = $('#mv-share'); if (s2) s2.addEventListener('click', () => shareOrCopy('Come into ' + name, 'A Gratus Vibe. The code is ' + d.vibe.code, location.origin + '/app/vibes?code=' + d.vibe.code).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
+    } catch (e) { b.disabled = false; b.textContent = 'Open the room'; toast(String(e.message || e)); }
+  });
+}
 // ══ THE PASSAGE · what a garden looks like from outside. Never a word of the journal. ══════════
 function passageOf() {
   const plants = S.plants.filter((p) => !p.private).slice().sort((a, b) => daysOf(b) - daysOf(a)).slice(0, 40);
@@ -319,7 +419,7 @@ async function loadCats() {
 const money = (n) => n >= 1000000 ? '$' + (n / 1000000).toFixed(1) + 'M' : n >= 1000 ? '$' + Math.round(n / 1000) + 'k' : '$' + n;
 function projectRow(p) {
   return '<button class="glass gvp" data-gv="' + esc(p.slug) + '">' +
-    (p.image ? '<img class="gvp-art" src="' + esc(p.image) + '" alt="" loading="lazy">' : '<span class="gvp-art none">' + esc(p.bloom) + '</span>') +
+    '<span class="gvp-art">' + (p.image ? '<i class="gvp-wash" style="background-image:url(' + JSON.stringify(esc(p.image)) + ')"></i><img src="' + esc(p.image) + '" alt="" loading="lazy">' : '<span class="gvp-none">' + esc(p.bloom) + '</span>') + '</span>' +
     '<span class="gvp-words"><b>' + esc(p.title) + '</b>' +
     '<span class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks</i>' : p.verified ? '<i class="gvt">Verified</i>' : '') +
       (p.qf ? '<i class="gvt gold">Matched now</i>' : '') +
@@ -648,6 +748,8 @@ function viewGratus() {
     '<div class="hcard door gifts" id="open-gifts"><img class="door-art" src="/assets/art/home/giftbox.jpg" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family.</span><button class="gpill sm" id="send-gift">' + I.giftline + '<span>Send a Gift</span><span class="arr">→</span></button></span><span class="door-go">›</span></div>' +
     '<div class="together"><h2><i>✦</i>Gratus Gives Together<i>✦</i></h2><p>Set Your Gratus Goals</p></div>' +
     goalsBlock() +
+    door('journal', 'Gratus Vibes', 'The small rooms. A few people, one feed.', 'open-vibes') +
+    door('sprout', 'Gratus Guides', 'Why any of this exists, and how to walk it.', 'open-guides') +
     '</section>';
 }
 // ── the garden room: a field with a horizon, the plants in it, the seeds above it ──
@@ -703,9 +805,9 @@ function viewGarden() {
 
 function menuSheet() {
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">Grow Gratus Give</span></div>' +
-    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
+    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
   const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
-  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
+  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-guides', () => go('gratus', 'guides')); on('#m-vibes', () => go('gratus', 'vibes')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
 }
 function entryCard(e) {
   return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + (e.star ? '\u2605 ' : '') + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
@@ -1256,6 +1358,7 @@ function wire() {
   const wt = $('#write-today'); if (wt) wt.addEventListener('click', () => { go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 120); });
   const oj = $('#open-journal'); if (oj) oj.addEventListener('click', () => { jTab = 'entries'; go('gratus', 'book'); });
   const ogd = $('#open-garden'); if (ogd) ogd.addEventListener('click', () => go('gratus', 'garden'));
+  { const b1 = $('#open-vibes'); if (b1) b1.addEventListener('click', () => go('gratus', 'vibes')); const b2 = $('#open-guides'); if (b2) b2.addEventListener('click', () => go('gratus', 'guides')); }
   const ogf = $('#open-gifts'); if (ogf) ogf.addEventListener('click', (ev) => { if (ev.target.closest('#send-gift')) return; go('give'); });
   const sg = $('#send-gift'); if (sg) sg.addEventListener('click', (ev) => { ev.stopPropagation(); go('give'); setTimeout(() => giveSheet(null), 400); });
   const ob = $('#open-book'); if (ob) ob.addEventListener('click', () => go('gratus', 'book'));
@@ -1315,6 +1418,25 @@ function wire() {
   const jc = $('#j-clear'); if (jc) jc.addEventListener('click', () => { jDay = jEmoji = jTag = jFolder = journalQuery = ''; jStar = false; render(); });
   const js2 = $('#j-star'); if (js2) js2.addEventListener('click', () => { jStar = !jStar; render(); });
   $$('[data-gfilter]').forEach((b) => b.addEventListener('click', () => { gardenFilter = b.dataset.gfilter; render(); }));
+  { const on = (id, fn) => { const b = $(id); if (b) b.addEventListener('click', fn); };
+    on('#gd-write', () => quickWrite()); on('#gd-book', () => go('gratus', 'book')); on('#gd-vibes', () => go('gratus', 'vibes'));
+    on('#gd-giveth', () => go('give', 'giveth')); on('#gd-laws', openLaws); }
+  $$('[data-vopen]').forEach((b) => b.addEventListener('click', () => loadVibe(b.dataset.vopen)));
+  { const mk = $('#vb-make'); if (mk) mk.addEventListener('click', makeVibeSheet);
+    const jn = $('#vb-join'); if (jn) jn.addEventListener('click', () => { const c = ($('#vb-code').value || '').trim().toUpperCase(); if (!c) { toast('A code.'); return; } if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '✦' }); save(); } loadVibe(c); });
+    const sv = $('#vb-share'); if (sv && vibeNow) sv.addEventListener('click', () => shareOrCopy('Come into ' + vibeNow.name, 'A Gratus Vibe. The code is ' + vibeNow.code, location.origin + '/app/vibes?code=' + vibeNow.code).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
+    const lv = $('#vb-leave'); if (lv && vibeNow) lv.addEventListener('click', () => { S.vibes = S.vibes.filter((x) => x.code !== vibeNow.code); save(); vibeNow = null; vibeState = 'idle'; render(); toast('Left the room. The code still works.'); });
+    let vEmoji = null;
+    $$('[data-vpick]').forEach((b) => b.addEventListener('click', () => { vEmoji = vEmoji === b.dataset.vpick ? null : b.dataset.vpick; $$('[data-vpick]').forEach((x) => x.classList.toggle('on', x.dataset.vpick === vEmoji)); }));
+    const po = $('#vb-post'); if (po) po.addEventListener('click', async () => {
+      const t = ($('#vb-text').value || '').trim(); if (!t) { toast('A few words.'); return; }
+      po.disabled = true; po.textContent = 'Saying...';
+      try {
+        const r = await fetch('/api/vibes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'post', code: vibeNow.code, text: t, name: S.name || '', emoji: vEmoji || '✦' }) });
+        const d = await r.json().catch(() => ({})); if (!r.ok || !d.vibe) throw new Error(d.error || 'refused');
+        vibeNow = d.vibe; render(); toast('Said');
+      } catch (e) { po.disabled = false; po.textContent = 'Say it ✦'; toast(String(e.message || e)); }
+    }); }
   $$('[data-gview]').forEach((b) => b.addEventListener('click', () => { gardenView = b.dataset.gview; render(); }));
   $$('[data-gsort]').forEach((b) => b.addEventListener('click', () => { gardenSort = b.dataset.gsort; render(); }));
   const tn = $('#tend-now'); if (tn) tn.addEventListener('click', () => { const next = S.plants.filter((p) => !(p.kept || []).includes(today())).sort((a, b) => daysOf(b) - daysOf(a))[0]; quickWrite(next ? { emoji: face(next) } : null); });
@@ -1338,15 +1460,18 @@ async function boot() {
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));
   window.addEventListener('popstate', () => { if (room) closeRoom(true); if (!$('#laws').hidden) { $('#laws').hidden = true; document.body.classList.remove('room'); } render(); });
   const q = new URLSearchParams(location.search).get('tab'); const m = /^\/app\/?(\w+)?/.exec(location.pathname); const want = q || (m && m[1]) || 'gratus';
-  const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden', 'giveth', 'console'];
-  if (SUBS.includes(want)) { tab = want === 'book' || want === 'galaxy' || want === 'garden' ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
+  const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden', 'giveth', 'console', 'guides', 'vibes'];
+  if (SUBS.includes(want)) { tab = ['book', 'galaxy', 'garden', 'guides', 'vibes'].includes(want) ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
   const isGift = location.pathname === '/gift' || location.pathname.endsWith('gift.html') || location.hash.startsWith('#gift');
   const isPassage = location.pathname === '/passage';
   const projPage = /^\/p\/([a-z0-9:-]+)/.exec(location.pathname);
   try { const k = JSON.parse(localStorage.getItem(GVK) || 'null'); if (k) { conSlug = k.slug || ''; conKey = k.key || ''; } } catch (e) {}
   const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000);
     if (isPassage) { const c = location.hash.replace(/^#/, ''); const g = c ? decodeGift(c) : null; if (g) { openPassage(g, false); return; } toast('That Passage link is incomplete.'); }
-    if (projPage) { openProjectPage(projPage[1]); return; } if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
+    if (projPage) { openProjectPage(projPage[1]); return; }
+    const vc = new URLSearchParams(location.search).get('code');
+    if (vc && sub === 'vibes') { const c = vc.trim().toUpperCase(); if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '\u2726' }); save(); } loadVibe(c); }
+    else if (S.vibes.length && sub === 'vibes') loadVibe(S.vibes[0].code, true); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
   if (new URLSearchParams(location.search).has('nosplash')) start(); else splash(start);
 }
 boot().catch((e) => { console.error(e); const el = document.createElement('div'); el.className = 'noscript'; el.innerHTML = '<h2>Gratus could not open.</h2><p class="lead">' + esc(e && e.message || e) + '</p>'; document.body.appendChild(el); });

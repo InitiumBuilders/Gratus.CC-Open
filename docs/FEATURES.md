@@ -49,6 +49,14 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Give to the World: Gratus Earth (heal places), Gratus Vault (a wish for tomorrow), Gratus World. Rooms exist; the data is imagined.
 - Gifts you gave and received, with links.
 
+## Gratus Guides
+
+- Why any of this exists: the mission, the vision, the five-step loop, how a Gratus grows, and the five things the app promises. A door from the home and from the menu.
+
+## Gratus Vibes
+
+- The small rooms. A Vibe has a name, a mark and a six-character code; anyone holding the code is in it. People say one true thing there with an emoji from their own garden, and that is all that travels: a journal entry never comes here. Start one, share the code, or go in with a code someone gave you. The person who opened a room keeps a key that can take a post down.
+
 ## Everywhere
 
 - On a desktop the scene is a painting at its own size on a wall of its own blurred light, with the content column at 760px. On a phone the scene covers.

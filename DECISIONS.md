@@ -155,3 +155,9 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 117. **A project can be seen from outside** at `/p/<slug>`: how it answers, and the words of anyone who chose to publish them. Something a steward can post.
 118. **The journal writes where you are standing.** A composer sheet rather than a jump to another tab, the month summed up, hold a day to open it, and entries you can keep close.
 119. **The garden is a field or a list, in the order you want,** with a Today card that says how many plants have had a word and offers to tend one more. It counts what was tended, never what was not.
+
+## v19 — GUIDES, VIBES, AND A CARD THAT SHOWS THE PICTURE (2026-09-19)
+120. **A project's picture is shown, never cropped into nonsense.** A logo and a photograph cannot share one cover-cropped tile. The card is a full-width banner at the image's own aspect, `object-fit: contain`, over a blurred wash of the same image so the frame is never empty, under a scrim so the words below stay readable.
+121. **Gratus Guides is the mission and the vision,** with the loop, the phases and the five promises. Not a help page: the reason the thing exists, said plainly.
+122. **Gratus Vibes are the small rooms.** A name, a mark and a six-character code from an alphabet with no ambiguous glyphs, because a code is read aloud and typed by hand. Anyone with the code is in the room. A journal entry never travels there, and the app says so on the screen.
+123. **No Gratus Circles.** Set aside by his decision.

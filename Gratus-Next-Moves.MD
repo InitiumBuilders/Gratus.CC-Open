@@ -8,12 +8,17 @@ Write → plant → return → phase → recipe → give → the gift grows agai
 
 Everything on this list either makes that loop clearer, safer or faster to feel, or it is a room off the loop and waits its turn.
 
-## The next big moves, as he chose them
+## The next big moves
+
+- **A Vibe should let you know it is alive.** Not a notification and not a presence word: a mark on the room's chip when there are words you have not read. This is the missing half of the return loop.
+- **A Vibe's own Passage.** What the room grew together, as a link.
+
 
 Gratus is a complete machine with almost nothing flowing through it. The constraint is not features: nothing leaves the app, so nothing brings anyone in, and nothing is waiting when you return. v18 attacks the first half.
 
 - ~~**The Gratus Passage**~~ and ~~**a project's own page**~~ shipped in v18. What is still missing is the **reason to return**.
-- **Gratus Circles** — a plant several people water together. The only move that creates both halves at once: someone else tended it while you were away, and it needs a second person to exist. This is the next big one.
+- ~~**Gratus Circles**~~ — set aside by his decision. Something like it may return later as **Gratus Guides** in a different shape; the name is now taken by the mission and vision room.
+- ~~**Gratus Vibes**~~ shipped in v19: the small rooms, a code, a feed. This is the social half. What it still lacks is a reason to look in: nothing tells you the room has new words in it.
 - **The Season** — a bounded thirty days with a theme, one shared garden, and an ending where everything grown is given.
 - **Voice-first Gratus** — it reads the question aloud, you speak, it plants. Half of it already exists.
 - **The first ten people.** No feature substitutes for this, and it is the honest top of the list.

@@ -2,6 +2,12 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v19 · Guides, Vibes, and a card that shows the picture (2026-09-19)
+
+- **The project card is a media banner.** A 104-pixel tile with `cover` was cropping logos into nonsense and floating when a title wrapped. Now the image sits full width at its own aspect with `contain`, on a blurred wash of itself, under a scrim.
+- **Gratus Guides**: the mission, the vision, the loop, the phases and the promises.
+- **Gratus Vibes**: the small rooms. A name, a mark, a code, and a feed of short gratitudes.
+
 ## v18 · The Passage, the answer, and two rooms rebuilt (2026-09-19)
 
 - **The Gratus Passage**: a link that shows what grew, with not one word of the journal in it. The first thing Gratus makes that lives outside the app.
