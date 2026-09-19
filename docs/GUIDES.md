@@ -7,7 +7,7 @@ Two guides: one for people who use Gratus, one for people who build on it.
 ### Your first day
 
 1. Open [gratus.cc](https://www.gratus.cc) and tap **Plant My Gratus**. The doorway plays, the light fills the screen, and the garden opens behind it. Tap anywhere to enter early.
-2. On **Grow**, answer today's question in the entry box. Pick the emoji you are planting and any tags that fit. Tap **Plant My Gratus**.
+2. On **Grow**, answer today's question in the entry box, or add a photo, or speak it where your browser allows. Pick the emoji you are planting and any tags that fit. Tap **Plant My Gratus**.
 3. Watch the planting ceremony. Your emoji is now Planted in your garden on the **Gratus** tab.
 
 ### Growing
@@ -40,6 +40,10 @@ His song, A Sacred Place, plays when the app opens. The speaker button in the to
 - **iPhone, Safari:** Share, then **Add to Home Screen**.
 
 Gratus then opens full screen and works offline.
+
+### Back it up
+
+The profile button in the top bar opens your sheet. **Export everything** saves a file with your whole Growth Book. **Restore from a file** brings it back on any device. Do this before you change phones.
 
 ### Privacy
 

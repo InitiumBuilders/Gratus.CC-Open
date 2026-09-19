@@ -10,9 +10,9 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 
 ## Now (the next ship or two)
 
-1. **Protect the journal.** Export the whole Growth Book as a file from the profile sheet, and restore it. A local-first app with no backup is one lost phone from a lost year. This comes before any sync.
+1. ~~**Protect the journal.**~~ Done in v12.1: export and restore live in the profile sheet. Next: a reminder to export after every tenth entry, until sync exists.
 2. **The first move must land.** On a first open with an empty garden, the home leads straight to the entry box and the first plant; nothing else competes. Walk the empty state on a fresh device every ship.
-3. **Honest composer.** Photo and Voice are drawn and not built. Either build voice (speech to text into the entry) or mark both "next" until they exist.
+3. **Composer, second pass.** Photo and voice exist (photo resized on the device, voice through the browser's speech recognition). Next: show the photo inside the garden orb and let a voice entry keep its recording.
 4. **License.** Choose it (see the first question below) and add it. Without a license the mirror is public, not open.
 5. **Desktop loops.** The boomerang videos are 640px portrait and upscale softly on a desktop. Render 1080px versions for `#scene` when the viewport is wide.
 
@@ -44,14 +44,14 @@ These change the shape of the work. Each one is a fork.
 6. **Reminders.** The house rule bans presence words like "come back". Is a single daily nudge at a time the person chooses welcome, or does Gratus never call anyone?
 7. **Which room becomes real first.** Support a Project, Gratus Earth or the Vault? And with whom?
 8. **Desktop.** Is desktop a first-class experience with a wider layout, or the phone app centred on a scene, as now?
-9. **Photo and voice.** Build voice first, build photo first, or remove both until one is built?
+9. **Voice recordings.** A voice entry becomes text today. Should the recording itself be kept on the device too, and could it ride inside a gift?
 10. **The name on the colophon.** Your full name appears on the landing page and now in a public repository. Keep it, or sign as August?
 
 ## Questions I asked myself, and my answers
 
 - **What is the one thing this app is?** A garden grown from gratitude that can be given. If a feature does not feed that sentence, it waits.
 - **What must never happen?** Journal text leaving the device without an explicit give. A secret in the public mirror. A word nobody can read. Each has a gate now: the state design, `open-source.mjs`, and the readability audit plus the contrast gate.
-- **Is the journal safe today?** No. It lives in one browser's storage. Export and restore is the next ship for that reason.
+- **Is the journal safe today?** Safer. It lives in one browser's storage, and since v12.1 it can be exported to a file and restored on any device. Sync, if it comes, comes after the identity question.
 - **What does "backend later" mean in practice?** One function, one JSON document, last-writer-wins, named in a comment. It is the right size until the stream shows real traffic; then per-goal writes.
 - **What breaks first at scale?** The goals document and the desktop video quality. Both are on this list.
 - **How do we keep the scenes and still read every word?** Bright scene above, dark plate below, scrim bands where words cross the scene, dark glass under every control. Never white on bright. Verified by screenshot at 375 on every page, every ship.

@@ -423,3 +423,6 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 .page { position: relative; z-index: 2; background: linear-gradient(180deg, rgba(5, 9, 18, .76), rgba(5, 9, 18, .84) 120px, rgba(5, 9, 18, .84)); border-radius: 32px 32px 0 0; margin-top: -30px; padding-top: 28px; padding-bottom: 32px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12); }
 .glass { background: rgba(12, 18, 34, .72); }
 .stream { background: rgba(12, 18, 34, .72); }
+
+/* the empty garden: the words stand on a dark pool, the scene stays around them */
+.garden .empty-note::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse 70% 62% at 50% 55%, rgba(5, 9, 18, .84) 0%, rgba(5, 9, 18, .6) 55%, rgba(5, 9, 18, 0) 100%); }

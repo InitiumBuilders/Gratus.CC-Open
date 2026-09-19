@@ -2,6 +2,12 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v12.1 · Restore, and the empty garden reads (2026-09-19)
+
+- Restore from a file beside Export everything in the profile sheet; the file is checked before anything is replaced.
+- The empty garden's words stand on a dark pool inside the scene.
+- The docs corrected: photo and voice entries already exist.
+
 ## v12 · The core in the bar, every word on a plate, open source (2026-09-19)
 
 - The bar's logo sits half in the bar in a 68px squircle, with two swaying arcs of light, five rising embers, and a glow that spills onto the bar.

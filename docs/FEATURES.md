@@ -12,7 +12,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 ## Grow
 
 - Today's question, drawn from the question pool.
-- The entry: text, with photo and voice as the next steps.
+- The entry: text, a photo (resized on the device and kept with the entry), and voice where the browser offers speech recognition.
 - The emoji you are planting, chosen from your palette; the first emoji is suggested by the engine.
 - Tags (Love, Support, Friendship, Gratitude, Health, Friends, Music, Family, Nature, Work, Home, Rest, and your own).
 - Plant My Gratus: the planting ceremony through the Gate's light, then the Planted moment.
@@ -41,11 +41,11 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 
 - The twelve laws, one line per screen, from the top bar.
 - Privacy and terms pages.
+- Export everything as a file, and restore from one, in the profile sheet.
 - A dev panel behind `?dev=1`: add days, add an earlier hand, reset.
 
 ## Not yet
 
-- Photo and voice entries.
 - Accounts, sync between devices, and backup beyond the device.
 - Real projects and partners behind Give.
 - Notifications or reminders.

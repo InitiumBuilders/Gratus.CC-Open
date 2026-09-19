@@ -105,3 +105,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 81. **The public mirror is gated twice.** `scripts/gates/open-source.mjs` holds fifteen taught rules, each with a decoy that must fire before a ship; `scripts/publish-open.sh` exports the tree without git state, env files, Vercel state or personal paths, gates the export, pushes on top of the public history, clones the result and gates the clone. `ship.sh` runs it after the live stamp is confirmed.
 82. **Scripts carry no person.** No home paths and no personal email in code; the commit identity lives in the private repository's local git config.
 83. **The docs are part of the app.** README, pitch, architecture, features, guides, evolutions, and `Gratus-Next-Moves.MD` with the roadmap and the open questions.
+
+## v12.1 — RESTORE (2026-09-19)
+84. **The journal can come back.** Restore from a file sits beside Export everything. The file is checked (version, entries, plants) and the person confirms before anything on the device is replaced; the state object is replaced in place so nothing holds a stale reference.
+85. **The empty garden reads.** His three lines stand on a dark pool inside the scene, with the scene still around them.
