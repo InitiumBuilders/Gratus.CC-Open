@@ -147,3 +147,11 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 111. **The garden is a field, not a box.** A horizon, a ring around each plant filling toward its next phase, a diamond on the ones growing for a project, four lanes and the phase legend.
 112. **A project is shown in full.** Raised, donors, updates, location, organisation, chains, every contact link they published, their recent updates, the gifts that just arrived, how faithfully they answer, and what else is like them. All read live from Giveth; none of it invented.
 113. **Grow a Gratus Gift for a Giveth project.** An emoji can be dedicated to a project, grown with your days, and given to them when it is Ready to Give, carrying every day you held it. Dedicating changes nothing about how it grows; it only remembers who it is for.
+
+## v18 — THE PASSAGE, THE ANSWER, AND TWO ROOMS REBUILT (2026-09-19)
+114. **A Passage carries what grew, never what was written.** Emojis, days, phases, blooms, marks and four counts, encoded into the link like a Gratus Gift. Nothing is uploaded, so there is nothing to delete later; the link simply stops being shared.
+115. **A seed is private to its project until its author says otherwise.** Only the person who planted it can publish it. This closed a real gap: before today, anyone who knew a slug could read every seed written to that project.
+116. **A bloom is not the end.** A seed carries a thread. The author speaks with a key given once at planting; the steward speaks with the project key.
+117. **A project can be seen from outside** at `/p/<slug>`: how it answers, and the words of anyone who chose to publish them. Something a steward can post.
+118. **The journal writes where you are standing.** A composer sheet rather than a jump to another tab, the month summed up, hold a day to open it, and entries you can keep close.
+119. **The garden is a field or a list, in the order you want,** with a Today card that says how many plants have had a word and offers to tend one more. It counts what was tended, never what was not.

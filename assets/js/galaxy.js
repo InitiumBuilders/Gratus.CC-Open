@@ -7,7 +7,7 @@
 import * as Gr from '../../engine/gratus.js?v=12';
 import * as E from '../../engine/emoji.js?v=12';
 import { newId } from '../../engine/rng.js?v=12';
-import { esc, $, $$, sheet, toast, fmtDay } from './ui.js?v=12';
+import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy } from './ui.js?v=12';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
 const KEY = 'gratus.galaxy.v1';
@@ -152,6 +152,74 @@ function render() {
   wire();
 }
 
+// ══ THE PASSAGE · what a garden looks like from outside. Never a word of the journal. ══════════
+function passageOf() {
+  const plants = S.plants.filter((p) => !p.private).slice().sort((a, b) => daysOf(b) - daysOf(a)).slice(0, 40);
+  return {
+    v: 1, n: (S.name || '').slice(0, 40), at: today(),
+    p: plants.map((p) => [face(p), daysOf(p), p.forProject ? p.forProject.title.slice(0, 40) : 0]),
+    b: S.seeds.filter((s) => s.status === 'bloomed').slice(-12).map((s) => [s.bloom, s.title.slice(0, 40)]),
+    m: MILESTONES.filter(([id]) => S.milestones[id]).map(([, name, ico]) => [ico, name]),
+    a: (C.alchemy ? C.alchemy.models : []).filter((x) => S.alch[x.id]).map((x) => [x.result, x.name]),
+    c: [new Set(S.entries.map((e) => e.day)).size, S.plants.length, S.gifts.given.length, S.seeds.length],
+  };
+}
+function passageLink() { return location.origin + '/passage#' + encodeGift(passageOf()); }
+function passageSheet() {
+  const link = passageLink();
+  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:78px;height:78px;filter:drop-shadow(0 0 16px rgba(180,255,120,.5))"><h2>Your Passage</h2><span class="kicker mint">A garden, seen from outside</span></div>' +
+    '<p class="body">This link shows what grew: your emojis and their days, the seeds that bloomed, and the marks you have earned. It carries <b>not one word</b> of your journal, and nothing you have not already given away.</p>' +
+    '<div class="actions"><button class="btn mint" id="pa-share">Share my Passage</button><button class="btn" id="pa-see">See it first</button></div>' +
+    '<p class="cap">The whole page rides inside the link, like a Gratus Gift. Nothing is uploaded, and there is nothing to delete later; the link simply stops being shared.</p>');
+  $('#pa-share', sh.el).addEventListener('click', () => shareOrCopy('My Gratus Passage', 'What grew in my garden.', link).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
+  $('#pa-see', sh.el).addEventListener('click', () => { sh.close(); openPassage(passageOf(), true); });
+}
+function openPassage(g, mine) {
+  const root = $('#room'); if (!root) return;
+  const phase = (d) => phaseOf(d).name;
+  root.innerHTML = '<div class="room-page passage">' + art(scene('journey', 3)) +
+    '<div class="rhead"><span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="pa-x" aria-label="close">✕</button></div>' +
+    '<div class="rbody">' +
+    '<span class="kicker mint">A Gratus Passage</span>' +
+    '<h1>' + esc(g.n ? g.n + '\u2019s garden' : 'A garden') + '</h1>' +
+    '<div class="glass stats"><div><b>' + (g.c[0] || 0) + '</b><span>days written</span></div><div><b>' + (g.c[1] || 0) + '</b><span>plants</span></div><div><b>' + ((g.c[2] || 0) + (g.c[3] || 0)) + '</b><span>given</span></div></div>' +
+    (g.p && g.p.length ? '<span class="kicker mint">What grew</span><div class="pgrid">' + g.p.map(([e, d, forp]) => '<div class="pcell"><span class="orb' + (d >= 9 ? ' lit' : '') + '"><span>' + esc(e) + '</span></span><b>' + plural(d, 'day') + '</b><span>' + esc(phase(d)) + (forp ? ' · for ' + esc(String(forp)) : '') + '</span></div>').join('') + '</div>' : '') +
+    (g.b && g.b.length ? '<span class="kicker gold">Seeds that bloomed</span><div class="chips">' + g.b.map(([e, t]) => '<span class="chip">' + esc(e) + ' ' + esc(t) + '</span>').join('') + '</div>' : '') +
+    (g.a && g.a.length ? '<span class="kicker mint">Marks</span><div class="chips">' + g.a.map(([e, n]) => '<span class="chip">' + esc(e) + ' ' + esc(n) + '</span>').join('') + '</div>' : '') +
+    (g.m && g.m.length ? '<div class="chips">' + g.m.map(([e, n]) => '<span class="chip">' + esc(e) + ' ' + esc(n) + '</span>').join('') + '</div>' : '') +
+    '<p class="cap">Not one word of a journal is in this page. Only what grew, and what was given.</p>' +
+    (mine ? '<button class="btn mint wide" id="pa-share2">Share my Passage</button>' : '<a class="btn mint wide" href="/app">Grow your own Gratus 🌱</a>') +
+    '<p class="statement quiet" style="text-align:center">\u201cGratitude Moves Worlds.\u201d</p>' +
+    '</div></div>';
+  root.hidden = false; document.body.classList.add('room');
+  const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/passage') history.replaceState(null, '', '/app'); };
+  $('#pa-x', root).addEventListener('click', close);
+  const s2 = $('#pa-share2', root); if (s2) s2.addEventListener('click', () => shareOrCopy('My Gratus Passage', 'What grew in my garden.', passageLink()).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
+}
+// ══ A PROJECT'S OWN PAGE · what a steward can post ══════════════════════════════════════════
+async function openProjectPage(slug) {
+  const root = $('#room'); if (!root) return;
+  root.innerHTML = '<div class="room-page"><div class="rbody"><span class="kicker mint">Reading the trace</span><h1>' + esc(slug) + '</h1></div></div>';
+  root.hidden = false; document.body.classList.add('room');
+  let p = null, t = null;
+  try { const r = await fetch('/api/giveth?q=project&slug=' + encodeURIComponent(slug), { cache: 'no-store' }); const d = await r.json().catch(() => ({})); if (r.ok) p = d.project; } catch (e) {}
+  try { const r = await fetch('/api/trace?project=' + encodeURIComponent(slug), { cache: 'no-store' }); t = await r.json().catch(() => null); } catch (e) {}
+  const g = t && t.signal;
+  root.innerHTML = '<div class="room-page passage">' + art(scene('console')) +
+    '<div class="rhead"><span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="pp-x" aria-label="close">✕</button></div>' +
+    '<div class="rbody">' +
+    '<span class="kicker mint">A Gratus page</span>' +
+    '<h1>' + esc((p && p.title) || slug) + '</h1>' +
+    (p ? '<p class="body">' + esc(p.summary) + '</p>' : '') +
+    (g ? '<span class="kicker gold">How this project answers</span><div class="gv-facts"><div class="gv-fact"><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div class="gv-fact"><b>' + g.share + '%</b><span>watered</span></div><div class="gv-fact"><b>' + (g.medianDays == null ? '—' : g.medianDays) + '</b><span>days to answer</span></div></div>'
+      : '<p class="cap">No seeds have been planted for this project yet.</p>') +
+    (t && t.seeds && t.seeds.length ? '<span class="kicker mint">What people wrote, and what they were told</span><div class="rows">' + t.seeds.map((s) => '<div class="glass gv-update"><span class="kicker">' + esc(s.name) + ' · ' + esc(fmtDay(String(s.at).slice(0, 10))) + (s.first ? ' · 🫶 the first' : '') + '</span><b>' + esc(s.message) + '</b>' + (s.water ? '<span class="cap">' + esc(s.water.from) + ': ' + esc(s.water.reply) + '</span>' : '<span class="cap">Not watered yet.</span>') + '</div>').join('') + '</div>' : '') +
+    (t && t.held ? '<p class="cap">' + plural(t.held, 'other seed') + ' ' + (t.held === 1 ? 'was' : 'were') + ' written to this project and kept between them. Only the person who wrote a seed can publish it.</p>' : '') +
+    '<div class="actions">' + (p ? '<a class="btn mint" href="/app/giveth">Give to them with a Gratus Seed</a><a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">The project on Giveth ↗</a>' : '') + '</div>' +
+    '<p class="statement quiet" style="text-align:center">\u201cThe capital funds the work. The seed funds the morale.\u201d</p>' +
+    '</div></div>';
+  $('#pp-x', root).addEventListener('click', () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); location.href = '/app/giveth'; });
+}
 // ══ HARMONIC ALCHEMY · a mark needs both halves: what you gave, and what you tended ══════════
 function alchemyState() {
   const days = new Set(S.entries.map((e) => e.day)).size;
@@ -384,7 +452,7 @@ function giveToProject(pl, p) {
       const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ act: 'plant', project: p.slug, title: p.title, message, name: S.name || '', emoji: face(pl), bloom: p.bloom }) });
       const dd = await r.json().catch(() => ({})); if (!r.ok || !dd.seed) throw new Error(dd.error || 'the trace refused');
-      S.seeds.push(Object.assign({}, dd.seed, { slug: p.slug, image: p.image || null, categories: p.categories || [], days: d }));
+      S.seeds.push(Object.assign({}, dd.seed, { slug: p.slug, image: p.image || null, categories: p.categories || [], days: d, mine: dd.mine || null }));
       pl.given = { to: p.title, slug: p.slug, at: today(), days: d }; save(); sh.close();
       playCeremonies(['<div class="cer"><span class="big">' + esc(p.bloom) + '</span><h2>Given.</h2><p>' + esc(plural(d, 'day')) + ' of care, and your words, are with ' + esc(p.title) + '.</p><span class="kicker">tap to continue</span></div>'], () => { checkMilestones(); checkAlchemy(); render(); });
     } catch (e) { b.disabled = false; b.textContent = 'Capital sent · plant this Gratus'; toast(String(e.message || e)); }
@@ -411,7 +479,7 @@ function seedSheet(p) {
         body: JSON.stringify({ act: 'plant', project: p.slug, title: p.title, message, name, tx, bloom: p.bloom }) });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.seed) throw new Error(d.error || 'the trace refused');
-      S.seeds.push(Object.assign({}, d.seed, { slug: p.slug, image: p.image || null, categories: p.categories || [] }));
+      S.seeds.push(Object.assign({}, d.seed, { slug: p.slug, image: p.image || null, categories: p.categories || [], mine: d.mine || null }));
       if (tx) confirmGift(d.seed.id, p.slug, tx);
       save(); sh.close();
       playCeremonies([d.first
@@ -423,14 +491,36 @@ function seedSheet(p) {
 function mySeedSheet(id) {
   const s = S.seeds.find((x) => x.id === id); if (!s) return;
   const b = s.status === 'bloomed';
-  sheet('<div class="hero-sm"><span class="orb xl' + (b ? ' lit' : '') + '"><span>' + esc(b ? s.bloom : '🌱') + '</span></span><h2>' + esc(s.title) + '</h2><span class="kicker mint">' + esc(b ? 'Bloomed' : 'Planted') + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + '</span></div>' +
+  const sh = sheet('<div class="hero-sm"><span class="orb xl' + (b ? ' lit' : '') + '"><span>' + esc(b ? s.bloom : '🌱') + '</span></span><h2>' + esc(s.title) + '</h2><span class="kicker mint">' + esc(b ? 'Bloomed' : 'Planted') + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + '</span></div>' +
     '<span class="kicker mint">What you wrote</span><p class="lead" style="white-space:pre-wrap">' + esc(s.message) + '</p>' +
     (b && s.water ? '<span class="kicker gold">What they wrote back</span><p class="lead" style="white-space:pre-wrap">' + esc(s.water.reply) + '</p><span class="cap">' + esc(s.water.from) + ' · ' + esc(fmtDay(s.water.at.slice(0, 10))) + '</span>' : '<p class="cap">Not watered yet. A project answers when it can; some answer in a day, some in a season. The seed keeps either way.</p>') +
     (s.confirmed ? '<span class="kicker mint">Giveth confirms ' + esc(s.confirmed.amount + ' ' + (s.confirmed.currency || '')) + '</span>' : s.tx ? '<span class="cap">tx ' + esc(s.tx.slice(0, 18)) + '… (unconfirmed)</span>' : '') +
     (s.first ? '<p class="cap">🫶 Yours was the first seed this project ever received.</p>' : '') +
     (b && s.water && s.water.passTo ? '<div class="glass card"><span class="kicker gold">They passed it on</span><p class="body">' + esc(s.water.from) + ' is grateful for <b>' + esc(s.water.passTo) + '</b>' + (s.water.passWhy ? ': ' + esc(s.water.passWhy) : '') + '</p><button class="btn mint" data-flow="' + esc(s.water.passTo) + '">Continue the flow ' + esc(s.water.passTo) + ' →</button></div>' : '') +
+    ((s.thread || []).length ? '<span class="kicker mint">Since then</span><div class="rows">' + s.thread.map((m) => '<div class="glass gv-update"><span class="kicker">' + (m.who === 'donor' ? 'you' : esc((s.water && s.water.from) || s.title)) + ' · ' + esc(fmtDay(String(m.at).slice(0, 10))) + '</span><b>' + esc(m.text) + '</b></div>').join('') + '</div>' : '') +
+    (b && s.mine ? '<div class="two"><input class="field" id="sd-say" maxlength="280" placeholder="Say something back..." aria-label="say something back"><button class="btn" id="sd-send">Send</button></div>' : '') +
+    (s.mine ? '<button class="btn sm quiet" id="sd-pub">' + (s.public ? '✓ Your words are shown on their Gratus page' : 'Let them show your words publicly') + '</button>' : '') +
     (b ? '<button class="btn" data-similar="' + esc(s.slug || s.project) + '">Others like this one</button>' : '') +
+    '<a class="btn quiet" href="/p/' + esc(s.slug || s.project) + '">Their Gratus page →</a>' +
     '<div class="links"><a href="https://giveth.io/project/' + esc(s.slug || s.project) + '" target="_blank" rel="noopener">The project on Giveth</a></div>');
+  const say = $('#sd-send', sh.el); if (say) say.addEventListener('click', async () => {
+    const t = $('#sd-say', sh.el).value.trim(); if (!t) { toast('A few words.'); return; }
+    say.disabled = true; say.textContent = '...';
+    try {
+      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'say', project: s.slug || s.project, seed: s.id, text: t, key: s.mine }) });
+      const d = await r.json().catch(() => ({})); if (!r.ok || !d.seed) throw new Error(d.error || 'refused');
+      s.thread = d.seed.thread; save(); sh.close(); toast('Sent'); mySeedSheet(id);
+    } catch (e) { say.disabled = false; say.textContent = 'Send'; toast(String(e.message || e)); }
+  });
+  const pub = $('#sd-pub', sh.el); if (pub) pub.addEventListener('click', async () => {
+    const next = !s.public;
+    if (next && !confirm('Show your words on this project\u2019s public Gratus page? Anyone with the link can read them.')) return;
+    try {
+      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'publish', project: s.slug || s.project, seed: s.id, public: next, key: s.mine }) });
+      const d = await r.json().catch(() => ({})); if (!r.ok || !d.seed) throw new Error(d.error || 'refused');
+      s.public = d.seed.public; save(); sh.close(); toast(s.public ? 'Shown on their page' : 'Kept between you'); mySeedSheet(id);
+    } catch (e) { toast(String(e.message || e)); }
+  });
 }
 // ── the seed and the capital, linked: ask Giveth whether that transaction really arrived ──
 async function confirmGift(seedId, slug, tx) {
@@ -474,13 +564,14 @@ function viewConsole() {
     (conState === 'live' && !seeds.length ? '<p class="cap">No seeds yet for that project. When someone gives with a Gratus Seed, it arrives here.</p>' : '') +
     (seeds.length ? '<div class="eyebrow"><h2>Seeds</h2><span class="more">' + plural(seeds.length, 'seed') + '</span></div><div class="rows">' + seeds.map((s) => '<div class="glass entry conseed"><span class="thumb">' + esc(s.status === 'bloomed' ? s.bloom : '🌱') + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(s.name) + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + (s.tx ? ' · on chain' : '') + '</span><span class="text">' + esc(s.message) + '</span>' + (s.water ? '<span class="cap">You watered it: ' + esc(s.water.reply) + '</span>' : '<button class="btn sm mint" data-water="' + esc(s.id) + '">Water this seed</button>') + '</span></div>').join('') + '</div>' : '') +
     '<p class="cap">Every seed here was written by a person who gave to you. Watering one takes twenty seconds and it lands in their garden as a bloom.</p>' +
+    (conSlug ? '<a class="btn" href="/p/' + esc(conSlug) + '">Your public Gratus page →</a><p class="cap">Post that link. It shows how you answer, and the words of anyone who chose to publish theirs.</p>' : '') +
     '</div>';
 }
 async function conLoad() {
   if (!conSlug) { toast('Your project slug, from its Giveth address.'); return; }
   conState = 'loading'; render();
   try {
-    const r = await fetch('/api/trace?project=' + encodeURIComponent(conSlug), { cache: 'no-store' });
+    const r = await fetch('/api/trace?project=' + encodeURIComponent(conSlug) + (conKey ? '&key=' + encodeURIComponent(conKey) : ''), { cache: 'no-store' });
     const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'no answer');
     conSeeds = d.seeds || []; conSignal = d.signal || null; conState = 'live';
     try { localStorage.setItem(GVK, JSON.stringify({ slug: conSlug, key: conKey })); } catch (e) {}
@@ -560,13 +651,13 @@ function viewGratus() {
     '</section>';
 }
 // ── the garden room: a field with a horizon, the plants in it, the seeds above it ──
-let gardenFilter = 'all';
+let gardenFilter = 'all', gardenView = 'field', gardenSort = 'days';
 function gardenField() {
   let plants = S.plants.filter((p) => !p.private);
   if (gardenFilter === 'ready') plants = plants.filter((p) => daysOf(p) >= 13);
   else if (gardenFilter === 'growing') plants = plants.filter((p) => daysOf(p) < 13);
   else if (gardenFilter === 'dedicated') plants = plants.filter((p) => p.forProject);
-  plants = plants.slice().sort((a, b) => daysOf(b) - daysOf(a));
+  plants = plants.slice().sort((a, b) => gardenSort === 'recent' ? String(b.planted).localeCompare(String(a.planted)) : gardenSort === 'name' ? nameOf(face(a)).localeCompare(nameOf(face(b))) : daysOf(b) - daysOf(a));
   const n = plants.length;
   if (!n) return '<div class="glass garden field">' + art(scene('garden')) +
     '<div class="empty-note"><span class="orb lg empty"><span>+</span></span><p class="cap">' + (gardenFilter === 'all' ? 'Moments take root. Gratitude grows. A kinder world blooms.' : 'Nothing here with that filter yet.') + '</p>' + (gardenFilter === 'all' ? '<button class="btn mint" id="first-plant">Plant My Gratus 🌱</button>' : '') + '</div></div>';
@@ -578,6 +669,10 @@ function gardenField() {
     const kept = d && (p.kept || []).includes(today());
     return '<button class="orb p' + ph + (kept ? ' lit' : '') + (p.forProject ? ' pledged' : '') + '" data-p="' + esc(p.id) + '" style="left:calc(50% + ' + (r * Math.cos(a)).toFixed(1) + 'px);top:calc(50% + ' + (r * Math.sin(a)).toFixed(1) + 'px);--h:' + (ph >= 4 ? '#F2C97D' : '#6ED9C0') + ';--pct:' + pct + '" aria-label="' + esc(nameOf(face(p)) + ', ' + plural(d, 'day') + (nx ? ', ' + nx.name + ' in ' + plural(nx.day - d, 'day') : ', ready to give')) + '"><span>' + esc(face(p)) + '</span></button>';
   }).join('');
+  if (gardenView === 'list') {
+    return '<div class="rows">' + plants.map((p) => { const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d); const kept = d && (p.kept || []).includes(today());
+      return '<button class="glass opt" data-p="' + esc(p.id) + '"><span class="ico' + (d >= 13 ? ' gold' : '') + '">' + esc(face(p)) + '</span><span class="grow"><b>' + esc(nameOf(face(p))) + (p.forProject ? ' ◆' : '') + '</b><span>' + esc(ph.name) + ' · ' + plural(d, 'day') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + (kept ? ' · tended today' : '') + '</span></span><span class="arrow">›</span></button>'; }).join('') + '</div>';
+  }
   return '<div class="glass garden field">' + art(scene('garden')) + '<i class="horizon" aria-hidden="true"></i>' + orbs + '</div>';
 }
 function viewGarden() {
@@ -585,6 +680,7 @@ function viewGarden() {
   const care = S.plants.reduce((t, p) => t + daysOf(p), 0);
   const ready = S.plants.filter((p) => daysOf(p) >= 13).length;
   const pledged = S.plants.filter((p) => p.forProject).length;
+  const tendedToday = S.plants.filter((p) => (p.kept || []).includes(today())).length;
   const entries = S.entries.slice().reverse();
   const lanes = [['all', 'Everything'], ['growing', 'Growing'], ['ready', 'Ready to give'], ['dedicated', 'For a project']];
   const phases = C.book.phases;
@@ -592,6 +688,8 @@ function viewGarden() {
     '<div class="page">' +
     '<div class="glass stats in"><div><b>' + n + '</b><span>' + (n === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + care + '</b><span>days of care</span></div><div><b>' + ready + '</b><span>ready to give</span></div></div>' +
     (n ? '<div class="chips row">' + lanes.map(([k, t]) => '<button class="chip' + (gardenFilter === k ? ' on' : '') + '" data-gfilter="' + k + '">' + t + (k === 'dedicated' && pledged ? ' · ' + pledged : '') + '</button>').join('') + '</div>' : '') +
+    (n ? '<div class="chips row end"><button class="chip' + (gardenView === 'field' ? ' on' : '') + '" data-gview="field">✦ Field</button><button class="chip' + (gardenView === 'list' ? ' on' : '') + '" data-gview="list">☰ List</button><button class="chip' + (gardenSort === 'days' ? ' on' : '') + '" data-gsort="days">Most days</button><button class="chip' + (gardenSort === 'recent' ? ' on' : '') + '" data-gsort="recent">Newest</button><button class="chip' + (gardenSort === 'name' ? ' on' : '') + '" data-gsort="name">By name</button></div>' : '') +
+    (n ? '<div class="glass card tended"><span class="kicker mint">Today</span><p class="body"><b>' + tendedToday + '</b> of ' + plural(n, 'plant') + ' tended. ' + (tendedToday >= n ? 'The whole garden has had a word today.' : 'Each one grows on the days you write about it.') + '</p>' + (tendedToday < n ? '<button class="btn mint" id="tend-now">Tend one now 🌱</button>' : '') + '</div>' : '') +
     gardenField() +
     (n ? '<div class="phaseline">' + phases.map((p, i) => '<span class="ph' + (S.plants.some((x) => phaseIndex(daysOf(x)) === i) ? ' on' : '') + '"><i>' + p.icon + '</i>' + esc(p.name) + '</span>').join('') + '</div>' +
       '<p class="cap">Every orb is one emoji and the days you kept it. The ring around it fills as it grows toward its next phase. Tap one to open it.</p>' : '') +
@@ -605,12 +703,12 @@ function viewGarden() {
 
 function menuSheet() {
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">Grow Gratus Give</span></div>' +
-    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
+    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
   const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
-  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
+  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
 }
 function entryCard(e) {
-  return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
+  return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + (e.star ? '\u2605 ' : '') + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
 }
 
 // ── GROW · plant today ──
@@ -766,7 +864,39 @@ function viewGalaxy() {
 
 // ── THE GROWTH BOOK ──
 let bookTab = 'journal', recipeCat = 'all', qOffset = 0, journalQuery = '';
-let jTab = 'entries', jMonth = 0, jDay = '', jEmoji = '', jTag = '', jFolder = '';
+// ── write where you are standing: the composer as a sheet, so the journal never has to be left ──
+function quickWrite(pre) {
+  const pal = palette().slice(0, 10); const t = today();
+  const dr = { text: (pre && pre.text) || '', emoji: (pre && pre.emoji) || null, tags: [] };
+  const pool = Gr.questionPool(C.prompts); const q = Gr.question(pool, t + ':j', qOffset);
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>🌱</span></span><h2>Today</h2><span class="kicker mint">' + esc(q) + '</span></div>' +
+    '<textarea class="field" id="qw-text" rows="4" maxlength="1234" placeholder="What are you grateful for today?" aria-label="your entry">' + esc(dr.text) + '</textarea>' +
+    '<span class="kicker mint">The emoji you are planting</span>' +
+    '<div class="pick">' + pal.map((e) => '<button class="orb' + (dr.emoji === e ? ' on' : '') + '" data-qwpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
+    '<span class="kicker mint">Tags</span><div class="chips">' + C.book.tags.slice(0, 9).map((x) => '<button class="chip" data-qwtag="' + esc(x) + '">' + esc(x) + '</button>').join('') + '</div>' +
+    '<button class="btn mint wide" id="qw-plant">Plant My Gratus 🌱</button>' +
+    '<button class="btn quiet" id="qw-full">Open the full composer</button>', { autofocus: true });
+  $$('[data-qwpick]', sh.el).forEach((b) => b.addEventListener('click', () => { dr.emoji = dr.emoji === b.dataset.qwpick ? null : b.dataset.qwpick; $$('[data-qwpick]', sh.el).forEach((x) => x.classList.toggle('on', x.dataset.qwpick === dr.emoji)); }));
+  $$('[data-qwtag]', sh.el).forEach((b) => b.addEventListener('click', () => { const x = b.dataset.qwtag; dr.tags = dr.tags.includes(x) ? dr.tags.filter((y) => y !== x) : dr.tags.concat([x]); b.classList.toggle('on', dr.tags.includes(x)); }));
+  $('#qw-full', sh.el).addEventListener('click', () => { draft.text = $('#qw-text', sh.el).value; draft.emoji = dr.emoji; draft.tags = dr.tags.slice(); sh.close(); go('grow'); });
+  $('#qw-plant', sh.el).addEventListener('click', () => {
+    draft.text = $('#qw-text', sh.el).value; draft.emoji = dr.emoji; draft.tags = dr.tags.slice();
+    if (!draft.text.trim() && !draft.emoji) { toast('A word or an emoji. Either grows.'); return; }
+    sh.close(); plantNow();
+  });
+}
+// ── a day, opened ──
+function daySheet(day) {
+  const es = S.entries.filter((e) => e.day === day);
+  const grew = S.plants.filter((p) => (p.kept || []).includes(day));
+  sheet('<div class="hero-sm"><span class="orb lg' + (es.length ? ' lit' : '') + '"><span>' + esc(es.length ? (es[0].emoji || '✦') : '·') + '</span></span><h2>' + esc(day === today() ? 'Today' : fmtDay(day)) + '</h2><span class="kicker mint">' + (es.length ? plural(es.length, 'entry').replace('entrys', 'entries') : 'Nothing written') + (grew.length ? ' · ' + plural(grew.length, 'plant') + ' grew' : '') + '</span></div>' +
+    (grew.length ? '<div class="chips">' + grew.map((p) => '<span class="chip">' + esc(face(p)) + ' ' + esc(nameOf(face(p))) + '</span>').join('') + '</div>' : '') +
+    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">This day has no entry. A day without one is not a failure; it is simply a day.</p>') +
+    (day === today() ? '<button class="btn mint wide" id="dy-write">Write today\u2019s entry 🌱</button>' : ''));
+  $$('[data-e]').forEach((b) => b.addEventListener('click', () => entrySheet(S.entries.find((x) => x.id === b.dataset.e))));
+  const w = $('#dy-write'); if (w) w.addEventListener('click', quickWrite);
+}
+let jTab = 'entries', jMonth = 0, jDay = '', jEmoji = '', jTag = '', jFolder = '', jStar = false;
 const monthKey = (off) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return d.getFullYear() + '-' + pad2(d.getMonth() + 1); };
 function monthGrid(off) {
   const key = monthKey(off); const [Y, M] = key.split('-').map(Number);
@@ -781,11 +911,15 @@ function monthGrid(off) {
     cells += '<button class="cal-d' + (n ? ' on' : '') + (k === t ? ' today' : '') + (k === jDay ? ' sel' : '') + (future ? ' future' : '') + '" data-calday="' + k + '"' + (future ? ' disabled' : '') + '><span>' + d + '</span>' + (n > 1 ? '<i class="dots">' + '•'.repeat(Math.min(3, n)) + '</i>' : n ? '<i class="dots">•</i>' : '') + '</button>';
   }
   const written = Object.keys(byDay).filter((k) => k.startsWith(key)).length;
+  const mEntries = S.entries.filter((e) => e.day.startsWith(key));
+  const mEmoji = new Set(mEntries.map((e) => e.emoji).filter(Boolean)).size;
+  const mWords = mEntries.reduce((n, e) => n + (e.text || '').split(/\s+/).filter(Boolean).length, 0);
   const label = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
   return '<div class="glass cal"><div class="cal-head"><button class="cal-nav" data-calmove="-1" aria-label="the month before">‹</button><b>' + esc(label) + '</b><button class="cal-nav" data-calmove="1"' + (off >= 0 ? ' disabled' : '') + ' aria-label="the month after">›</button></div>' +
     '<div class="cal-dow"><i>M</i><i>T</i><i>W</i><i>T</i><i>F</i><i>S</i><i>S</i></div>' +
     '<div class="cal-grid">' + cells + '</div>' +
-    '<p class="cap">' + (written ? plural(written, 'day') + ' written this month' : 'Nothing written this month yet') + (jDay ? ' · showing ' + esc(fmtDay(jDay)) : '') + '</p></div>';
+    '<div class="monthsum"><span><b>' + written + '</b>' + (written === 1 ? 'day' : 'days') + '</span><span><b>' + mEntries.length + '</b>' + (mEntries.length === 1 ? 'entry' : 'entries') + '</span><span><b>' + mEmoji + '</b>' + (mEmoji === 1 ? 'emoji' : 'emojis') + '</span><span><b>' + mWords + '</b>words</span></div>' +
+    '<p class="cap">' + (jDay ? 'Showing ' + esc(fmtDay(jDay)) + '. Hold a day to open it.' : 'Tap a day to show it. Hold one to open it.') + '</p></div>';
 }
 function viewJournal() {
   const t = today(); const pool = Gr.questionPool(C.prompts); const q = Gr.question(pool, t + ':j', qOffset);
@@ -800,18 +934,20 @@ function viewJournal() {
       if (jEmoji && e.emoji !== jEmoji) return false;
       if (jTag && !(e.tags || []).includes(jTag)) return false;
       if (jFolder && e.folder !== jFolder) return false;
+      if (jStar && !e.star) return false;
       if (!qq) return true;
       return (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim();
     }).slice().reverse();
     const byDay = []; for (const e of list) { const last = byDay[byDay.length - 1]; if (last && last.day === e.day) last.items.push(e); else byDay.push({ day: e.day, items: [e] }); }
     const emojis = Array.from(new Set(S.entries.map((e) => e.emoji).filter(Boolean))).slice(0, 14);
     const tags = Array.from(new Set(S.entries.flatMap((e) => e.tags || []))).slice(0, 14);
-    const filtering = jDay || jEmoji || jTag || jFolder || qq;
+    const filtering = jDay || jEmoji || jTag || jFolder || jStar || qq;
     body = monthGrid(jMonth) +
       '<input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
       (emojis.length ? '<div class="chips row">' + emojis.map((e) => '<button class="chip' + (jEmoji === e ? ' on' : '') + '" data-jemoji="' + esc(e) + '"><span class="emoji">' + esc(e) + '</span> ' + esc(nameOf(e)) + '</button>').join('') + '</div>' : '') +
       (tags.length ? '<div class="chips row">' + tags.map((x) => '<button class="chip' + (jTag === x ? ' on' : '') + '" data-jtag="' + esc(x) + '">' + esc(x) + '</button>').join('') + '</div>' : '') +
       (S.folders.length ? '<div class="chips row">' + S.folders.map((f) => '<button class="chip' + (jFolder === f.id ? ' on' : '') + '" data-jfolder="' + esc(f.id) + '">📁 ' + esc(f.name) + '</button>').join('') + '</div>' : '') +
+      (S.entries.some((e) => e.star) ? '<button class="chip' + (jStar ? ' on' : '') + '" id="j-star">★ Kept close</button>' : '') +
       (filtering ? '<button class="btn sm quiet" id="j-clear">Clear the filters · ' + plural(list.length, 'entry').replace('entrys', 'entries') + '</button>' : '') +
       (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map(entryCard).join('') + '</div>').join('')
         : '<p class="cap">' + (filtering ? 'Nothing here with that filter.' : 'Nothing written yet. Every entry you plant lives here, by day.') + '</p>');
@@ -833,6 +969,7 @@ function viewBook() {
 function arcSheet(emoji) {
   const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const seed = p ? p.emoji : emoji; const arc = E.arc(seed, d, C.evo); const sch = E.schedule(C.evo); const ph = phaseOf(d); const nx = nextPhase(d);
   const recipes = allRecipes().filter((r) => r.formula.includes(emoji) || r.result === emoji);
+  const forp = p && p.forProject;
   const sh = sheet('<div class="hero-sm"><span class="orb xl' + (p ? ' lit' : '') + '"><span>' + esc(emoji) + '</span></span><h2>' + esc(nameOf(emoji)) + '</h2><span class="kicker mint">' + (p ? esc(ph.name + ' · ' + plural(d, 'day')) + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : '') : 'Not planted yet') + '</span></div>' +
     (p ? '<p class="body">' + esc(ph.meaning) + '</p>' : '') +
     (arc ? '<div><span class="kicker mint">' + esc(arc.chain.arc) + '</span><div class="arc" style="padding-top:8px">' + arc.stages.map((s, i) => (i ? '<span class="arrow">→</span>' : '') + '<span class="' + (s.reached ? '' : 'dim') + '" title="' + esc(s.name) + '">' + esc(s.emoji) + '</span>').join('') + '</div><div class="rows" style="padding-top:8px">' + arc.chain.stages.map((s, i) => '<div class="cap"><b style="color:var(--ink)">' + esc(s.emoji + ' ' + s.name) + '</b> · day ' + (sch[i] != null ? sch[i] : '') + ' · ' + esc(s.line) + '</div>').join('') + '</div></div>' : '<p class="cap">This emoji keeps its shape. The phases are its growth.</p>') +
@@ -932,12 +1069,13 @@ function entrySheet(e) {
     (e.voice ? '<div class="glass voiceprev"><span class="kicker mint">Your voice · ' + fmtDur(e.voice.dur) + '</span><audio controls id="en-audio"></audio></div>' : '') +
     (e.tags && e.tags.length ? '<div class="chips">' + e.tags.map((t) => '<span class="chip">' + esc(t) + '</span>').join('') + '</div>' : '') +
     '<span class="kicker mint">Folder</span><div class="chips">' + folders + '<button class="chip" id="en-newfolder">+ new folder</button></div>' +
-    '<div class="actions">' + (e.emoji ? '<button class="btn mint" id="en-thread">Continue this thread ' + esc(e.emoji) + '</button>' : '') + '<button class="btn quiet" id="en-del">Delete this entry</button></div>' +
+    '<div class="actions">' + (e.emoji ? '<button class="btn mint" id="en-thread">Continue this thread ' + esc(e.emoji) + '</button>' : '') + '<button class="btn" id="en-star">' + (e.star ? '★ Kept close' : '☆ Keep this one close') + '</button><button class="btn quiet" id="en-del">Delete this entry</button></div>' +
     '<p class="cap">Deleting an entry never takes a day from an emoji.</p>');
   if (e.voice) keepGet(e.id).then((b) => { const au = $('#en-audio', sh.el); if (!au) return; if (b) au.src = URL.createObjectURL(b); else au.outerHTML = '<p class="cap">The recording is not on this device.</p>'; }).catch(() => null);
   $$('[data-efold]', sh.el).forEach((b) => b.addEventListener('click', () => { e.folder = e.folder === b.dataset.efold ? null : b.dataset.efold; save(); $$('[data-efold]', sh.el).forEach((x) => x.classList.toggle('on', x.dataset.efold === e.folder)); toast(e.folder ? 'Filed in ' + folderOf(e.folder).name : 'Taken out of its folder'); render(); }));
   $('#en-newfolder', sh.el).addEventListener('click', () => { sh.close(); newFolder((f) => { e.folder = f.id; save(); render(); toast('Filed in ' + f.name); }); });
   const th = $('#en-thread', sh.el); if (th) th.addEventListener('click', () => { sh.close(); continueThread(e.emoji); });
+  $('#en-star', sh.el).addEventListener('click', () => { e.star = !e.star; save(); sh.close(); render(); toast(e.star ? 'Kept close' : 'Let go'); });
   $('#en-del', sh.el).addEventListener('click', () => { if (!confirm('Delete this entry?')) return; S.entries = S.entries.filter((x) => x.id !== e.id); if (e.voice) keepDel(e.id).catch(() => null); save(); sh.close(); render(); });
 }
 function folderOf(id) { return S.folders.find((f) => f.id === id) || null; }
@@ -1027,12 +1165,13 @@ function youSheet() {
   const col = C.copy.locked.colophon; const d = S.plants.reduce((n, p) => n + daysOf(p), 0);
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:88px;height:88px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>' + esc(S.name || 'You') + '</h2><span class="kicker mint">' + esc(S.entries.length + (S.entries.length === 1 ? ' entry' : ' entries') + ' · ' + plural(S.plants.length, 'plant') + ' · ' + plural(d, 'day') + ' of care') + '</span></div>' +
     '<input class="field" id="you-name" placeholder="your name, for the gifts you give" maxlength="40" aria-label="your name" value="' + esc(S.name || '') + '">' +
-    '<div class="actions"><button class="btn" id="you-save">Save</button>' + (installEvt || /iphone|ipad|android/i.test(navigator.userAgent) ? '<button class="btn mint" id="you-install">Add Gratus to your phone</button>' : '') + '<button class="btn" id="you-sun">🔆 Sunlight on Giveth</button><button class="btn" id="you-laws">The twelve laws</button><button class="btn" id="you-export">Export everything</button><label class="btn" id="you-restore">Restore from a file<input type="file" id="you-file" accept="application/json,.json" hidden></label><button class="btn quiet" id="you-reset">Start over on this device</button></div>' +
+    '<div class="actions"><button class="btn" id="you-save">Save</button>' + (installEvt || /iphone|ipad|android/i.test(navigator.userAgent) ? '<button class="btn mint" id="you-install">Add Gratus to your phone</button>' : '') + '<button class="btn mint" id="you-passage">Share my Gratus Passage</button><button class="btn" id="you-sun">🔆 Sunlight on Giveth</button><button class="btn" id="you-laws">The twelve laws</button><button class="btn" id="you-export">Export everything</button><label class="btn" id="you-restore">Restore from a file<input type="file" id="you-file" accept="application/json,.json" hidden></label><button class="btn quiet" id="you-reset">Start over on this device</button></div>' +
     '<div class="cap" style="display:grid;gap:4px;padding-top:8px"><b style="color:var(--ink)">' + esc(col.name) + '</b><span>' + esc(col.method) + '</span><span>' + esc(col.date) + ' · <a href="' + esc(col.makerUrl || '#') + '" target="_blank" rel="noopener">' + esc(col.maker) + '</a></span><span style="color:var(--ink-2)">' + esc(col.words) + '</span><span style="color:var(--ink-2)">' + esc(col.close) + '</span><span>Voice recordings stay on this device and are not in the export.</span><span><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span></div>');
   $('#you-save', sh.el).addEventListener('click', () => { S.name = $('#you-name', sh.el).value.trim(); save(); sh.close(); toast('Saved'); });
   const ins = $('#you-install', sh.el); if (ins) ins.addEventListener('click', () => { sh.close(); promptInstall(); });
   $('#you-laws', sh.el).addEventListener('click', () => { sh.close(); openLaws(); });
   const sn = $('#you-sun', sh.el); if (sn) sn.addEventListener('click', () => { sh.close(); sunSheet(); });
+  const pg = $('#you-passage', sh.el); if (pg) pg.addEventListener('click', () => { sh.close(); passageSheet(); });
   $('#you-export', sh.el).addEventListener('click', () => { const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gratus-' + today() + '.json'; document.body.appendChild(a); a.click(); a.remove(); toast('Exported'); });
   $('#you-file', sh.el).addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { let o = null; try { o = JSON.parse(rd.result); } catch (e) { o = null; }
     if (!o || o.v !== 1 || !Array.isArray(o.entries) || !Array.isArray(o.plants)) { toast('That file is not a Gratus export.'); return; }
@@ -1168,13 +1307,17 @@ function wire() {
   $$('[data-node]').forEach((b) => b.addEventListener('click', () => { const n = b.dataset.node; if (n === 'give') go('give'); else go('give', n); }));
   $$('[data-book]').forEach((b) => b.addEventListener('click', () => { bookTab = b.dataset.book; render(); }));
   $$('[data-jt]').forEach((b) => b.addEventListener('click', () => { jTab = b.dataset.jt; render(); }));
-  $$('[data-calday]').forEach((b) => b.addEventListener('click', () => { jDay = jDay === b.dataset.calday ? '' : b.dataset.calday; render(); }));
+  $$('[data-calday]').forEach((b) => { b.addEventListener('click', () => { jDay = jDay === b.dataset.calday ? '' : b.dataset.calday; render(); }); longPress(b, { on: () => daySheet(b.dataset.calday) }); });
   $$('[data-calmove]').forEach((b) => b.addEventListener('click', () => { jMonth = Math.min(0, jMonth + Number(b.dataset.calmove)); jDay = ''; render(); }));
   $$('[data-jemoji]').forEach((b) => b.addEventListener('click', () => { jEmoji = jEmoji === b.dataset.jemoji ? '' : b.dataset.jemoji; render(); }));
   $$('[data-jtag]').forEach((b) => b.addEventListener('click', () => { jTag = jTag === b.dataset.jtag ? '' : b.dataset.jtag; render(); }));
   $$('[data-jfolder]').forEach((b) => b.addEventListener('click', () => { jFolder = jFolder === b.dataset.jfolder ? '' : b.dataset.jfolder; render(); }));
-  const jc = $('#j-clear'); if (jc) jc.addEventListener('click', () => { jDay = jEmoji = jTag = jFolder = journalQuery = ''; render(); });
+  const jc = $('#j-clear'); if (jc) jc.addEventListener('click', () => { jDay = jEmoji = jTag = jFolder = journalQuery = ''; jStar = false; render(); });
+  const js2 = $('#j-star'); if (js2) js2.addEventListener('click', () => { jStar = !jStar; render(); });
   $$('[data-gfilter]').forEach((b) => b.addEventListener('click', () => { gardenFilter = b.dataset.gfilter; render(); }));
+  $$('[data-gview]').forEach((b) => b.addEventListener('click', () => { gardenView = b.dataset.gview; render(); }));
+  $$('[data-gsort]').forEach((b) => b.addEventListener('click', () => { gardenSort = b.dataset.gsort; render(); }));
+  const tn = $('#tend-now'); if (tn) tn.addEventListener('click', () => { const next = S.plants.filter((p) => !(p.kept || []).includes(today())).sort((a, b) => daysOf(b) - daysOf(a))[0]; quickWrite(next ? { emoji: face(next) } : null); });
   $$('[data-thread]').forEach((b) => b.addEventListener('click', () => threadSheet(b.dataset.thread)));
   $$('[data-folder]').forEach((b) => b.addEventListener('click', () => { const f = folderOf(b.dataset.folder); if (f) folderSheet(f); }));
   const nf = $('#new-folder'); if (nf) nf.addEventListener('click', () => newFolder());
@@ -1198,8 +1341,12 @@ async function boot() {
   const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden', 'giveth', 'console'];
   if (SUBS.includes(want)) { tab = want === 'book' || want === 'galaxy' || want === 'garden' ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
   const isGift = location.pathname === '/gift' || location.pathname.endsWith('gift.html') || location.hash.startsWith('#gift');
+  const isPassage = location.pathname === '/passage';
+  const projPage = /^\/p\/([a-z0-9:-]+)/.exec(location.pathname);
   try { const k = JSON.parse(localStorage.getItem(GVK) || 'null'); if (k) { conSlug = k.slug || ''; conKey = k.key || ''; } } catch (e) {}
-  const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
+  const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000);
+    if (isPassage) { const c = location.hash.replace(/^#/, ''); const g = c ? decodeGift(c) : null; if (g) { openPassage(g, false); return; } toast('That Passage link is incomplete.'); }
+    if (projPage) { openProjectPage(projPage[1]); return; } if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
   if (new URLSearchParams(location.search).has('nosplash')) start(); else splash(start);
 }
 boot().catch((e) => { console.error(e); const el = document.createElement('div'); el.className = 'noscript'; el.innerHTML = '<h2>Gratus could not open.</h2><p class="lead">' + esc(e && e.message || e) + '</p>'; document.body.appendChild(el); });

@@ -2,6 +2,15 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v18 · The Passage, the answer, and two rooms rebuilt (2026-09-19)
+
+- **The Gratus Passage**: a link that shows what grew, with not one word of the journal in it. The first thing Gratus makes that lives outside the app.
+- **A project's own Gratus page** at `/p/<slug>`, shareable by a steward.
+- **The answer**: a seed carries a thread, not a receipt. Either side can keep speaking.
+- **Your words, your choice**: seeds are private to the project by default; only their author can publish them. This also closed a real gap, where anyone who knew a slug could read every seed written to it.
+- **The journal writes where you stand**: a composer sheet, the month summed up, hold a day to open it, and starred entries.
+- **The garden gets views and order**: field or list, three orderings, and a Today card.
+
 ## v17 · Deeper, and it fits the phone (2026-09-19)
 
 - **Nothing runs off the page.** A grid or flex child that would not shrink was pushing the app wider than the phone; the calendar grid, the goals stream and the emoji palette each did it differently. Every page now measures exactly 375 at 375.

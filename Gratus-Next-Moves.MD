@@ -8,6 +8,16 @@ Write → plant → return → phase → recipe → give → the gift grows agai
 
 Everything on this list either makes that loop clearer, safer or faster to feel, or it is a room off the loop and waits its turn.
 
+## The next big moves, as he chose them
+
+Gratus is a complete machine with almost nothing flowing through it. The constraint is not features: nothing leaves the app, so nothing brings anyone in, and nothing is waiting when you return. v18 attacks the first half.
+
+- ~~**The Gratus Passage**~~ and ~~**a project's own page**~~ shipped in v18. What is still missing is the **reason to return**.
+- **Gratus Circles** — a plant several people water together. The only move that creates both halves at once: someone else tended it while you were away, and it needs a second person to exist. This is the next big one.
+- **The Season** — a bounded thirty days with a theme, one shared garden, and an ending where everything grown is given.
+- **Voice-first Gratus** — it reads the question aloud, you speak, it plants. Half of it already exists.
+- **The first ten people.** No feature substitutes for this, and it is the honest top of the list.
+
 ## The Giveth arc
 
 The full brief is in [docs/GIVETH.md](docs/GIVETH.md); the architecture and the six loops are in [docs/EMOTIONAL-TRACE.md](docs/EMOTIONAL-TRACE.md). Shipped in v15: loop one, the Emotional TRACE, and the "Nobody yet" lane of loop two.
@@ -20,7 +30,8 @@ The full brief is in [docs/GIVETH.md](docs/GIVETH.md); the architecture and the 
 - **G6. Tell the project it was watered.** A steward has no way to know a bloom landed. A gentle receipt, without presence words.
 - ~~**G7. Loops three to six.**~~ All shipped in v16. Loops 5 and 6 ship as a prompt and a read, which is the only form this app will carry them in.
 - **G9. Offer the responsiveness reading to Giveth and DeVouch.** It exists now and nobody outside Gratus can see it.
-- **G11. A project's own Gratus page.** A shareable link a steward can post, showing their seeds and how they answer, so the loop can be seen from outside the app.
+- ~~**G11. A project's own Gratus page.**~~ Shipped in v18 at `/p/<slug>`.
+- **G13. Tell the steward when a seed is published**, so they know they have something to post.
 - **G12. Recurring and QF-aware giving.** Giveth has recurring donations and quadratic rounds; a seed could know it rode a matched gift.
 - **G10. A steward has no way to know their water landed.** A receipt, without presence words.
 - **G8. Send the pitch.** The pitch in GIVETH.md is written. It has not been sent to anyone at Giveth.

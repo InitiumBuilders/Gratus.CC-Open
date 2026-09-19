@@ -47,6 +47,18 @@ One object in `localStorage` under `gratus.galaxy.v1`:
 
 Planting, reaching a phase, making a recipe and harvesting each open through the Gate's light: the ceremony plays the doorway video from its seventeenth second, and when the light floods (at 24.6 seconds, or nine seconds in as a fallback) the moment is revealed behind a flash.
 
+## The Passage
+
+`/passage#<code>` shows a garden from outside. The whole page is base64url-encoded into the link, exactly like a Gratus Gift: the name, each plant's emoji and day count and dedication, the seeds that bloomed, the milestones and the alchemy marks, and four counts. **No journal text is ever included**, and nothing is uploaded, so there is nothing to delete later; the link simply stops being shared.
+
+## A project's Gratus page
+
+`/p/<slug>` reads the project from Giveth and the trace from our own store, and shows the responsiveness reading plus the seeds whose authors published them. A steward can post that link.
+
+## Who can read a seed
+
+`api/trace.js` answers three ways. An open read returns the reading and only published seeds, with a count of the ones held back. A read with the project key returns everything, for the steward. A read with `ids=` returns those seeds, which only the person who planted them holds, since an id is sixteen random hex characters. A seed also carries `mine`, the sha-256 of a key given once to its author, which is what lets them speak in the thread and publish their words.
+
 ## Gifts
 
 A gift is the plant, its days, its message and the hands that held it, encoded base64url into the URL: `/gift#<code>`. No server is involved. The receiver walks eight pages, sees how it grew, and chooses how to keep it; kept gifts are planted in their garden with `carried` and `from` set. `/gift` without a code opens the demo gift.

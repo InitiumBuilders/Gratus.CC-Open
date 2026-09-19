@@ -22,10 +22,10 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 ## Gratus (the home)
 
 - His new look, text for text: Today's Gratitude and Write Today; the doors Gratitude Journal, Grow Your Gratus Garden!, Give Gratus Gifts with Send a Gift; Gratus Gives Together with Set Your Gratus Goals and the shared stream. The menu button opens every room, the song, and your sheet.
-- Your Gratus Garden, its own room: a field with a horizon, every emoji you keep sized by phase, a ring around each one filling toward its next phase, a diamond on the ones growing for a Giveth project, lanes for Everything, Growing, Ready to give and For a project, and the phase legend beneath.
+- Your Gratus Garden, its own room: a field with a horizon, or a list; every emoji sized by phase with a ring filling toward the next one; a diamond on the ones growing for a Giveth project; lanes for Everything, Growing, Ready to give and For a project; ordering by days, newest or name; a Today card saying how many plants have had a word, with one tap to tend another; and the phase legend beneath.
 - Entries, plants and gifts counts.
 - The Growth Book:
-  - Journal, four rooms: Entries (today's question, a real month calendar you can walk back through and tap a day to open it, search, and filters by emoji, tag and folder), Threads (one emoji followed through your days, with its phase and the day it grows next; continue a thread from any entry), Folders (make them, file entries into them from any entry, rename, delete without losing an entry), Milestones (eighteen marks on your own road: days in a row, entries, photo, voice, folder, goal, phases, recipe, gifts, days of care; a toast when one lights).
+  - Journal, four rooms: Entries (today's question, a real month calendar with the month summed up, tap a day to show it and hold one to open it, a composer that opens where you are standing so you never have to leave, search, starred entries, and filters by emoji, tag and folder), Threads (one emoji followed through your days, with its phase and the day it grows next; continue a thread from any entry), Folders (make them, file entries into them from any entry, rename, delete without losing an entry), Milestones (eighteen marks on your own road: days in a row, entries, photo, voice, folder, goal, phases, recipe, gifts, days of care; a toast when one lights).
   - Phases: Planted, Nurtured, Deepened, Bloomed, Ready to Give, with the day each begins and what it means.
   - Emojis: your palette, evolution arcs, and adding your own.
   - Recipes: **Harmonic alchemy** first, twelve marks that each need both halves of you, something given and something tended, each showing its own progress in plain words; then the sixty recipes, the ones you have made lit, and adding your own.
@@ -36,6 +36,9 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Entering Give plays his plant growing into the light until the screen fills with white, holds it, and the page fades in. Tap to enter early.
 - **Give with Giveth** — the Emotional TRACE. Browse real Giveth projects live: four lanes (GIVbacks eligible, boosted with GIVpower, the ones nobody has given to yet, everything), Giveth's own categories, search, and Show more through the whole catalogue. Open a project and see what it has raised, how many donors, how many updates, where it works, which chains it accepts, its organisation, every way to contact it, its recent updates, the gifts that have just arrived, and how faithfully it answers the people who give. Then give on giveth.io in your own wallet and plant a Gratus Seed: a few words about why. Dormant seeds sit in your garden as 🌱 until the project waters them, and then bloom into that project's own emoji with their reply kept inside.
 - **The Project Console** — if you run a Giveth project, claim it with its slug, read every seed people planted with their gifts, and water them with a line back. You also see how you answer: seeds received, the share you have watered, and the median days it takes.
+- **A project's own Gratus page** at `/p/<slug>` — public, shareable by the steward, showing how they answer and the words of anyone who chose to publish theirs.
+- **The answer** — a bloom is not the end. Either side can keep speaking, and the thread lives inside the seed.
+- **Your words, your choice** — a seed is private to the project by default. Only the person who wrote it can publish it, from their own seed sheet.
 - **I see you** — a seed that is the first a project has ever received blooms into 🫶 instead of the project's own emoji, and says so.
 - **Pass it on** — when a steward waters a seed they can name a project they are grateful for. The donor sees it inside their bloom and can continue the flow, or look at projects like the one they gave to.
 - **Giveth confirms it** — plant a seed with a transaction hash and Gratus checks it against that project's recent gifts on Giveth, then records what arrived.
@@ -51,6 +54,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - On a desktop the scene is a painting at its own size on a wall of its own blurred light, with the content column at 760px. On a phone the scene covers.
 - The twelve laws, one line per screen, from the top bar.
 - Privacy and terms pages.
+- **Your Gratus Passage** — a link that shows what grew: your emojis and their days, the seeds that bloomed, the marks you have earned. It carries not one word of your journal. The whole page rides inside the link, like a Gratus Gift, so nothing is uploaded and there is nothing to delete later.
 - Export everything as a file, and restore from one, in the profile sheet.
 - **Sunlight** — paste the public address you give with on Giveth and Gratus reads how much you tend the commons there. Read only; Gratus never connects a wallet or signs anything.
 - The Emotional TRACE constellation in your garden: every seed you planted, bloomed or waiting.
