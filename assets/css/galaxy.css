@@ -860,3 +860,20 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 /* ═══ v28 · the standing, before anything is standing ═════════════════════ */
 .standing.empty .stand-ring { background: conic-gradient(rgba(255, 217, 138, .22) 0, rgba(255, 255, 255, .1) 0); }
 .standing.empty .stand-face { opacity: .92; }
+
+/* ═══ v34 · the act is on the screen ══════════════════════════════════════ */
+
+/* Give and Grow are working screens, and on both of them the thing you came to
+   do sat below the fold: the writing box 124 pixels under it, the first door
+   under it too. The hero was 82svh, which is a page you look at rather than a
+   page you use. At 52svh it is still half the screen and still a painting, and
+   the box and the doors are now on it. Home and the rooms keep their own
+   heights; this rule reaches only the two tabs where something is done. */
+.hero { min-height: 52svh; }
+
+/* the standing carries one line, so it stands one line tall */
+.standing { grid-template-columns: 58px 1fr; gap: 12px; padding: 14px 16px; }
+.standing .stand-ring { width: 58px; height: 58px; }
+.standing .stand-ring::before { inset: 4px; }
+.standing .stand-face { font-size: 26px; }
+.standing .stand-words b { font-size: 20px; line-height: 25px; }

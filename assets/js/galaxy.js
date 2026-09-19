@@ -969,8 +969,7 @@ function standingBlock() {
     return '<div class="glass card standing empty">' +
       '<span class="stand-ring" style="--pct:0"><span class="stand-face">' + first.icon + '</span></span>' +
       '<span class="stand-words"><span class="kicker gold">Nothing planted yet</span>' +
-      '<b>Your first word plants something.</b>' +
-      '<span class="cap">Pick an emoji to carry it. Write about it again on another day and it becomes ' + esc(next.name) + '.</span></span></div>';
+      '<b>Your first word plants something.</b></span></div>';
   }
   const rows = S.plants.map((p) => { const d = daysOf(p); return { p, d, nx: nextPhase(d), ph: phaseOf(d) }; });
   const moving = rows.filter((x) => x.nx).sort((a, b) => (a.nx.day - a.d) - (b.nx.day - b.d));
@@ -990,8 +989,7 @@ function standingBlock() {
   return '<div class="glass card standing">' +
     '<span class="stand-ring" style="--pct:' + pct + '"><span class="stand-face">' + esc(face(x.p)) + '</span></span>' +
     '<span class="stand-words"><span class="kicker gold">' + esc(x.ph.name) + ' \u00b7 ' + esc(plural(x.d, 'day') + ' of care') + '</span>' +
-    '<b>' + line + '</b>' +
-    '<span class="cap">' + esc(x.ph.meaning) + '</span></span></div>';
+    '<b>' + line + '</b></span></div>';
 }
 function viewGrow() {
   const pal = palette();
@@ -1406,7 +1404,7 @@ function giveSheet(pre) {
 }
 function shareSheet(g) {
   const text = (S.name || 'Someone') + ' grew you a Gratus Gift. ' + plural(g.days, 'day') + ' of gratitude.';
-  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(g.emoji) + '</span></span><h2>Share the gift</h2><span class="kicker mint">The whole journey lives inside the link.</span></div><input class="field" id="sh-link" readonly aria-label="the link" value="' + esc(g.link) + '" style="font-size:15px"><div class="actions"><button class="btn gold" id="sh-share">Share</button><button class="btn" id="sh-copy">Copy the link</button><button class="btn quiet" id="sh-preview">Preview the journey</button></div>');
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(g.emoji) + '</span></span><h2>Share the gift</h2><span class="kicker mint">The whole journey lives inside the link.</span></div><p class="cap">If they choose to, they can send back that it landed and that it kept growing. It is their choice each time, and it carries no words.</p><input class="field" id="sh-link" readonly aria-label="the link" value="' + esc(g.link) + '" style="font-size:15px"><div class="actions"><button class="btn gold" id="sh-share">Share</button><button class="btn" id="sh-copy">Copy the link</button><button class="btn quiet" id="sh-preview">Preview the journey</button></div>');
   $('#sh-copy', sh.el).addEventListener('click', async () => { try { await navigator.clipboard.writeText(g.link); toast('Link copied'); } catch (e) { $('#sh-link', sh.el).select(); toast('Select and copy'); } });
   $('#sh-share', sh.el).addEventListener('click', async () => { if (navigator.share) { try { await navigator.share({ title: 'A Gratus Gift', text, url: g.link }); } catch (e) {} } else { try { await navigator.clipboard.writeText(text + ' ' + g.link); toast('Copied'); } catch (e) {} } });
   $('#sh-preview', sh.el).addEventListener('click', () => { sh.close(); const gift = decodeGift(g.link.split('#')[1]); if (gift) openJourney(gift, { preview: true }); });

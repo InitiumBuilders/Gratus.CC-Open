@@ -230,3 +230,8 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 
 ## v33 · WHAT THE RETURN KEEPS, AND FOR HOW LONG (2026-09-19)
 164. **A store that only grows is written down as one.** A Return document is kept until someone removes it and nothing removes one. There is no harm in a kept document, because it holds a phase against a random number, and the absence of a sweep is a fact about this system that belongs in the architecture rather than in nobody's head.
+
+## v34 · THE ACT IS ON THE SCREEN (2026-09-19)
+165. **A working screen shows the work without scrolling.** Give and Grow are where something is done, and on both the thing you came to do was below the fold. A hero of 82svh makes a page you look at; 52svh is still a painting and leaves room for the page to be used. Home and the rooms are pages you arrive at, and they keep their heights.
+166. **A card that carries one line stands one line tall.** The standing's third line repeated the label beneath it and cost the composer its place on the screen.
+167. **A feature nobody is told about does not exist.** The Return shipped two versions ago and nothing said so at the one moment it matters, which is while you are sending the gift.
