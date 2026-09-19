@@ -227,3 +227,6 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 161. **The name is assembled on the phone, never on the server.** The giver typed who they gave it to, and that note never leaves their device. The store holds a phase against a random number and nothing in it can be read backwards into a person.
 162. **The giver hears the chord for a plant that is no longer theirs.** This is the deepest thing the sound can do and it was the reason to build the sound at all.
 163. **A recording is capped at two megabytes, not six.** The daily allowance bounds how often a device transcribes; this bounds what each one costs. A cap only a very long recording can reach is not a cap.
+
+## v33 · WHAT THE RETURN KEEPS, AND FOR HOW LONG (2026-09-19)
+164. **A store that only grows is written down as one.** A Return document is kept until someone removes it and nothing removes one. There is no harm in a kept document, because it holds a phase against a random number, and the absence of a sweep is a fact about this system that belongs in the architecture rather than in nobody's head.

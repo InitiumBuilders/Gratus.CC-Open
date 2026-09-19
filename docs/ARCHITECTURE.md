@@ -91,7 +91,7 @@ A document holds notes, and a note holds four fields: the kind (`landed` or `gre
 
 On the receiving side `offerReturn()` shows `returnSheet()` once per event, and records the answer on the plant as `p.told` whichever way it goes, so declining is silent and permanent. On the giving side `checkReturns()` asks for its own ids alone, compares the count with `x.seen`, and plays the new ones as ceremonies carrying `soundPhase` for the phase reached.
 
-Limits: eight notes per gift, twenty returns per gift per day, one note per kind and phase, and at most twenty ids in a read. Named risk: anyone holding a gift link holds its echo and can post a return for it, so the worst case is a false kind word reaching the giver. The app never claims the receiver said anything beyond the phase.
+Limits: eight notes per gift, twenty returns per gift per day, one note per kind and phase, and at most twenty ids in a read. Named risk: anyone holding a gift link holds its echo and can post a return for it, so the worst case is a false kind word reaching the giver. The app never claims the receiver said anything beyond the phase. Named limit: a document is kept until someone removes it. It holds a kind, a phase, an emoji and a day against a random number, so there is nothing in one to expire, and there is no sweep yet that deletes documents nobody reads any more.
 
 ## The frame
 

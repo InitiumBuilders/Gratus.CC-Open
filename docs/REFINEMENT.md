@@ -175,7 +175,11 @@ prompt in section 4 could not name a single habit it exists to remove.
    open is the second hop: a gift that is passed on rather than kept has no way
    to tell the first giver that it travelled again.
 6. The project console still looks plainer than every room around it.
-7. Teach the slop gate one shape a grep can almost see: a one sentence paragraph
+7. A sweep for the Return. A document is kept until someone removes it, and
+   nothing removes one. There is no harm in a kept one, because it holds a
+   phase against a random number, and a store that only grows is still a store
+   that only grows.
+8. Teach the slop gate one shape a grep can almost see: a one sentence paragraph
    that repeats a noun phrase from the paragraph above it.
 
 **Later.**
