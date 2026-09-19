@@ -15,7 +15,7 @@ The full brief is in [docs/GIVETH.md](docs/GIVETH.md); the architecture and the 
 - **G1. Owner verification.** A Gratus claim is first-come and light. Tie it to a verified Giveth project owner, or to a DeVouch attestation, so watering cannot be impersonated. The one thing we cannot do alone, and the first thing to ask Giveth for.
 - **G2. Confirm the gift.** Read the transaction back from Giveth's API by hash and mark the seed confirmed, so the seed and the capital are actually linked.
 - **G3. Rate limits.** Planting, watering and the voice function all need a per-device allowance before this is shared widely.
-- **G4. Per-seed documents.** One document per project is last-writer-wins; split it when the stream grows.
+- **G4. Per-seed documents.** One document per project is last-writer-wins, and Vercel Blob takes a few seconds to become consistent, which widens that window. Split it into one document per seed when the stream grows.
 - **G5. The "I See You" mark.** When a seed is the first a project ever receives, bloom it into a rare hand-sign mark.
 - **G6. Tell the project it was watered.** A steward has no way to know a bloom landed. A gentle receipt, without presence words.
 - **G7. Loops three to six**, in the order set out in EMOTIONAL-TRACE.md: reputation signal, emoji alchemy, circular flow, GIVgarden cross-pollination.

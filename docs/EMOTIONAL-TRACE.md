@@ -95,6 +95,7 @@ Chosen from the project's own Giveth category, so a bloom says something true ab
 3. **No rate limit on planting.** Fix before this is shared widely, alongside the voice function's allowance.
 4. **The donation and the seed are not cryptographically linked.** The tx hash is typed in by hand and unverified. Fix: read the donation back from Giveth's API by hash and mark the seed confirmed.
 5. **A seed cannot be withdrawn** once planted. Fix: a delete, with the project's copy going too.
+6. **Vercel Blob is not read-after-write consistent.** Measured on the live site: a read within about five seconds of a write returns the previous version; by the second read it has converged. No flow depends on an immediate re-read, because both writers update from the write's own response, and the donor's `checkBloom()` runs twice, at 1.5 and 12 seconds. But it widens the last-writer-wins window in limit 2, and anything built on this store must never trust a read that closely follows a write.
 
 ## The six loops
 

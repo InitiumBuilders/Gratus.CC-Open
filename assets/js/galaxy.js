@@ -928,7 +928,7 @@ async function boot() {
   if (SUBS.includes(want)) { tab = want === 'book' || want === 'galaxy' || want === 'garden' ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
   const isGift = location.pathname === '/gift' || location.pathname.endsWith('gift.html') || location.hash.startsWith('#gift');
   try { const k = JSON.parse(localStorage.getItem(GVK) || 'null'); if (k) { conSlug = k.slug || ''; conKey = k.key || ''; } } catch (e) {}
-  const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
+  const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
   if (new URLSearchParams(location.search).has('nosplash')) start(); else splash(start);
 }
 boot().catch((e) => { console.error(e); const el = document.createElement('div'); el.className = 'noscript'; el.innerHTML = '<h2>Gratus could not open.</h2><p class="lead">' + esc(e && e.message || e) + '</p>'; document.body.appendChild(el); });
