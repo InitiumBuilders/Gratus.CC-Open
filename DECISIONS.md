@@ -139,3 +139,11 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 105. **The circular flow ships as a prompt, and the person signs.** A steward passes it on by naming a project they are grateful for; the donor sees it inside their bloom and continues the flow. Routing a share of GIVbacks yield automatically would need custody, which this app does not do and will not.
 106. **Sunlight is read, never connected.** A public address, read through Giveth's own `userByAddress` for GIVpower boosting, gifts and likes. Gratus never asks anyone to connect a wallet, never asks for a key or a seed phrase, and never signs anything.
 107. **A confirmed gift is a lookup, not a proof.** A transaction hash checked against that project's recent gifts on Giveth records what arrived. A hash is public, so it says nothing about who sent it, and the docs say exactly that.
+
+## v17 — DEEPER, AND IT FITS THE PHONE (2026-09-19)
+108. **A grid or flex child that holds text gets `min-width: 0`.** Without it the child refuses to shrink below its content and widens the whole document. Three different places did it: the calendar grid, the goals stream and the emoji palette. Every page is now measured at 375 and must equal 375.
+109. **The emoji palette wraps.** A horizontal scroller with no affordance reads as content running off the edge. It wraps into two rows with Show every emoji beneath.
+110. **The journal is a month you can see.** A real calendar, months you can walk back through, a day you can tap to open, and filters by emoji, tag and folder. The thirty-day bar said how much; the month says when.
+111. **The garden is a field, not a box.** A horizon, a ring around each plant filling toward its next phase, a diamond on the ones growing for a project, four lanes and the phase legend.
+112. **A project is shown in full.** Raised, donors, updates, location, organisation, chains, every contact link they published, their recent updates, the gifts that just arrived, how faithfully they answer, and what else is like them. All read live from Giveth; none of it invented.
+113. **Grow a Gratus Gift for a Giveth project.** An emoji can be dedicated to a project, grown with your days, and given to them when it is Ready to Give, carrying every day you held it. Dedicating changes nothing about how it grows; it only remembers who it is for.

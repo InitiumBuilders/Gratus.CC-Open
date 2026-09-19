@@ -227,25 +227,36 @@ function sunSheet() {
 }
 // ══ THE EMOTIONAL TRACE · Begin → Become → Bridge → Bloom ══════════════════════
 // Giveth's rail moves the capital. This one moves what the capital was for.
-let gvLane = 'verified', gvSearch = '', gvList = null, gvState = 'idle', gvTotal = 0;
+let gvLane = 'verified', gvSearch = '', gvList = null, gvState = 'idle', gvTotal = 0, gvCat = '', gvCats = null, gvSkip = 0, gvMore = false;
 let conSlug = '', conKey = '', conSeeds = null, conState = 'idle', conSignal = null;
 const GVK = 'gratus.giveth.key';
 
-async function loadGiveth() {
-  if (gvState === 'loading') return; gvState = 'loading'; const lane = gvLane, q = gvSearch;
+async function loadGiveth(more) {
+  if (gvState === 'loading') return; gvState = 'loading'; if (!more) { gvSkip = 0; gvList = null; }
   try {
-    const u = '/api/giveth?lane=' + encodeURIComponent(lane) + (q ? '&search=' + encodeURIComponent(q) : '') + '&limit=12';
+    const u = '/api/giveth?lane=' + encodeURIComponent(gvLane) + (gvSearch ? '&search=' + encodeURIComponent(gvSearch) : '') +
+      (gvCat ? '&cat=' + encodeURIComponent(gvCat) : '') + '&skip=' + gvSkip + '&limit=12';
     const r = await fetch(u, { cache: 'no-store' }); const d = await r.json().catch(() => ({}));
     if (!r.ok || !d.projects) throw new Error(d.error || 'no answer');
-    gvList = d.projects; gvTotal = d.total || d.projects.length; gvState = 'live';
-  } catch (e) { gvList = null; gvState = 'offline'; }
+    gvList = more && gvList ? gvList.concat(d.projects) : d.projects;
+    gvTotal = d.total || gvList.length; gvMore = d.projects.length >= 12 && gvList.length < gvTotal; gvState = 'live';
+  } catch (e) { if (!more) gvList = null; gvState = 'offline'; }
   if (sub === 'giveth') render();
+  if (!gvCats) loadCats();
 }
+async function loadCats() {
+  try { const r = await fetch('/api/giveth?q=cats', { cache: 'no-store' }); const d = await r.json().catch(() => ({}));
+    if (r.ok && d.categories && d.categories.length) { gvCats = d.categories; if (sub === 'giveth') render(); } } catch (e) {}
+}
+const money = (n) => n >= 1000000 ? '$' + (n / 1000000).toFixed(1) + 'M' : n >= 1000 ? '$' + Math.round(n / 1000) + 'k' : '$' + n;
 function projectRow(p) {
   return '<button class="glass gvp" data-gv="' + esc(p.slug) + '">' +
     (p.image ? '<img class="gvp-art" src="' + esc(p.image) + '" alt="" loading="lazy">' : '<span class="gvp-art none">' + esc(p.bloom) + '</span>') +
     '<span class="gvp-words"><b>' + esc(p.title) + '</b>' +
-    '<span class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks</i>' : p.verified ? '<i class="gvt">Verified</i>' : '') + (p.donors === 0 ? '<i class="gvt mint">Nobody yet</i>' : '<i class="gvt">' + plural(p.donors, 'donor') + '</i>') + (p.categories[0] ? '<i class="gvt">' + esc(p.categories[0]) + '</i>' : '') + '</span>' +
+    '<span class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks</i>' : p.verified ? '<i class="gvt">Verified</i>' : '') +
+      (p.qf ? '<i class="gvt gold">Matched now</i>' : '') +
+      (p.donors === 0 ? '<i class="gvt mint">Nobody yet</i>' : '<i class="gvt">' + money(p.raised) + ' · ' + plural(p.donors, 'donor') + '</i>') +
+      (p.categories[0] ? '<i class="gvt">' + esc(p.categories[0]) + '</i>' : '') + '</span>' +
     '<span class="cap">' + esc(p.summary.slice(0, 120)) + '</span></span><span class="arrow">›</span></button>';
 }
 function viewGiveth() {
@@ -263,9 +274,11 @@ function viewGiveth() {
     '<div class="eyebrow"><h2>Projects</h2>' + (gvState === 'live' ? '<span class="more">' + gvTotal.toLocaleString() + ' on Giveth</span>' : '') + '</div>' +
     '<input class="field" id="gv-search" placeholder="Search Giveth projects..." aria-label="search Giveth projects" value="' + esc(gvSearch) + '">' +
     '<div class="chips row">' + lanes.map(([k, n]) => '<button class="chip' + (gvLane === k ? ' on' : '') + '" data-gvlane="' + k + '">' + n + '</button>').join('') + '</div>' +
+    (gvCats ? '<div class="chips row"><button class="chip' + (gvCat ? '' : ' on') + '" data-gvcat="">Everything</button>' + gvCats.map((c) => '<button class="chip' + (gvCat === c.slug ? ' on' : '') + '" data-gvcat="' + esc(c.slug) + '">' + esc(c.title) + '</button>').join('') + '</div>' : '') +
     (gvState === 'loading' ? '<p class="cap">Asking Giveth...</p>' : '') +
     (gvState === 'offline' ? '<p class="cap">Giveth is not answering right now. The projects live on their side; try again in a moment, or open <a href="https://giveth.io/projects" target="_blank" rel="noopener">giveth.io/projects</a>.</p>' : '') +
-    (gvList && gvList.length ? '<div class="rows">' + gvList.map(projectRow).join('') + '</div>' : gvState === 'live' ? '<p class="cap">Nothing with those words. Try another.</p>' : '') +
+    (gvList && gvList.length ? '<div class="rows">' + gvList.map(projectRow).join('') + '</div>' : gvState === 'live' ? '<p class="cap">Nothing with those words. Try another lane, or another category.</p>' : '') +
+    (gvMore ? '<button class="btn wide" id="gv-more">Show more of the ' + gvTotal.toLocaleString() + '</button>' : '') +
     '<button class="glass opt" id="gv-console"><span class="ico">' + I.people + '</span><span class="grow"><b>I run a project</b><span>Read the seeds people planted with their gifts, and water them.</span></span><span class="arrow">›</span></button>' +
     '<p class="cap">Gratus is not Giveth and holds no money. Giving happens on giveth.io, in your own wallet. A seed is a note, not a payment.</p>' +
     '</div>';
@@ -294,21 +307,88 @@ async function projectSheet(slug) {
   let p = (gvList || []).find((x) => x.slug === slug) || null;
   try { const r = await fetch('/api/giveth?q=project&slug=' + encodeURIComponent(slug), { cache: 'no-store' }); const d = await r.json().catch(() => ({})); if (r.ok && d.project) p = d.project; } catch (e) {}
   if (!p) { sh.close(); toast('Giveth is not answering right now.'); return; }
+  const LINK = { website: '🔗', x: '𝕏', twitter: '𝕏', discord: '💬', telegram: '✈️', instagram: '◎', youtube: '▶', linkedin: 'in', farcaster: '⌘', facebook: 'f', github: '⌥', reddit: '◉' };
+  const grown = S.plants.filter((x) => x.forProject && x.forProject.slug === p.slug);
   sh.el.innerHTML = '<div class="grabber" aria-hidden="true"></div>' +
-    (p.image ? '<img src="' + esc(p.image) + '" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:18px">' : '') +
+    (p.image ? '<div class="gv-hero"><img src="' + esc(p.image) + '" alt=""></div>' : '') +
     '<h2>' + esc(p.title) + '</h2>' +
-    '<span class="kicker mint">' + (p.givbacks ? 'GIVbacks eligible · ' : p.verified ? 'Verified · ' : '') + plural(p.donors, 'donor') + (p.raised ? ' · $' + p.raised.toLocaleString() + ' raised' : ' · nothing given yet') + '</span>' +
+    '<div class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks eligible</i>' : p.verified ? '<i class="gvt">Verified</i>' : '<i class="gvt">Not yet verified</i>') +
+      (p.qf ? '<i class="gvt gold">Matched right now</i>' : '') + (p.where ? '<i class="gvt">' + esc(p.where) + '</i>' : '') +
+      (p.org ? '<i class="gvt">' + esc(p.org) + '</i>' : '') + '</div>' +
+    '<div class="gv-facts"><div class="gv-fact"><b>' + (p.raised ? money(p.raised) : '—') + '</b><span>raised</span></div>' +
+      '<div class="gv-fact"><b>' + (p.donors || 0).toLocaleString() + '</b><span>' + (p.donors === 1 ? 'donor' : 'donors') + '</span></div>' +
+      '<div class="gv-fact"><b>' + (p.updates || 0) + '</b><span>' + (p.updates === 1 ? 'update' : 'updates') + '</span></div></div>' +
     '<p class="body">' + esc(p.summary) + '</p>' +
-    (p.categories.length ? '<div class="chips">' + p.categories.map((c) => '<span class="chip">' + esc(c) + '</span>').join('') + '</div>' : '') +
+    (p.chains && p.chains.length ? '<p class="cap">Accepts gifts on ' + esc(p.chains.join(', ')) + '.</p>' : '') +
+    (p.links && p.links.length ? '<span class="kicker mint">Find them</span><div class="gv-links">' + p.links.map((l) => '<a href="' + esc(l.link) + '" target="_blank" rel="noopener">' + (LINK[l.type] || '🔗') + ' ' + esc(l.type === 'x' ? 'X' : l.type.charAt(0).toUpperCase() + l.type.slice(1)) + '</a>').join('') + '</div>' : '') +
     '<div id="gv-signal"></div>' +
-    '<div class="actions"><button class="btn mint" id="gv-seed">Plant a Gratus Seed &amp; give ' + esc(p.bloom) + '</button><a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">Read it on Giveth</a></div>' +
-    '<p class="cap">Giving happens on giveth.io in your own wallet. Gratus never touches the money.</p>';
+    '<div class="actions"><button class="btn mint" id="gv-seed">Plant a Gratus Seed &amp; give ' + esc(p.bloom) + '</button>' +
+      '<button class="btn" id="gv-grow">' + (grown.length ? 'Growing ' + plural(grown.length, 'Gratus') + ' for them' : 'Grow a Gratus Gift for them 🌱') + '</button>' +
+      '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">Read it on Giveth ↗</a></div>' +
+    '<p class="cap">Giving happens on giveth.io in your own wallet. Gratus never touches the money.</p>' +
+    '<div id="gv-updates"></div><div id="gv-donors"></div>' +
+    '<button class="btn" data-similar="' + esc(p.slug) + '">Others like this one</button>';
   $('#gv-seed', sh.el).addEventListener('click', () => { sh.close(); seedSheet(p); });
+  $('#gv-grow', sh.el).addEventListener('click', () => { sh.close(); growForSheet(p); });
+  $$('[data-similar]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); similarSheet(b.dataset.similar); }));
   // how faithfully this project answers the people who give to it. A reading, never a comparison.
   fetch('/api/trace?project=' + encodeURIComponent(p.slug), { cache: 'no-store' }).then((r) => r.json()).then((d) => {
     const el = $('#gv-signal', sh.el); if (!el || !d || !d.signal) return; const g = d.signal;
-    el.innerHTML = '<div class="glass card"><span class="kicker mint">How this project answers</span><div class="glass stats"><div><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div><b>' + g.share + '%</b><span>watered</span></div><div><b>' + (g.medianDays == null ? '—' : g.medianDays) + '</b><span>days to answer</span></div></div><p class="cap">Written by people who gave. Only this project can change it, by writing back.</p></div>';
+    el.innerHTML = '<span class="kicker mint">How this project answers</span><div class="gv-facts"><div class="gv-fact"><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div class="gv-fact"><b>' + g.share + '%</b><span>watered</span></div><div class="gv-fact"><b>' + (g.medianDays == null ? '—' : g.medianDays) + '</b><span>days to answer</span></div></div>';
   }).catch(() => null);
+  // what they have told the world
+  fetch('/api/giveth?q=updates&slug=' + encodeURIComponent(p.slug), { cache: 'no-store' }).then((r) => r.json()).then((d) => {
+    const el = $('#gv-updates', sh.el); if (!el || !d || !d.updates || !d.updates.length) return;
+    el.innerHTML = '<div class="eyebrow"><h2>Their updates</h2><span class="more">' + plural(d.updates.length, 'shown') + '</span></div><div class="rows">' +
+      d.updates.slice(0, 4).map((u) => '<div class="glass gv-update"><span class="kicker">' + esc(fmtDay(String(u.at).slice(0, 10))) + (u.reactions ? ' · ' + plural(u.reactions, 'like') : '') + '</span><b>' + esc(u.title) + '</b>' + (u.summary ? '<span class="cap">' + esc(u.summary) + '</span>' : '') + '</div>').join('') + '</div>';
+  }).catch(() => null);
+  // the gifts that arrived
+  fetch('/api/giveth?q=donors&slug=' + encodeURIComponent(p.slug), { cache: 'no-store' }).then((r) => r.json()).then((d) => {
+    const el = $('#gv-donors', sh.el); if (!el || !d || !d.gifts || !d.gifts.length) return;
+    el.innerHTML = '<div class="eyebrow"><h2>Gifts that arrived</h2><span class="more">' + (d.total || 0).toLocaleString() + ' in all</span></div><div class="rows">' +
+      d.gifts.slice(0, 6).map((x) => '<div class="glass gv-gift"><span class="orb sm"><span>🎁</span></span><b>' + esc(x.name || 'someone') + '</b><span class="amt">' + (x.usd ? '$' + x.usd.toLocaleString() : esc(x.currency || '')) + '</span></div>').join('') +
+      '</div><p class="cap">Read live from Giveth. Names are the ones people chose to show.</p>';
+  }).catch(() => null);
+}
+// ── grow a Gratus Gift for a Giveth project: days of care, then given ──
+function growForSheet(p) {
+  const ready = S.plants.filter((x) => daysOf(x) >= (C.book.phases[C.book.phases.length - 1] || {}).day);
+  const mine = S.plants.filter((x) => x.forProject && x.forProject.slug === p.slug);
+  const pal = palette().slice(0, 12);
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(p.bloom) + '</span></span><h2>Grow a Gratus Gift</h2><span class="kicker mint">for ' + esc(p.title) + '</span></div>' +
+    '<p class="body">Choose an emoji and dedicate it to this project. Every day you write about it, it grows. At Ready to Give it can be given to them, carrying every day you held it.</p>' +
+    (mine.length ? '<span class="kicker gold">Already growing for them</span><div class="rows">' + mine.map((x) => { const d = daysOf(x); const ph = phaseOf(d); return '<div class="glass opt"><span class="ico">' + esc(face(x)) + '</span><span class="grow"><b>' + esc(nameOf(face(x))) + '</b><span>' + esc(ph.name) + ' · ' + plural(d, 'day') + '</span></span></div>'; }).join('') + '</div>' : '') +
+    '<span class="kicker mint">Dedicate an emoji</span><div class="pick" id="gf-pick">' + pal.map((e) => '<button class="orb" data-gfpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
+    (ready.length ? '<span class="kicker gold">Ready to give now</span><div class="rows">' + ready.map((x) => '<button class="glass opt" data-gfnow="' + esc(x.id) + '"><span class="ico gold">' + esc(face(x)) + '</span><span class="grow"><b>' + esc(nameOf(face(x))) + '</b><span>' + plural(daysOf(x), 'day') + ' · give it to ' + esc(p.title) + '</span></span><span class="arrow">›</span></button>').join('') + '</div>' : '') +
+    '<p class="cap">A dedicated plant still lives in your garden. Dedicating one changes nothing about how it grows; it only remembers who it is for.</p>');
+  $$('[data-gfpick]', sh.el).forEach((b) => b.addEventListener('click', () => {
+    const e = b.dataset.gfpick; let pl = plantFor(e);
+    if (!pl) { pl = { id: newId('p'), emoji: e, planted: today(), kept: [], carried: 0, origin: 'planted', from: null }; S.plants.push(pl); }
+    pl.forProject = { slug: p.slug, title: p.title, bloom: p.bloom };
+    save(); sh.close(); toast(nameOf(e) + ' is growing for ' + p.title);
+    draft.emoji = e; go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 120);
+  }));
+  $$('[data-gfnow]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); const pl = S.plants.find((x) => x.id === b.dataset.gfnow); if (pl) giveToProject(pl, p); }));
+}
+function giveToProject(pl, p) {
+  const d = daysOf(pl);
+  const sh = sheet('<div class="hero-sm"><span class="orb xl lit"><span>' + esc(face(pl)) + '</span></span><h2>Give it to ' + esc(p.title) + '</h2><span class="kicker mint">' + plural(d, 'day') + ' of care</span></div>' +
+    '<p class="body">This Gratus carries ' + plural(d, 'day') + '. Give on Giveth in your own wallet, then plant it here as a seed: your words and the days it took, together.</p>' +
+    '<textarea class="field" id="gt-msg" rows="3" maxlength="280" placeholder="What these days were about..." aria-label="your words">' + esc('I grew this for ' + plural(d, 'day') + ' before I gave it.') + '</textarea>' +
+    '<div class="actions"><a class="btn mint" href="' + esc(p.donateUrl) + '" target="_blank" rel="noopener">Give on Giveth ↗</a>' +
+    '<button class="btn" id="gt-plant">Capital sent · plant this Gratus</button></div>');
+  $('#gt-plant', sh.el).addEventListener('click', async () => {
+    const message = $('#gt-msg', sh.el).value.trim(); if (!message) { toast('A few words.'); return; }
+    const b = $('#gt-plant', sh.el); b.disabled = true; b.textContent = 'Planting...';
+    try {
+      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ act: 'plant', project: p.slug, title: p.title, message, name: S.name || '', emoji: face(pl), bloom: p.bloom }) });
+      const dd = await r.json().catch(() => ({})); if (!r.ok || !dd.seed) throw new Error(dd.error || 'the trace refused');
+      S.seeds.push(Object.assign({}, dd.seed, { slug: p.slug, image: p.image || null, categories: p.categories || [], days: d }));
+      pl.given = { to: p.title, slug: p.slug, at: today(), days: d }; save(); sh.close();
+      playCeremonies(['<div class="cer"><span class="big">' + esc(p.bloom) + '</span><h2>Given.</h2><p>' + esc(plural(d, 'day')) + ' of care, and your words, are with ' + esc(p.title) + '.</p><span class="kicker">tap to continue</span></div>'], () => { checkMilestones(); checkAlchemy(); render(); });
+    } catch (e) { b.disabled = false; b.textContent = 'Capital sent · plant this Gratus'; toast(String(e.message || e)); }
+  });
 }
 // ── Begin: the seed goes in with the gift ──
 function seedSheet(p) {
@@ -479,17 +559,42 @@ function viewGratus() {
     goalsBlock() +
     '</section>';
 }
-// ── the garden room: your plants, your counts, the doors that were the old home ──
+// ── the garden room: a field with a horizon, the plants in it, the seeds above it ──
+let gardenFilter = 'all';
+function gardenField() {
+  let plants = S.plants.filter((p) => !p.private);
+  if (gardenFilter === 'ready') plants = plants.filter((p) => daysOf(p) >= 13);
+  else if (gardenFilter === 'growing') plants = plants.filter((p) => daysOf(p) < 13);
+  else if (gardenFilter === 'dedicated') plants = plants.filter((p) => p.forProject);
+  plants = plants.slice().sort((a, b) => daysOf(b) - daysOf(a));
+  const n = plants.length;
+  if (!n) return '<div class="glass garden field">' + art(scene('garden')) +
+    '<div class="empty-note"><span class="orb lg empty"><span>+</span></span><p class="cap">' + (gardenFilter === 'all' ? 'Moments take root. Gratitude grows. A kinder world blooms.' : 'Nothing here with that filter yet.') + '</p>' + (gardenFilter === 'all' ? '<button class="btn mint" id="first-plant">Plant My Gratus 🌱</button>' : '') + '</div></div>';
+  const spread = Math.min(30, 140 / Math.sqrt(Math.max(1, n)));
+  const orbs = plants.map((p, i) => {
+    const r = i ? 30 + spread * Math.sqrt(i) : 0; const a = i * Gr.GOLDEN * Math.PI / 180; const d = daysOf(p);
+    const ph = phaseIndex(d); const nx = nextPhase(d); const prev = (C.book.phases[ph] || {}).day || 0;
+    const pct = nx ? Math.round(((d - prev) / (nx.day - prev)) * 100) : 100;
+    const kept = d && (p.kept || []).includes(today());
+    return '<button class="orb p' + ph + (kept ? ' lit' : '') + (p.forProject ? ' pledged' : '') + '" data-p="' + esc(p.id) + '" style="left:calc(50% + ' + (r * Math.cos(a)).toFixed(1) + 'px);top:calc(50% + ' + (r * Math.sin(a)).toFixed(1) + 'px);--h:' + (ph >= 4 ? '#F2C97D' : '#6ED9C0') + ';--pct:' + pct + '" aria-label="' + esc(nameOf(face(p)) + ', ' + plural(d, 'day') + (nx ? ', ' + nx.name + ' in ' + plural(nx.day - d, 'day') : ', ready to give')) + '"><span>' + esc(face(p)) + '</span></button>';
+  }).join('');
+  return '<div class="glass garden field">' + art(scene('garden')) + '<i class="horizon" aria-hidden="true"></i>' + orbs + '</div>';
+}
 function viewGarden() {
-  const plants = S.plants.filter((p) => !p.private).slice().sort((a, b) => daysOf(b) - daysOf(a));
-  const n = plants.length; const c = Math.min(30, 150 / Math.sqrt(Math.max(1, n)));
-  const orbs = plants.map((p, i) => { const r = i ? 34 + c * Math.sqrt(i) : 0; const a = i * Gr.GOLDEN * Math.PI / 180; const d = daysOf(p); return '<button class="orb p' + phaseIndex(d) + (d && (p.kept || []).includes(today()) ? ' lit' : '') + '" data-p="' + esc(p.id) + '" style="left:calc(50% + ' + (r * Math.cos(a)).toFixed(1) + 'px);top:calc(50% + ' + (r * Math.sin(a)).toFixed(1) + 'px);--h:' + (phaseIndex(d) >= 4 ? '#F2C97D' : '#6ED9C0') + '" aria-label="' + esc(nameOf(face(p)) + ', ' + plural(d, 'day')) + '"><span>' + esc(face(p)) + '</span></button>'; }).join('');
+  const n = S.plants.filter((p) => !p.private).length;
+  const care = S.plants.reduce((t, p) => t + daysOf(p), 0);
+  const ready = S.plants.filter((p) => daysOf(p) >= 13).length;
+  const pledged = S.plants.filter((p) => p.forProject).length;
   const entries = S.entries.slice().reverse();
-  return hero(scene('garden'), { cls: 'room-hero', h1: 'Your Gratus Garden', k1: 'Grow gratitude every day.', k2: plural(n, 'plant') + ' · ' + plural(S.plants.reduce((t, p) => t + daysOf(p), 0), 'day') + ' of care' }) +
+  const lanes = [['all', 'Everything'], ['growing', 'Growing'], ['ready', 'Ready to give'], ['dedicated', 'For a project']];
+  const phases = C.book.phases;
+  return hero(scene('garden'), { cls: 'room-hero', h1: 'Your Gratus Garden', k1: 'Grow gratitude every day.', k2: plural(n, 'plant') + ' · ' + plural(care, 'day') + ' of care' }) +
     '<div class="page">' +
-    '<div class="glass stats in"><div><b>' + S.entries.length + '</b><span>Entries</span></div><div><b>' + S.plants.length + '</b><span>Plants</span></div><div><b>' + (S.gifts.given.length + S.gifts.received.length) + '</b><span>Gifts</span></div></div>' +
-    '<div class="glass garden">' + art(scene('garden')) + (n ? orbs : '<div class="empty-note"><span class="orb lg empty"><span>+</span></span><p class="cap">Moments take root. Gratitude grows. A kinder world blooms.</p><button class="btn mint" id="first-plant">Plant My Gratus 🌱</button></div>') + '</div>' +
-    (n ? '<p class="kicker" style="text-align:center">Gratitude turns moments into movement.</p>' : '') +
+    '<div class="glass stats in"><div><b>' + n + '</b><span>' + (n === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + care + '</b><span>days of care</span></div><div><b>' + ready + '</b><span>ready to give</span></div></div>' +
+    (n ? '<div class="chips row">' + lanes.map(([k, t]) => '<button class="chip' + (gardenFilter === k ? ' on' : '') + '" data-gfilter="' + k + '">' + t + (k === 'dedicated' && pledged ? ' · ' + pledged : '') + '</button>').join('') + '</div>' : '') +
+    gardenField() +
+    (n ? '<div class="phaseline">' + phases.map((p, i) => '<span class="ph' + (S.plants.some((x) => phaseIndex(daysOf(x)) === i) ? ' on' : '') + '"><i>' + p.icon + '</i>' + esc(p.name) + '</span>').join('') + '</div>' +
+      '<p class="cap">Every orb is one emoji and the days you kept it. The ring around it fills as it grows toward its next phase. Tap one to open it.</p>' : '') +
     traceBlock() +
     '<button class="glass opt" id="open-book"><span class="ico">📖</span><span class="grow"><b>The Gratus Growth Book</b><span>Your gratitude journal, by day. The phases, the emojis, the recipes.</span></span><span class="arrow">›</span></button>' +
     (S.gifts.received.length ? '<div class="eyebrow"><h2>Gifts received</h2></div><div class="rows">' + S.gifts.received.slice().reverse().slice(0, 3).map((g) => '<div class="glass opt"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>From ' + esc(g.from || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + '</span></span></div>').join('') + '</div>' : '') +
@@ -497,6 +602,7 @@ function viewGarden() {
     '<button class="glass opt" id="open-galaxy"><span class="ico"><img src="' + LOGO + '" alt="" style="width:30px;height:30px"></span><span class="grow"><b>The Gratus Galaxy</b><span>People · Projects · A brighter planet.</span></span><span class="arrow">›</span></button>' +
     '</div>';
 }
+
 function menuSheet() {
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">Grow Gratus Give</span></div>' +
     '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
@@ -520,6 +626,7 @@ function viewGrow() {
     '<div class="glass voiceprev" id="voiceprev"' + (draft.voice ? '' : ' hidden') + '><span class="kicker mint">Your voice · ' + fmtDur(draft.voiceDur) + '</span><audio controls id="voice-audio"></audio><button class="btn sm quiet" id="voice-drop">Remove the recording</button></div>' +
     '<span class="kicker mint">The emoji you are planting</span>' +
     '<div class="pick" id="pick">' + pal.map((e) => '<button class="orb' + (draft.emoji === e ? ' on' : '') + '" data-pick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '<button class="orb empty" id="pick-any" aria-label="any emoji"><span>+</span></button></div>' +
+    (pal.length > 8 ? '<button class="btn sm quiet pick-more" id="pick-more">Show every emoji</button>' : '') +
     '<span class="kicker mint">Tags</span><div class="chips" id="tags">' + C.book.tags.concat(draft.tags.filter((t) => !C.book.tags.includes(t))).map((t) => '<button class="chip' + (draft.tags.includes(t) ? ' on' : '') + '" data-tag="' + esc(t) + '">' + esc(t) + '</button>').join('') + '<button class="chip" id="tag-any">+ tag</button></div>' +
     '<button class="btn mint wide" id="plant">Plant My Gratus 🌱</button></div>' +
     '<p class="kicker" style="text-align:center">A small moment. A brighter tomorrow.</p>' +
@@ -659,22 +766,57 @@ function viewGalaxy() {
 
 // ── THE GROWTH BOOK ──
 let bookTab = 'journal', recipeCat = 'all', qOffset = 0, journalQuery = '';
-let jTab = 'entries';
+let jTab = 'entries', jMonth = 0, jDay = '', jEmoji = '', jTag = '', jFolder = '';
+const monthKey = (off) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return d.getFullYear() + '-' + pad2(d.getMonth() + 1); };
+function monthGrid(off) {
+  const key = monthKey(off); const [Y, M] = key.split('-').map(Number);
+  const first = new Date(Y, M - 1, 1); const days = new Date(Y, M, 0).getDate();
+  const lead = (first.getDay() + 6) % 7; // weeks begin on Monday
+  const byDay = {}; for (const e of S.entries) byDay[e.day] = (byDay[e.day] || 0) + 1;
+  const t = today();
+  let cells = '';
+  for (let i = 0; i < lead; i++) cells += '<i class="pad"></i>';
+  for (let d = 1; d <= days; d++) {
+    const k = key + '-' + pad2(d); const n = byDay[k] || 0; const future = k > t;
+    cells += '<button class="cal-d' + (n ? ' on' : '') + (k === t ? ' today' : '') + (k === jDay ? ' sel' : '') + (future ? ' future' : '') + '" data-calday="' + k + '"' + (future ? ' disabled' : '') + '><span>' + d + '</span>' + (n > 1 ? '<i class="dots">' + '•'.repeat(Math.min(3, n)) + '</i>' : n ? '<i class="dots">•</i>' : '') + '</button>';
+  }
+  const written = Object.keys(byDay).filter((k) => k.startsWith(key)).length;
+  const label = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  return '<div class="glass cal"><div class="cal-head"><button class="cal-nav" data-calmove="-1" aria-label="the month before">‹</button><b>' + esc(label) + '</b><button class="cal-nav" data-calmove="1"' + (off >= 0 ? ' disabled' : '') + ' aria-label="the month after">›</button></div>' +
+    '<div class="cal-dow"><i>M</i><i>T</i><i>W</i><i>T</i><i>F</i><i>S</i><i>S</i></div>' +
+    '<div class="cal-grid">' + cells + '</div>' +
+    '<p class="cap">' + (written ? plural(written, 'day') + ' written this month' : 'Nothing written this month yet') + (jDay ? ' · showing ' + esc(fmtDay(jDay)) : '') + '</p></div>';
+}
 function viewJournal() {
   const t = today(); const pool = Gr.questionPool(C.prompts); const q = Gr.question(pool, t + ':j', qOffset);
-  const days = new Set(S.entries.map((e) => e.day)); const band = []; for (let i = 29; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); band.push('<i class="' + (days.has(k) ? (k === t ? 'gold' : 'lit') : '') + '" title="' + k + '"></i>'); }
   let body = '';
   if (jTab === 'threads') body = viewThreads();
   else if (jTab === 'folders') body = viewFolders();
   else if (jTab === 'milestones') body = viewMilestones();
   else {
-    const qq = journalQuery.trim().toLowerCase(); const list = S.entries.filter((e) => !qq || (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim()).slice().reverse();
+    const qq = journalQuery.trim().toLowerCase();
+    const list = S.entries.filter((e) => {
+      if (jDay && e.day !== jDay) return false;
+      if (jEmoji && e.emoji !== jEmoji) return false;
+      if (jTag && !(e.tags || []).includes(jTag)) return false;
+      if (jFolder && e.folder !== jFolder) return false;
+      if (!qq) return true;
+      return (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim();
+    }).slice().reverse();
     const byDay = []; for (const e of list) { const last = byDay[byDay.length - 1]; if (last && last.day === e.day) last.items.push(e); else byDay.push({ day: e.day, items: [e] }); }
-    body = '<input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
-      (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map(entryCard).join('') + '</div>').join('') : '<p class="cap">' + (qq ? 'Nothing with those words.' : 'Nothing written yet. Every entry you plant lives here, by day.') + '</p>');
+    const emojis = Array.from(new Set(S.entries.map((e) => e.emoji).filter(Boolean))).slice(0, 14);
+    const tags = Array.from(new Set(S.entries.flatMap((e) => e.tags || []))).slice(0, 14);
+    const filtering = jDay || jEmoji || jTag || jFolder || qq;
+    body = monthGrid(jMonth) +
+      '<input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
+      (emojis.length ? '<div class="chips row">' + emojis.map((e) => '<button class="chip' + (jEmoji === e ? ' on' : '') + '" data-jemoji="' + esc(e) + '"><span class="emoji">' + esc(e) + '</span> ' + esc(nameOf(e)) + '</button>').join('') + '</div>' : '') +
+      (tags.length ? '<div class="chips row">' + tags.map((x) => '<button class="chip' + (jTag === x ? ' on' : '') + '" data-jtag="' + esc(x) + '">' + esc(x) + '</button>').join('') + '</div>' : '') +
+      (S.folders.length ? '<div class="chips row">' + S.folders.map((f) => '<button class="chip' + (jFolder === f.id ? ' on' : '') + '" data-jfolder="' + esc(f.id) + '">📁 ' + esc(f.name) + '</button>').join('') + '</div>' : '') +
+      (filtering ? '<button class="btn sm quiet" id="j-clear">Clear the filters · ' + plural(list.length, 'entry').replace('entrys', 'entries') + '</button>' : '') +
+      (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map(entryCard).join('') + '</div>').join('')
+        : '<p class="cap">' + (filtering ? 'Nothing here with that filter.' : 'Nothing written yet. Every entry you plant lives here, by day.') + '</p>');
   }
   return '<div class="glass card"><span class="kicker mint">Today\'s question</span><h3 class="q"><button id="j-q" aria-label="another question">' + esc(q) + '</button></h3><button class="btn mint" id="j-write">Write today\'s entry 🌱</button></div>' +
-    '<div class="glass card"><div class="dayhead"><b>' + plural(days.size, 'day') + ' written</b><span class="cap">the last thirty</span></div><div class="band">' + band.join('') + '</div></div>' +
     '<div class="glass seg" style="grid-template-columns:repeat(4,1fr)">' + [['entries', 'Entries'], ['threads', 'Threads'], ['folders', 'Folders'], ['milestones', 'Milestones']].map(([k, n]) => '<button class="' + (jTab === k ? 'on' : '') + '" data-jt="' + k + '">' + n + '</button>').join('') + '</div>' + body;
 }
 function viewBook() {
@@ -872,8 +1014,8 @@ function viewMilestones() {
     '<div class="miles">' + MILESTONES.map(([id, name, ico]) => { const when = S.milestones[id]; return '<div class="glass mile' + (when ? ' lit' : '') + '"><span class="orb"><span>' + ico + '</span></span><span>' + esc(name) + '</span>' + (when ? '<span class="when">' + esc(fmtDay(when)) + '</span>' : '') + '</div>'; }).join('') + '</div>';
 }
 function viewThreads() {
-  const th = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)).map((p) => { const em = face(p); const es = threadEntries(p.emoji); const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d); const last = es[es.length - 1];
-    return '<button class="glass thread" data-thread="' + esc(p.emoji) + '"><span class="orb' + (d >= 9 ? ' lit' : '') + '"><span>' + esc(em) + '</span></span><span class="grow"><b>' + esc(nameOf(em)) + '</b><span class="cap">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + '</span>' + (last && last.text ? '<span class="line">' + esc(last.text) + '</span>' : '') + '</span><span class="arrow">›</span></button>'; }).join('');
+  const th = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)).map((p) => { const em = face(p); const es = threadEntries(p.emoji); const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d); const last = es[es.length - 1]; const forp = p.forProject ? ' · for ' + p.forProject.title : '';
+    return '<button class="glass thread" data-thread="' + esc(p.emoji) + '"><span class="orb' + (d >= 9 ? ' lit' : '') + '"><span>' + esc(em) + '</span></span><span class="grow"><b>' + esc(nameOf(em)) + '</b><span class="cap">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + esc(forp) + '</span>' + (last && last.text ? '<span class="line">' + esc(last.text) + '</span>' : '') + '</span><span class="arrow">›</span></button>'; }).join('');
   return '<p class="cap">A thread is one emoji, followed through your days. Continue a thread and it grows.</p>' + (th ? '<div class="rows">' + th + '</div>' : '<p class="cap">Plant an emoji and its thread begins here.</p>');
 }
 function viewFolders() {
@@ -982,6 +1124,7 @@ function wire() {
   const ae = $('#all-entries'); if (ae) ae.addEventListener('click', () => { const sh = sheet('<h2>All entries</h2><div class="rows">' + S.entries.slice().reverse().map(entryCard).join('') + '</div>'); $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); })); });
   const w = $('#write'); if (w) w.addEventListener('input', () => { draft.text = w.value; });
   $$('[data-pick]').forEach((b) => b.addEventListener('click', () => { draft.emoji = draft.emoji === b.dataset.pick ? null : b.dataset.pick; $$('[data-pick]').forEach((x) => x.classList.toggle('on', x.dataset.pick === draft.emoji)); }));
+  const pm = $('#pick-more'); if (pm) pm.addEventListener('click', () => { const pk = $('#pick'); if (!pk) return; const open = pk.classList.toggle('open'); pm.textContent = open ? 'Show fewer' : 'Show every emoji'; });
   const pa = $('#pick-any'); if (pa) pa.addEventListener('click', () => { const sh = sheet('<h2>Any emoji</h2><p class="body">Type or paste one. It joins your palette when you plant it.</p><input class="field" id="any-in" placeholder="🌱" aria-label="an emoji"><button class="btn mint" id="any-go">Use it</button>', { autofocus: true }); $('#any-go', sh.el).addEventListener('click', () => { const e = Gr.firstEmoji($('#any-in', sh.el).value); if (!e) { toast('An emoji'); return; } if (!palette().includes(e)) S.my.emojis.push(e); draft.emoji = e; draft.text = $('#write') ? $('#write').value : draft.text; save(); sh.close(); render(); }); });
   $$('[data-tag]').forEach((b) => b.addEventListener('click', () => { const t = b.dataset.tag; draft.tags = draft.tags.includes(t) ? draft.tags.filter((x) => x !== t) : draft.tags.concat([t]); b.classList.toggle('on', draft.tags.includes(t)); }));
   const ta = $('#tag-any'); if (ta) ta.addEventListener('click', () => { const t = prompt('A tag'); if (t && t.trim()) { draft.tags.push(t.trim().slice(0, 24)); draft.text = $('#write') ? $('#write').value : draft.text; render(); } });
@@ -1002,6 +1145,8 @@ function wire() {
   const gvd = $('#give-giveth'); if (gvd) gvd.addEventListener('click', () => go('give', 'giveth'));
   $$('[data-gv]').forEach((b) => b.addEventListener('click', () => projectSheet(b.dataset.gv)));
   $$('[data-gvlane]').forEach((b) => b.addEventListener('click', () => { gvLane = b.dataset.gvlane; gvState = 'idle'; gvList = null; render(); }));
+  $$('[data-gvcat]').forEach((b) => b.addEventListener('click', () => { gvCat = b.dataset.gvcat; gvState = 'idle'; gvList = null; render(); }));
+  const gvm = $('#gv-more'); if (gvm) gvm.addEventListener('click', () => { gvSkip = (gvList || []).length; gvm.textContent = 'Reading Giveth...'; loadGiveth(true); });
   const gvs = $('#gv-search'); if (gvs) { gvs.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { gvSearch = gvs.value.trim(); gvState = 'idle'; gvList = null; render(); } }); gvs.addEventListener('search', () => { gvSearch = gvs.value.trim(); gvState = 'idle'; gvList = null; render(); }); }
   const gvl = $('#gv-learn'); if (gvl) gvl.addEventListener('click', givethLearnSheet);
   const gvc = $('#gv-console'); if (gvc) gvc.addEventListener('click', () => go('give', 'console'));
@@ -1023,6 +1168,13 @@ function wire() {
   $$('[data-node]').forEach((b) => b.addEventListener('click', () => { const n = b.dataset.node; if (n === 'give') go('give'); else go('give', n); }));
   $$('[data-book]').forEach((b) => b.addEventListener('click', () => { bookTab = b.dataset.book; render(); }));
   $$('[data-jt]').forEach((b) => b.addEventListener('click', () => { jTab = b.dataset.jt; render(); }));
+  $$('[data-calday]').forEach((b) => b.addEventListener('click', () => { jDay = jDay === b.dataset.calday ? '' : b.dataset.calday; render(); }));
+  $$('[data-calmove]').forEach((b) => b.addEventListener('click', () => { jMonth = Math.min(0, jMonth + Number(b.dataset.calmove)); jDay = ''; render(); }));
+  $$('[data-jemoji]').forEach((b) => b.addEventListener('click', () => { jEmoji = jEmoji === b.dataset.jemoji ? '' : b.dataset.jemoji; render(); }));
+  $$('[data-jtag]').forEach((b) => b.addEventListener('click', () => { jTag = jTag === b.dataset.jtag ? '' : b.dataset.jtag; render(); }));
+  $$('[data-jfolder]').forEach((b) => b.addEventListener('click', () => { jFolder = jFolder === b.dataset.jfolder ? '' : b.dataset.jfolder; render(); }));
+  const jc = $('#j-clear'); if (jc) jc.addEventListener('click', () => { jDay = jEmoji = jTag = jFolder = journalQuery = ''; render(); });
+  $$('[data-gfilter]').forEach((b) => b.addEventListener('click', () => { gardenFilter = b.dataset.gfilter; render(); }));
   $$('[data-thread]').forEach((b) => b.addEventListener('click', () => threadSheet(b.dataset.thread)));
   $$('[data-folder]').forEach((b) => b.addEventListener('click', () => { const f = folderOf(b.dataset.folder); if (f) folderSheet(f); }));
   const nf = $('#new-folder'); if (nf) nf.addEventListener('click', () => newFolder());

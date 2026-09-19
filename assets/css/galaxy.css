@@ -600,3 +600,66 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 /* the landing uses the same cards and pills as links */
 a.gpill, a.hcard, a.door { text-decoration: none; color: var(--ink); }
 a.gpill { color: #1E2A10; }
+
+/* ── v17 · nothing runs off the page: a flex or grid child must be allowed to shrink ── */
+.stream > *, .page > *, .rows > *, .card > *, .actions > *, .home14 > * { min-width: 0; }
+.opt .grow, .thread .grow, .goal .grow, .entry > span, .gvp-words, .door-words, .project .grow, .choice .grow, .partner .grow { min-width: 0; }
+.goal .grow b, .goal .grow span, .opt .grow b, .opt .grow span, .thread b { overflow-wrap: anywhere; }
+.stream { overflow: visible; }
+.glass, .hcard, .stream, .card { max-width: 100%; }
+.entry .text, .gvp-words b, .door-words b, .thread .line { overflow-wrap: anywhere; }
+/* the palette wraps instead of running off the edge, with a second row and a gentle end */
+.pick { display: flex; flex-wrap: wrap; gap: 8px; overflow: visible; max-height: 124px; overflow-y: hidden; transition: max-height var(--t) var(--ease); }
+.pick.open { max-height: 460px; overflow-y: auto; }
+.pick-more { justify-self: start; }
+.chips.row { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent 100%); mask-image: linear-gradient(90deg, #000 88%, transparent 100%); padding-right: 22px; }
+.chips.row:last-child, .chips.row.end { -webkit-mask-image: none; mask-image: none; }
+
+/* ── v17 · the project, in depth ── */
+.gv-hero { position: relative; margin: -12px -20px 0; }
+.gv-hero img { width: 100%; height: 190px; object-fit: cover; display: block; -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%); mask-image: linear-gradient(180deg, #000 60%, transparent 100%); }
+.gv-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.gv-fact { display: grid; gap: 2px; justify-items: center; text-align: center; padding: 12px 6px; border-radius: 18px; background: rgba(5, 9, 18, .6); border: 1px solid rgba(242, 201, 125, .28); }
+.gv-fact b { font-family: var(--display); font-size: 26px; line-height: 30px; font-weight: 500; color: #FFE9B0; }
+.gv-fact span { font-size: 14px; line-height: 18px; font-weight: 600; color: var(--ink); }
+.gv-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.gv-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; background: rgba(5, 9, 18, .6); border: 1px solid var(--hair-2); color: var(--ink); font-size: 15px; font-weight: 600; text-decoration: none; }
+.gv-update { display: grid; gap: 4px; padding: 14px 16px; text-align: left; }
+.gv-update b { font-size: 17px; line-height: 22px; font-weight: 600; }
+.gv-update .cap { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.gv-gift { display: flex; align-items: center; gap: 10px; padding: 10px 14px; }
+.gv-gift b { font-size: 16px; font-weight: 600; flex: 1; min-width: 0; }
+.gv-gift .amt { font-family: var(--display); font-size: 20px; color: #FFE9B0; white-space: nowrap; }
+
+/* ── v17 · the journal's month ── */
+.cal { display: grid; gap: 10px; padding: 14px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cal-head b { font-family: var(--display); font-size: 24px; font-weight: 500; color: #FFE9B0; }
+.cal-nav { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; line-height: 1; color: #F2C97D; border: 1px solid var(--hair-2); background: rgba(5, 9, 18, .5); }
+.cal-nav:disabled { opacity: .3; }
+.cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-dow i { font-style: normal; text-align: center; font-size: 13px; font-weight: 700; color: var(--violet-text); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-grid .pad { display: block; }
+.cal-d { position: relative; aspect-ratio: 1; border-radius: 30%; display: grid; place-content: center; gap: 1px; justify-items: center; font-size: 15px; font-weight: 600; color: var(--ink); background: rgba(255, 255, 255, .04); border: 1px solid transparent; }
+.cal-d .dots { font-style: normal; font-size: 9px; line-height: 6px; color: var(--violet-text); letter-spacing: -1px; }
+.cal-d.on { background: var(--hue-16); border-color: var(--hair-hue); }
+.cal-d.today { border-color: rgba(242, 201, 125, .9); color: #FFE9B0; }
+.cal-d.sel { background: linear-gradient(180deg, #F7F4BC, #DCE697); color: #1E2A10; border-color: #fff; }
+.cal-d.sel .dots { color: #1E2A10; }
+.cal-d.future { opacity: .3; }
+.chip .emoji { font-family: var(--emoji); }
+
+/* ── v17 · the garden as a field ── */
+.garden.field { height: 400px; }
+.garden.field .horizon { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(242, 201, 125, .55), transparent); box-shadow: 0 0 18px rgba(242, 201, 125, .35); pointer-events: none; z-index: 0; }
+.garden .orb.pledged::after { content: "◆"; position: absolute; right: -2px; top: -6px; font-size: 11px; color: #FFD98A; text-shadow: 0 0 6px rgba(255, 217, 138, .9); }
+.garden .orb[style*="--pct"]::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; padding: 2px; background: conic-gradient(rgba(185, 255, 228, .95) calc(var(--pct, 0) * 1%), rgba(255, 255, 255, .1) 0); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; pointer-events: none; }
+.phaseline { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.phaseline .ph { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--ink); background: rgba(5, 9, 18, .55); border: 1px solid var(--hair); }
+.phaseline .ph i { font-style: normal; font-family: var(--emoji); }
+.phaseline .ph.on { border-color: var(--hair-hue); box-shadow: 0 0 14px rgba(110, 217, 192, .25); }
+/* a grid or flex child must be allowed to shrink, everywhere, or it pushes the page wider than the phone */
+.glass > *, .cal > *, .card > *, .page > *, .home14 > *, .sheet > *, .rows > *, .actions > *, .gv-facts > *, .trace3 > * { min-width: 0; }
+.cal-grid, .cal-dow, .cal-d, .seg, .seg > * { min-width: 0; }
+.cal-d { padding: 0; }

@@ -76,7 +76,12 @@ Four more reads, added in v16:
 | `q=confirm&slug=&tx=` | `donationsByProjectId(projectId, take:300)` | Checking a transaction hash against that project's recent gifts, so a seed can say what actually arrived. |
 | `q=similar&slug=` | `similarProjectsBySlug` | The circular flow: what else is near what you already gave to. |
 | `q=sunlight&address=` | `userByAddress` | How much a **public** address takes part: boosted, given, liked. Read only, no authentication, no signature. |
+| `q=updates&slug=` | `getProjectUpdates` | What the project has told the world, newest first. |
+| `q=donors&slug=` | `donationsByProjectId` | The gifts that have just arrived, with the names people chose to show. |
+| `q=cats` | `mainCategories` | Giveth's own categories, for the directory. |
 | the responsiveness reading | ours, not theirs | Computed from our own trace document, never from their data. |
+
+A project page in Gratus now shows: raised, donors, updates, verification and GIVbacks badges, whether a quadratic round is matching it right now, where it works, its organisation, the chains it accepts, every social and website link it has published, its recent updates, its recent gifts, how faithfully it answers Gratus Seeds, and what else is like it. Contact links come from `socialMedia` and `website` on the project itself; Giveth stores them as typed links (X, Discord, Telegram, Farcaster, Instagram, YouTube, LinkedIn, Facebook, website).
 
 **The donation itself never happens in Gratus.** We open Giveth in a new tab; the person gives from their own wallet, on their own chain, to the project's own address. Gratus holds no money, takes no fee, and has no custody. The app says so on the screen.
 

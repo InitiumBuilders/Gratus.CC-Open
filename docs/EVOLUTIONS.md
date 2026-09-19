@@ -2,6 +2,15 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v17 · Deeper, and it fits the phone (2026-09-19)
+
+- **Nothing runs off the page.** A grid or flex child that would not shrink was pushing the app wider than the phone; the calendar grid, the goals stream and the emoji palette each did it differently. Every page now measures exactly 375 at 375.
+- **The journal is a month you can see.** A real calendar, walk back through the months, tap a day to open it, and filter by emoji, tag or folder.
+- **The garden is a field.** A horizon, every plant sized by phase with a ring filling toward the next one, a diamond on the ones growing for a project, four lanes and the phase legend.
+- **A project, in depth.** Raised, donors, updates, where it works, its organisation, the chains it accepts, all its contact links, its recent updates, the gifts that just arrived, how it answers, and what else is like it.
+- **The directory.** Giveth's own categories, and Show more through the whole catalogue.
+- **Grow a Gratus Gift for a Giveth project.** Dedicate an emoji, grow it with your days, give it when it is ready.
+
 ## v16 · All six loops (2026-09-19)
 
 - **I see you**: a project's first-ever seed blooms into 🫶 and the ceremony says so.

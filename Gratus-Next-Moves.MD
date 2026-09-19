@@ -20,6 +20,8 @@ The full brief is in [docs/GIVETH.md](docs/GIVETH.md); the architecture and the 
 - **G6. Tell the project it was watered.** A steward has no way to know a bloom landed. A gentle receipt, without presence words.
 - ~~**G7. Loops three to six.**~~ All shipped in v16. Loops 5 and 6 ship as a prompt and a read, which is the only form this app will carry them in.
 - **G9. Offer the responsiveness reading to Giveth and DeVouch.** It exists now and nobody outside Gratus can see it.
+- **G11. A project's own Gratus page.** A shareable link a steward can post, showing their seeds and how they answer, so the loop can be seen from outside the app.
+- **G12. Recurring and QF-aware giving.** Giveth has recurring donations and quadratic rounds; a seed could know it rode a matched gift.
 - **G10. A steward has no way to know their water landed.** A receipt, without presence words.
 - **G8. Send the pitch.** The pitch in GIVETH.md is written. It has not been sent to anyone at Giveth.
 
@@ -77,6 +79,8 @@ These change the shape of the work. Each one is a fork.
 19. **The intros and patience.** Give and Grow now open through a video every time, by his ask. Watch how it feels after a week of daily use; if it wears, play the intro once per open and keep the tap to enter.
 20. ~~**The landing page in the new look.**~~ Done in v15: acts with one statement each, his card art, gold pills, the Emotional TRACE named.
 21. **The console needs the app's own look.** It is functional and plain next to the rest.
+23. ~~**Mobile overflow.**~~ Fixed in v17 and measured on every page. The rule to keep: any grid or flex child that holds text needs `min-width: 0`, or it refuses to shrink and widens the whole document.
+24. **A written overflow gate.** The audit that found these was run by hand. Make it a script so a future ship cannot reintroduce them.
 22. **A seed should be withdrawable.** Once planted it cannot be taken back, from either side.
 
 16. **The voice function needs a limit.** It is public and spends his ElevenLabs credit. Add a per-device daily allowance and a size cap smaller than six megabytes before the app is shared widely.
