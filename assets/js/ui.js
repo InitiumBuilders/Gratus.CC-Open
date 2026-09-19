@@ -1,5 +1,5 @@
 // Small UI helpers: sheets, toasts, press-and-hold. No rules live here.
-export function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+export function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 export function h(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
 export function $(sel, root) { return (root || document).querySelector(sel); }
 export function $$(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }

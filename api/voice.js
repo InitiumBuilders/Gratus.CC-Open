@@ -16,9 +16,14 @@ const TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 const PER_DEVICE = 40;   // recordings per device per day
 const PER_DAY = 600;     // recordings across everyone per day
 const dayDoc = () => 'gratus/voice/' + new Date().toISOString().slice(0, 10) + '.json';
-const whoOf = (req) => createHash('sha256')
-  .update(String(req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '').split(',')[0].trim() + '\u00b7gratus-voice')
-  .digest('hex').slice(0, 16);
+// The salt used to be the constant written on this line, in a public repository, and the
+// document it hashes into is world readable. Four billion addresses is an afternoon of
+// guessing, so that document was a list of everyone who spoke, held in a way that looked
+// careful. GRATUS_SALT is a real secret; the fallback is derived from the store token,
+// which is also one.
+const sha = (s) => createHash('sha256').update(String(s)).digest('hex');
+const SALT = process.env.GRATUS_SALT || sha('gratus/voice/' + String(TOKEN)).slice(0, 32);
+const whoOf = (req) => sha(String(req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '').split(',')[0].trim() + '\u00b7' + SALT).slice(0, 16);
 
 async function readDay() {
   const key = dayDoc();
@@ -52,10 +57,15 @@ const ORIGINS = ['https://www.gratus.cc', 'https://gratus.cc', 'https://gratus-i
 // is short, and a cap that only a very long recording can reach is not a cap.
 const MAX = 2_000_000;
 
+// This is not authentication and it never was: a header anyone can type is a header
+// anyone can type. What actually bounds the spend is the allowance above. What this does
+// is keep another site from spending it, so the origin has to be one of ours. It used to
+// pass an empty origin and every address on vercel.app, which is most of the internet.
+const PREVIEW = /^https:\/\/[a-z0-9-]*gratus[a-z0-9-]*\.vercel\.app$/;
 function fromGratus(req) {
   const o = req.headers.origin || '';
-  const ok = !o || ORIGINS.includes(o) || /^http:\/\/localhost(:\d+)?$/.test(o) || /\.vercel\.app$/.test(o);
-  return ok && req.headers['x-gratus'] === 'voice';
+  if (!(ORIGINS.includes(o) || PREVIEW.test(o) || /^http:\/\/localhost(:\d+)?$/.test(o))) return false;
+  return req.headers['x-gratus'] === 'voice';
 }
 async function body(req) {
   if (Buffer.isBuffer(req.body)) return req.body;

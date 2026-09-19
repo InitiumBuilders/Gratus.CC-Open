@@ -8,7 +8,7 @@ import * as Gr from '../../engine/gratus.js?v=12';
 import * as E from '../../engine/emoji.js?v=12';
 import { newId } from '../../engine/rng.js?v=12';
 import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=12';
-import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy } from './ui.js?v=12';
+import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy } from './ui.js?v=13';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
 const KEY = 'gratus.galaxy.v1';
@@ -774,13 +774,17 @@ function mySeedSheet(id) {
   });
 }
 // ── the seed and the capital, linked: ask Giveth whether that transaction really arrived ──
+// This used to read the amount here and then post it to the trace as fact, so the number
+// in the shared document was whatever this browser said it was. The trace asks Giveth
+// itself now. All that goes out is the transaction and the key that proves the seed is ours.
 async function confirmGift(seedId, slug, tx) {
   try {
-    const r = await fetch('/api/giveth?q=confirm&slug=' + encodeURIComponent(slug) + '&tx=' + encodeURIComponent(tx), { cache: 'no-store' });
-    const d = await r.json().catch(() => ({})); if (!r.ok || !d.confirmed) return;
-    const mine = S.seeds.find((x) => x.id === seedId); if (mine) { mine.confirmed = { at: new Date().toISOString(), amount: d.gift.amount, currency: d.gift.currency, usd: d.gift.usd }; save(); }
-    fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'confirm', project: slug, seed: seedId, amount: String(d.gift.amount), currency: d.gift.currency, usd: d.gift.usd }) }).catch(() => null);
-    toast('Giveth confirms it: ' + d.gift.amount + ' ' + d.gift.currency);
+    const mine = S.seeds.find((x) => x.id === seedId); if (!mine) return;
+    const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ act: 'confirm', project: slug, seed: seedId, tx, key: mine.mine }) });
+    const d = await r.json().catch(() => ({})); if (!r.ok || !d.confirmed || !d.seed || !d.seed.confirmed) return;
+    mine.confirmed = d.seed.confirmed; mine.tx = d.seed.tx || tx; save();
+    toast('Giveth confirms it: ' + d.seed.confirmed.amount + ' ' + d.seed.confirmed.currency);
     render();
   } catch (e) {}
 }
@@ -791,7 +795,7 @@ async function checkBloom() {
   const bloomed = [];
   for (const slug of Object.keys(bySlug)) {
     try {
-      const r = await fetch('/api/trace?project=' + encodeURIComponent(slug) + '&ids=' + bySlug[slug].join(','), { cache: 'no-store' });
+      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'read', project: slug, ids: bySlug[slug] }) });
       const d = await r.json().catch(() => ({})); if (!r.ok || !d.seeds) continue;
       for (const got of d.seeds) { const mine = S.seeds.find((x) => x.id === got.id); if (mine && got.status === 'bloomed' && mine.status !== 'bloomed') { mine.status = 'bloomed'; mine.water = got.water; bloomed.push(mine); } }
     } catch (e) {}
@@ -823,23 +827,66 @@ async function conLoad() {
   if (!conSlug) { toast('Your project slug, from its Giveth address.'); return; }
   conState = 'loading'; render();
   try {
-    const r = await fetch('/api/trace?project=' + encodeURIComponent(conSlug) + (conKey ? '&key=' + encodeURIComponent(conKey) : ''), { cache: 'no-store' });
+    const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'read', project: conSlug, key: conKey || '' }) });
     const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'no answer');
     conSeeds = d.seeds || []; conSignal = d.signal || null; conState = 'live';
     try { localStorage.setItem(GVK, JSON.stringify({ slug: conSlug, key: conKey })); } catch (e) {}
   } catch (e) { conSeeds = null; conState = 'idle'; toast(String(e.message || e)); }
   render();
 }
+// Claiming a project used to be one tap and no proof, which meant a stranger could take
+// any project, read the seeds their authors had held back, and answer in the project's
+// own voice. A key is only handed to somebody who can edit what the project says about
+// itself on Giveth, which is the same thing a domain proves about a website.
+const PVK = 'gratus.giveth.prove';
+let conProve = null;
+try { conProve = JSON.parse(localStorage.getItem(PVK) || 'null'); } catch (e) { conProve = null; }
+
+function keySheet(key) {
+  sheet('<h2>Your project key</h2><p class="body">Keep this. It waters seeds for <b>' + esc(conSlug) + '</b>, and it is shown once.</p><p class="lead mono" style="word-break:break-all;background:rgba(5,9,18,.6);padding:14px;border-radius:14px">' + esc(key) + '</p><button class="btn mint" id="ck-copy">Copy it</button>');
+  const cc = $('#ck-copy'); if (cc) cc.addEventListener('click', () => { navigator.clipboard.writeText(key).then(() => toast('Copied'), () => toast('Copy it by hand')); });
+}
+
+function proveSheet(code, title) {
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>\ud83d\udd11</span></span><h2>Show it is yours</h2><span class="kicker mint">' + esc(title || conSlug) + '</span></div>' +
+    '<p class="body">Put this line anywhere in the project description on Giveth and save it. Gratus reads the page back and looks for it. You can take it out once the claim is through.</p>' +
+    '<p class="lead mono" style="word-break:break-all;background:rgba(5,9,18,.6);padding:14px;border-radius:14px">' + esc(code) + '</p>' +
+    '<div class="actions"><button class="btn" id="pv-copy">Copy the line</button>' +
+    '<a class="btn" href="https://giveth.io/project/' + esc(conSlug) + '" target="_blank" rel="noopener">Open it on Giveth \u2197</a></div>' +
+    '<button class="btn mint wide" id="pv-done">I have saved it \u00b7 finish the claim</button>' +
+    '<p class="cap">The code is public. The proof is that you could put it there.</p>');
+  const cp = $('#pv-copy', sh.el); if (cp) cp.addEventListener('click', () => { navigator.clipboard.writeText(code).then(() => toast('Copied'), () => toast('Copy it by hand')); });
+  $('#pv-done', sh.el).addEventListener('click', async () => {
+    const b = $('#pv-done', sh.el); b.disabled = true; b.textContent = 'Reading the page...';
+    try {
+      const done = await conProveNow();
+      if (done) sh.close();
+    } finally { b.disabled = false; b.textContent = 'I have saved it \u00b7 finish the claim'; }
+  });
+}
+
+async function conProveNow() {
+  if (!conProve || conProve.slug !== conSlug) { toast('Start the claim again for a fresh code.'); return false; }
+  try {
+    const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'claim-prove', project: conSlug, secret: conProve.secret }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.key) throw new Error(d.error || 'the claim was refused');
+    conKey = d.key; conProve = null;
+    try { localStorage.removeItem(PVK); localStorage.setItem(GVK, JSON.stringify({ slug: conSlug, key: conKey })); } catch (e) {}
+    keySheet(d.key); render();
+    return true;
+  } catch (e) { toast(String(e.message || e)); return false; }
+}
+
 async function conClaim() {
   if (!conSlug) { toast('Your project slug first.'); return; }
-  if (!confirm('Claim "' + conSlug + '"? The key is shown once. Do this only for a project you run.')) return;
+  if (conProve && conProve.slug === conSlug) { proveSheet(conProve.code, conProve.title); return; }
   try {
     const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'claim', project: conSlug }) });
-    const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'claim refused');
-    conKey = d.key; try { localStorage.setItem(GVK, JSON.stringify({ slug: conSlug, key: conKey })); } catch (e) {}
-    sheet('<h2>Your project key</h2><p class="body">Keep this. It waters seeds for <b>' + esc(conSlug) + '</b>, and it is shown once.</p><p class="lead mono" style="word-break:break-all;background:rgba(5,9,18,.6);padding:14px;border-radius:14px">' + esc(d.key) + '</p><button class="btn mint" id="ck-copy">Copy it</button>');
-    const cc = $('#ck-copy'); if (cc) cc.addEventListener('click', () => { navigator.clipboard.writeText(d.key).then(() => toast('Copied'), () => toast('Copy it by hand')); });
-    render();
+    const d = await r.json().catch(() => ({})); if (!r.ok || !d.code) throw new Error(d.error || 'claim refused');
+    conProve = { slug: conSlug, secret: d.secret, code: d.code, title: d.project || '' };
+    try { localStorage.setItem(PVK, JSON.stringify(conProve)); } catch (e) {}
+    proveSheet(d.code, d.project);
   } catch (e) { toast(String(e.message || e)); }
 }
 function waterSheet(seedId) {

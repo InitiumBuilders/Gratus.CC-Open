@@ -31,6 +31,12 @@ const RULES = [
   ['secret assignment', /(TOKEN|SECRET|PASSWORD|PASSPHRASE|API_KEY)\s*[:=]\s*["'][^"'\s]{12,}["']/, 'const SECRET = "decoydecoydecoy123"'],
 ];
 const FORBIDDEN_FILES = [/^\.env(\..*)?$/, /^\.vercel$/];
+// .env.example is the one file in that family a public repository should carry: it is how
+// somebody cloning this knows which secrets the code expects. It is allowed only while it
+// holds no values, which is a thing this gate can check rather than a filename it has to
+// trust. The docs gate requires the file; this one decides what may be in it.
+const envExampleIsSafe = (text) => !String(text).split('\n')
+  .some((l) => /^\s*[A-Z][A-Z0-9_]*\s*=\s*\S/.test(l));
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
@@ -47,7 +53,16 @@ function walk(dir, out = []) {
 function scan() {
   const hits = []; const fired = new Set();
   for (const e of walk(ROOT)) {
-    if (e.forbidden) { hits.push(`${e.forbidden}: forbidden file (env or vercel state)`); fired.add('forbidden file'); continue; }
+    if (e.forbidden) {
+      if (basename(e.forbidden) === '.env.example') {
+        let text = null;
+        try { text = readFileSync(join(ROOT, e.forbidden), 'utf8'); } catch (err) { text = null; }
+        if (text === null) { hits.push(`${e.forbidden}: could not be opened, so it has not been cleared`); fired.add('env.example unreadable'); continue; }
+        if (envExampleIsSafe(text)) continue;
+        hits.push(`${e.forbidden}: a value is filled in; this file carries names only`); fired.add('env.example with a value'); continue;
+      }
+      hits.push(`${e.forbidden}: forbidden file (env or vercel state)`); fired.add('forbidden file'); continue;
+    }
     const lines = readFileSync(e.file, 'utf8').split('\n');
     lines.forEach((line, i) => { for (const [name, re] of RULES) if (re.test(line)) { hits.push(`${e.rel}:${i + 1}: ${name} · ${line.trim().slice(0, 90)}`); fired.add(name); } });
   }
@@ -58,11 +73,21 @@ if (DECOY) {
   const dir = join(ROOT, '.decoys'); mkdirSync(dir, { recursive: true });
   RULES.forEach(([name, , decoy], i) => writeFileSync(join(dir, `decoy-${i}.txt`), decoy + '\n'));
   writeFileSync(join(ROOT, '.env.decoy'), 'X=1\n');
+  const realExample = existsSync(join(ROOT, '.env.example')) ? readFileSync(join(ROOT, '.env.example'), 'utf8') : null;
+  writeFileSync(join(ROOT, '.env.example'), '# a decoy\nGRATUS_SALT=this-is-a-real-looking-secret\n');
   const { fired } = scan();
+  if (realExample === null) rmSync(join(ROOT, '.env.example'), { force: true });
+  else writeFileSync(join(ROOT, '.env.example'), realExample);
+  // and now the other half: the real file, which holds names only, must pass
+  const after = scan().hits.filter((h) => h.includes('.env.example'));
   rmSync(dir, { recursive: true, force: true }); rmSync(join(ROOT, '.env.decoy'), { force: true });
-  const missed = RULES.map(([n]) => n).concat(['forbidden file']).filter((n) => !fired.has(n));
+  if (realExample !== null && after.length) {
+    console.log('open-source gate DECOY TEST: FAIL \u00b7 the real .env.example is being blocked: ' + after[0]);
+    process.exit(1);
+  }
+  const missed = RULES.map(([n]) => n).concat(['forbidden file', 'env.example with a value']).filter((n) => !fired.has(n));
   if (missed.length) { console.log('open-source gate DECOY TEST: FAIL · rules that did not fire:', missed.join(', ')); process.exit(1); }
-  console.log(`open-source gate DECOY TEST: PASS · ${RULES.length + 1} rules, every decoy caught`);
+  console.log(`open-source gate DECOY TEST: PASS · ${RULES.length + 2} rules, every decoy caught`);
   process.exit(0);
 }
 

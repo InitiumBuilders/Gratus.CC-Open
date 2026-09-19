@@ -14,20 +14,14 @@
 //   q=donors     the most recent gifts that arrived
 //   q=cats       Giveth's own main categories, for the directory
 
-const GIVETH = 'https://mainnet.serve.giveth.io/graphql';
+import { ask, ONE, DONATIONS, giftOf } from './_giveth.js';
+
 const LIST = `query($limit:Int,$skip:Int,$searchTerm:String,$filters:[FilterField!],$sortingBy:SortingField,$mainCategory:String){
   allProjects(limit:$limit, skip:$skip, searchTerm:$searchTerm, filters:$filters, sortingBy:$sortingBy, mainCategory:$mainCategory){
     totalCount
     projects{ id title slug verified isGivbackEligible descriptionSummary image totalDonations countUniqueDonors
       categories{ name mainCategory{ title } } }
   }
-}`;
-const ONE = `query($slug:String!){
-  projectBySlug(slug:$slug){ id title slug verified isGivbackEligible description descriptionSummary image
-    totalDonations countUniqueDonors totalReactions totalProjectUpdates website youtube impactLocation
-    updatedAt creationDate isQfActive organization{ name label } socialMedia{ type link }
-    categories{ name mainCategory{ title } } adminUser{ name }
-    addresses{ address networkId chainType isRecipient } }
 }`;
 const UPDATES = `query($projectId:Int!,$take:Int){
   getProjectUpdates(projectId:$projectId, take:$take, skip:0){
@@ -45,11 +39,6 @@ const SIMILAR = (slug, take) => `{
   similarProjectsBySlug(slug:"${slug}", take:${take}){
     projects{ id title slug verified isGivbackEligible descriptionSummary image totalDonations countUniqueDonors
       categories{ name mainCategory{ title } } }
-  }
-}`;
-const DONATIONS = `query($projectId:Int!,$take:Int){
-  donationsByProjectId(projectId:$projectId, take:$take, orderBy:{field:CreationDate, direction:DESC}){
-    donations{ transactionId valueUsd amount currency createdAt anonymous }
   }
 }`;
 const USER = `query($address:String!){
@@ -84,14 +73,6 @@ const trim = (p) => ({
   chains: Array.from(new Set((p.addresses || []).filter((a) => a.isRecipient).map((a) => CHAIN[a.networkId] || (a.chainType === 'SOLANA' ? 'Solana' : a.chainType === 'STELLAR' ? 'Stellar' : null)).filter(Boolean))),
 });
 
-async function ask(query, variables) {
-  const r = await fetch(GIVETH, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query, variables }) });
-  if (!r.ok) throw new Error('giveth ' + r.status);
-  const j = await r.json();
-  if (j.errors) throw new Error(j.errors[0] && j.errors[0].message);
-  return j.data;
-}
-
 export default async function handler(req, res) {
   const q = String(req.query.q || 'projects');
   res.setHeader('Cache-Control', q === 'confirm' ? 'no-store' : 'public, s-maxage=300, stale-while-revalidate=3600');
@@ -110,12 +91,10 @@ export default async function handler(req, res) {
       const slug = String(req.query.slug || '').slice(0, 120);
       const tx = String(req.query.tx || '').trim().toLowerCase().slice(0, 100);
       if (!slug || !tx) { res.status(400).json({ error: 'a slug and a transaction' }); return; }
-      const p = await ask(ONE, { slug });
-      if (!p.projectBySlug) { res.status(404).json({ error: 'no such project' }); return; }
-      const d = await ask(DONATIONS, { projectId: Number(p.projectBySlug.id), take: 300 });
-      const hit = (d.donationsByProjectId.donations || []).find((x) => String(x.transactionId || '').toLowerCase() === tx);
-      if (!hit) { res.status(200).json({ confirmed: false, note: 'Not among this project’s last 300 gifts on Giveth. A gift can take a few minutes to appear, and older ones fall outside this window.' }); return; }
-      res.status(200).json({ confirmed: true, gift: { amount: hit.amount, currency: hit.currency, usd: hit.valueUsd, at: hit.createdAt } });
+      const got = await giftOf(slug, tx);
+      if (!got.found) { res.status(404).json({ error: 'no such project' }); return; }
+      if (!got.confirmed) { res.status(200).json({ confirmed: false, note: got.note }); return; }
+      res.status(200).json({ confirmed: true, gift: got.gift });
       return;
     }
 

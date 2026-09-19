@@ -19,6 +19,12 @@ export async function del(p) { MEM.delete(p); }
 export async function head(p) { return MEM.has(p) ? { pathname: p } : null; }
 export const __MEM = MEM;
 
+// A gate may lend Giveth a voice, because the claim and the confirm are now decided by
+// what Giveth says and a gate that cannot answer for it cannot test either one. Nothing
+// is registered by default, so the rule below still holds: no gate reaches the internet.
+let GIVETH = null;
+export function __giveth(fn) { GIVETH = fn; }
+
 // the handlers read a blob back over fetch, so memory:// has to answer
 const realFetch = globalThis.fetch;
 globalThis.fetch = async (url, init) => {
@@ -28,6 +34,13 @@ globalThis.fetch = async (url, init) => {
     if (!MEM.has(key)) return { ok: false, status: 404, json: async () => ({}) };
     const body = MEM.get(key);
     return { ok: true, status: 200, json: async () => JSON.parse(body), text: async () => body };
+  }
+  if (u.startsWith('https://mainnet.serve.giveth.io')) {
+    if (!GIVETH) return { ok: false, status: 599, json: async () => ({ error: 'the gate blocked giveth; register one with __giveth()' }) };
+    let sent = {};
+    try { sent = JSON.parse((init && init.body) || '{}'); } catch (e) {}
+    const out = await GIVETH(sent);
+    return { ok: true, status: 200, json: async () => out, text: async () => JSON.stringify(out) };
   }
   // a gate must never reach the internet: anything else is refused out loud
   if (/^https?:/i.test(u)) {
