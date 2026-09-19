@@ -477,3 +477,17 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 #voice.on { background: rgba(255, 120, 120, .28); border-color: rgba(255, 150, 150, .7); color: #fff; }
 .actions { display: grid; gap: 10px; }
 .two { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+/* ── v13.1 · the word comes back under the logo, close, the whole group sitting in the bar ── */
+.tabs .bar { height: 88px; }
+.tabs button { height: 100%; }
+.tabs .star { align-content: center; gap: 3px; padding: 0; }
+.tabs .star .core { width: 52px; height: 52px; }
+.tabs .star .core img { width: 52px; height: 52px; }
+.tabs .star .core .ring { inset: -6px; border-radius: 37%; }
+.tabs .star .core .aura { inset: -6px; border-radius: 37%; }
+.tabs .star .core::after { inset: -14px; }
+.tabs .star span.lbl { display: block; transform: none; font-size: 14px; line-height: 18px; font-weight: 700; color: var(--ink); text-shadow: 0 1px 8px rgba(0, 0, 0, .8); }
+.tabs .star.on span.lbl { color: var(--violet-text); }
+.tabs { height: calc(104px + var(--sab)); }
+#view { padding-bottom: calc(126px + var(--sab)); }
+.hero.home { padding-bottom: calc(154px + var(--sab)); }
