@@ -214,9 +214,26 @@ const inline = ['index.html', 'app.html', 'privacy.html', 'terms.html']
   .filter((f) => fs.existsSync(path.join(root, f)) && /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?\S/.test(rd(f)));
 say(!inline.length, 'no page carries an inline script' + (inline.length ? ' (' + inline.join(', ') + ')' : ''));
 
-// ── 8 · the friendly branch that could never run ──
-const gv = rd('api/_giveth.js');
-say(/if \(!data/.test(gv) && !/if \(j\.errors\) throw/.test(gv), 'an answer carrying both errors and data is still an answer');
+// ── 8 · a project that does not exist, and a slug in the wrong case ──
+// Giveth's real words for both, copied from the live API on 2026-09-19:
+//   {"errors":[{"message":"Project not found."}],"data":null}
+// It is case sensitive, and fifty of fifty projects sampled from its own list carry a
+// capital, so a handler that lower cases a slug before asking can never find anything.
+__giveth((sent) => {
+  const vars = sent.variables || {};
+  if (vars.slug && vars.slug !== 'Tree-Project') return { errors: [{ message: 'Project not found.' }], data: null };
+  const q = String(sent.query || '');
+  if (q.includes('projectBySlug')) return { data: { projectBySlug: { id: '77', title: 'Tree Project', slug: 'Tree-Project', description: 'nothing here yet', descriptionSummary: '' } } };
+  return { data: { donationsByProjectId: { donations: [] } } };
+});
+const missing = await call(trace, post({ act: 'claim', project: 'no-such-project-at-all' }, '10.7.7.1'));
+say(missing.code === 404, 'a project Giveth does not have is a 404 and not an outage  (got ' + missing.code + ')');
+say(!/unreachable|could not be reached/i.test(String(missing.body && missing.body.error)), 'and the person is told the truth about it  (' + String(missing.body && missing.body.error).slice(0, 60) + ')');
+
+const cased = await call(trace, post({ act: 'claim', project: 'Tree-Project' }, '10.7.7.2'));
+say(cased.code === 200 && !!cased.body.code, 'a slug is carried to Giveth in the case it was written in  (got ' + cased.code + ')');
+const flattened = await call(trace, post({ act: 'claim', project: 'tree-project' }, '10.7.7.3'));
+say(flattened.code === 404, 'and the lower cased spelling is the one Giveth refuses  (got ' + flattened.code + ')');
 
 console.log('G-II integrity: ' + (fails ? 'FAIL - ' + fails : 'PASS'));
 process.exit(fails ? 1 : 0);

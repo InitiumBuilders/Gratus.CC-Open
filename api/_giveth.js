@@ -22,20 +22,23 @@ export const DONATIONS = `query($projectId:Int!,$take:Int){
   }
 }`;
 
-// A GraphQL answer can carry errors AND the data that was asked for. This used to throw
-// on the errors alone and drop the answer with them, which is why the friendly "no such
-// project" reply further down had never once run: an unknown slug comes back as
-// { data: { projectBySlug: null }, errors: [...] }, and the throw beat the 404 to it.
-// Now the errors only decide anything when there is no data to read.
+// Giveth answers a project that does not exist by putting "Project not found." in errors
+// and null in data. That is an answer. Reading it as a failure is why the friendly "no
+// such project" reply further down had never once run: the throw beat the 404 to it, and
+// somebody who mistyped a slug was told the whole of Giveth was unreachable.
+//
+// Measured against the live API rather than assumed, after a first repair that handled a
+// shape Giveth does not send.
+const NOT_FOUND = /not\s*found/i;
 export async function ask(query, variables) {
   const r = await fetch(GIVETH, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query, variables }) });
   if (!r.ok) throw new Error('giveth ' + r.status);
   const j = await r.json();
   const data = j && j.data;
-  if (!data || typeof data !== 'object' || !Object.keys(data).length) {
-    throw new Error((j && j.errors && j.errors[0] && j.errors[0].message) || 'giveth returned nothing');
-  }
-  return data;
+  if (data && typeof data === 'object' && Object.keys(data).length) return data;
+  const said = (j && j.errors && j.errors[0] && j.errors[0].message) || '';
+  if (NOT_FOUND.test(said)) return {};            // asked and answered: there is no such thing
+  throw new Error(said || 'giveth returned nothing');
 }
 
 // The project's own page, as Giveth holds it. Used to check that whoever is claiming a

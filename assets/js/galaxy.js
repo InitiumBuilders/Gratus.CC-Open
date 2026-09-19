@@ -811,7 +811,8 @@ function viewConsole() {
   return hero(scene('console'), { cls: 'room-hero', h1: 'Project Console', k1: 'The seeds people planted with their gifts.', k2: 'Read them. Water them.' }) +
     '<div class="page">' +
     '<div class="glass card"><span class="kicker mint">Your project</span>' +
-    '<input class="field" id="con-slug" placeholder="your project slug" aria-label="project slug" value="' + esc(conSlug) + '">' +
+    '<input class="field" id="con-slug" placeholder="your project address on Giveth" aria-label="project address on Giveth" value="' + esc(conSlug) + '">' +
+    '<p class="cap">The last part of your project\u2019s Giveth link, copied exactly. Capitals matter.</p>' +
     '<input class="field" id="con-key" placeholder="your project key" aria-label="project key" value="' + esc(conKey) + '">' +
     '<div class="actions"><button class="btn mint" id="con-open">Open the feed</button><button class="btn" id="con-claim">Claim this project</button></div>' +
     '<p class="cap">The key waters seeds for one project. Claiming shows it once, and only a hash of it is kept. This is a light claim, not verification: real verification lives on Giveth.</p></div>' +
@@ -898,7 +899,7 @@ function waterSheet(seedId) {
     '<input class="field" id="wt-from" maxlength="40" placeholder="your name or the project\'s" aria-label="from" value="' + esc(s.title || conSlug) + '">' +
     '<span class="kicker gold">Pass it on, if you like</span>' +
     '<p class="cap">Name a Giveth project you are grateful for. The person who gave to you sees it, and can carry the flow onward.</p>' +
-    '<input class="field" id="wt-pass" maxlength="120" placeholder="their Giveth slug, e.g. earth-commons" aria-label="a project you are grateful for">' +
+    '<input class="field" id="wt-pass" maxlength="120" placeholder="their Giveth address, copied exactly" aria-label="a project you are grateful for">' +
     '<input class="field" id="wt-why" maxlength="140" placeholder="why them, in a line" aria-label="why">' +
     '<button class="btn mint wide" id="wt-send">Send it · their seed blooms</button>', { autofocus: true });
   $('#wt-send', sh.el).addEventListener('click', async () => {
@@ -1787,7 +1788,9 @@ function wire() {
   const gvl = $('#gv-learn'); if (gvl) gvl.addEventListener('click', givethLearnSheet);
   const gvc = $('#gv-console'); if (gvc) gvc.addEventListener('click', () => go('give', 'console'));
   $$('[data-seed]').forEach((b) => b.addEventListener('click', () => mySeedSheet(b.dataset.seed)));
-  const cs = $('#con-slug'); if (cs) cs.addEventListener('input', () => { conSlug = cs.value.trim().toLowerCase(); });
+  // lower casing what they type used to be harmless and is not any more: Giveth looks a
+  // project up by the exact spelling of its slug, capitals and all.
+  const cs = $('#con-slug'); if (cs) cs.addEventListener('input', () => { conSlug = cs.value.trim(); });
   const ck = $('#con-key'); if (ck) ck.addEventListener('input', () => { conKey = ck.value.trim(); });
   const co = $('#con-open'); if (co) co.addEventListener('click', conLoad);
   const cl = $('#con-claim'); if (cl) cl.addEventListener('click', conClaim);

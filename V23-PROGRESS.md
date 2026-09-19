@@ -186,11 +186,29 @@ that no longer exists, including that a claim answers 403, which is now the wron
 G-II asserts all five and thirty-six more against what is there now. The old file is in
 `attic/`.
 
-**What I got wrong on the way.** The first browser walk passed while every app view held
-fifty-six characters of text: the doorway ceremony was still on screen and fifty-six
-cleared the floor I had set. A floor low enough for the splash to pass is not a floor.
-It goes through the same door the other gates use now and asks for real text, and the
-walk is a gate of its own, G27.
+**What I got wrong on the way, three times.**
+
+The first browser walk passed while every app view held fifty-six characters of text: the
+doorway ceremony was still on screen and fifty-six cleared the floor I had set. A floor
+low enough for the splash to pass is not a floor. It goes through the same door the other
+gates use now and asks for real text, and the walk is a gate of its own, G27.
+
+I repaired the Giveth not-found branch against a shape Giveth does not send. I had it
+answering a missing project with `data` and `errors` together; it actually answers with
+`data: null` and `"Project not found."`, which my repair still read as an outage. The
+first ship went out with the friendly branch as unreachable as it had ever been, and I
+found it by asking the live API instead of my model of it. The gate asserted the shape of
+the source, which is why it went green over a live 502. It asks the handler now, with
+Giveth answering the words the live API answers.
+
+Then the one that would have broken the feature outright: **`projectBySlug` is case
+sensitive, and fifty of fifty live projects sampled from Giveth's own list have a capital
+in their slug.** The trace lower cases every slug, which was harmless while it only used
+the slug to name a document, and stopped being harmless the moment the claim and the
+confirm started asking Giveth about it. Every real project would have been told it does
+not exist. There are two addresses now: the one Giveth is asked with, spelled as Giveth
+spells it, and the lower cased one the store files under, which keeps every document
+written so far exactly where it is.
 
 ---
 
@@ -218,3 +236,6 @@ Newest last. One line per meaningful step, with the command that proved it.
 - `node scripts/gates/banned.mjs` → caught "come back" in my own note; reworded, not exempted
 - `node scripts/gates/slop.mjs` → caught a word in my own comment that the rule reads as the verb meaning emphasise. I meant the `_` character, so the comment uses the character
 - `node scripts/gates/v23.mjs --fast` → the remaining reds are movements III to VII, which is their job
+- live probe after the first ship → the policy, the refusals and the worker all correct, and a mistyped slug answering **502**
+- asked Giveth directly → `{"errors":[{"message":"Project not found."}],"data":null}`, and `CARE-PERU` resolves while `care-peru` does not
+- `mutate.py` → **19/19 KILLED** with M42 (the flattened slug) and M43 (not-found read as an outage) added, M38 removed as the same defect aimed at a line that no longer exists

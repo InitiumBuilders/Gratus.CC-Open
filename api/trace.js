@@ -28,7 +28,8 @@ const TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 const KEY = (slug) => 'gratus/trace/' + slug + '.json';
 const PAGE = (slug, n) => 'gratus/trace/' + slug + '/p' + n + '.json';
 const clip = (v, n) => (typeof v === 'string' ? v : '').replace(/[<>]/g, '').trim().slice(0, n);
-const slugOf = (v) => clip(v, 120).toLowerCase().replace(/[^a-z0-9:-]/g, '');
+const asGiveth = (v) => clip(v, 120).replace(/[^A-Za-z0-9:_-]/g, '');   // as Giveth spells it
+const slugOf = (v) => asGiveth(v).toLowerCase();                        // as the store files it
 const sha = (s) => createHash('sha256').update(String(s)).digest('hex');
 const id = () => randomBytes(8).toString('hex');
 const DAY = 86400000;
@@ -130,7 +131,8 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') { res.status(405).json({ error: 'GET or POST' }); return; }
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const act = String(body.act || 'plant');
-    const slug = slugOf(body.project);
+    const given = asGiveth(body.project);
+    const slug = given.toLowerCase();
     if (!slug) { res.status(400).json({ error: 'a project' }); return; }
     const doc = await read(slug);
     const now = Date.now();
@@ -194,7 +196,7 @@ export default async function handler(req, res) {
       const tx = clip(body.tx, 100).toLowerCase() || seed.tx;
       if (!tx) { res.status(400).json({ error: 'a transaction' }); return; }
       let got;
-      try { got = await giftOf(slug, tx); }
+      try { got = await giftOf(given, tx); }
       catch (e) { res.status(503).json({ error: 'Giveth could not be reached to check that gift. Nothing was written.' }); return; }
       if (!got.confirmed) { res.status(200).json({ confirmed: false, note: got.note }); return; }
       seed.tx = tx;
@@ -219,9 +221,9 @@ export default async function handler(req, res) {
       if (doc.claim) { res.status(409).json({ error: 'this project is already claimed' }); return; }
       if (!allow(doc, whoOf(req), CAP_CLAIM)) { res.status(429).json({ error: 'that is enough claim attempts for one day' }); return; }
       let page;
-      try { page = await pageOf(slug); }
+      try { page = await pageOf(given); }
       catch (e) { res.status(503).json({ error: 'Giveth could not be reached to check that project. Try again shortly.' }); return; }
-      if (!page) { res.status(404).json({ error: 'Giveth has no project with that address' }); return; }
+      if (!page) { res.status(404).json({ error: 'Giveth has no project at that address. It is spelled exactly as it appears in the project’s own link, capitals included.' }); return; }
       const code = 'gratus-' + randomBytes(5).toString('hex');
       const secret = randomBytes(12).toString('base64url');
       doc.pending = (doc.pending || []).filter((p) => now - new Date(p.at).getTime() < PROVE_MS).slice(-4)
@@ -239,7 +241,7 @@ export default async function handler(req, res) {
       const pend = (doc.pending || []).find((p) => p.secret === sha(secret) && now - new Date(p.at).getTime() < PROVE_MS);
       if (!pend) { res.status(403).json({ error: 'that proof has run out. Start the claim again for a fresh code.' }); return; }
       let page;
-      try { page = await pageOf(slug); }
+      try { page = await pageOf(given); }
       catch (e) { res.status(503).json({ error: 'Giveth could not be reached to read that project. Nothing was claimed.' }); return; }
       if (!page) { res.status(404).json({ error: 'Giveth has no project with that address' }); return; }
       const said = (page.title + ' ' + page.description + ' ' + page.summary).toLowerCase();
@@ -261,7 +263,7 @@ export default async function handler(req, res) {
       if (!reply) { res.status(400).json({ error: 'a reply needs a few words' }); return; }
       seed.water = {
         reply, from: clip(body.from, 40) || seed.title || 'the project', at: new Date().toISOString(),
-        passTo: slugOf(body.passTo) || null, passWhy: clip(body.passWhy, 140) || null,
+        passTo: asGiveth(body.passTo) || null, passWhy: clip(body.passWhy, 140) || null,
       };
       seed.status = 'bloomed';
       await write(slug, doc);
