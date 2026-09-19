@@ -194,6 +194,23 @@ function viewGuides() {
 }
 // ══ GRATUS VIBES · the small rooms ══════════════════════════════════════════════════════════
 let vibeNow = null, vibeState = 'idle';
+// What a room holds is on the server; what you have read is on your device.
+// vibeCounts is the first half, x.seen the second, and the difference is the mark.
+// Six rooms at most per look, because this is a courtesy, not a service.
+let vibeCounts = null;
+const vibeUnread = (x) => { const n = vibeCounts && vibeCounts[x.code]; return typeof n === 'number' ? Math.max(0, n - (Number(x.seen) || 0)) : 0; };
+async function loadVibeCounts() {
+  if (!S.vibes.length) return;
+  const out = {};
+  await Promise.all(S.vibes.slice(-6).map(async (x) => {
+    try {
+      const r = await fetch('/api/vibes?code=' + encodeURIComponent(x.code), { cache: 'no-store' });
+      if (!r.ok) return; const d = await r.json();
+      if (d && d.vibe) out[x.code] = Number(d.vibe.count) || 0;
+    } catch (e) {}
+  }));
+  vibeCounts = out; if (sub === 'vibes') render();
+}
 async function loadVibe(code, quiet) {
   if (!code) return; vibeState = 'loading'; if (!quiet && sub === 'vibes') render();
   try {
@@ -201,15 +218,19 @@ async function loadVibe(code, quiet) {
     const d = await r.json().catch(() => ({}));
     if (!r.ok || !d.vibe) throw new Error(d.error || 'no answer');
     vibeNow = d.vibe; vibeState = 'live';
-    const mine = S.vibes.find((v) => v.code === code); if (mine) { mine.name = d.vibe.name; save(); }
+    const mine = S.vibes.find((v) => v.code === code); if (mine) { mine.name = d.vibe.name; mine.seen = Number(d.vibe.count) || 0; save(); }
+    if (vibeCounts) vibeCounts[code] = Number(d.vibe.count) || 0;
   } catch (e) { vibeState = 'offline'; }
   if (sub === 'vibes') render();
 }
+const unreadRooms = () => S.vibes.filter((x) => vibeUnread(x) > 0).length;
 function viewVibes() {
   const v = vibeNow;
+  if (vibeCounts === null && S.vibes.length) loadVibeCounts();
   return hero(scene('vibes'), { cls: 'room-hero', h1: 'Gratus Vibes', k1: 'The small rooms.', k2: 'A few people. One feed. Gratitude out loud.' }) +
     '<div class="page">' +
-    (S.vibes.length ? '<div class="chips row">' + S.vibes.map((x) => '<button class="chip' + (v && v.code === x.code ? ' on' : '') + '" data-vopen="' + esc(x.code) + '">' + esc(x.emoji || '✦') + ' ' + esc(x.name || x.code) + '</button>').join('') + '</div>' : '') +
+    (S.vibes.length ? '<div class="chips row">' + S.vibes.map((x) => '<button class="chip' + (v && v.code === x.code ? ' on' : '') + '" data-vopen="' + esc(x.code) + '">' + esc(x.emoji || '✦') + ' ' + esc(x.name || x.code) + (vibeUnread(x) ? '<i class="dot"></i>' : '') + '</button>').join('') + '</div>' : '') +
+    (unreadRooms() ? '<p class="vibeline"><i class="vibemark"></i>' + (unreadRooms() === 1 ? 'One of your rooms has words you have not read.' : unreadRooms() + ' of your rooms have words you have not read.') + '</p>' : '') +
     (!v ? '<div class="glass card"><span class="kicker mint">What a Vibe is</span><p class="body">A small room with a name and a code. Anyone holding the code is in it. People post short gratitudes there with an emoji from their own garden, and that is all that travels: your journal stays on your device.</p>' +
       '<div class="two"><input class="field" id="vb-code" maxlength="12" placeholder="e.g. K7M2QP" aria-label="a vibe code"><button class="btn" id="vb-join">Go in</button></div>' +
       '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' +
@@ -427,7 +448,9 @@ async function loadCats() {
 const money = (n) => n >= 1000000 ? '$' + (n / 1000000).toFixed(1) + 'M' : n >= 1000 ? '$' + Math.round(n / 1000) + 'k' : '$' + Math.round(n || 0);
 function projectRow(p) {
   return '<button class="glass gvp" data-gv="' + esc(p.slug) + '">' +
-    '<span class="gvp-art">' + (p.image ? '<i class="gvp-wash" style="background-image:url(' + JSON.stringify(esc(p.image)) + ')"></i><img src="' + esc(p.image) + '" alt="" loading="lazy">' : '<span class="gvp-none">' + esc(p.bloom) + '</span>') + '</span>' +
+    '<span class="gvp-art">' + (p.image ? '<i class="gvp-wash" style="background-image:url(' + JSON.stringify(esc(p.image)) + ')"></i>' : '') +
+      '<span class="gvp-none">' + esc(p.bloom) + '</span>' +
+      (p.image ? '<img src="' + esc(p.image) + '" alt="" loading="lazy">' : '') + '</span>' +
     '<span class="gvp-words"><b>' + esc(p.title) + '</b>' +
     (p.donors === 0 ? '' : '<span class="gvp-stat"><b>' + money(p.raised) + '</b> raised · <b>' + (Number(p.donors) || 0).toLocaleString() + '</b> ' + (p.donors === 1 ? 'donor' : 'donors') + '</span>') +
     '<span class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks</i>' : p.verified ? '<i class="gvt">Verified</i>' : '') +

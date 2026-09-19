@@ -168,3 +168,8 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 126. **Five things do not wrap two, two and one.** The phase legend is one scrolled row on every width. An orphan alone on its own line is the symmetry law being broken quietly.
 127. **The money on a project card gets its own line.** Putting it in a chip beside the others pushed the row to two lines on almost every project.
 128. **An endpoint that spends money has a ceiling, and the ceiling is taken before the spend.** Voice: forty recordings per device per day, six hundred across everyone, reserved ahead of the call to ElevenLabs. A limit applied after the money is gone is not a limit.
+
+## v21 — FOURTEEN PIXELS, AND A ROOM THAT ANSWERS (2026-09-19)
+129. **A full-bleed fixed layer is one viewport wide, and a viewport includes the scrollbar.** That is where the landing page's fourteen extra pixels came from, and no card was at fault. The document clips its horizontal axis. The audit that finds real runaways measures elements against the client width directly, so the net can never hide the reading.
+130. **A frame waiting on a picture holds something.** A project's bloom on a soft ground, until the image arrives from IPFS and paints over it. An empty black rectangle is the worst thing a card can show.
+131. **A room can be returned to.** A Vibe carries a mark when it holds words you have not read: the count is the server's, the reading is the device's, and the difference is the mark. Not a notification, not a presence word, and it never says anything about how long you were away.

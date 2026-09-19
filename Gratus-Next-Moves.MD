@@ -10,7 +10,7 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 
 ## The next big moves
 
-- **A Vibe should let you know it is alive.** Not a notification and not a presence word: a mark on the room's chip when there are words you have not read. This is the missing half of the return loop.
+- ~~**A Vibe should let you know it is alive.**~~ Shipped in v21: a mark on the room and a line above the rooms when it holds words you have not read. What the room holds is on the server, what you have read is on your device, and the difference is the mark. Still open: it is read when you are looking at the Vibes room, not while you are elsewhere.
 - **A Vibe's own Passage.** What the room grew together, as a link.
 
 

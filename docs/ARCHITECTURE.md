@@ -49,7 +49,7 @@ Planting, reaching a phase, making a recipe and harvesting each open through the
 
 ## Gratus Vibes
 
-`api/vibes.js` keeps one JSON document per room in Vercel Blob at `gratus/vibes/<code>.json`: a name, a line about it, a mark, and the posts. A code is six characters from a 32-letter alphabet with no ambiguous glyphs, because it is read aloud and typed by hand. `make` returns the code and a keeper key, shown once, whose sha-256 is stored; the keeper can take a post down. `post` writes a short gratitude with a name and an emoji, capped at 400 a day and 400 kept, with a two-minute dedupe. On the device, `S.vibes` holds the rooms a person has joined. A vibe link is `/app/vibes?code=XXXXXX`.
+`api/vibes.js` keeps one JSON document per room in Vercel Blob at `gratus/vibes/<code>.json`: a name, a line about it, a mark, and the posts. A code is six characters from a 32-letter alphabet with no ambiguous glyphs, because it is read aloud and typed by hand. `make` returns the code and a keeper key, shown once, whose sha-256 is stored; the keeper can take a post down. `post` writes a short gratitude with a name and an emoji, capped at 400 a day and 400 kept, with a two-minute dedupe. On the device, `S.vibes` holds the rooms a person has joined, each with a `seen` count: what the room holds is on the server, what you have read is on your device, and the difference is the mark that says a room has words you have not read. At most six rooms are asked at a time, because this is a courtesy and not a service. A vibe link is `/app/vibes?code=XXXXXX`.
 
 ## The Passage
 

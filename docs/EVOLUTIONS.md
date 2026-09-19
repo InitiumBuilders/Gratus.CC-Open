@@ -2,6 +2,13 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v21 · Fourteen pixels, and a room that answers (2026-09-19)
+
+- **The landing page was 389 pixels wide inside a 375 pixel window.** Not a card: the fixed star layer, which is one viewport width, and a viewport width includes the scrollbar gutter. The document now clips its horizontal axis.
+- **A project's frame is never an empty black band** while its picture travels from IPFS. The project's own bloom sits on a soft ground until the image paints over it.
+- **A Vibe tells you it holds words you have not read.** A mark on the room, and a line above the rooms. It is the other half of the loop: until now a room could only be spoken into, never returned to.
+- The overflow audit is committed at `scripts/audit/overflow.js`, so the reading is repeatable rather than remembered.
+
 ## v20 · The refining pass (2026-09-19)
 
 - **A digit reads as a digit.** The display face ships oldstyle figures, so `1` drew as a small capital I and `0` as an O. The garden said "I plant · O ready to give" and the journal said "I day · I entry". Lining, tabular figures everywhere.

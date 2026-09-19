@@ -761,3 +761,26 @@ a.gpill { color: #1E2A10; }
 /* an example room, shown before you are in one */
 .sample { position: relative; }
 .sample .vpost { border-style: dashed; border-color: rgba(185, 255, 228, .28); }
+
+/* ═══ v21 · the landing's fourteen pixels, and a card that is never a black band ═══ */
+
+/* The landing measured 389 wide inside a 375 viewport. The cause was not a card:
+   it was the fixed star layer, which is inset: 0 and therefore one hundred
+   viewport widths, and a viewport width INCLUDES the scrollbar gutter. Clipping
+   the horizontal axis on the document is the remedy for that whole class.
+   It is a net, not an excuse: the audit in scripts/audit/overflow.js measures
+   elements against clientWidth directly, so a real runaway is still caught. */
+html { overflow-x: clip; }
+
+/* A project's picture arrives over IPFS. Until it does, the frame holds the
+   project's own bloom on a soft ground, never an empty black rectangle. */
+.gvp .gvp-art { background: radial-gradient(circle at 50% 42%, rgba(110, 217, 192, .16), rgba(10, 16, 24, 1) 72%); }
+.gvp .gvp-art img { z-index: 2; }
+.gvp .gvp-none { z-index: 1; background: none; }
+
+/* a room holding words you have not read */
+.chip .dot, .vibemark {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  background: #B9FFE4; box-shadow: 0 0 10px rgba(185, 255, 228, .9); flex: none;
+}
+.vibeline { display: flex; align-items: center; gap: 9px; font-size: 15px; line-height: 21px; font-weight: 600; color: #B9FFE4; }
