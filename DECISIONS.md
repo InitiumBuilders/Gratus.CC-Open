@@ -205,3 +205,6 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 ## v28 — THE STANDING, BEFORE ANYTHING IS STANDING (2026-09-19)
 148. **A panel that explains the thing hides itself from the person who needs explaining to.** The standing returned nothing when the garden was empty, so it never appeared for a first visit. It now stands at zero and says what a first word does.
 149. **A lesson about an instrument is not a lesson about the code.** v27 recorded that an observer never fired. The observer was very likely fine; the pane driving it dispatches no event for a scripted scroll. The record was corrected rather than quietly left standing, because a public repository that carries a wrong technical claim teaches it to whoever reads it next.
+
+## v29 — AN AUDIT THAT CRIES WOLF IS AN AUDIT NOBODY RUNS (2026-09-19)
+150. **A parent that clips is as safe as a parent that scrolls.** The overflow audit skipped parents with a sideways scroll and not parents that hide or clip, so it reported every blurred wash behind a project picture, each of which is inset past its own frame on purpose and cannot widen anything. A tool that reports work where there is none stops being read.

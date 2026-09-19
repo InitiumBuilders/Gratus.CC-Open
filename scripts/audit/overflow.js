@@ -9,9 +9,9 @@
 // itself. A net that hides the reading would make the reading useless.
 //
 // The culprit is the element whose right edge is past the viewport while its
-// parent's is not. Parents that scroll sideways on purpose are skipped, and so
-// are fixed layers, which are one viewport width by definition and include the
-// scrollbar gutter.
+// parent's is not. Parents that scroll or clip are skipped, because nothing
+// inside either can widen the document, and so are fixed layers, which are one
+// viewport width by definition and include the scrollbar gutter.
 (() => {
   const d = document.documentElement, w = d.clientWidth, out = [];
   for (const el of document.querySelectorAll('body *')) {
@@ -23,7 +23,11 @@
     if (!p) continue;
     const pr = p.getBoundingClientRect();
     if (pr.right > w + 1) continue;                       // the parent is already guilty
-    if (/auto|scroll/.test(getComputedStyle(p).overflowX)) continue;  // scrolls on purpose
+    // A parent that scrolls sideways on purpose is fine, and so is one that CLIPS:
+    // nothing inside either can widen the document. Missing the clipping case made
+    // this report every blurred wash behind a project picture, which is inset past
+    // its own frame by design. An audit that cries wolf is an audit nobody runs.
+    if (/auto|scroll|hidden|clip/.test(getComputedStyle(p).overflowX)) continue;
     out.push({
       el: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).trim().replace(/\s+/g, '.') : ''),
       right: Math.round(r.right), over: Math.round(r.right - w), minWidth: cs.minWidth,

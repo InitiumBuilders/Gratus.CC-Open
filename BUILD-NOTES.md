@@ -146,3 +146,6 @@ The owner asked for notes as we go: *"so we can keep progress reports and learn 
 
 ## v28 — THE STANDING, BEFORE ANYTHING IS STANDING (2026-09-19)
 **What changed:** `standingBlock()` returns an empty-garden standing instead of an empty string; a v28 CSS block for its ring at zero; the v27 note in this file carries a correction. **Verified:** rendered with the garden cleared on the live build. **Lesson:** every block in this app that starts with a guard returning nothing is worth re-reading as the first thing a new person does or does not see. This one had been invisible on the most common first visit since the day it was written, which was earlier the same day.
+
+## v29 — AN AUDIT THAT CRIES WOLF IS AN AUDIT NOBODY RUNS (2026-09-19)
+**What changed:** `scripts/audit/overflow.js` now skips parents whose `overflow-x` is hidden or clip as well as auto or scroll. **Verified:** the Giveth list reported three culprits before the change and the document was exactly 375 wide the whole time, which is what identified them as false. **Lesson:** I wrote this audit two versions ago and then believed its output over a measurement that disagreed with it. The document width and the culprit list cannot both be right; when they disagree, the instrument is the thing to check.
