@@ -198,3 +198,6 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 144. **Depth is bought with opacity and transform, never with a blur.** A blurred full screen fixed layer costs on every frame it is composited, and this one is on screen for the whole session. Fading the scene toward the ground colour and widening it very slightly reads as the same recession and costs nothing.
 145. **Never buy an effect with the hero's contrast.** Turning the scrim down to brighten the scene would have made the words over it harder to read, and the contrast gate cannot see that, because it cannot see what is behind an image. The effect went on the layer instead.
 146. **Actions of different kinds do not sit in one row.** Sharing a room's code and sharing what it grew belong together; leaving is a different act and sits apart and quiet.
+
+## v27 — AN EFFECT YOU CAN PROVE IS RUNNING (2026-09-19)
+147. **An effect nobody can prove is running has no business shipping.** The depth pass hung on an IntersectionObserver watching a one pixel mark inside a container that clips, and no observation was ever delivered. It was replaced with a passive scroll read that can be driven and measured from outside. Cheapness is worth less than being checkable.

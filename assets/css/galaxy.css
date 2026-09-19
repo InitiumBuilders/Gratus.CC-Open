@@ -850,9 +850,6 @@ html { overflow-x: clip; }
 #scene .layer { transition: opacity 1.4s ease, transform 1.1s var(--ease); }
 body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 
-/* the hero's own end, one pixel, absolutely placed so the hero's two-row grid is
-   untouched. `.hero > :not(.art)` would otherwise make it relative and add a row. */
-.hero > .depth-mark { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: 0; }
 
 /* a room's three actions: the two that share sit together, and leaving sits
    apart and quiet, because it is a different kind of act */

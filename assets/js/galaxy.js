@@ -105,17 +105,28 @@ function choreograph() { const h = document.documentElement; h.classList.remove(
 // a blur, because a blur across a full screen layer is paid for on every frame
 // the layer is composited and this one is on screen for the whole session.
 // One observer, two states, no scroll handler.
-let depthIO = null;
+// The first build watched a one pixel mark at the hero's end with an
+// IntersectionObserver, because a scroll handler sounded expensive. It was never
+// seen to fire, and an effect nobody can prove is running has no business
+// shipping. This reads one number off one scroll event and compares it with a
+// boolean; when the boolean has not changed it does nothing at all, which is
+// almost every event. Cheap enough, and it can be watched from outside.
+let depthOff = null;
 function depthWatch(root) {
-  if (depthIO) { depthIO.disconnect(); depthIO = null; }
+  if (depthOff) { window.removeEventListener('scroll', depthOff); depthOff = null; }
   document.body.classList.remove('deep');
   if (!motionOk()) return;
-  const mark = $('.depth-mark', root || document);
-  if (!mark) return;
-  depthIO = new IntersectionObserver((entries) => {
-    for (const e of entries) document.body.classList.toggle('deep', !e.isIntersecting && e.boundingClientRect.top < 0);
-  }, { threshold: 0 });
-  depthIO.observe(mark);
+  const hero = $('.hero', root || document);
+  if (!hero) return;
+  const at = Math.max(120, hero.getBoundingClientRect().height * .72);
+  let now = false;
+  depthOff = () => {
+    const d = window.scrollY > at;
+    if (d === now) return;
+    now = d; document.body.classList.toggle('deep', d);
+  };
+  window.addEventListener('scroll', depthOff, { passive: true });
+  depthOff();
 }
 function stars() { const el = $('.stars'); if (!el || el.children.length) return; let s = ''; for (let i = 0; i < 70; i++) s += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>'; el.innerHTML = s; }
 
@@ -129,8 +140,7 @@ function hero(sceneName, o) {
   setScene(sceneName);
   return '<section class="hero' + (o.cls ? ' ' + o.cls : '') + '">' +
     '<div class="top-words">' + (o.brand ? '<div class="brandrow in" style="--i:0"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname">Gratus.CC</span><span class="kicker">' + esc(o.brand) + '</span></div>' : '') + (o.h1 ? '<h1 class="in" style="--i:0">' + esc(o.h1) + '</h1>' : '') + (o.k1 ? '<span class="kicker mint in" style="--i:1">' + esc(o.k1) + '</span>' : '') + (o.k2 ? '<span class="kicker in" style="--i:1">' + esc(o.k2) + '</span>' : '') + '</div>' +
-    '<div class="low">' + (o.low || '') + '</div>' +
-    '<i class="depth-mark" aria-hidden="true"></i></section>';
+    '<div class="low">' + (o.low || '') + '</div></section>';
 }
 const INTROS = { give: { src: 'give-intro', flood: 12.6, hard: 14500 }, grow: { src: 'grow-intro', flood: 9.6, hard: 11500 } };
 let booted = false, introOn = false;

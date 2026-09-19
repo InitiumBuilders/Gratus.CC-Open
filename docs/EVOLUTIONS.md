@@ -2,6 +2,10 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v27 · An effect you can prove is running (2026-09-19)
+
+- **Depth changed hands.** It watched a one pixel mark at the hero's end with an IntersectionObserver, and that observer was never once seen to deliver. It now reads the scroll position and compares it with a boolean, doing nothing at all when the boolean has not changed, which is almost every event. The effect is the same and it can be watched from outside.
+
 ## v26 · Depth (2026-09-19)
 
 - **The scene steps back when you start reading.** Past the hero the background fades toward the ground colour and drifts very slightly wider, the way a background falls out of focus when you look at something nearer. It is opacity and transform on the scene layer, never a blur, because a blur across a full screen fixed layer is paid for on every frame it is composited and this one is there for the whole session.
