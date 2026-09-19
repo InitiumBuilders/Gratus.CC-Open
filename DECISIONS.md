@@ -193,3 +193,8 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 ## v25 — FIVE IS A LIST OF FIVE (2026-09-19)
 142. **A chain of conditions needs a case for every branch, not a catch-all at the end.** The plain "Kept." card sat on a final `else`, so a crossing with no emoji change fell through to it and undid the moment one second later. It now has its own condition: no plant, no crossing, just a word.
 143. **Anything that comes in fives is written down the page.** Wrapped across a row it lands two, two and one, and the fifth is orphaned. This is the same law the phase legend needed in v20.
+
+## v26 — DEPTH (2026-09-19)
+144. **Depth is bought with opacity and transform, never with a blur.** A blurred full screen fixed layer costs on every frame it is composited, and this one is on screen for the whole session. Fading the scene toward the ground colour and widening it very slightly reads as the same recession and costs nothing.
+145. **Never buy an effect with the hero's contrast.** Turning the scrim down to brighten the scene would have made the words over it harder to read, and the contrast gate cannot see that, because it cannot see what is behind an image. The effect went on the layer instead.
+146. **Actions of different kinds do not sit in one row.** Sharing a room's code and sharing what it grew belong together; leaving is a different act and sits apart and quiet.

@@ -98,6 +98,25 @@ function dayEmojis() { const by = {}; for (const e of S.entries) { if (!e.emoji)
 function sharedDays(a, b) { const by = dayEmojis(); let n = 0; for (const d in by) if (by[d].has(a) && by[d].has(b)) n++; return n; }
 function recipeState(r) { const need = r.days || C.recipes.days || 3; const n = sharedDays(r.formula[0], r.formula[1]); return { made: !!S.made[r.id] || n >= need, days: n, need }; }
 function choreograph() { const h = document.documentElement; h.classList.remove('landed'); if (motionOk() && !document.hidden) { h.classList.remove('anim'); void h.offsetWidth; h.classList.add('anim'); } clearTimeout(choreograph.t); choreograph.t = setTimeout(() => h.classList.add('landed'), 2400); }
+// ── DEPTH ──
+// When you scroll past the hero into the page, the scene steps back: it darkens
+// and drifts very slightly wider, the way a background falls out of focus when
+// you look at something near. It is done with opacity and transform only, never
+// a blur, because a blur across a full screen layer is paid for on every frame
+// the layer is composited and this one is on screen for the whole session.
+// One observer, two states, no scroll handler.
+let depthIO = null;
+function depthWatch(root) {
+  if (depthIO) { depthIO.disconnect(); depthIO = null; }
+  document.body.classList.remove('deep');
+  if (!motionOk()) return;
+  const mark = $('.depth-mark', root || document);
+  if (!mark) return;
+  depthIO = new IntersectionObserver((entries) => {
+    for (const e of entries) document.body.classList.toggle('deep', !e.isIntersecting && e.boundingClientRect.top < 0);
+  }, { threshold: 0 });
+  depthIO.observe(mark);
+}
 function stars() { const el = $('.stars'); if (!el || el.children.length) return; let s = ''; for (let i = 0; i < 70; i++) s += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>'; el.innerHTML = s; }
 
 // ── shell ──
@@ -110,7 +129,8 @@ function hero(sceneName, o) {
   setScene(sceneName);
   return '<section class="hero' + (o.cls ? ' ' + o.cls : '') + '">' +
     '<div class="top-words">' + (o.brand ? '<div class="brandrow in" style="--i:0"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname">Gratus.CC</span><span class="kicker">' + esc(o.brand) + '</span></div>' : '') + (o.h1 ? '<h1 class="in" style="--i:0">' + esc(o.h1) + '</h1>' : '') + (o.k1 ? '<span class="kicker mint in" style="--i:1">' + esc(o.k1) + '</span>' : '') + (o.k2 ? '<span class="kicker in" style="--i:1">' + esc(o.k2) + '</span>' : '') + '</div>' +
-    '<div class="low">' + (o.low || '') + '</div></section>';
+    '<div class="low">' + (o.low || '') + '</div>' +
+    '<i class="depth-mark" aria-hidden="true"></i></section>';
 }
 const INTROS = { give: { src: 'give-intro', flood: 12.6, hard: 14500 }, grow: { src: 'grow-intro', flood: 9.6, hard: 11500 } };
 let booted = false, introOn = false;
@@ -148,7 +168,7 @@ function render() {
   else if (tab === 'grow') s = topBar() + viewGrow();
   else if (tab === 'give') s = topBar() + viewGive();
   else s = viewGratus();
-  root.innerHTML = s; choreograph(); frameArt(root);
+  root.innerHTML = s; choreograph(); frameArt(root); depthWatch(root);
   if (tab === 'gratus' && !sub) { const t = $('.top'); if (t) t.querySelector('.left').style.visibility = 'hidden'; }
   $$('.tabs button[data-tab]').forEach((b) => { b.classList.toggle('on', b.dataset.tab === tab && !sub); });
   const back = $('#top-back'); if (back) back.addEventListener('click', () => go(sub === 'vault' || sub === 'earth' ? 'give' : tab, sub === 'vault' || sub === 'earth' ? 'world' : null));

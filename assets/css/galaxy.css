@@ -835,3 +835,27 @@ html { overflow-x: clip; }
   min-height: 50px; padding: 8px 16px; border-radius: 18px; font-size: 16px; line-height: 22px;
 }
 .chip.note i { margin-left: auto; font-size: 14px; line-height: 19px; text-align: right; }
+
+/* ═══ v26 · depth, and three actions that fit ═════════════════════════════ */
+
+/* The scene steps back once you are reading: it fades toward the ground colour
+   and drifts very slightly wider, the way a background falls out of focus when
+   you look at something nearer.
+
+   Opacity and transform only, and on the LAYER rather than the scrim. Two things
+   were wrong with reaching for the scrim: turning its opacity down at rest would
+   have made the hero brighter and quietly cost the contrast the gate cannot see
+   behind an image, and a blur across a full screen fixed layer is paid for on
+   every frame it is composited, for the whole session. */
+#scene .layer { transition: opacity 1.4s ease, transform 1.1s var(--ease); }
+body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
+
+/* the hero's own end, one pixel, absolutely placed so the hero's two-row grid is
+   untouched. `.hero > :not(.art)` would otherwise make it relative and add a row. */
+.hero > .depth-mark { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: 0; }
+
+/* a room's three actions: the two that share sit together, and leaving sits
+   apart and quiet, because it is a different kind of act */
+.vibehead .actions { grid-auto-flow: row; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vibehead .actions .btn { white-space: nowrap; }
+.vibehead .actions #vb-leave { grid-column: 1 / -1; }

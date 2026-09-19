@@ -2,6 +2,11 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v26 · Depth (2026-09-19)
+
+- **The scene steps back when you start reading.** Past the hero the background fades toward the ground colour and drifts very slightly wider, the way a background falls out of focus when you look at something nearer. It is opacity and transform on the scene layer, never a blur, because a blur across a full screen fixed layer is paid for on every frame it is composited and this one is there for the whole session.
+- **A room's three actions fit.** The two that share sit side by side and leaving sits apart and quiet, because it is a different kind of act.
+
 ## v25 · Five is a list of five (2026-09-19)
 
 - **A crossing is no longer followed by "Kept."** When a plant crossed a phase and its emoji happened not to change, the run of conditions fell through to the last one and told the person their word had merely been kept, a second after telling them it had crossed into Deepened. The plain card is now only for a word with no plant behind it.
