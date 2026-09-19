@@ -2,6 +2,16 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v20 · The refining pass (2026-09-19)
+
+- **A digit reads as a digit.** The display face ships oldstyle figures, so `1` drew as a small capital I and `0` as an O. The garden said "I plant · O ready to give" and the journal said "I day · I entry". Lining, tabular figures everywhere.
+- **Counts carry separators**: 16,846 donors, not 16846.
+- **A chip is never cut mid-word.** The sideways rows fade over the last 26 pixels instead of a wide wash, and the variant that dropped the fade entirely, which hard-clipped "Newest" to "Newe", no longer exists.
+- **The phase legend is one row.** It used to wrap two, two and one, leaving an orphan alone on its own line.
+- **The project card puts the money on its own line**, so the chips stop wrapping to two rows.
+- **The voice function has an allowance**: forty recordings per device per day, six hundred across everyone, reserved before the call to ElevenLabs. It had no ceiling of any kind before today.
+- Headlines balance, so no line ends with one word alone. A day that has not happened yet is quiet rather than unreadable. An example room is shown before you are in one.
+
 ## v19 · Guides, Vibes, and a card that shows the picture (2026-09-19)
 
 - **The project card is a media banner.** A 104-pixel tile with `cover` was cropping logos into nonsense and floating when a title wrapped. Now the image sits full width at its own aspect with `contain`, on a blurred wash of itself, under a scrim.

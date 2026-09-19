@@ -96,3 +96,10 @@ html.anim:not(.landed) .in { opacity: 0; transform: translateY(12px); animation:
 @keyframes twinkle { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } html.anim .in { opacity: 1; transform: none; animation: none; } }
 @media (forced-colors: active) { .glass, .btn, .chip, .orb, .field { border: 1px solid CanvasText; } }
+
+/* ── v20 · a digit must read as a digit ──
+   Cormorant Garamond ships oldstyle figures by default, so 1 renders as a small
+   capital I and 0 as an O. "1 plant · 0 ready to give" read as "I plant · O ready
+   to give" in the garden, the journal summary and every stat. Lining figures
+   everywhere; tabular so columns of numbers line up. */
+html, body { font-variant-numeric: lining-nums tabular-nums; font-feature-settings: "lnum" 1, "tnum" 1; }

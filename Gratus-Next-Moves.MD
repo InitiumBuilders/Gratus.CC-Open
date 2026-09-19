@@ -29,7 +29,7 @@ The full brief is in [docs/GIVETH.md](docs/GIVETH.md); the architecture and the 
 
 - **G1. Owner verification.** A Gratus claim is first-come and light. Tie it to a verified Giveth project owner, or to a DeVouch attestation, so watering cannot be impersonated. The one thing we cannot do alone, and the first thing to ask Giveth for.
 - ~~**G2. Confirm the gift.**~~ Done in v16. It is a lookup, not a proof of ownership: a hash is public. Ownership needs a signature, which this app does not ask for.
-- **G3. Rate limits.** Done for planting in v16 (240 per project per day, five-minute dedupe). The **voice function still has no allowance** and spends his ElevenLabs credit: this is now the most urgent open item.
+- ~~**G3. Rate limits.**~~ Done. Planting in v16 (240 per project per day, five-minute dedupe); the voice function in v20 (forty per device per day, six hundred in total, reserved before the call). What remains is a smaller size cap than six megabytes.
 - **G4. Per-seed documents.** One document per project is last-writer-wins, and Vercel Blob takes a few seconds to become consistent, which widens that window. Split it into one document per seed when the stream grows.
 - ~~**G5. The "I See You" mark.**~~ Done in v16: 🫶, with its own ceremony.
 - **G6. Tell the project it was watered.** A steward has no way to know a bloom landed. A gentle receipt, without presence words.
@@ -99,7 +99,7 @@ These change the shape of the work. Each one is a fork.
 24. **A written overflow gate.** The audit that found these was run by hand. Make it a script so a future ship cannot reintroduce them.
 22. **A seed should be withdrawable.** Once planted it cannot be taken back, from either side.
 
-16. **The voice function needs a limit.** It is public and spends his ElevenLabs credit. Add a per-device daily allowance and a size cap smaller than six megabytes before the app is shared widely.
+16. ~~**The voice function needs a limit.**~~ Shipped in v20: forty recordings per device per day, six hundred across everyone, reserved before the call to ElevenLabs. Still open: a size cap smaller than six megabytes, and the key itself should be rotated, because it was once pasted into a chat window.
 17. **Recordings in the export.** The JSON export leaves recordings behind. Add a second export that packs them, or include them as data URLs when small.
 18. **Milestones as ceremonies.** A lit milestone is a toast today. Give the big ones (seven days in a row, Bloomed, first gift) the Gate's light.
 

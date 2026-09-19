@@ -83,6 +83,8 @@ The whole design, its limits and the five loops still to build are in [EMOTIONAL
 
 `api/voice.js` is a Vercel function. The recording arrives as the raw request body (webm, mp4 or ogg from `MediaRecorder`), is checked for origin, a `X-Gratus: voice` header and size (six megabytes), and is posted to ElevenLabs speech to text (`scribe_v1`) with the key from `ELEVENLABS_API_KEY`. The function returns `{ text, language }` and keeps nothing. The key is in the Vercel environment of both projects and in no file; the open-source gate knows its shape.
 
+The endpoint carries an allowance, because transcription spends real money on a real account and an open endpoint without a ceiling is a bill waiting to happen. One day's counters live in one Blob document, `gratus/voice/<YYYY-MM-DD>.json` = `{ total, who }`: forty recordings per device per day, six hundred across everyone. The device is a salted hash of the forwarded address, never the address itself, and the document is a day old at most. The count is reserved before the call to ElevenLabs, because a ceiling applied after the spend is not a ceiling. Named limit: it is a read, then a write, so recordings landing in the same instant can undercount. It is a soft ceiling against runaway spend, not an exact meter.
+
 On the device, `assets/js/keep.js` is a small IndexedDB store keyed by entry id. The composer records with `MediaRecorder`, shows the recording to hear back, sends it for words, and on planting keeps the blob under the new entry's id. The entry carries `voice: { mime, dur }`; the entry sheet plays it from the keep. Recordings are not in the JSON export, and the sheet says so.
 
 ## The desktop

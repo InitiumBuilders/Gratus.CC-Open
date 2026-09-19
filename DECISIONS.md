@@ -161,3 +161,10 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 121. **Gratus Guides is the mission and the vision,** with the loop, the phases and the five promises. Not a help page: the reason the thing exists, said plainly.
 122. **Gratus Vibes are the small rooms.** A name, a mark and a six-character code from an alphabet with no ambiguous glyphs, because a code is read aloud and typed by hand. Anyone with the code is in the room. A journal entry never travels there, and the app says so on the screen.
 123. **No Gratus Circles.** Set aside by his decision.
+
+## v20 — THE REFINING PASS (2026-09-19)
+124. **A digit must read as a digit.** The display face defaults to oldstyle figures, which draw 1 as a small capital I and 0 as an O. Every number in the app is lining and tabular. This was invisible in every measurement I had taken and obvious the moment I looked at the screen.
+125. **A word is never half-faded.** A sideways row of chips fades over its last 26 pixels, an edge and nothing more. The variant that removed the fade to avoid that wash instead hard-clipped the last word, which was worse.
+126. **Five things do not wrap two, two and one.** The phase legend is one scrolled row on every width. An orphan alone on its own line is the symmetry law being broken quietly.
+127. **The money on a project card gets its own line.** Putting it in a chip beside the others pushed the row to two lines on almost every project.
+128. **An endpoint that spends money has a ceiling, and the ceiling is taken before the spend.** Voice: forty recordings per device per day, six hundred across everyone, reserved ahead of the call to ElevenLabs. A limit applied after the money is gone is not a limit.

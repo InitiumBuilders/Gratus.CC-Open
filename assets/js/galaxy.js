@@ -46,6 +46,7 @@ const I = {
   giftline: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13M12 8c-2 0-4-1-4-3s2-2 4 3c2-5 4-5 4-3s-2 3-4 3"/></svg>',
   user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z"/></svg>',
+  gift: '<svg viewBox="0 0 24 24"><path d="M3 11h18v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9Z"/><path d="M2.5 7.5h19v3.5h-19zM12 7.5V21"/><path d="M12 7.5S10.8 3 8.4 3a2.2 2.2 0 0 0 0 4.5H12Zm0 0S13.2 3 15.6 3a2.2 2.2 0 0 1 0 4.5H12Z"/></svg>',
   people: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c.6-3 3-5 6-5s5.4 2 6 5M14 18c.4-2 1.8-3.5 3.5-3.5S21 16 21 18"/></svg>',
   globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
   cam: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="3"/><circle cx="12" cy="13" r="4"/><path d="M8 6l1.5-2h5L16 6"/></svg>',
@@ -85,7 +86,8 @@ function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e
 const daysOf = (p) => (p.kept || []).length + (p.carried || 0);
 const face = (p) => E.currentEmoji(p.emoji, daysOf(p), C.evo);
 const nameOf = (e) => (C.names || {})[e] || e;
-const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+// a count is read by a person: 16846 donors is a number, 16,846 donors is a fact
+const plural = (n, w) => (Number(n) || 0).toLocaleString() + ' ' + w + (Number(n) === 1 ? '' : 's');
 function phaseOf(d) { let out = C.book.phases[0]; for (const ph of C.book.phases) if (d >= ph.day) out = ph; return out; }
 function phaseIndex(d) { return C.book.phases.indexOf(phaseOf(d)); }
 function nextPhase(d) { return C.book.phases.find((ph) => ph.day > d) || null; }
@@ -209,8 +211,14 @@ function viewVibes() {
     '<div class="page">' +
     (S.vibes.length ? '<div class="chips row">' + S.vibes.map((x) => '<button class="chip' + (v && v.code === x.code ? ' on' : '') + '" data-vopen="' + esc(x.code) + '">' + esc(x.emoji || '✦') + ' ' + esc(x.name || x.code) + '</button>').join('') + '</div>' : '') +
     (!v ? '<div class="glass card"><span class="kicker mint">What a Vibe is</span><p class="body">A small room with a name and a code. Anyone holding the code is in it. People post short gratitudes there with an emoji from their own garden, and that is all that travels: your journal stays on your device.</p>' +
-      '<div class="two"><input class="field" id="vb-code" maxlength="12" placeholder="a code, e.g. K7M2QP" aria-label="a vibe code"><button class="btn" id="vb-join">Go in</button></div>' +
-      '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' : '') +
+      '<div class="two"><input class="field" id="vb-code" maxlength="12" placeholder="e.g. K7M2QP" aria-label="a vibe code"><button class="btn" id="vb-join">Go in</button></div>' +
+      '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' +
+      '<div class="eyebrow"><h2>What a room looks like</h2><span class="more">an example</span></div>' +
+      '<div class="rows sample">' + [['🌻', 'Maya', 'Two hours of quiet this morning, and nobody needed anything from me.'],
+        ['☕', 'Tomas', 'My sister rang for no reason at all.'],
+        ['🌊', 'June', 'Cold water, and the sound it makes.']].map((x) =>
+        '<div class="glass vpost"><span class="orb sm"><span>' + x[0] + '</span></span><span class="grow"><span class="kicker">' + x[1] + '</span><b>' + x[2] + '</b></span></div>').join('') + '</div>' +
+      '<p class="cap">That is the whole of it. A few people, a few lines, and an emoji each one grew.</p>' : '') +
     (vibeState === 'loading' ? '<p class="cap">Opening the room...</p>' : '') +
     (vibeState === 'offline' && !v ? '<p class="cap">No vibe answered on that code. Check it and try again.</p>' : '') +
     (v ? '<div class="glass card vibehead"><span class="v-ico">' + esc(v.emoji) + '</span><div><b>' + esc(v.name) + '</b>' + (v.about ? '<span class="body">' + esc(v.about) + '</span>' : '') +
@@ -221,7 +229,7 @@ function viewVibes() {
       '<div class="pick">' + palette().slice(0, 8).map((e) => '<button class="orb" data-vpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
       '<button class="btn mint wide" id="vb-post">Say it ✦</button>' +
       '<p class="cap">Everyone with the code can read this. Write what you would say out loud in the room.</p></div>' +
-      (v.posts.length ? '<div class="eyebrow"><h2>The room</h2><span class="more">' + plural(v.posts.length, 'shown') + '</span></div><div class="rows">' +
+      (v.posts.length ? '<div class="eyebrow"><h2>The room</h2><span class="more">' + v.posts.length + ' shown' + '</span></div><div class="rows">' +
         v.posts.map((p) => '<div class="glass vpost"><span class="orb sm"><span>' + esc(p.emoji) + '</span></span><span class="grow"><span class="kicker">' + esc(p.name) + ' · ' + esc(fmtDay(String(p.at).slice(0, 10))) + '</span><b>' + esc(p.text) + '</b></span></div>').join('') + '</div>'
         : '<p class="cap">Nobody has said anything here yet. Be the first; it makes the room exist.</p>') : '') +
     '<p class="cap">A Vibe holds what people choose to say in it. It is not your journal, and your journal never comes here.</p>' +
@@ -416,14 +424,15 @@ async function loadCats() {
   try { const r = await fetch('/api/giveth?q=cats', { cache: 'no-store' }); const d = await r.json().catch(() => ({}));
     if (r.ok && d.categories && d.categories.length) { gvCats = d.categories; if (sub === 'giveth') render(); } } catch (e) {}
 }
-const money = (n) => n >= 1000000 ? '$' + (n / 1000000).toFixed(1) + 'M' : n >= 1000 ? '$' + Math.round(n / 1000) + 'k' : '$' + n;
+const money = (n) => n >= 1000000 ? '$' + (n / 1000000).toFixed(1) + 'M' : n >= 1000 ? '$' + Math.round(n / 1000) + 'k' : '$' + Math.round(n || 0);
 function projectRow(p) {
   return '<button class="glass gvp" data-gv="' + esc(p.slug) + '">' +
     '<span class="gvp-art">' + (p.image ? '<i class="gvp-wash" style="background-image:url(' + JSON.stringify(esc(p.image)) + ')"></i><img src="' + esc(p.image) + '" alt="" loading="lazy">' : '<span class="gvp-none">' + esc(p.bloom) + '</span>') + '</span>' +
     '<span class="gvp-words"><b>' + esc(p.title) + '</b>' +
+    (p.donors === 0 ? '' : '<span class="gvp-stat"><b>' + money(p.raised) + '</b> raised · <b>' + (Number(p.donors) || 0).toLocaleString() + '</b> ' + (p.donors === 1 ? 'donor' : 'donors') + '</span>') +
     '<span class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks</i>' : p.verified ? '<i class="gvt">Verified</i>' : '') +
       (p.qf ? '<i class="gvt gold">Matched now</i>' : '') +
-      (p.donors === 0 ? '<i class="gvt mint">Nobody yet</i>' : '<i class="gvt">' + money(p.raised) + ' · ' + plural(p.donors, 'donor') + '</i>') +
+      (p.donors === 0 ? '<i class="gvt mint">Nobody yet</i>' : '') +
       (p.categories[0] ? '<i class="gvt">' + esc(p.categories[0]) + '</i>' : '') + '</span>' +
     '<span class="cap">' + esc(p.summary.slice(0, 120)) + '</span></span><span class="arrow">›</span></button>';
 }
@@ -655,7 +664,7 @@ function viewConsole() {
   return hero(scene('console'), { cls: 'room-hero', h1: 'Project Console', k1: 'The seeds people planted with their gifts.', k2: 'Read them. Water them.' }) +
     '<div class="page">' +
     '<div class="glass card"><span class="kicker mint">Your project</span>' +
-    '<input class="field" id="con-slug" placeholder="your Giveth project slug, e.g. earth-commons" aria-label="project slug" value="' + esc(conSlug) + '">' +
+    '<input class="field" id="con-slug" placeholder="your project slug" aria-label="project slug" value="' + esc(conSlug) + '">' +
     '<input class="field" id="con-key" placeholder="your project key" aria-label="project key" value="' + esc(conKey) + '">' +
     '<div class="actions"><button class="btn mint" id="con-open">Open the feed</button><button class="btn" id="con-claim">Claim this project</button></div>' +
     '<p class="cap">The key waters seeds for one project. Claiming shows it once, and only a hash of it is kept. This is a light claim, not verification: real verification lives on Giveth.</p></div>' +
@@ -788,7 +797,7 @@ function viewGarden() {
   const phases = C.book.phases;
   return hero(scene('garden'), { cls: 'room-hero', h1: 'Your Gratus Garden', k1: 'Grow gratitude every day.', k2: plural(n, 'plant') + ' · ' + plural(care, 'day') + ' of care' }) +
     '<div class="page">' +
-    '<div class="glass stats in"><div><b>' + n + '</b><span>' + (n === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + care + '</b><span>days of care</span></div><div><b>' + ready + '</b><span>ready to give</span></div></div>' +
+    '<div class="glass stats in"><div><b>' + n + '</b><span>' + (n === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + care + '</b><span>' + (care === 1 ? 'day of care' : 'days of care') + '</span></div><div><b>' + ready + '</b><span>ready to give</span></div></div>' +
     (n ? '<div class="chips row">' + lanes.map(([k, t]) => '<button class="chip' + (gardenFilter === k ? ' on' : '') + '" data-gfilter="' + k + '">' + t + (k === 'dedicated' && pledged ? ' · ' + pledged : '') + '</button>').join('') + '</div>' : '') +
     (n ? '<div class="chips row end"><button class="chip' + (gardenView === 'field' ? ' on' : '') + '" data-gview="field">✦ Field</button><button class="chip' + (gardenView === 'list' ? ' on' : '') + '" data-gview="list">☰ List</button><button class="chip' + (gardenSort === 'days' ? ' on' : '') + '" data-gsort="days">Most days</button><button class="chip' + (gardenSort === 'recent' ? ' on' : '') + '" data-gsort="recent">Newest</button><button class="chip' + (gardenSort === 'name' ? ' on' : '') + '" data-gsort="name">By name</button></div>' : '') +
     (n ? '<div class="glass card tended"><span class="kicker mint">Today</span><p class="body"><b>' + tendedToday + '</b> of ' + plural(n, 'plant') + ' tended. ' + (tendedToday >= n ? 'The whole garden has had a word today.' : 'Each one grows on the days you write about it.') + '</p>' + (tendedToday < n ? '<button class="btn mint" id="tend-now">Tend one now 🌱</button>' : '') + '</div>' : '') +
@@ -898,7 +907,7 @@ function viewGive() {
   return hero(scene('give'), { h1: 'Give', k1: 'Turn Gratitude', k2: 'Into Impact', low: '<p class="statement in" style="--i:2">Give the Gift That Keeps On Giving.</p>' }) +
     '<div class="page">' +
     '<div class="glass card"><span class="kicker mint">Choose how to give:</span>' +
-    '<button class="glass opt" id="give-gift"><span class="ico gold">' + I.heart + '</span><span class="grow"><b>Give a Gratus Gift</b><span>Turn your gratitude into a gift for someone else.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="give-gift"><span class="ico gold">' + I.gift + '</span><span class="grow"><b>Give a Gratus Gift</b><span>Turn your gratitude into a gift for someone else.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-giveth"><span class="ico gold">' + I.giveth + '</span><span class="grow"><b>Give with Giveth</b><span>Real projects, zero fees, on chain. Plant a Gratus Seed with your gift.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-project"><span class="ico">' + I.people + '</span><span class="grow"><b>Support a Project</b><span>Give to people, places or causes that matter.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-world"><span class="ico">' + I.globe + '</span><span class="grow"><b>Give to the World</b><span>Be part of a kinder, brighter planet.</span></span><span class="arrow">›</span></button>' +

@@ -720,3 +720,44 @@ a.gpill { color: #1E2A10; }
 .vpost { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; padding: 14px 16px; }
 .vpost .grow { display: grid; gap: 4px; min-width: 0; }
 .vpost b { font-size: 18px; line-height: 25px; font-weight: 500; overflow-wrap: anywhere; }
+
+/* ═══ v20 · the refining pass ══════════════════════════════════════════════ */
+
+/* a row of chips scrolls sideways; the fade is an EDGE, 26px, never wide enough
+   to grey out a word. .end used to drop the mask entirely, which hard-clipped
+   "Newest" to "Newe" in the garden. */
+.chips.row, .chips.row.end {
+  flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+  padding-right: 26px; scroll-padding-right: 26px;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
+}
+.chips.row::-webkit-scrollbar, .phaseline::-webkit-scrollbar { display: none; }
+.chips.row .chip { font-size: 14px; padding: 0 12px; min-height: 34px; }
+
+/* the phase legend was five chips wrapping 2 + 2 + 1, an orphan on its own line.
+   One row, scrolled, on every width. */
+.phaseline {
+  flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none;
+  padding-right: 26px;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
+}
+.phaseline .ph { flex: none; }
+
+/* a day that has not happened yet is quiet, not unreadable */
+.cal-d.future { opacity: .45; }
+
+/* a headline never leaves one word alone on the last line */
+.hero h1, .hero .kicker, .hero .statement, .eyebrow h2, .page h2, .page h3,
+.door .door-words b, .gvp .gvp-words b, .card .body, .vpost b { text-wrap: balance; }
+.cap, .body { text-wrap: pretty; }
+
+/* the project card: the money is a line of its own, so the chips stop wrapping */
+.gvp .gvp-stat { display: block; font-size: 14px; line-height: 21px; font-weight: 600; color: #FFE9B0; }
+.gvp .gvp-stat b { font-family: var(--display); font-size: 21px; line-height: 21px; font-weight: 600; color: #FFF7D6; }
+.gvp .arrow { align-self: start; padding-top: 6px; }
+
+/* an example room, shown before you are in one */
+.sample { position: relative; }
+.sample .vpost { border-style: dashed; border-color: rgba(185, 255, 228, .28); }
