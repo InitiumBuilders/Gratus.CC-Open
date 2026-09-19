@@ -189,3 +189,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 139. **A meaning you cannot learn is decoration.** The five notes are in Guides with what each one is, and any of them can be heard on a tap. A grammar nobody can read is not a grammar.
 140. **A room's Passage carries no code and no words.** Showing what a room grew and letting someone into it are separate acts. A page that did both would open the room to everyone it ever reached.
 141. **A tally is not a ranking.** A room shows which emojis were used and how often. It never shows who, and it never orders people.
+
+## v25 — FIVE IS A LIST OF FIVE (2026-09-19)
+142. **A chain of conditions needs a case for every branch, not a catch-all at the end.** The plain "Kept." card sat on a final `else`, so a crossing with no emoji change fell through to it and undid the moment one second later. It now has its own condition: no plant, no crossing, just a word.
+143. **Anything that comes in fives is written down the page.** Wrapped across a row it lands two, two and one, and the fifth is orphaned. This is the same law the phase legend needed in v20.

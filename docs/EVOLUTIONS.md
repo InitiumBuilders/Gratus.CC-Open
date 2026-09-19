@@ -2,6 +2,11 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v25 · Five is a list of five (2026-09-19)
+
+- **A crossing is no longer followed by "Kept."** When a plant crossed a phase and its emoji happened not to change, the run of conditions fell through to the last one and told the person their word had merely been kept, a second after telling them it had crossed into Deepened. The plain card is now only for a word with no plant behind it.
+- **The five notes are written down the page, one row each.** As chips they wrapped two, two and one, leaving Ready to Give alone on its own line.
+
 ## v24 · The sound made learnable, and a room with a face (2026-09-19)
 
 - **The Gratus Sound has a page.** Guides now says what the five notes mean and lets you hear the chord as far as any phase, so the grammar can be learned rather than only felt.

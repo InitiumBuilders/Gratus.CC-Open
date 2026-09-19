@@ -823,3 +823,15 @@ html { overflow-x: clip; }
 .roomfield { display: flex; flex-wrap: wrap; gap: 10px; padding: 2px 0; }
 .rf { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px 5px 5px; border-radius: 999px; background: rgba(5, 9, 18, .55); border: 1px solid var(--hair); }
 .rf b { font-family: var(--display); font-size: 19px; line-height: 20px; font-weight: 600; color: #FFE9B0; }
+
+/* ═══ v25 · five is a list of five ════════════════════════════════════════ */
+
+/* Wrapped as chips the five phases fell 2 + 2 + 1 and left Ready to Give alone
+   on its own line. A grammar is read down, so it is written down: one row each,
+   the phase on the left and the interval on the right. */
+.notes { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.chip.note {
+  flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px;
+  min-height: 50px; padding: 8px 16px; border-radius: 18px; font-size: 16px; line-height: 22px;
+}
+.chip.note i { margin-left: auto; font-size: 14px; line-height: 19px; text-align: right; }
