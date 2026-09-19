@@ -216,3 +216,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 154. **A fenced block is a quotation, not the repository speaking.** Without that, a document could never name the habit it exists to remove.
 155. **A dash is sometimes a design decision nobody made.** Four in this app stood where the interface had not decided what to show. Removing them forced the word: `not yet`, and `$0`.
 156. **The gate is the floor and says so in its own header.** It cannot see a paragraph that says nothing in four graceful sentences. That is still read by a person, every time.
+
+## v31 · THE SOUND REACHES THE LAST TWO ROOMS (2026-09-19)
+157. **Saying a true thing in a room is a keeping, so it sounds like one.** The root alone, the same note a kept word plays in the garden. The law that nothing sounds on an ordinary tap still holds, because this is not navigation.
+158. **A Passage sounds the chord as far as the furthest plant it shows.** What grew is the whole point of the page, and the chord is how this app says what grew. From a shared link it is silent, because the browser has had no gesture, and arriving somewhere you were invited should be quiet anyway.

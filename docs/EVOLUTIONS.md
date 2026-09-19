@@ -2,6 +2,11 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v31 · The sound reaches the last two rooms (2026-09-19)
+
+- **A Vibe sounds when your words land in it.** Saying a true thing out loud in a room is a keeping, so it sounds like one: the root alone. It was the only room in the app with nothing to hear.
+- **A Passage sounds like what grew.** Opening one plays the chord as far as the furthest plant in the garden it is showing. Opened from a tap inside the app it plays. Opened cold from a shared link the browser has had no gesture yet and it stays silent, which is the right way to arrive somewhere you were invited.
+
 ## v30 · The slop gate (2026-09-19)
 
 - **A fifth gate, and the first one that judges writing.** It refuses the mechanical habits of machine prose across the repository: a dash standing in for a decision about how two clauses relate, a contrast with nothing on the other side of it, a word that sounds expert and carries nothing, a run-up that announces a point instead of making it.

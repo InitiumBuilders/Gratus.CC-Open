@@ -168,8 +168,9 @@ prompt in section 4 could not name a single habit it exists to remove.
 
 **Next.**
 
-4. A room's own sound. Vibes is the only room with nothing to hear, and the
-   chord already exists.
+4. ~~A room's own sound.~~ Shipped in v31. A Vibe sounds the root when your
+   words land in it, and a Passage sounds the chord as far as the furthest
+   plant in the garden it shows.
 5. A gift that reports back. Giving is the deepest act in the product and the
    giver never learns that the thing kept growing. This is the loop with one
    half missing, and closing it is the largest remaining move.

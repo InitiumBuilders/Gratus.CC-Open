@@ -389,6 +389,8 @@ function passageSheet() {
 function openPassage(g, mine) {
   if (g && g.k === 'vibe') return openRoomPassage(g, mine);
   const root = $('#room'); if (!root) return;
+  const furthest = (g.p || []).reduce((best, row) => Math.max(best, phaseIndex(Number(row[1]) || 0)), -1);
+  if (furthest >= 0) soundPhase(furthest);
   const phase = (d) => phaseOf(d).name;
   root.innerHTML = '<div class="room-page passage">' + art(scene('journey', 3)) +
     '<div class="rhead"><span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="pa-x" aria-label="close">✕</button></div>' +
@@ -1685,7 +1687,7 @@ function wire() {
       try {
         const r = await fetch('/api/vibes', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'post', code: vibeNow.code, text: t, name: S.name || '', emoji: vEmoji || '✦' }) });
         const d = await r.json().catch(() => ({})); if (!r.ok || !d.vibe) throw new Error(d.error || 'refused');
-        vibeNow = d.vibe; render(); toast('Said');
+        vibeNow = d.vibe; soundKept(); render(); toast('Said');
       } catch (e) { po.disabled = false; po.textContent = 'Say it ✦'; toast(String(e.message || e)); }
     }); }
   $$('[data-gview]').forEach((b) => b.addEventListener('click', () => { gardenView = b.dataset.gview; render(); }));
