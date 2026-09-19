@@ -2,6 +2,16 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v16 · All six loops (2026-09-19)
+
+- **I see you**: a project's first-ever seed blooms into 🫶 and the ceremony says so.
+- **Responsiveness**: seeds received, share watered and days to answer, on the project sheet and in the project's own console. It orders nobody against anybody.
+- **Harmonic alchemy**: twelve marks in `config/alchemy.json`, each needing both a gift and inner work, each showing its own progress.
+- **The circular flow**: a steward can pass it on to a project they are grateful for; the donor continues the flow, or sees others like the one they gave to.
+- **Sunlight**: a public Giveth address read for GIVpower boosting, gifts and likes, feeding the alchemy.
+- **Giveth confirms it**: a transaction hash checked against that project's recent gifts.
+- Rate limits on planting; the big milestones now arrive through the Gate's light instead of a toast.
+
 ## v15 · Giveth, and the Emotional TRACE (2026-09-19)
 
 - **The Emotional TRACE**: Begin (plant a Gratus Seed with a donation), Become (the project reads it in its own console), Bridge (they water it), Bloom (it opens in the donor's garden with their reply inside). `api/trace.js` and the trace constellation.

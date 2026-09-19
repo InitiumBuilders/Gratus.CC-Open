@@ -1,9 +1,15 @@
 // GRATUS × GIVETH · a read-only window onto Giveth's public impact-graph.
 // Giveth runs the capital rail: zero-fee donations, verified projects, GIVbacks, GIVpower.
 // Gratus adds the emotional rail on top of it. This function only reads; it never holds a key,
-// never sees a wallet, and never touches a donation. The donation itself happens on giveth.io.
+// never asks for a wallet, and never touches a donation. The donation itself happens on giveth.io.
 //
 // Their API: https://mainnet.serve.giveth.io/graphql  ·  their code: https://github.com/Giveth/impact-graph (MIT)
+//
+//   q=projects   the four lanes
+//   q=project    one project by slug
+//   q=confirm    was this transaction really a gift to this project (loop: the seed and the capital, linked)
+//   q=similar    what else is like this project (loop 5: the circular flow)
+//   q=sunlight   how much a public address takes part in Giveth (loop 3: GIVgarden cross-pollination)
 
 const GIVETH = 'https://mainnet.serve.giveth.io/graphql';
 const LIST = `query($limit:Int,$skip:Int,$searchTerm:String,$filters:[FilterField!],$sortingBy:SortingField){
@@ -18,17 +24,31 @@ const ONE = `query($slug:String!){
     countUniqueDonors totalReactions categories{ name mainCategory{ title } } adminUser{ name }
     addresses{ networkId chainType isRecipient } }
 }`;
+const SIMILAR = `query($slug:String,$take:Int){
+  similarProjectsBySlug(slug:$slug, take:$take){
+    projects{ id title slug verified isGivbackEligible descriptionSummary image totalDonations countUniqueDonors
+      categories{ name mainCategory{ title } } }
+  }
+}`;
+const DONATIONS = `query($projectId:Int!,$take:Int){
+  donationsByProjectId(projectId:$projectId, take:$take, orderBy:{field:CreationDate, direction:DESC}){
+    donations{ transactionId valueUsd amount currency createdAt anonymous }
+  }
+}`;
+const USER = `query($address:String!){
+  userByAddress(address:$address){ id name totalDonated donationsCount likedProjectsCount boostedProjectsCount projectsCount }
+}`;
 
 // a project's bloom: the emoji a watered seed becomes, from the project's own main category
 const BLOOM = {
   environment: '🌳', 'environment-and-energy': '🌳', nature: '🌿', economics: '🌾', 'non-profit': '🤝',
   community: '🤝', education: '📚', health: '🩺', 'health-and-wellness': '🩺', art: '🎨', 'art-and-culture': '🎨',
-  technology: '⚡', finance: '🔆', equality: '🕊️', 'other': '✨', 'food': '🌻', 'water': '💧', 'housing': '🏡',
-  'inclusion': '🕊️', 'research': '🔬', 'ngo': '🤝', 'animals': '🦋', 'nonprofit': '🤝',
+  technology: '⚡', finance: '🔆', equality: '🕊️', other: '✨', food: '🌻', water: '💧', housing: '🏡',
+  inclusion: '🕊️', research: '🔬', ngo: '🤝', animals: '🦋', nonprofit: '🤝', 'economics-and-infrastructure': '🌾',
 };
 const bloomFor = (p) => {
   const cats = (p && p.categories) || [];
-  for (const c of cats) { const k = ((c.mainCategory && c.mainCategory.title) || c.name || '').toLowerCase().replace(/\s+/g, '-'); if (BLOOM[k]) return BLOOM[k]; }
+  for (const c of cats) { const k = ((c.mainCategory && c.mainCategory.title) || c.name || '').toLowerCase().replace(/[\s&]+/g, '-'); if (BLOOM[k]) return BLOOM[k]; }
   for (const c of cats) { const k = (c.name || '').toLowerCase(); if (BLOOM[k]) return BLOOM[k]; }
   return '🌻';
 };
@@ -50,8 +70,8 @@ async function ask(query, variables) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
   const q = String(req.query.q || 'projects');
+  res.setHeader('Cache-Control', q === 'confirm' ? 'no-store' : 'public, s-maxage=300, stale-while-revalidate=3600');
   try {
     if (q === 'project') {
       const slug = String(req.query.slug || '').slice(0, 120);
@@ -61,7 +81,45 @@ export default async function handler(req, res) {
       res.status(200).json({ project: trim(d.projectBySlug) });
       return;
     }
-    // lanes: verified (GIVbacks eligible first), unseen (newest, nobody has given yet), all
+
+    // ── the seed and the capital, linked. Was this transaction really a gift to this project? ──
+    if (q === 'confirm') {
+      const slug = String(req.query.slug || '').slice(0, 120);
+      const tx = String(req.query.tx || '').trim().toLowerCase().slice(0, 100);
+      if (!slug || !tx) { res.status(400).json({ error: 'a slug and a transaction' }); return; }
+      const p = await ask(ONE, { slug });
+      if (!p.projectBySlug) { res.status(404).json({ error: 'no such project' }); return; }
+      const d = await ask(DONATIONS, { projectId: Number(p.projectBySlug.id), take: 300 });
+      const hit = (d.donationsByProjectId.donations || []).find((x) => String(x.transactionId || '').toLowerCase() === tx);
+      if (!hit) { res.status(200).json({ confirmed: false, note: 'Not among this project’s last 300 gifts on Giveth. A gift can take a few minutes to appear, and older ones fall outside this window.' }); return; }
+      res.status(200).json({ confirmed: true, gift: { amount: hit.amount, currency: hit.currency, usd: hit.valueUsd, at: hit.createdAt } });
+      return;
+    }
+
+    // ── the circular flow: what else is like this ──
+    if (q === 'similar') {
+      const slug = String(req.query.slug || '').slice(0, 120);
+      if (!slug) { res.status(400).json({ error: 'a slug' }); return; }
+      const d = await ask(SIMILAR, { slug, take: 6 });
+      res.status(200).json({ projects: ((d.similarProjectsBySlug || {}).projects || []).map(trim) });
+      return;
+    }
+
+    // ── sunlight: how much a public address takes part in Giveth. Read only. Never a signature. ──
+    if (q === 'sunlight') {
+      const address = String(req.query.address || '').trim().toLowerCase();
+      if (!/^0x[a-f0-9]{40}$/.test(address)) { res.status(400).json({ error: 'an Ethereum address' }); return; }
+      const d = await ask(USER, { address });
+      const u = d.userByAddress;
+      if (!u) { res.status(200).json({ found: false, note: 'Giveth has not seen this address yet.' }); return; }
+      const boosted = Number(u.boostedProjectsCount || 0), given = Number(u.donationsCount || 0), liked = Number(u.likedProjectsCount || 0);
+      // sunlight is a reading, not a score: how much of the commons this address tends
+      const sun = Math.min(5, Math.round((boosted * 1.5 + given * 0.25 + liked * 0.1) / 3));
+      res.status(200).json({ found: true, name: u.name || null, boosted, given, liked, projects: Number(u.projectsCount || 0), sun });
+      return;
+    }
+
+    // lanes: verified (GIVbacks eligible first), boosted (GIVpower), unseen (nobody has given yet), all
     const lane = String(req.query.lane || 'verified');
     const search = String(req.query.search || '').slice(0, 80) || undefined;
     const limit = Math.min(24, Math.max(1, Number(req.query.limit) || 12));

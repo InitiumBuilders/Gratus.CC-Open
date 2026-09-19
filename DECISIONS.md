@@ -131,3 +131,11 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 99. **Claiming a project is light, and named as light.** First-come by slug, a key shown once with only its hash kept. It is not verification; verification belongs to Giveth, and tying the two together is the first thing we will ask them for.
 100. **Visibility at the margins is a query, not a reward.** The "Nobody yet" lane asks Giveth for the newest projects and keeps only those with zero donors. Ranking buries them; one lane reverses that for anyone who opens it.
 101. **The landing page is acts, not sections.** One statement to a screen, his card art, the gold pills, the same scene and ritual as the app.
+
+## v16 — ALL SIX LOOPS (2026-09-19)
+102. **The first seed a project ever receives is marked, not rewarded.** It blooms 🫶 and the ceremony says "I see you." The leverage is the lane that finds those projects, not the mark.
+103. **Responsiveness is a reading, shown to the project first.** Seeds received, share watered, median days to answer. It orders nobody against anybody, there is no list, and the house gate refuses the words that would make it one. The gate caught me writing one of those words in a comment that was denying it; the comment changed, not the gate.
+104. **A mark needs both halves of a person.** Harmonic alchemy: twelve marks, each requiring something given and something tended. Checked on the device, sent nowhere, and an unmade mark shows its own progress in plain words.
+105. **The circular flow ships as a prompt, and the person signs.** A steward passes it on by naming a project they are grateful for; the donor sees it inside their bloom and continues the flow. Routing a share of GIVbacks yield automatically would need custody, which this app does not do and will not.
+106. **Sunlight is read, never connected.** A public address, read through Giveth's own `userByAddress` for GIVpower boosting, gifts and likes. Gratus never asks anyone to connect a wallet, never asks for a key or a seed phrase, and never signs anything.
+107. **A confirmed gift is a lookup, not a proof.** A transaction hash checked against that project's recent gifts on Giveth records what arrived. A hash is public, so it says nothing about who sent it, and the docs say exactly that.

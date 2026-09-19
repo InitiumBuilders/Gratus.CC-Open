@@ -57,11 +57,11 @@ const I = {
 // ── time and state ──
 const pad2 = (n) => String(n).padStart(2, '0');
 function today() { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false, folders: [], milestones: {}, seeds: [] }; }
+function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false, folders: [], milestones: {}, seeds: [], alch: {}, sun: null }; }
 function load() {
   try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
   if (!S || S.v !== 1) S = fresh();
-  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true; if (!Array.isArray(S.folders)) S.folders = []; if (!Array.isArray(S.seeds)) S.seeds = []; if (!S.milestones || typeof S.milestones !== 'object') S.milestones = {};
+  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true; if (!Array.isArray(S.folders)) S.folders = []; if (!Array.isArray(S.seeds)) S.seeds = []; if (!S.alch || typeof S.alch !== 'object') S.alch = {}; if (!S.milestones || typeof S.milestones !== 'object') S.milestones = {};
   if (!S.migrated) { S.migrated = true; try { migrate(); } catch (e) {} }
   S.opens = (S.opens || 0) + 1; save();
 }
@@ -129,7 +129,7 @@ function tabIntro(t, then) {
 function go(t, s) { if (booted && !s && INTROS[t] && t !== tab) { tabIntro(t, () => goNow(t, s)); return; } goNow(t, s); }
 function goNow(t, s) { tab = t; sub = s || null; const path = '/app' + (sub ? '/' + sub : (tab === 'gratus' ? '' : '/' + tab)); if (location.pathname.endsWith('.html')) history.replaceState(null, '', location.pathname + '?tab=' + (sub || tab)); else history.replaceState(null, '', path); render(); window.scrollTo({ top: 0 }); }
 function render() {
-  checkMilestones();
+  checkMilestones(); checkAlchemy();
   const root = $('#view'); let s = '';
   if (sub === 'book') s = topBar({ back: true }) + viewBook();
   else if (sub === 'garden') s = topBar({ back: true }) + viewGarden();
@@ -152,10 +152,83 @@ function render() {
   wire();
 }
 
+// ══ HARMONIC ALCHEMY · a mark needs both halves: what you gave, and what you tended ══════════
+function alchemyState() {
+  const days = new Set(S.entries.map((e) => e.day)).size;
+  const cats = new Set(); for (const s of S.seeds) for (const c of (s.categories || [])) cats.add(String(c).toLowerCase());
+  return {
+    entryDays: days,
+    gave: S.seeds.length,
+    gaveUnseen: S.seeds.filter((s) => s.first).length,
+    bloomed: S.seeds.filter((s) => s.status === 'bloomed').length,
+    phase: S.plants.reduce((m, p) => Math.max(m, daysOf(p)), 0),
+    gifts: S.gifts.given.length,
+    goals: S.goals.length,
+    folders: S.folders.length,
+    voice: S.entries.filter((e) => e.voice).length,
+    photo: S.entries.filter((e) => e.photo).length,
+    sun: (S.sun && S.sun.sun) || 0,
+    cats,
+  };
+}
+function alchemyMet(model, st) {
+  for (const [k, want] of Object.entries(model.need || {})) {
+    if (k === 'gaveCategory') { if (!st.cats.has(String(want).toLowerCase())) return false; continue; }
+    if ((st[k] || 0) < want) return false;
+  }
+  return true;
+}
+function alchemyProgress(model, st) {
+  const parts = [];
+  for (const [k, want] of Object.entries(model.need || {})) {
+    if (k === 'gaveCategory') { parts.push((st.cats.has(String(want).toLowerCase()) ? '✓ ' : '') + 'a gift to ' + want); continue; }
+    const have = st[k] || 0; const label = { entryDays: 'days written', gave: 'seeds planted', gaveUnseen: 'a first seed', bloomed: 'watered', phase: 'days of care on one plant', gifts: 'Gratus Gifts', goals: 'goals posted', folders: 'folders', voice: 'voice entries', photo: 'photo entries', sun: 'sunlight on Giveth' }[k] || k;
+    parts.push((have >= want ? '✓ ' : Math.min(have, want) + ' of ' + want + ' ') + label);
+  }
+  return parts.join(' · ');
+}
+function checkAlchemy() {
+  if (!C.alchemy || !S) return; const st = alchemyState(); const made = [];
+  for (const m of C.alchemy.models) { if (!S.alch[m.id] && alchemyMet(m, st)) { S.alch[m.id] = today(); made.push(m); } }
+  if (!made.length) return;
+  save();
+  playCeremonies(made.map((m) => '<div class="cer"><span class="big">' + esc(m.result) + '</span><h2>' + esc(m.name) + '</h2><p>' + esc(m.line) + '</p><span class="kicker">tap to continue</span></div>'), () => render());
+}
+function alchemyBlock() {
+  if (!C.alchemy) return '';
+  const st = alchemyState(); const models = C.alchemy.models;
+  const made = models.filter((m) => S.alch[m.id]).length;
+  return '<div class="eyebrow"><h2>Harmonic alchemy</h2><span class="more">' + made + ' of ' + models.length + '</span></div>' +
+    '<p class="cap">A mark here needs both halves of you: something given, and something tended. Neither one alone will make it.</p>' +
+    '<div class="rows">' + models.map((m) => { const on = !!S.alch[m.id];
+      return '<div class="glass recipe' + (on ? ' made' : '') + '"><span class="f">' + esc(m.result) + '</span><span class="cat">' + (on ? esc(fmtDay(S.alch[m.id])) : 'not yet') + '</span><span class="name">' + esc(m.name) + '</span><span class="line">' + esc(on ? m.line : alchemyProgress(m, st)) + '</span></div>'; }).join('') + '</div>';
+}
+// ── sunlight: how much a public Giveth address tends the commons. Read only, never a signature. ──
+function sunSheet() {
+  const s = S.sun;
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>🔆</span></span><h2>Sunlight</h2><span class="kicker mint">Your part in the commons</span></div>' +
+    '<p class="body">Paste the public address you give with on Giveth. Gratus reads how much you take part there: projects you boost with GIVpower, gifts you have given, projects you have liked. That reading is sunlight, and it feeds the alchemy marks.</p>' +
+    '<p class="cap">Read only. Gratus never asks you to connect a wallet, never asks for a key or a seed phrase, and never signs anything. A public address is public.</p>' +
+    '<input class="field" id="sun-addr" placeholder="0x..." aria-label="your public address" value="' + esc((s && s.address) || '') + '">' +
+    '<button class="btn mint wide" id="sun-go">Read it</button>' +
+    (s && s.found ? '<div class="glass stats"><div><b>' + s.boosted + '</b><span>boosted</span></div><div><b>' + s.given + '</b><span>gifts</span></div><div><b>' + s.sun + '</b><span>sunlight</span></div></div>' : ''), { autofocus: true });
+  $('#sun-go', sh.el).addEventListener('click', async () => {
+    const a = $('#sun-addr', sh.el).value.trim(); if (!/^0x[a-fA-F0-9]{40}$/.test(a)) { toast('A public address, starting 0x.'); return; }
+    const b = $('#sun-go', sh.el); b.disabled = true; b.textContent = 'Reading Giveth...';
+    try {
+      const r = await fetch('/api/giveth?q=sunlight&address=' + encodeURIComponent(a), { cache: 'no-store' });
+      const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'no answer');
+      if (!d.found) { toast('Giveth has not seen that address yet.'); b.disabled = false; b.textContent = 'Read it'; return; }
+      S.sun = Object.assign({ address: a }, d); save(); sh.close();
+      toast('Sunlight ' + d.sun + ' of 5 · ' + plural(d.boosted, 'project') + ' boosted');
+      checkAlchemy(); render();
+    } catch (e) { b.disabled = false; b.textContent = 'Read it'; toast(String(e.message || e)); }
+  });
+}
 // ══ THE EMOTIONAL TRACE · Begin → Become → Bridge → Bloom ══════════════════════
 // Giveth's rail moves the capital. This one moves what the capital was for.
 let gvLane = 'verified', gvSearch = '', gvList = null, gvState = 'idle', gvTotal = 0;
-let conSlug = '', conKey = '', conSeeds = null, conState = 'idle';
+let conSlug = '', conKey = '', conSeeds = null, conState = 'idle', conSignal = null;
 const GVK = 'gratus.giveth.key';
 
 async function loadGiveth() {
@@ -227,9 +300,15 @@ async function projectSheet(slug) {
     '<span class="kicker mint">' + (p.givbacks ? 'GIVbacks eligible · ' : p.verified ? 'Verified · ' : '') + plural(p.donors, 'donor') + (p.raised ? ' · $' + p.raised.toLocaleString() + ' raised' : ' · nothing given yet') + '</span>' +
     '<p class="body">' + esc(p.summary) + '</p>' +
     (p.categories.length ? '<div class="chips">' + p.categories.map((c) => '<span class="chip">' + esc(c) + '</span>').join('') + '</div>' : '') +
+    '<div id="gv-signal"></div>' +
     '<div class="actions"><button class="btn mint" id="gv-seed">Plant a Gratus Seed &amp; give ' + esc(p.bloom) + '</button><a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">Read it on Giveth</a></div>' +
     '<p class="cap">Giving happens on giveth.io in your own wallet. Gratus never touches the money.</p>';
   $('#gv-seed', sh.el).addEventListener('click', () => { sh.close(); seedSheet(p); });
+  // how faithfully this project answers the people who give to it. A reading, never a comparison.
+  fetch('/api/trace?project=' + encodeURIComponent(p.slug), { cache: 'no-store' }).then((r) => r.json()).then((d) => {
+    const el = $('#gv-signal', sh.el); if (!el || !d || !d.signal) return; const g = d.signal;
+    el.innerHTML = '<div class="glass card"><span class="kicker mint">How this project answers</span><div class="glass stats"><div><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div><b>' + g.share + '%</b><span>watered</span></div><div><b>' + (g.medianDays == null ? '—' : g.medianDays) + '</b><span>days to answer</span></div></div><p class="cap">Written by people who gave. Only this project can change it, by writing back.</p></div>';
+  }).catch(() => null);
 }
 // ── Begin: the seed goes in with the gift ──
 function seedSheet(p) {
@@ -252,9 +331,12 @@ function seedSheet(p) {
         body: JSON.stringify({ act: 'plant', project: p.slug, title: p.title, message, name, tx, bloom: p.bloom }) });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.seed) throw new Error(d.error || 'the trace refused');
-      S.seeds.push(Object.assign({}, d.seed, { slug: p.slug, image: p.image || null }));
+      S.seeds.push(Object.assign({}, d.seed, { slug: p.slug, image: p.image || null, categories: p.categories || [] }));
+      if (tx) confirmGift(d.seed.id, p.slug, tx);
       save(); sh.close();
-      playCeremonies(['<div class="cer"><span class="big">🌱</span><h2>Capital sent.<br>Seed planted.</h2><p>Your words are with ' + esc(p.title) + '. When they water it, this seed blooms into ' + esc(p.bloom) + ' in your garden.</p><span class="kicker">tap to continue</span></div>'], () => { checkMilestones(); render(); });
+      playCeremonies([d.first
+        ? '<div class="cer"><span class="big">🫶</span><h2>I see you.</h2><p>Yours is the first seed ' + esc(p.title) + ' has ever received. This one blooms into a mark nobody else can plant twice.</p><span class="kicker">tap to continue</span></div>'
+        : '<div class="cer"><span class="big">🌱</span><h2>Capital sent.<br>Seed planted.</h2><p>Your words are with ' + esc(p.title) + '. When they water it, this seed blooms into ' + esc(p.bloom) + ' in your garden.</p><span class="kicker">tap to continue</span></div>'], () => { checkMilestones(); checkAlchemy(); render(); });
     } catch (e) { btn.disabled = false; btn.textContent = 'Capital sent · plant the seed'; toast(String(e.message || e)); }
   });
 }
@@ -264,8 +346,22 @@ function mySeedSheet(id) {
   sheet('<div class="hero-sm"><span class="orb xl' + (b ? ' lit' : '') + '"><span>' + esc(b ? s.bloom : '🌱') + '</span></span><h2>' + esc(s.title) + '</h2><span class="kicker mint">' + esc(b ? 'Bloomed' : 'Planted') + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + '</span></div>' +
     '<span class="kicker mint">What you wrote</span><p class="lead" style="white-space:pre-wrap">' + esc(s.message) + '</p>' +
     (b && s.water ? '<span class="kicker gold">What they wrote back</span><p class="lead" style="white-space:pre-wrap">' + esc(s.water.reply) + '</p><span class="cap">' + esc(s.water.from) + ' · ' + esc(fmtDay(s.water.at.slice(0, 10))) + '</span>' : '<p class="cap">Not watered yet. A project answers when it can; some answer in a day, some in a season. The seed keeps either way.</p>') +
-    (s.tx ? '<span class="cap">tx ' + esc(s.tx.slice(0, 18)) + '…</span>' : '') +
+    (s.confirmed ? '<span class="kicker mint">Giveth confirms ' + esc(s.confirmed.amount + ' ' + (s.confirmed.currency || '')) + '</span>' : s.tx ? '<span class="cap">tx ' + esc(s.tx.slice(0, 18)) + '… (unconfirmed)</span>' : '') +
+    (s.first ? '<p class="cap">🫶 Yours was the first seed this project ever received.</p>' : '') +
+    (b && s.water && s.water.passTo ? '<div class="glass card"><span class="kicker gold">They passed it on</span><p class="body">' + esc(s.water.from) + ' is grateful for <b>' + esc(s.water.passTo) + '</b>' + (s.water.passWhy ? ': ' + esc(s.water.passWhy) : '') + '</p><button class="btn mint" data-flow="' + esc(s.water.passTo) + '">Continue the flow ' + esc(s.water.passTo) + ' →</button></div>' : '') +
+    (b ? '<button class="btn" data-similar="' + esc(s.slug || s.project) + '">Others like this one</button>' : '') +
     '<div class="links"><a href="https://giveth.io/project/' + esc(s.slug || s.project) + '" target="_blank" rel="noopener">The project on Giveth</a></div>');
+}
+// ── the seed and the capital, linked: ask Giveth whether that transaction really arrived ──
+async function confirmGift(seedId, slug, tx) {
+  try {
+    const r = await fetch('/api/giveth?q=confirm&slug=' + encodeURIComponent(slug) + '&tx=' + encodeURIComponent(tx), { cache: 'no-store' });
+    const d = await r.json().catch(() => ({})); if (!r.ok || !d.confirmed) return;
+    const mine = S.seeds.find((x) => x.id === seedId); if (mine) { mine.confirmed = { at: new Date().toISOString(), amount: d.gift.amount, currency: d.gift.currency, usd: d.gift.usd }; save(); }
+    fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'confirm', project: slug, seed: seedId, amount: String(d.gift.amount), currency: d.gift.currency, usd: d.gift.usd }) }).catch(() => null);
+    toast('Giveth confirms it: ' + d.gift.amount + ' ' + d.gift.currency);
+    render();
+  } catch (e) {}
 }
 // ── Bridge: has anyone watered what I planted ──
 async function checkBloom() {
@@ -281,7 +377,7 @@ async function checkBloom() {
   }
   if (!bloomed.length) return;
   save();
-  playCeremonies(bloomed.map((s) => '<div class="cer"><span class="big">' + esc(s.bloom) + '</span><h2>Your seed bloomed.</h2><p>' + esc((s.water && s.water.from) || s.title) + ' wrote back: “' + esc(((s.water && s.water.reply) || '').slice(0, 140)) + '”</p><span class="kicker">tap to continue</span></div>'), () => { checkMilestones(); render(); });
+  playCeremonies(bloomed.map((s) => '<div class="cer"><span class="big">' + esc(s.bloom) + '</span><h2>Your seed bloomed.</h2><p>' + esc((s.water && s.water.from) || s.title) + ' wrote back: “' + esc(((s.water && s.water.reply) || '').slice(0, 140)) + '”</p><span class="kicker">tap to continue</span></div>'), () => { checkMilestones(); checkAlchemy(); render(); });
 }
 // ── Become: the project's own console ──
 function viewConsole() {
@@ -293,6 +389,7 @@ function viewConsole() {
     '<input class="field" id="con-key" placeholder="your project key" aria-label="project key" value="' + esc(conKey) + '">' +
     '<div class="actions"><button class="btn mint" id="con-open">Open the feed</button><button class="btn" id="con-claim">Claim this project</button></div>' +
     '<p class="cap">The key waters seeds for one project. Claiming shows it once, and only a hash of it is kept. This is a light claim, not verification: real verification lives on Giveth.</p></div>' +
+    (conSignal ? '<div class="glass card"><span class="kicker mint">How you answer</span><div class="glass stats"><div><b>' + conSignal.seeds + '</b><span>' + (conSignal.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div><b>' + conSignal.share + '%</b><span>watered</span></div><div><b>' + (conSignal.medianDays == null ? '—' : conSignal.medianDays) + '</b><span>days to answer</span></div></div><p class="cap">This is not a comparison with anyone. It is here so you can see what the people who gave to you are waiting for.</p></div>' : '') +
     (conState === 'loading' ? '<p class="cap">Reading the trace...</p>' : '') +
     (conState === 'live' && !seeds.length ? '<p class="cap">No seeds yet for that project. When someone gives with a Gratus Seed, it arrives here.</p>' : '') +
     (seeds.length ? '<div class="eyebrow"><h2>Seeds</h2><span class="more">' + plural(seeds.length, 'seed') + '</span></div><div class="rows">' + seeds.map((s) => '<div class="glass entry conseed"><span class="thumb">' + esc(s.status === 'bloomed' ? s.bloom : '🌱') + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(s.name) + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + (s.tx ? ' · on chain' : '') + '</span><span class="text">' + esc(s.message) + '</span>' + (s.water ? '<span class="cap">You watered it: ' + esc(s.water.reply) + '</span>' : '<button class="btn sm mint" data-water="' + esc(s.id) + '">Water this seed</button>') + '</span></div>').join('') + '</div>' : '') +
@@ -305,7 +402,7 @@ async function conLoad() {
   try {
     const r = await fetch('/api/trace?project=' + encodeURIComponent(conSlug), { cache: 'no-store' });
     const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'no answer');
-    conSeeds = d.seeds || []; conState = 'live';
+    conSeeds = d.seeds || []; conSignal = d.signal || null; conState = 'live';
     try { localStorage.setItem(GVK, JSON.stringify({ slug: conSlug, key: conKey })); } catch (e) {}
   } catch (e) { conSeeds = null; conState = 'idle'; toast(String(e.message || e)); }
   render();
@@ -329,18 +426,32 @@ function waterSheet(seedId) {
     '<span class="kicker mint">Write back</span>' +
     '<textarea class="field" id="wt-msg" rows="3" maxlength="280" placeholder="This means the world to us. We just..." aria-label="your reply"></textarea>' +
     '<input class="field" id="wt-from" maxlength="40" placeholder="your name or the project\'s" aria-label="from" value="' + esc(s.title || conSlug) + '">' +
+    '<span class="kicker gold">Pass it on, if you like</span>' +
+    '<p class="cap">Name a Giveth project you are grateful for. The person who gave to you sees it, and can carry the flow onward.</p>' +
+    '<input class="field" id="wt-pass" maxlength="120" placeholder="their Giveth slug, e.g. earth-commons" aria-label="a project you are grateful for">' +
+    '<input class="field" id="wt-why" maxlength="140" placeholder="why them, in a line" aria-label="why">' +
     '<button class="btn mint wide" id="wt-send">Send it · their seed blooms</button>', { autofocus: true });
   $('#wt-send', sh.el).addEventListener('click', async () => {
     const reply = $('#wt-msg', sh.el).value.trim(); if (!reply) { toast('A few words back.'); return; }
     const from = $('#wt-from', sh.el).value.trim();
     const b = $('#wt-send', sh.el); b.disabled = true; b.textContent = 'Sending...';
     try {
-      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'water', project: conSlug, seed: seedId, reply, from, key: conKey }) });
+      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'water', project: conSlug, seed: seedId, reply, from, key: conKey, passTo: ($('#wt-pass', sh.el) || {}).value, passWhy: ($('#wt-why', sh.el) || {}).value }) });
       const d = await r.json().catch(() => ({})); if (!r.ok || !d.seed) throw new Error(d.error || 'the trace refused');
       const i = conSeeds.findIndex((x) => x.id === seedId); if (i >= 0) conSeeds[i] = d.seed;
       sh.close(); toast('Watered. It blooms in their garden.'); render();
     } catch (e) { b.disabled = false; b.textContent = 'Send it · their seed blooms'; toast(String(e.message || e)); }
   });
+}
+async function similarSheet(slug) {
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>♾️</span></span><h2>The flow continues</h2><span class="kicker mint">Reading Giveth</span></div>');
+  try {
+    const r = await fetch('/api/giveth?q=similar&slug=' + encodeURIComponent(slug), { cache: 'no-store' });
+    const d = await r.json().catch(() => ({})); const ps = (d.projects || []).filter((p) => p.slug !== slug);
+    sh.el.innerHTML = '<div class="grabber" aria-hidden="true"></div><h2>The flow continues</h2><p class="body">Projects like the one you gave to. Gratitude routed along what it is already near, rather than a fresh start each time.</p>' +
+      (ps.length ? '<div class="rows">' + ps.map(projectRow).join('') + '</div>' : '<p class="cap">Giveth has nothing similar to hand right now.</p>');
+    $$('[data-gv]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); projectSheet(b.dataset.gv); }));
+  } catch (e) { sh.close(); toast('Giveth is not answering right now.'); }
 }
 function traceBlock() {
   if (!S.seeds.length) return '';
@@ -573,7 +684,7 @@ function viewBook() {
   else if (bookTab === 'emojis') { const pal = palette(); body = '<div class="glass card"><span class="kicker mint">Your palette</span><div class="chips">' + pal.map((e) => '<button class="orb' + (plantFor(e) ? ' lit' : '') + '" data-arc="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div><div class="two"><input class="field" id="new-emoji" placeholder="any emoji" aria-label="a new emoji"><button class="btn" id="add-emoji">Add an emoji</button></div></div>' +
     '<div class="eyebrow"><h2>Arcs</h2><span class="more">' + C.evo.chains.length + ' chains</span></div><div class="rows">' + C.evo.chains.map((ch) => '<button class="glass recipe" data-chain="' + esc(ch.id) + '"><span class="f">' + ch.stages.map((s) => esc(s.emoji)).join('<span class="op">→</span>') + '</span><span class="name">' + esc(ch.arc) + '</span><span class="line">' + esc(ch.stages[0].line) + '</span></button>').join('') + '</div>'; }
   else { const cats = C.recipes.categories; const list = allRecipes().filter((r) => recipeCat === 'all' || r.cat === recipeCat); body = '<div class="chips row"><button class="chip' + (recipeCat === 'all' ? ' on' : '') + '" data-rcat="all">All</button>' + Object.keys(cats).map((k) => '<button class="chip' + (recipeCat === k ? ' on' : '') + '" data-rcat="' + k + '">' + esc(cats[k].name) + '</button>').join('') + '<button class="chip' + (recipeCat === 'mine' ? ' on' : '') + '" data-rcat="mine">Mine</button></div>' +
-    '<button class="btn wide" id="add-recipe">+ Add a recipe</button><div class="rows">' + list.map((r) => { const st = recipeState(r); return '<button class="glass recipe' + (st.made ? ' made' : '') + '" data-recipe="' + esc(r.id) + '"><span class="f">' + r.formula.map(esc).join('<span class="op">+</span>') + '<span class="op">→</span>' + esc(r.result) + '</span><span class="cat">' + esc(r.cat === 'mine' ? 'Mine' : (cats[r.cat] || {}).name || '') + '</span><span class="name">' + esc(r.name) + '</span><span class="line">' + esc(r.statement) + (st.made ? ' · made' : ' · ' + st.days + ' of ' + st.need + ' days together') + '</span></button>'; }).join('') + '</div>'; }
+    alchemyBlock() + '<div class="eyebrow"><h2>Recipes</h2></div><button class="btn wide" id="add-recipe">+ Add a recipe</button><div class="rows">' + list.map((r) => { const st = recipeState(r); return '<button class="glass recipe' + (st.made ? ' made' : '') + '" data-recipe="' + esc(r.id) + '"><span class="f">' + r.formula.map(esc).join('<span class="op">+</span>') + '<span class="op">→</span>' + esc(r.result) + '</span><span class="cat">' + esc(r.cat === 'mine' ? 'Mine' : (cats[r.cat] || {}).name || '') + '</span><span class="name">' + esc(r.name) + '</span><span class="line">' + esc(r.statement) + (st.made ? ' · made' : ' · ' + st.days + ' of ' + st.need + ' days together') + '</span></button>'; }).join('') + '</div>'; }
   return hero(scene('book'), { cls: 'room-hero', h1: 'Growth Book', k1: 'Your Gratitude Journal', k2: 'Journal · Phases · Emojis · Recipes' }) +
     '<div class="page"><div class="glass seg" style="grid-template-columns:repeat(4,1fr)">' + [['journal', 'Journal'], ['phases', 'Phases'], ['emojis', 'Emojis'], ['recipes', 'Recipes']].map(([k, n]) => '<button class="' + (bookTab === k ? 'on' : '') + '" data-book="' + k + '">' + n + '</button>').join('') + '</div>' + body + '</div>';
 }
@@ -745,8 +856,13 @@ const MILESTONES = [
 ];
 function checkMilestones() {
   if (!S) return; const now = today(); const lit = [];
-  for (const [id, name, , test] of MILESTONES) { let ok = false; try { ok = test(); } catch (e) { ok = false; } if (!S.milestones[id] && ok) { S.milestones[id] = now; lit.push(name); } }
-  if (lit.length) { save(); setTimeout(() => toast('Milestone · ' + lit[0]), 600); }
+  for (const [id, name, ico, test] of MILESTONES) { let ok = false; try { ok = test(); } catch (e) { ok = false; } if (!S.milestones[id] && ok) { S.milestones[id] = now; lit.push({ id, name, ico }); } }
+  if (!lit.length) return;
+  save();
+  const BIG = { 'seven-in-row': 1, 'thirty-in-row': 1, bloomed: 1, ready: 1, 'first-gift': 1, received: 1, 'first-bloom': 1, 'care-100': 1 };
+  const big = lit.filter((x) => BIG[x.id]);
+  if (big.length) playCeremonies(big.map((x) => '<div class="cer"><span class="big">' + esc(x.ico) + '</span><h2>' + esc(x.name) + '</h2><p>A mark on your own road. Nothing here compares you with anyone.</p><span class="kicker">tap to continue</span></div>'), () => render());
+  else setTimeout(() => toast('Milestone · ' + lit[0].name), 600);
 }
 function viewMilestones() {
   const row = daysInRow(); const lit = MILESTONES.filter(([id]) => S.milestones[id]).length;
@@ -769,11 +885,12 @@ function youSheet() {
   const col = C.copy.locked.colophon; const d = S.plants.reduce((n, p) => n + daysOf(p), 0);
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:88px;height:88px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>' + esc(S.name || 'You') + '</h2><span class="kicker mint">' + esc(S.entries.length + (S.entries.length === 1 ? ' entry' : ' entries') + ' · ' + plural(S.plants.length, 'plant') + ' · ' + plural(d, 'day') + ' of care') + '</span></div>' +
     '<input class="field" id="you-name" placeholder="your name, for the gifts you give" maxlength="40" aria-label="your name" value="' + esc(S.name || '') + '">' +
-    '<div class="actions"><button class="btn" id="you-save">Save</button>' + (installEvt || /iphone|ipad|android/i.test(navigator.userAgent) ? '<button class="btn mint" id="you-install">Add Gratus to your phone</button>' : '') + '<button class="btn" id="you-laws">The twelve laws</button><button class="btn" id="you-export">Export everything</button><label class="btn" id="you-restore">Restore from a file<input type="file" id="you-file" accept="application/json,.json" hidden></label><button class="btn quiet" id="you-reset">Start over on this device</button></div>' +
+    '<div class="actions"><button class="btn" id="you-save">Save</button>' + (installEvt || /iphone|ipad|android/i.test(navigator.userAgent) ? '<button class="btn mint" id="you-install">Add Gratus to your phone</button>' : '') + '<button class="btn" id="you-sun">🔆 Sunlight on Giveth</button><button class="btn" id="you-laws">The twelve laws</button><button class="btn" id="you-export">Export everything</button><label class="btn" id="you-restore">Restore from a file<input type="file" id="you-file" accept="application/json,.json" hidden></label><button class="btn quiet" id="you-reset">Start over on this device</button></div>' +
     '<div class="cap" style="display:grid;gap:4px;padding-top:8px"><b style="color:var(--ink)">' + esc(col.name) + '</b><span>' + esc(col.method) + '</span><span>' + esc(col.date) + ' · <a href="' + esc(col.makerUrl || '#') + '" target="_blank" rel="noopener">' + esc(col.maker) + '</a></span><span style="color:var(--ink-2)">' + esc(col.words) + '</span><span style="color:var(--ink-2)">' + esc(col.close) + '</span><span>Voice recordings stay on this device and are not in the export.</span><span><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span></div>');
   $('#you-save', sh.el).addEventListener('click', () => { S.name = $('#you-name', sh.el).value.trim(); save(); sh.close(); toast('Saved'); });
   const ins = $('#you-install', sh.el); if (ins) ins.addEventListener('click', () => { sh.close(); promptInstall(); });
   $('#you-laws', sh.el).addEventListener('click', () => { sh.close(); openLaws(); });
+  const sn = $('#you-sun', sh.el); if (sn) sn.addEventListener('click', () => { sh.close(); sunSheet(); });
   $('#you-export', sh.el).addEventListener('click', () => { const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gratus-' + today() + '.json'; document.body.appendChild(a); a.click(); a.remove(); toast('Exported'); });
   $('#you-file', sh.el).addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { let o = null; try { o = JSON.parse(rd.result); } catch (e) { o = null; }
     if (!o || o.v !== 1 || !Array.isArray(o.entries) || !Array.isArray(o.plants)) { toast('That file is not a Gratus export.'); return; }
@@ -894,6 +1011,8 @@ function wire() {
   const co = $('#con-open'); if (co) co.addEventListener('click', conLoad);
   const cl = $('#con-claim'); if (cl) cl.addEventListener('click', conClaim);
   $$('[data-water]').forEach((b) => b.addEventListener('click', () => waterSheet(b.dataset.water)));
+  $$('[data-flow]').forEach((b) => b.addEventListener('click', () => { go('give', 'giveth'); setTimeout(() => projectSheet(b.dataset.flow), 300); }));
+  $$('[data-similar]').forEach((b) => b.addEventListener('click', () => similarSheet(b.dataset.similar)));
   const gw = $('#give-world'); if (gw) gw.addEventListener('click', () => go('give', 'world'));
   $$('[data-given]').forEach((b) => b.addEventListener('click', () => { const g = S.gifts.given.find((x) => x.id === b.dataset.given); if (g) shareSheet(g); }));
   $$('[data-cat]').forEach((b) => b.addEventListener('click', () => { projFilter = b.dataset.cat; render(); }));
@@ -917,8 +1036,8 @@ function wire() {
 
 // ── boot ──
 async function boot() {
-  const [evo, names, prompts, copy, book, recipes] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes'].map((n) => fetch('/config/' + n + '.json?v=12').then((r) => r.json())));
-  C = { evo, names, prompts, copy, book, recipes }; load(); stars(); songInit();
+  const [evo, names, prompts, copy, book, recipes, alchemy] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy'].map((n) => fetch('/config/' + n + '.json?v=16').then((r) => r.json())));
+  C = { evo, names, prompts, copy, book, recipes, alchemy }; load(); stars(); songInit();
   if ('serviceWorker' in navigator && !location.search.includes('dev=1')) navigator.serviceWorker.register('/sw.js').catch(() => null);
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));

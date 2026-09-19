@@ -1,8 +1,8 @@
 // Offline-first shell. Everything lives on the device for now.
-const V = 'gratus-1789839681';
-const SHELL = ['/app.html', '/assets/css/tokens.css?v=29', '/assets/css/galaxy.css?v=29', '/assets/js/galaxy.js?v=1789839681', '/assets/js/ui.js?v=12', '/assets/js/keep.js?v=13',
+const V = 'gratus-1789840100';
+const SHELL = ['/app.html', '/assets/css/tokens.css?v=30', '/assets/css/galaxy.css?v=30', '/assets/js/galaxy.js?v=1789840100', '/assets/js/ui.js?v=12', '/assets/js/keep.js?v=13',
   '/engine/gratus.js?v=12', '/engine/emoji.js?v=12', '/engine/rng.js?v=12',
-  '/config/evolutions.json?v=12', '/config/emoji-names.json?v=12', '/config/prompts.json?v=12', '/config/copy.json?v=12', '/config/growth-book.json?v=12', '/config/recipes.json?v=12',
+  '/config/evolutions.json?v=12', '/config/emoji-names.json?v=12', '/config/prompts.json?v=12', '/config/copy.json?v=12', '/config/growth-book.json?v=12', '/config/recipes.json?v=12', '/config/alchemy.json?v=16',
   '/assets/art/gfx/logo.png', '/assets/art/gfx/g11.jpg', '/assets/art/gfx/g08.jpg', '/assets/art/gfx/g13.jpg', '/assets/art/gfx/g15.jpg', '/assets/art/gfx/g20.jpg', '/assets/art/gfx/g22.jpg', '/assets/art/gfx/g27.jpg', '/assets/art/gfx/v3-poster.jpg',
   '/assets/brand/gratus-logo-original.webp', '/assets/brand/icon-192.png', '/manifest.webmanifest'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(V).then((c) => c.addAll(SHELL).catch(() => null)).then(() => self.skipWaiting())); });

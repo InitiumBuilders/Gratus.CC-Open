@@ -1,0 +1,79 @@
+{
+  "note": "Harmonic alchemy: marks that need both halves of a person. Giving alone will not make one, and neither will writing alone. Conditions are checked on this device; nothing here is sent anywhere.",
+  "conditions": {
+    "entryDays": "distinct days written in the journal",
+    "gave": "seeds planted with a gift, of any project",
+    "gaveCategory": "a seed planted with a gift to a project in this Giveth category",
+    "gaveUnseen": "a seed that was the first a project ever received",
+    "bloomed": "seeds a project has watered",
+    "phase": "a plant that has reached this many days of care",
+    "gifts": "Gratus Gifts given",
+    "goals": "Gratus Goals posted",
+    "folders": "folders made",
+    "voice": "entries kept with your voice",
+    "photo": "entries kept with a photo",
+    "sun": "how much a linked Giveth address tends the commons, 0 to 5"
+  },
+  "models": [
+    {
+      "id": "resilient-earth", "result": "🌍", "name": "Resilient Earth",
+      "line": "You funded the ground and you tended yourself. Both, or neither.",
+      "need": { "gaveCategory": "Environment & Energy", "entryDays": 3 }
+    },
+    {
+      "id": "first-light", "result": "🫶", "name": "First Light",
+      "line": "You gave to someone nobody had given to yet, and you kept writing.",
+      "need": { "gaveUnseen": 1, "entryDays": 2 }
+    },
+    {
+      "id": "answered", "result": "🌻", "name": "Answered",
+      "line": "You wrote to a stranger about why. A stranger wrote back.",
+      "need": { "bloomed": 1 }
+    },
+    {
+      "id": "deep-roots", "result": "🌳", "name": "Deep Roots",
+      "line": "One thing held for nine days, and a gift sent outward in the same season.",
+      "need": { "phase": 9, "gave": 1 }
+    },
+    {
+      "id": "open-hands", "result": "🤝", "name": "Open Hands",
+      "line": "You gave to a person you know and to a person you will never meet.",
+      "need": { "gifts": 1, "gave": 1 }
+    },
+    {
+      "id": "spoken-and-sent", "result": "🎙️", "name": "Spoken And Sent",
+      "line": "You said it out loud, and then you did something about it.",
+      "need": { "voice": 1, "gave": 1 }
+    },
+    {
+      "id": "clear-water", "result": "💧", "name": "Clear Water",
+      "line": "You gave where the water is, and you kept a week of your own.",
+      "need": { "gaveCategory": "Nature", "entryDays": 7 }
+    },
+    {
+      "id": "the-commons", "result": "🔆", "name": "The Commons",
+      "line": "You tend the commons on chain and you tend yourself off it.",
+      "need": { "sun": 2, "entryDays": 5 }
+    },
+    {
+      "id": "named-and-kept", "result": "📁", "name": "Named And Kept",
+      "line": "You gave a season a name, and you gave a stranger a reason.",
+      "need": { "folders": 1, "gave": 1 }
+    },
+    {
+      "id": "said-aloud", "result": "🎯", "name": "Said Aloud",
+      "line": "You said where you are going, and you helped someone else get there.",
+      "need": { "goals": 1, "gave": 1 }
+    },
+    {
+      "id": "the-whole-circle", "result": "♾️", "name": "The Whole Circle",
+      "line": "Planted, written, given, answered. The loop closed once, and it can close again.",
+      "need": { "entryDays": 9, "gifts": 1, "bloomed": 1, "phase": 13 }
+    },
+    {
+      "id": "taught-by-light", "result": "🕊️", "name": "Taught By Light",
+      "line": "A picture, a voice, a gift and thirty days. Nothing here can be bought.",
+      "need": { "photo": 1, "voice": 1, "gave": 1, "entryDays": 30 }
+    }
+  ]
+}

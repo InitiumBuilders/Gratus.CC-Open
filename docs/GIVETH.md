@@ -69,6 +69,15 @@ The lanes in the Gratus room map onto their API like this:
 
 A single project comes from `projectBySlug`. The donate link is `https://giveth.io/donate/<slug>` and the project page is `https://giveth.io/project/<slug>`.
 
+Four more reads, added in v16:
+
+| Call | Their query | What it is for |
+|---|---|---|
+| `q=confirm&slug=&tx=` | `donationsByProjectId(projectId, take:300)` | Checking a transaction hash against that project's recent gifts, so a seed can say what actually arrived. |
+| `q=similar&slug=` | `similarProjectsBySlug` | The circular flow: what else is near what you already gave to. |
+| `q=sunlight&address=` | `userByAddress` | How much a **public** address takes part: boosted, given, liked. Read only, no authentication, no signature. |
+| the responsiveness reading | ours, not theirs | Computed from our own trace document, never from their data. |
+
 **The donation itself never happens in Gratus.** We open Giveth in a new tab; the person gives from their own wallet, on their own chain, to the project's own address. Gratus holds no money, takes no fee, and has no custody. The app says so on the screen.
 
 ## 4. What Gratus adds: the Emotional TRACE
@@ -132,11 +141,15 @@ The capital funds the work. The seed funds the morale. The bloom funds the next 
 
 The full reasoning is in [EMOTIONAL-TRACE.md](EMOTIONAL-TRACE.md). In short:
 
-1. **Emotional TRACE** — Begin, Become, Bridge, Bloom. **Shipped in v15.**
-2. **The "I See You" catalyst** — visibility for projects with zero donors. Lane shipped; the rare mark is next.
-3. **Human-in-the-loop reputation** — seeds received and faithfully watered as a qualitative signal, offered to Giveth and to DeVouch.
-4. **Harmonic emoji alchemy** — recipes that need both a gift and inner work.
-5. **Circular Gratus flow** — routing a share of GIVbacks yield toward projects your project has thanked.
-6. **GIVgarden cross-pollination** — governance participation accelerating growth in the personal garden.
+| # | Loop | State |
+|---|---|---|
+| 1 | **Emotional TRACE** — Begin, Become, Bridge, Bloom | Shipped, v15 |
+| 2 | **The "I See You" catalyst** — the Nobody yet lane, and a 🫶 mark for a project's first-ever seed | Shipped, v16 |
+| 3 | **Human-in-the-loop responsiveness** — seeds received, share watered, days to answer | Shipped, v16 |
+| 4 | **Harmonic emoji alchemy** — twelve marks needing both a gift and inner work | Shipped, v16 |
+| 5 | **Circular Gratus flow** — a steward passes it on; the donor continues the flow | Shipped as a prompt, v16 |
+| 6 | **GIVgarden cross-pollination** — a public address read as sunlight | Shipped, v16 |
+
+The two that touch money or keys, 5 and 6, ship in the only form this app will carry them: a prompt the person acts on, and a read-only look at a public address. No custody, no connection, no signature.
 
 Sources: [docs.giveth.io](https://docs.giveth.io) · [docs.giveth.io/givbacks](https://docs.giveth.io/givbacks) · [docs.giveth.io/projectverification](https://docs.giveth.io/projectverification) · [github.com/Giveth/impact-graph](https://github.com/Giveth/impact-graph)

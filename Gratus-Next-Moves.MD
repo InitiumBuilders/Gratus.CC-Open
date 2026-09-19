@@ -13,12 +13,14 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 The full brief is in [docs/GIVETH.md](docs/GIVETH.md); the architecture and the six loops are in [docs/EMOTIONAL-TRACE.md](docs/EMOTIONAL-TRACE.md). Shipped in v15: loop one, the Emotional TRACE, and the "Nobody yet" lane of loop two.
 
 - **G1. Owner verification.** A Gratus claim is first-come and light. Tie it to a verified Giveth project owner, or to a DeVouch attestation, so watering cannot be impersonated. The one thing we cannot do alone, and the first thing to ask Giveth for.
-- **G2. Confirm the gift.** Read the transaction back from Giveth's API by hash and mark the seed confirmed, so the seed and the capital are actually linked.
-- **G3. Rate limits.** Planting, watering and the voice function all need a per-device allowance before this is shared widely.
+- ~~**G2. Confirm the gift.**~~ Done in v16. It is a lookup, not a proof of ownership: a hash is public. Ownership needs a signature, which this app does not ask for.
+- **G3. Rate limits.** Done for planting in v16 (240 per project per day, five-minute dedupe). The **voice function still has no allowance** and spends his ElevenLabs credit: this is now the most urgent open item.
 - **G4. Per-seed documents.** One document per project is last-writer-wins, and Vercel Blob takes a few seconds to become consistent, which widens that window. Split it into one document per seed when the stream grows.
-- **G5. The "I See You" mark.** When a seed is the first a project ever receives, bloom it into a rare hand-sign mark.
+- ~~**G5. The "I See You" mark.**~~ Done in v16: 🫶, with its own ceremony.
 - **G6. Tell the project it was watered.** A steward has no way to know a bloom landed. A gentle receipt, without presence words.
-- **G7. Loops three to six**, in the order set out in EMOTIONAL-TRACE.md: reputation signal, emoji alchemy, circular flow, GIVgarden cross-pollination.
+- ~~**G7. Loops three to six.**~~ All shipped in v16. Loops 5 and 6 ship as a prompt and a read, which is the only form this app will carry them in.
+- **G9. Offer the responsiveness reading to Giveth and DeVouch.** It exists now and nobody outside Gratus can see it.
+- **G10. A steward has no way to know their water landed.** A receipt, without presence words.
 - **G8. Send the pitch.** The pitch in GIVETH.md is written. It has not been sent to anyone at Giveth.
 
 ## Now (the next ship or two)
