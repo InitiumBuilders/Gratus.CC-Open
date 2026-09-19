@@ -1,0 +1,22 @@
+{
+  "name": "Gratus.CC",
+  "short_name": "Gratus",
+  "description": "Grow Gratus Give. A kinder world grows from here. Plant your gratitude, grow an emoji garden, and give gifts that grow.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050912",
+  "theme_color": "#050912",
+  "icons": [
+    { "src": "/assets/brand/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/brand/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/brand/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/assets/brand/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Grow", "url": "/app/grow", "description": "Plant My Gratus" },
+    { "name": "Gratus", "url": "/app", "description": "Your Gratitude Garden" },
+    { "name": "Give", "url": "/app/give", "description": "Turn gratitude into impact" }
+  ]
+}

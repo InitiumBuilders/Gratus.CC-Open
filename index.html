@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5, user-scalable=yes">
+<title>Gratus.CC</title>
+<meta name="description" content="Gratus.CC · Grow Gratus Give. A kinder world grows from here. Plant your gratitude, grow an emoji garden, and give gifts that grow.">
+<meta name="theme-color" content="#050912">
+<meta property="og:title" content="Gratus.CC · Grow Gratus Give">
+<meta property="og:description" content="A kinder world grows from here. Plant your gratitude, grow an emoji garden, and give gifts that grow.">
+<meta property="og:image" content="https://www.gratus.cc/assets/brand/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/brand/icon-32.png" sizes="32x32">
+<link rel="icon" href="/assets/brand/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/brand/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=22">
+<link rel="stylesheet" href="/assets/css/galaxy.css?v=22">
+<style>
+  body { background: var(--ground); }
+  .site { position: relative; z-index: 2; }
+  .nav { position: absolute; top: 0; left: 0; right: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; max-width: 1100px; margin: 0 auto; }
+  .nav .brand { font-family: var(--display); font-size: 28px; display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 16px rgba(0, 0, 0, .8); color: var(--ink); text-decoration: none; }
+  .nav .brand img { width: 40px; height: 40px; filter: drop-shadow(0 0 10px rgba(180, 255, 120, .5)); }
+  .nav .links { display: flex; gap: 22px; }
+  .nav .links a { color: var(--ink); font-size: 17px; font-weight: 600; text-shadow: 0 1px 10px rgba(0, 0, 0, .8); }
+  .nav .btn { white-space: nowrap; }
+  .sect { position: relative; max-width: 1100px; margin: 0 auto; padding: 96px 24px; display: grid; gap: 24px; }
+  .sect.center { text-align: center; justify-items: center; }
+  .sect .huge { font-size: clamp(56px, 12vw, 120px); line-height: .98; text-shadow: 0 2px 40px rgba(0, 0, 0, .8); }
+  .sect .big { font-size: clamp(40px, 8vw, 72px); line-height: 1.02; text-shadow: 0 2px 30px rgba(0, 0, 0, .8); }
+  .sect .lead { max-width: 34em; text-shadow: 0 1px 14px rgba(0, 0, 0, .8); }
+  .hero-site { min-height: 100svh; display: grid; align-content: center; justify-items: center; text-align: center; gap: 22px; padding: 120px 24px 80px; position: relative; }
+  .hero-site::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(180deg, rgba(5, 9, 18, .72) 0%, rgba(5, 9, 18, .16) 30%, rgba(5, 9, 18, .22) 50%, rgba(5, 9, 18, .74) 78%, rgba(5, 9, 18, .92) 100%); }
+  .hero-site > * { position: relative; z-index: 1; }
+  .sect { background: rgba(5, 9, 18, .74); border: 1px solid rgba(255, 255, 255, .1); border-radius: 32px; width: calc(100% - 32px); margin: 24px auto; padding: 56px 24px; }
+  .foot { background: rgba(5, 9, 18, .84); border-radius: 32px 32px 0 0; }
+  .hero-site .cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .plate { border-radius: var(--r-24); overflow: hidden; border: 1px solid var(--hair-2); box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
+  .plate img { width: 100%; height: auto; display: block; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
+  .three .glass { padding: 22px; display: grid; gap: 8px; text-align: left; }
+  .three h3 { font-size: 32px; line-height: 36px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+  .partners { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .foot { text-align: center; padding: 64px 24px 96px; display: grid; gap: 8px; justify-items: center; color: var(--ink); font-size: 16px; text-shadow: 0 1px 10px rgba(0, 0, 0, .8); }
+  .foot .script { font-family: var(--display); font-style: italic; font-size: 34px; color: var(--ink); }
+  html.anim .sect > *, html.anim .hero-site > * { opacity: 0; transform: translateY(16px); filter: blur(8px); }
+  html.anim .sect.on > *, html.anim .hero-site.on > * { opacity: 1; transform: none; filter: none; transition: opacity 1s ease, transform 1s cubic-bezier(.16, 1, .3, 1), filter 1s ease; }
+  html.anim .on > :nth-child(2) { transition-delay: 120ms; } html.anim .on > :nth-child(3) { transition-delay: 240ms; } html.anim .on > :nth-child(4) { transition-delay: 360ms; }
+  @media (max-width: 720px) { .three, .pair { grid-template-columns: 1fr; } .sect { padding: 72px 20px; } .nav .links { display: none; } }
+</style>
+</head>
+<body>
+<div id="scene" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
+<div id="splash" hidden></div>
+<div class="site">
+<nav class="nav"><a class="brand" href="/"><img src="/assets/art/gfx/logo.png" alt="">Gratus.CC</a><span class="links"><a href="/app/grow">Grow</a><a href="/app">Gratus</a><a href="/app/give">Give</a><a href="/app/galaxy">Galaxy</a></span><a class="btn sm mint" href="/app">Open the app</a></nav>
+
+<section class="hero-site">
+  <img src="/assets/art/gfx/logo.png" alt="Gratus" style="width:150px;height:150px;filter:drop-shadow(0 0 24px rgba(180,255,120,.55)) drop-shadow(0 0 60px rgba(242,201,125,.3));animation:breathe 7s ease-in-out infinite">
+  <span class="kicker mint">Grow Gratus Give</span>
+  <h1 class="huge serif">Gratus.CC</h1>
+  <p class="statement">A kinder world grows from here.</p>
+  <div class="cta"><a class="btn mint" href="/app">Plant My Gratus 🌱</a><a class="btn gold" href="/gift">Open a Gratus Gift</a></div>
+  <span class="kicker">Gratitude in motion.</span>
+</section>
+
+<section class="sect center">
+  <span class="kicker mint">Three ways in</span>
+  <h2 class="big">Grow · Gratus · Give</h2>
+  <div class="plate"><img src="/assets/art/mock/grow-gratus-give.png" alt="The three screens of Gratus.CC: Grow, Gratus and Give" loading="lazy"></div>
+  <div class="three">
+    <div class="glass"><span class="kicker mint">Grow</span><h3>Plant today. A brighter tomorrow.</h3><p class="body">What are you grateful for today? Write it, tag it, and plant an emoji that grows a phase for every day you return to it. Post the Gratus Goals you are growing toward, and see everyone's in the stream.</p></div>
+    <div class="glass"><span class="kicker mint">Gratus</span><h3>Your Gratitude Garden</h3><p class="body">Moments take root. Gratitude grows. A kinder world blooms. Every emoji you keep sits in your garden, and the Growth Book is your journal by day, with the phases, the emojis and the recipes.</p></div>
+    <div class="glass"><span class="kicker gold">Give</span><h3>Turn gratitude into impact.</h3><p class="body">Give a Gratus Gift that carries its whole journey, support a project, or send a wish to tomorrow. Give what grows.</p></div>
+  </div>
+</section>
+
+<section class="sect center">
+  <span class="kicker mint">The first gift journey</span>
+  <h2 class="big">Every gift carries a story.</h2>
+  <p class="lead">Someone grows an emoji with days of gratitude and wraps it with a message. You unwrap it, walk its journey, see how it grew, and choose how to keep it. Then it can keep growing in your garden.</p>
+  <div class="plate"><img src="/assets/art/mock/gift-journey.png" alt="The eight pages of a Gratus Gift" loading="lazy"></div>
+  <a class="btn gold" href="/gift">Open a sample gift</a>
+</section>
+
+<section class="sect center">
+  <span class="kicker mint">People · Projects · A brighter planet</span>
+  <h2 class="big">The Gratus Galaxy</h2>
+  <p class="lead">A living constellation of gratitude, restoration and real-world impact.</p>
+  <div class="plate"><img src="/assets/art/gfx/g15.jpg" alt="The Gratus Galaxy" loading="lazy" style="max-height:640px;object-fit:cover;width:100%"></div>
+  <a class="btn" href="/app/galaxy">Explore The Galaxy →</a>
+  <div class="partners"><span class="kicker" style="align-self:center">Our partners</span><span class="chip">Giveth</span><span class="chip">Ripple Effect</span><span class="chip">Gitcoin</span><span class="chip">Open Source</span><span class="chip">Regen</span></div>
+</section>
+
+<section class="sect center">
+  <span class="kicker mint">Bolder possibilities · Many paths</span>
+  <div class="pair">
+    <a class="doorcard" href="/app/earth"><div class="art" style="background-image:url(/assets/art/gfx/g23.jpg)"></div><span class="kicker mint">1. Gratus Earth</span><h3>Heal Places</h3><p class="cap">A living map of real-world restoration projects. People fund, volunteer, and track healing across the planet.</p><p class="statement quiet">“Gratitude in action for a healthier Earth.”</p></a>
+    <a class="doorcard" href="/app/vault"><div class="art" style="background-image:url(/assets/art/gfx/g17.jpg)"></div><span class="kicker mint">2. Gratus Vault</span><h3>A Wish For Tomorrow</h3><p class="cap">A time capsule for humanity. Share your hopes, dreams and messages to future generations. Read what others around the world are dreaming about.</p><p class="statement quiet">“Different times. Same human heart.”</p></a>
+  </div>
+</section>
+
+<section class="sect center">
+  <span class="kicker mint">On your phone</span>
+  <h2 class="big">Add Gratus to your home screen.</h2>
+  <p class="lead">Open the app on your phone. On Android, in Chrome, open the menu and choose “Add to Home screen” or “Install app”. On iPhone, in Safari, tap Share, then “Add to Home Screen”. Gratus opens full screen and works offline.</p>
+  <a class="btn mint" href="/app">Open the app</a>
+</section>
+
+<footer class="foot">
+  <span class="script">Gratitude Moves Worlds.</span>
+  <span class="kicker">Grow what gives.</span>
+  <div class="hairline" style="width:64px;margin:16px 0;background:rgba(255,255,255,.3)"></div>
+  <b style="color:var(--ink)">Gratus.CC</b>
+  <span>a Davara Distinct Bio-symbolic illuminate glow build · twelve laws, one new world</span>
+  <span>9/2/2026 · August James Domanchuk</span>
+  <span>Journal Every Day. Give Gifts The Grow.</span>
+  <span>Gratus In Motus. Gratitude In Motion. Give Gifts That Grow. Gratus Gives.</span>
+  <span><a href="/app/laws">The twelve laws</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
+</footer>
+</div>
+<script type="module">
+  const GFX = (n) => '/assets/art/gfx/' + n; const h = document.documentElement; const ok = !matchMedia('(prefers-reduced-motion: reduce)').matches && !(navigator.connection && navigator.connection.saveData);
+  if (ok && !document.hidden) h.classList.add('anim');
+  // the scene is the screen: the Gate zooming out, forward and back, forever
+  const scene = document.getElementById('scene'); const layer = document.createElement('div'); layer.className = 'layer in'; layer.style.backgroundImage = 'url(' + GFX('dlong-poster.jpg') + ')';
+  if (ok) layer.innerHTML = '<video autoplay muted loop playsinline poster="' + GFX('dlong-poster.jpg') + '" aria-hidden="true"><source src="' + GFX('dlong.mp4') + '" type="video/mp4"></video>';
+  scene.appendChild(layer);
+  // the opening ritual, every time: the doorway, the light, a held white, then the page
+  const sp = document.getElementById('splash');
+  if (ok && !location.search.includes('nosplash')) {
+    sp.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.jpg') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + GFX('logo.png') + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
+    sp.hidden = false; const v = sp.querySelector('video'); let gone = false, flooded = false;
+    const out = () => { if (gone) return; gone = true; sp.classList.add('out'); setTimeout(() => { sp.hidden = true; sp.innerHTML = ''; }, 1500); };
+    const flood = () => { if (flooded) return; flooded = true; sp.querySelector('.white').classList.add('on'); sp.querySelector('.ritual').classList.add('lit'); setTimeout(out, 2600); };
+    v.addEventListener('ended', flood); v.addEventListener('timeupdate', () => { if (v.currentTime >= 24.4) flood(); }); const hard = setTimeout(flood, 16000);
+    sp.addEventListener('click', () => { clearTimeout(hard); out(); }); v.currentTime = 11; v.play().catch(() => setTimeout(out, 1000));
+  }
+  document.querySelectorAll(".kicker").forEach((k) => { if (/[.!?]$/.test(k.textContent.trim())) k.classList.add("say"); });
+  const secs = Array.from(document.querySelectorAll('.sect, .hero-site'));
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) e.target.classList.add('on'); }), { threshold: .2 }); secs.forEach((s) => io.observe(s)); }
+  setTimeout(() => secs.forEach((s) => s.classList.add('on')), 1200);
+  const st = document.querySelector('.stars'); let s = ''; for (let i = 0; i < 90; i++) s += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>'; st.innerHTML = s;
+</script>
+</body>
+</html>

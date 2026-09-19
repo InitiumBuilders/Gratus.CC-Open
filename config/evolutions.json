@@ -1,0 +1,359 @@
+{
+  "chains": [
+    {
+      "id": "seed-to-apple", "arc": "Seed To Apple", "family": "hope",
+      "stages": [
+        {"emoji":"🌱","name":"Seedling","line":"A small thanks, written down, is enough to begin."},
+        {"emoji":"🌿","name":"Herb","line":"Noticed again, the small thanks puts out leaves."},
+        {"emoji":"🌳","name":"Deciduous Tree","line":"Kept over many days, gratitude grows shade for other people."},
+        {"emoji":"🍎","name":"Red Apple","line":"What you tended feeds someone who did not plant it."}
+      ]
+    },
+    {
+      "id": "egg-to-rooster", "arc": "Egg To Rooster", "family": "hope",
+      "stages": [
+        {"emoji":"🥚","name":"Egg","line":"Something waits inside a quiet thanks, not yet seen."},
+        {"emoji":"🐣","name":"Hatching Chick","line":"Say it a few days in a row and it cracks open."},
+        {"emoji":"🐥","name":"Baby Chick","line":"Young gratitude follows you around, asking to be fed."},
+        {"emoji":"🐓","name":"Rooster","line":"Grown, it wakes the whole house before the light."}
+      ]
+    },
+    {
+      "id": "new-moon-to-full", "arc": "New Moon To Full", "family": "calm",
+      "stages": [
+        {"emoji":"🌑","name":"New Moon","line":"Some gratitude starts dark, a shape you trust is there."},
+        {"emoji":"🌒","name":"Waxing Crescent","line":"A thin edge of light shows after a few evenings."},
+        {"emoji":"🌓","name":"First Quarter","line":"Half lit now, and you can read by it."},
+        {"emoji":"🌔","name":"Waxing Gibbous","line":"Nearly whole, the thanks lights the path home."},
+        {"emoji":"🌕","name":"Full Moon","line":"Full, it needs no lamp to be seen by."}
+      ]
+    },
+    {
+      "id": "cloud-to-rainbow", "arc": "Cloud To Rainbow", "family": "sad",
+      "stages": [
+        {"emoji":"☁️","name":"Cloud","line":"A heavy day still holds water something needs."},
+        {"emoji":"🌧️","name":"Rain Cloud","line":"Let it fall; the ground has been waiting."},
+        {"emoji":"🌦️","name":"Sun Behind Rain","line":"Light and rain at once, in the same sky."},
+        {"emoji":"🌈","name":"Rainbow","line":"What was heavy shows its colors when the light returns."}
+      ]
+    },
+    {
+      "id": "candle-to-star", "arc": "Candle To Star", "family": "hope",
+      "stages": [
+        {"emoji":"🕯️","name":"Candle","line":"One small flame is enough to see the next step."},
+        {"emoji":"🔥","name":"Fire","line":"Fed each day, the flame becomes warmth to sit by."},
+        {"emoji":"✨","name":"Sparkles","line":"The warmth throws off light you did not plan."},
+        {"emoji":"🌟","name":"Glowing Star","line":"Steady light, seen from far away by people you have not met."}
+      ]
+    },
+    {
+      "id": "drop-to-whale", "arc": "Drop To Whale", "family": "calm",
+      "stages": [
+        {"emoji":"💧","name":"Droplet","line":"One drop of thanks is small and completely real."},
+        {"emoji":"💦","name":"Droplets","line":"A few drops together begin to sound like rain."},
+        {"emoji":"🌊","name":"Water Wave","line":"Enough drops make a wave that moves on its own."},
+        {"emoji":"🐳","name":"Spouting Whale","line":"Deep water holds something vast and gentle that surfaces to breathe."}
+      ]
+    },
+    {
+      "id": "heart-to-hearts", "arc": "Heart To Hearts", "family": "love",
+      "stages": [
+        {"emoji":"🤍","name":"White Heart","line":"A plain heart, open, before it has a color."},
+        {"emoji":"💓","name":"Beating Heart","line":"Tended, it starts to keep time with your days."},
+        {"emoji":"💗","name":"Growing Heart","line":"Each day of thanks makes room for one more."},
+        {"emoji":"💖","name":"Sparkling Heart","line":"A full heart throws light on everything nearby."},
+        {"emoji":"💞","name":"Revolving Hearts","line":"Two hearts turning around each other, both kept in motion."}
+      ]
+    },
+    {
+      "id": "chestnut-to-evergreen", "arc": "Chestnut To Evergreen", "family": "tired",
+      "stages": [
+        {"emoji":"🌰","name":"Chestnut","line":"A hard shell keeps something soft and whole for later."},
+        {"emoji":"🐿️","name":"Chipmunk","line":"What you tuck away on tired days is not lost."},
+        {"emoji":"🌲","name":"Evergreen Tree","line":"The kept thing grows into a tree that stays green through winter."}
+      ]
+    },
+    {
+      "id": "bug-to-wings", "arc": "Bug To Wings", "family": "afraid",
+      "stages": [
+        {"emoji":"🐛","name":"Bug","line":"The small thing you flinch from is only eating leaves."},
+        {"emoji":"🦋","name":"Butterfly","line":"Looked at long enough, it grows wings and lifts."},
+        {"emoji":"🌸","name":"Cherry Blossom","line":"It lands on a branch and the branch flowers."}
+      ]
+    },
+    {
+      "id": "sunrise-to-night", "arc": "Sunrise To Night", "family": "hope",
+      "stages": [
+        {"emoji":"🌅","name":"Sunrise","line":"Morning thanks faces the horizon before anything has happened."},
+        {"emoji":"☀️","name":"Sun","line":"By midday the light is on everything, plain and warm."},
+        {"emoji":"🌇","name":"Sunset","line":"Evening thanks looks back over a day that held."},
+        {"emoji":"🌃","name":"Night With Stars","line":"Night comes and the city keeps its small lights on."}
+      ]
+    },
+    {
+      "id": "note-to-violin", "arc": "Note To Violin", "family": "joy",
+      "stages": [
+        {"emoji":"🎵","name":"Musical Note","line":"One note of thanks, clear, and then quiet."},
+        {"emoji":"🎶","name":"Musical Notes","line":"A few notes in a row start to sound like a tune."},
+        {"emoji":"🎼","name":"Sheet Music","line":"Written down, the tune can be played again tomorrow."},
+        {"emoji":"🎻","name":"Violin","line":"Practiced, the tune becomes an instrument someone else can hear."}
+      ]
+    },
+    {
+      "id": "cup-to-couch", "arc": "Cup To Couch", "family": "tired",
+      "stages": [
+        {"emoji":"☕","name":"Hot Beverage","line":"A warm cup held in both hands is a whole thanks."},
+        {"emoji":"🥐","name":"Croissant","line":"Something small and good to go with it."},
+        {"emoji":"📰","name":"Newspaper","line":"The morning widens to include the world, slowly."},
+        {"emoji":"🛋️","name":"Couch And Lamp","line":"Rest has a place to sit and a lamp beside it."}
+      ]
+    },
+    {
+      "id": "page-to-owl", "arc": "Page To Owl", "family": "afraid",
+      "stages": [
+        {"emoji":"📖","name":"Open Book","line":"An open page holds what you did not know yet."},
+        {"emoji":"📚","name":"Books","line":"Read a little each day and the shelf fills."},
+        {"emoji":"🎓","name":"Graduation Cap","line":"What frightened you once, you can now explain to someone."},
+        {"emoji":"🦉","name":"Owl","line":"You see well in the dark now, and you wait."}
+      ]
+    },
+    {
+      "id": "house-to-street", "arc": "House To Street", "family": "love",
+      "stages": [
+        {"emoji":"🏠","name":"House","line":"Thanks for a roof is thanks for the ordinary."},
+        {"emoji":"🏡","name":"House With Garden","line":"Tended, a house grows a garden around it."},
+        {"emoji":"🏘️","name":"Houses","line":"One warm house makes the whole street feel lived in."}
+      ]
+    },
+    {
+      "id": "hand-to-world", "arc": "Hand To World", "family": "love",
+      "stages": [
+        {"emoji":"🤝","name":"Handshake","line":"A hand offered and a hand taken: the first pattern."},
+        {"emoji":"👥","name":"Two People","line":"Two people who keep showing up become a pair."},
+        {"emoji":"🫂","name":"People Hugging","line":"Held close, thanks needs no words at all."},
+        {"emoji":"🌍","name":"Globe","line":"Enough hands held and the world is smaller and kinder."}
+      ]
+    },
+    {
+      "id": "bread-to-table", "arc": "Bread To Table", "family": "love",
+      "stages": [
+        {"emoji":"🍞","name":"Bread","line":"Plain bread, warm, is the oldest thanks there is."},
+        {"emoji":"🥪","name":"Sandwich","line":"Bread made for someone is bread with a name on it."},
+        {"emoji":"🧺","name":"Basket","line":"Packed and carried, the meal goes where people are."},
+        {"emoji":"🍽️","name":"Place Setting","line":"A set table is a thanks said before anyone eats."}
+      ]
+    },
+    {
+      "id": "breath-to-clearing", "arc": "Breath To Clearing", "family": "calm",
+      "stages": [
+        {"emoji":"🧘","name":"Person Meditating","line":"Sitting still is a way of saying thank you for now."},
+        {"emoji":"🌬️","name":"Wind Face","line":"One long breath out, and the room is larger."},
+        {"emoji":"🌫️","name":"Fog","line":"Fog is not nothing; it is the day being soft."},
+        {"emoji":"⛅","name":"Sun Behind Cloud","line":"The fog lifts on its own and the light comes through."}
+      ]
+    },
+    {
+      "id": "walk-to-summit", "arc": "Walk To Summit", "family": "angry",
+      "stages": [
+        {"emoji":"🚶","name":"Person Walking","line":"Heat in the chest goes into the feet, one step."},
+        {"emoji":"🥾","name":"Hiking Boot","line":"Good boots turn a hard mood into a long walk."},
+        {"emoji":"🏔️","name":"Mountain","line":"From high up the thing looks small and far."},
+        {"emoji":"🌄","name":"Mountain Sunrise","line":"You walked far enough that the morning found you."}
+      ]
+    },
+    {
+      "id": "palette-to-picture", "arc": "Palette To Picture", "family": "joy",
+      "stages": [
+        {"emoji":"🎨","name":"Artist Palette","line":"Color set out, before you know what it will be."},
+        {"emoji":"🖌️","name":"Paintbrush","line":"A few days in, the brush knows where to go."},
+        {"emoji":"🖼️","name":"Framed Picture","line":"Finished and hung, the thanks is there for anyone to see."}
+      ]
+    },
+    {
+      "id": "pencil-to-book", "arc": "Pencil To Book", "family": "sad",
+      "stages": [
+        {"emoji":"✏️","name":"Pencil","line":"A pencil is enough to put the heavy thing down."},
+        {"emoji":"📝","name":"Memo","line":"A few lines on a hard day are still lines."},
+        {"emoji":"📄","name":"Page","line":"The page fills, and the weight is on the paper now."},
+        {"emoji":"📜","name":"Scroll","line":"Days of pages become a record you can unroll."},
+        {"emoji":"📕","name":"Closed Book","line":"Closed, it holds everything and asks nothing of you."}
+      ]
+    },
+    {
+      "id": "thread-to-coat", "arc": "Thread To Coat", "family": "sad",
+      "stages": [
+        {"emoji":"🧵","name":"Thread","line":"A single thread is thin and still holds a stitch."},
+        {"emoji":"🪡","name":"Sewing Needle","line":"Each day the needle goes through and pulls the pieces closer."},
+        {"emoji":"🧣","name":"Scarf","line":"Stitch by stitch, warmth for the cold part of the year."},
+        {"emoji":"🧥","name":"Coat","line":"Mended long enough, it becomes a coat you can give away."}
+      ]
+    },
+    {
+      "id": "rock-to-castle", "arc": "Rock To Castle", "family": "angry",
+      "stages": [
+        {"emoji":"🪨","name":"Rock","line":"Anger, held still, becomes a rock you can stand on."},
+        {"emoji":"🧱","name":"Brick","line":"Shaped by a day, the rock becomes something that fits."},
+        {"emoji":"🏗️","name":"Construction","line":"Brick on brick, the heat is building something now."},
+        {"emoji":"🏰","name":"Castle","line":"Walls made from old anger keep a warm room inside."}
+      ]
+    },
+    {
+      "id": "field-to-bento", "arc": "Field To Bento", "family": "tired",
+      "stages": [
+        {"emoji":"🌾","name":"Sheaf Of Rice","line":"A whole season stands in the field, ready to be cut."},
+        {"emoji":"🍚","name":"Cooked Rice","line":"Plain rice in a bowl is enough for a tired night."},
+        {"emoji":"🍙","name":"Rice Ball","line":"Shaped by hand, the meal is made to be carried."},
+        {"emoji":"🍱","name":"Bento Box","line":"Packed with care, rest travels with you into the day."}
+      ]
+    },
+    {
+      "id": "grapes-to-toast", "arc": "Grapes To Toast", "family": "calm",
+      "stages": [
+        {"emoji":"🍇","name":"Grapes","line":"Grapes take a whole summer, and nobody hurries them."},
+        {"emoji":"🍷","name":"Wine Glass","line":"Time in the dark turns the harvest into something deeper."},
+        {"emoji":"🥂","name":"Clinking Glasses","line":"Poured for two, the long wait becomes a toast."}
+      ]
+    },
+    {
+      "id": "shell-to-open-sea", "arc": "Shell To Open Sea", "family": "calm",
+      "stages": [
+        {"emoji":"🐚","name":"Spiral Shell","line":"A shell is the thanks the sea leaves on the sand."},
+        {"emoji":"🏖️","name":"Beach","line":"Sit long enough and the whole shore is yours."},
+        {"emoji":"⛵","name":"Sailboat","line":"The shore lets you go, and the wind does the rest."},
+        {"emoji":"🐬","name":"Dolphin","line":"Out past the shallows, something joyful swims beside the boat."}
+      ]
+    },
+    {
+      "id": "pot-to-bouquet", "arc": "Pot To Bouquet", "family": "love",
+      "stages": [
+        {"emoji":"🪴","name":"Potted Plant","line":"A plant on the sill, watered, is love in a small pot."},
+        {"emoji":"🌷","name":"Tulip","line":"The first bloom opens on a morning you did not expect."},
+        {"emoji":"🌹","name":"Rose","line":"Kept close and tended, the bloom deepens in color."},
+        {"emoji":"💐","name":"Bouquet","line":"Gathered, it becomes something you carry to a door."}
+      ]
+    },
+    {
+      "id": "compass-to-far-side", "arc": "Compass To Far Side", "family": "hope",
+      "stages": [
+        {"emoji":"🧭","name":"Compass","line":"A compass gives you north, not the whole road."},
+        {"emoji":"🗺️","name":"World Map","line":"Named places begin to appear, one at a time."},
+        {"emoji":"🧳","name":"Luggage","line":"Packed light, you are ready before you feel ready."},
+        {"emoji":"✈️","name":"Airplane","line":"Lifted, the thanks goes somewhere you have not been."},
+        {"emoji":"🌏","name":"Far Side","line":"The far side of the world turns out to have mornings too."}
+      ]
+    },
+    {
+      "id": "sand-to-calendar", "arc": "Sand To Calendar", "family": "tired",
+      "stages": [
+        {"emoji":"⏳","name":"Hourglass","line":"Sand is falling, and that is all it has to do."},
+        {"emoji":"⌛","name":"Hourglass Done","line":"The sand is through; the hour is finished and kept."},
+        {"emoji":"🕰️","name":"Mantel Clock","line":"Hours of rest add up on the mantel, quietly."},
+        {"emoji":"📅","name":"Calendar","line":"Days of rest make a month you can look back on."}
+      ]
+    },
+    {
+      "id": "key-to-road", "arc": "Key To Road", "family": "afraid",
+      "stages": [
+        {"emoji":"🔑","name":"Key","line":"You hold a key and the door is still shut."},
+        {"emoji":"🔓","name":"Open Lock","line":"Turned once, the lock lets go without a fight."},
+        {"emoji":"🚪","name":"Door","line":"An open door shows a room that was there the whole time."},
+        {"emoji":"🛣️","name":"Road","line":"Past the door there is a road, and it is yours."}
+      ]
+    },
+    {
+      "id": "piece-to-whole", "arc": "Piece To Whole", "family": "afraid",
+      "stages": [
+        {"emoji":"🧩","name":"Puzzle Piece","line":"One piece, no picture yet, and that is fine."},
+        {"emoji":"🔍","name":"Magnifying Glass","line":"Look closer at the worry and it has edges."},
+        {"emoji":"💡","name":"Light Bulb","line":"The pieces meet and a small light comes on."},
+        {"emoji":"🎯","name":"Bullseye","line":"It fits; what unsettled you had a place all along."}
+      ]
+    },
+    {
+      "id": "mirror-to-sky", "arc": "Mirror To Sky", "family": "sad",
+      "stages": [
+        {"emoji":"🪞","name":"Mirror","line":"The mirror shows a tired face and does not lie."},
+        {"emoji":"🪟","name":"Window","line":"Turned outward, the same glass shows a street and weather."},
+        {"emoji":"🔭","name":"Telescope","line":"Looked at long enough, far things come near."},
+        {"emoji":"🌌","name":"Milky Way","line":"The sadness is real and the sky is very large."}
+      ]
+    },
+    {
+      "id": "balloon-to-gift", "arc": "Balloon To Gift", "family": "joy",
+      "stages": [
+        {"emoji":"🎈","name":"Balloon","line":"A balloon is a small joy held by a string."},
+        {"emoji":"🎉","name":"Party Popper","line":"A few days of joy start a small celebration."},
+        {"emoji":"🎂","name":"Birthday Cake","line":"Someone is being celebrated, and you are in the room."},
+        {"emoji":"🎁","name":"Wrapped Gift","line":"Joy, wrapped, wants to be handed to someone else."}
+      ]
+    },
+    {
+      "id": "heat-to-words", "arc": "Heat To Words", "family": "angry",
+      "stages": [
+        {"emoji":"🧠","name":"Brain","line":"Anger arrives as heat; the thinking comes after."},
+        {"emoji":"💭","name":"Thought Balloon","line":"Given a day, the heat becomes a clear thought."},
+        {"emoji":"💬","name":"Speech Balloon","line":"A clear thought can be said in plain words."},
+        {"emoji":"🗣️","name":"Speaking Head","line":"Said out loud, calmly, it changes something."}
+      ]
+    },
+    {
+      "id": "flake-to-sled", "arc": "Flake To Sled", "family": "angry",
+      "stages": [
+        {"emoji":"❄️","name":"Snowflake","line":"One flake lands on the heat and hisses."},
+        {"emoji":"🌨️","name":"Snow Cloud","line":"Enough cold and the whole sky turns to snow."},
+        {"emoji":"⛄","name":"Snowman","line":"The cooled anger gets a face and two stick arms."},
+        {"emoji":"🛷","name":"Sled","line":"What was heat is now a hill you can play on."}
+      ]
+    },
+    {
+      "id": "leaf-to-flower", "arc": "Leaf To Flower", "family": "sad",
+      "stages": [
+        {"emoji":"🍂","name":"Fallen Leaf","line":"Something has fallen, and it is allowed to lie there."},
+        {"emoji":"🍄","name":"Mushroom","line":"In the damp, small things begin to grow from it."},
+        {"emoji":"🪱","name":"Worm","line":"Underground, the loss is being turned into soil."},
+        {"emoji":"🌼","name":"Blossom","line":"From that soil, a flower you did not plant."}
+      ]
+    },
+    {
+      "id": "sting-to-honey", "arc": "Sting To Honey", "family": "angry",
+      "stages": [
+        {"emoji":"🐝","name":"Honeybee","line":"A sting is real, and so is the work."},
+        {"emoji":"🌺","name":"Hibiscus","line":"Worked at, the hot day finds a flower to visit."},
+        {"emoji":"🍯","name":"Honey Pot","line":"Enough visits and the heat has turned to sweetness."}
+      ]
+    },
+    {
+      "id": "bell-to-peace", "arc": "Bell To Peace", "family": "afraid",
+      "stages": [
+        {"emoji":"🔔","name":"Bell","line":"A bell rings and asks you to answer."},
+        {"emoji":"🙏","name":"Folded Hands","line":"Answered with thanks, the call stops being a threat."},
+        {"emoji":"🕊️","name":"Dove","line":"The answered bell sends something white out the window."},
+        {"emoji":"☮️","name":"Peace Symbol","line":"Quiet, after the ringing, that stays in the room."}
+      ]
+    },
+    {
+      "id": "sunflower-to-birds", "arc": "Sunflower To Birds", "family": "joy",
+      "stages": [
+        {"emoji":"🌻","name":"Sunflower","line":"A sunflower turns to face what it is grateful for."},
+        {"emoji":"🌞","name":"Sun With Face","line":"Faced long enough, the sun looks back and smiles."},
+        {"emoji":"🐦","name":"Bird","line":"In the end it feeds the birds with its seeds."}
+      ]
+    },
+    {
+      "id": "clover-to-star", "arc": "Clover To Star", "family": "joy",
+      "stages": [
+        {"emoji":"🍀","name":"Four Leaf Clover","line":"Luck is a thanks that arrives before you asked."},
+        {"emoji":"🐞","name":"Lady Beetle","line":"Small luck lands on your hand and stays a moment."},
+        {"emoji":"🌠","name":"Shooting Star","line":"Noticed often enough, luck becomes a sky you can wish on."}
+      ]
+    },
+    {
+      "id": "turtle-to-island", "arc": "Turtle To Island", "family": "tired",
+      "stages": [
+        {"emoji":"🐢","name":"Turtle","line":"Slow is still moving, and the shell is a home."},
+        {"emoji":"🌴","name":"Palm Tree","line":"Slowly, the shore comes, and there is shade on it."},
+        {"emoji":"🏝️","name":"Desert Island","line":"Arrived, at your own pace, at a quiet place to rest."}
+      ]
+    }
+  ]
+}

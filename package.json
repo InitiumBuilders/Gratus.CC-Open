@@ -1,0 +1,15 @@
+{
+  "name": "gratus-in-motus",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Gratus.CC — Grow Gratus Give. A kinder world grows from here.",
+  "scripts": {
+    "test": "node --test scripts/tests/",
+    "gates": "node --test scripts/tests/ && node scripts/gates/contrast.mjs && node scripts/gates/banned.mjs",
+    "serve": "npx -y http-server . -p 4747 -c-1 --silent"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.0.0"
+  }
+}

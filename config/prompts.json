@@ -1,0 +1,430 @@
+{
+  "note": "Gratus Grace's lines. Plain, under twelve words, sage-like: says less, sees more, never flatters, never scolds. Never the same line twice to the same person. Every line here is flagged for the owner (owner: true on the file).",
+  "owner": true,
+  "practices": {
+    "notice": {
+      "none": [
+        "What is here, right now, that you almost walked past?",
+        "Name one small thing that worked today.",
+        "Something ordinary carried you today. Which?"
+      ],
+      "joy": [
+        "Where did the light come from today?",
+        "What made you laugh, and who was there?",
+        "Notice the thing you want to keep."
+      ],
+      "calm": [
+        "What is quiet in you right now?",
+        "Which slow thing did you let be slow?",
+        "Name what needed nothing from you today."
+      ],
+      "love": [
+        "Who was easy to be near today?",
+        "What did you give without being asked?",
+        "Notice the hand that was there."
+      ],
+      "hope": [
+        "What is leaning toward morning in you?",
+        "Which small thing pointed somewhere good?",
+        "What are you quietly counting on?"
+      ],
+      "sad": [
+        "What is heavy, and where are you holding it?",
+        "One small thing was still good. Which?",
+        "What did you manage, even so?"
+      ],
+      "afraid": [
+        "What is the fear standing in front of?",
+        "Notice one thing that stayed steady.",
+        "What would you see if you looked at it?"
+      ],
+      "angry": [
+        "What did the anger want to protect?",
+        "Where is the heat in you now?",
+        "Name the line that was crossed."
+      ],
+      "tired": [
+        "What can rest tonight without your help?",
+        "One thing was enough today. Which?",
+        "Notice what your body already did."
+      ]
+    },
+    "name": {
+      "none": [
+        "Give the day one word.",
+        "Where does today sit in your body?",
+        "Feel first. Then find the word."
+      ],
+      "joy": [
+        "Name the joy before it slips off.",
+        "Where in you did the good land?",
+        "Say what it was, plainly."
+      ],
+      "calm": [
+        "Calm has a texture. Describe it.",
+        "Where does the quiet live in you?",
+        "Name what let you set it down."
+      ],
+      "love": [
+        "Name who, and name why.",
+        "Love has a place in the body. Find it.",
+        "What does the warmth feel like, exactly?"
+      ],
+      "hope": [
+        "Name the thing you are hoping toward.",
+        "Where does hope sit: chest, hands, throat?",
+        "Say the wish out loud, in ink."
+      ],
+      "sad": [
+        "Say the sad thing in one sentence.",
+        "Where does it ache? Start there.",
+        "Naming it does not make it larger."
+      ],
+      "afraid": [
+        "Name the fear in a sentence. Just that.",
+        "Where is the tightness? Breathe into it.",
+        "Fear gets smaller when it has a name."
+      ],
+      "angry": [
+        "Name the anger without arguing with it.",
+        "Where is it: jaw, fists, chest?",
+        "What is underneath it? Name that too."
+      ],
+      "tired": [
+        "Say how tired, honestly.",
+        "Where does the weight sit tonight?",
+        "Tired is a feeling. Name it, then rest."
+      ]
+    },
+    "tend": {
+      "none": [
+        "Pick up yesterday's thread. Add one line.",
+        "What do you want more of tomorrow?",
+        "Which plant could use a day from you?"
+      ],
+      "joy": [
+        "Keep this. Write it down before sleep.",
+        "What made the joy possible? Tend that.",
+        "Return to a good thing on purpose."
+      ],
+      "calm": [
+        "A week of calm. What is holding it?",
+        "Set one intention for tomorrow morning.",
+        "Keep the practice that keeps you."
+      ],
+      "love": [
+        "Who made today easier? Say their name.",
+        "Tend the person, not just the feeling.",
+        "What would you do again tomorrow?"
+      ],
+      "hope": [
+        "When this happens tomorrow, I will…",
+        "Tend the small thing pointing somewhere.",
+        "What is the next step, plainly?"
+      ],
+      "sad": [
+        "A small kindness for tomorrow. Name it.",
+        "What helped, even a little? Keep it.",
+        "Tend one thing gently tonight."
+      ],
+      "afraid": [
+        "Who could stand beside you in this?",
+        "Name one steady thing to return to.",
+        "What is the smallest next step?"
+      ],
+      "angry": [
+        "What did this teach? One line.",
+        "Write the letter you will not send.",
+        "Tend the boundary, not the fire."
+      ],
+      "tired": [
+        "Tend one thing. Leave the rest.",
+        "One word from the body, then sleep.",
+        "What can wait until morning?"
+      ]
+    },
+    "give": {
+      "none": [
+        "Who deserves a thank you today?",
+        "A note to future you. Where to start?",
+        "What would you give if you could?"
+      ],
+      "joy": [
+        "Joy gives itself away. To whom?",
+        "Send the good thing somewhere.",
+        "Who needs to hear this today?"
+      ],
+      "calm": [
+        "Give a little of the quiet away.",
+        "Write to someone who is not calm.",
+        "Whose morning could you make easier?"
+      ],
+      "love": [
+        "Write to them. Send it or not.",
+        "What would you want them to know?",
+        "Give the words you keep meaning to say."
+      ],
+      "hope": [
+        "Write a note to your future self.",
+        "Give someone the thing you are hoping for.",
+        "Who could carry this hope with you?"
+      ],
+      "sad": [
+        "A letter to what was lost.",
+        "Who else is carrying something today?",
+        "Give yourself the kindness you would give a friend."
+      ],
+      "afraid": [
+        "Tell one person what frightens you.",
+        "Give the fear a smaller job.",
+        "Who would you want beside you?"
+      ],
+      "angry": [
+        "What do you want to protect? Give that.",
+        "A letter, unsent, to the one who crossed the line.",
+        "Turn the heat toward something you can build."
+      ],
+      "tired": [
+        "Give yourself tomorrow off from one thing.",
+        "Who could you ask for help?",
+        "Rest is a gift. Accept it."
+      ]
+    },
+    "return": {
+      "none": [
+        "What do you keep coming back to?",
+        "Pick one thread from this week. Pull it.",
+        "What is still true from a month ago?"
+      ],
+      "joy": [
+        "Which joy is worth returning to tomorrow?",
+        "Go back to the good moment. Add a detail.",
+        "What made today's light? Keep the recipe."
+      ],
+      "calm": [
+        "What practice is holding the calm?",
+        "Return to yesterday's quiet. Is it still here?",
+        "Name the habit you want to keep."
+      ],
+      "love": [
+        "Who do you keep returning to?",
+        "Write the next line of a long thank-you.",
+        "What would you do again, on purpose?"
+      ],
+      "hope": [
+        "What are you still hoping toward?",
+        "Return to the plan. What is the next step?",
+        "Which small sign came true?"
+      ],
+      "sad": [
+        "What helped last time? Return to it.",
+        "Pick up the thread gently. One line.",
+        "What has stayed steady through this?"
+      ],
+      "afraid": [
+        "What steadied you before? Go there again.",
+        "Return to the plainest next step.",
+        "Who has stood beside you before?"
+      ],
+      "angry": [
+        "What did you decide last time this rose?",
+        "Return to the line you drew.",
+        "What are you protecting, still?"
+      ],
+      "tired": [
+        "What restored you before? Return to it.",
+        "One line, then the bed that knows you.",
+        "Which small thing can wait until morning?"
+      ]
+    }
+  },
+  "thresholds": {
+    "first": "One seed is a whole garden, waiting.",
+    "sprout": "One day. That is how everything begins.",
+    "leaf": "Twice is a pattern. You are making one.",
+    "root": "The third day goes under. Roots first.",
+    "bud": "Five days closed around something. Keep it.",
+    "bloom": "Look what a week and a day can do.",
+    "sapling": "The habit has a body now.",
+    "tree": "Three weeks. It stands on its own.",
+    "harvest": "Something to give. Time made this, not you alone.",
+    "grove": "It outgrew one stem. So did you.",
+    "elder": "A season of a life, kept in light.",
+    "ancient": "The year turned. Now it holds others."
+  },
+  "statements": {
+    "first": "Start with one.",
+    "harvest": "Time is the only thing you can't buy.",
+    "spiral": "Growth has a pattern.",
+    "family": "The plant remembers the weather it grew in.",
+    "roots": "What you write goes down; what you tend comes up.",
+    "gift": "A gift that took eighty-nine days means more than one that took eighty-nine minutes.",
+    "moving": "The gift must keep moving.",
+    "ground": "The ground asks if you're here. You answer with a touch.",
+    "common": "Common ground can't be planted alone.",
+    "truth": "Truth first. Gratitude grows after.",
+    "presence": "Presence, never absence.",
+    "pool": "Nothing grows because it's big.",
+    "poolLong": "Nothing grows because it's big. Things grow because you showed up.",
+    "money": "Stable money, growing meaning.",
+    "ancient": "Some things grow until they hold others."
+  },
+  "weekly": {
+    "lead": [
+      "This week leaned {a}.",
+      "Mostly {a} this week.",
+      "A {a} week, in the main."
+    ],
+    "two": [
+      "This week leaned {a}, with a day of {b}.",
+      "Mostly {a}, and some {b}.",
+      "{a} and {b} shared the week."
+    ],
+    "garden": [
+      "{n} plants took a day from you this week.",
+      "You tended {n} plants this week.",
+      "{n} plants grew a day this week."
+    ],
+    "one": [
+      "One plant took a day from you this week.",
+      "You tended one plant this week."
+    ],
+    "quiet": [
+      "The garden rested this week. It kept everything."
+    ]
+  },
+  "season": {
+    "open": [
+      "{month} grew {days} days in the garden.",
+      "{days} days of {month} were planted."
+    ],
+    "weather": [
+      "The month leaned {a}.",
+      "Its weather was mostly {a}.",
+      "{a} was the month's weather, with {b} passing through."
+    ],
+    "close": [
+      "What you tended is still here.",
+      "All of it is kept.",
+      "Nothing here shrinks."
+    ]
+  },
+  "welcome": [
+    "The garden is here. So are you.",
+    "The soil is ready.",
+    "Everything you planted is still here."
+  ],
+  "empty": {
+    "garden": "Plant the first one.",
+    "give": "Gifts you give and receive will gather here.",
+    "groups": "A shared plot appears when two people plant.",
+    "ledger": "Your Gratus will gather here, day by day.",
+    "badges": "Marks appear as you practice. None are counted.",
+    "seasons": "Each month becomes a strip of frames as you plant.",
+    "fruits": "Fruit forms at thirty-four days. It keeps until you give it."
+  },
+  "noOverlap": "No overlap yet. What do you both want to protect?",
+  "selfGift": "A gift needs someone else to open it.",
+  "safety": {
+    "line": "If today is heavier than words, there are people ready to listen.",
+    "us": "In the US, call or text 988, any hour.",
+    "world": "Elsewhere: findahelpline.com",
+    "dismiss": "Thank you"
+  },
+  "hidden": {
+    "gardenHour": "You came at the garden hour. The soil noticed.",
+    "anniversary": "One year ago today, you planted this.",
+    "coinHold": "Thirteen seconds. Time is the only thing you can't buy."
+  },
+  "practiceNames": {
+    "notice": {
+      "name": "Notice",
+      "what": "what is here",
+      "line": "Attention is the raw material of gratitude."
+    },
+    "name": {
+      "name": "Name",
+      "what": "what I feel",
+      "line": "A feeling named is a feeling held."
+    },
+    "tend": {
+      "name": "Tend",
+      "what": "what I keep",
+      "line": "What you return to, grows."
+    },
+    "give": {
+      "name": "Give",
+      "what": "what I pass on",
+      "line": "Gratitude finishes when it is given."
+    },
+    "return": {
+      "name": "Return",
+      "what": "what I come to again",
+      "line": "The garden is made of returning."
+    }
+  },
+  "checkin": {
+    "line": "How are you feeling?",
+    "sub": "One tap colors the day and shapes what grows."
+  },
+  "ground": {
+    "welcome": "Welcome back",
+    "headline": "Where gratitude begins.",
+    "sub": "Plant your intentions and nourish what matters.",
+    "intention": "Today's intention",
+    "noIntention": "Set one line for today.",
+    "seeds": {
+      "planted": "Planted",
+      "rooted": "Rooted",
+      "nourished": "Nourished"
+    }
+  },
+  "grow": {
+    "headline": "You're blooming.",
+    "sub": "Keep going. Things are unfolding.",
+    "journey": "Growth journey",
+    "week": "This week",
+    "impact": "This month",
+    "program": {
+      "title": "Grow With Gratus",
+      "lines": [
+        "Grow With Gratus is the program behind the garden: you write, you plant, you tend; the garden pays you in $GRATUS for showing up; the fruit you grow can be given, and every gift carries the days it took.",
+        "Grow Together: a Gratus Group is a shared plot for two or more people — a couple, a family, a team, a classroom, a memorial. A plant becomes Common Ground only when two people plant the same thing and both accept it.",
+        "Gratus Give: causes with public gardens anyone can plant into. Verified causes pay no fee. Community projects are marked plainly.",
+        "Nothing here has levels, ranks, or leaderboards. Everyone is equal on this ground."
+      ]
+    }
+  },
+  "insights": {
+    "seedFeeling": "{emoji} grows on {feeling} days ({n} of {m}).",
+    "seedTop": "You tend {emoji} more than anything else.",
+    "feelingTop": "Most of your days lean {feeling}.",
+    "twoFeelings": "Your weather is mostly {a}, with {b} passing through.",
+    "hour": "Most of your writing happens in the {when}.",
+    "month": "{month} is your fullest month so far: {days} days.",
+    "companion": "{a} and {b} keep showing up together ({n} days): {name}.",
+    "near": "{a} and {b} have met {n} of {need} times. One more and they are companions.",
+    "hardLean": "On hard days you reach for {emoji}.",
+    "joyLean": "Joy shows up with {emoji}.",
+    "gap": "Nothing here shrinks. Everything you planted is still here."
+  },
+  "journal": {
+    "today": "Today",
+    "days": "Days",
+    "practices": "Practices",
+    "patterns": "Patterns",
+    "letters": "Letters",
+    "write": "Write about anything",
+    "morning": "Morning intention",
+    "evening": "Evening reflection",
+    "twoTouches": "Two touches a day",
+    "onThisDay": "On this day",
+    "search": "Search your journal",
+    "lock": "This journal is yours. A code keeps it that way.",
+    "empty": {
+      "days": "Your days will gather here, lit by how they felt.",
+      "patterns": "Patterns appear after a few days. Nothing is scored.",
+      "letters": "Letters to your future self, and the ones you may never send, keep here."
+    }
+  }
+}

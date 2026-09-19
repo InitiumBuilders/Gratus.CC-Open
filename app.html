@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5, user-scalable=yes">
+<title>Gratus.CC</title>
+<meta name="description" content="Gratus.CC · Grow Gratus Give. A kinder world grows from here. Plant your gratitude, grow an emoji garden, and give gifts that grow.">
+<meta name="theme-color" content="#050912">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gratus">
+<meta property="og:title" content="Gratus.CC · Grow Gratus Give">
+<meta property="og:description" content="A kinder world grows from here. Plant your gratitude, grow an emoji garden, and give gifts that grow.">
+<meta property="og:image" content="https://www.gratus.cc/assets/brand/og.jpg">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/brand/icon-32.png" sizes="32x32">
+<link rel="icon" href="/assets/brand/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/brand/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=22">
+<link rel="stylesheet" href="/assets/css/galaxy.css?v=22">
+</head>
+<body class="app">
+<div id="scene" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
+<main id="view"></main>
+<nav class="tabs" aria-label="Gratus"><div class="bar">
+  <button data-tab="grow"><svg viewBox="0 0 24 24"><path d="M5 19c8 1 13-4 14-14C9 5 4 10 5 19Z"/><path d="M5 19c3-4 6-7 10-10"/></svg>Grow</button>
+  <button data-tab="gratus" class="star on"><span class="core"><i class="ring" aria-hidden="true"></i><span class="embers" aria-hidden="true"><i style="--dx:-14px;--d:0s"></i><i style="--dx:9px;--d:.8s"></i><i style="--dx:-4px;--d:1.6s"></i><i style="--dx:17px;--d:2.3s"></i><i style="--dx:-21px;--d:3.1s"></i></span><img src="/assets/art/gfx/logo.png" alt=""></span><span class="lbl">Gratus</span></button>
+  <button data-tab="give" class="give"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13M12 8c-2 0-4-1-4-3s2-2 4 3c2-5 4-5 4-3s-2 3-4 3"/></svg>Give</button>
+</div></nav>
+<audio id="song" loop preload="none" src="/assets/audio/a-sacred-place.mp3"></audio>
+<div id="splash" hidden></div>
+<div id="room" role="dialog" aria-modal="true" aria-label="A Gratus Gift" hidden></div>
+<div id="laws" class="laws" role="dialog" aria-modal="true" aria-label="The twelve laws" hidden></div>
+<div id="sheets"></div>
+<div id="ceremony" role="dialog" aria-modal="true" aria-label="A moment" hidden></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript><div class="noscript"><h2>Gratus.CC</h2><p class="lead">Gratus needs JavaScript. The page at <a href="/">gratus.cc</a> reads without it.</p></div></noscript>
+<script type="module" src="/assets/js/galaxy.js?v=1789834141"></script>
+</body>
+</html>

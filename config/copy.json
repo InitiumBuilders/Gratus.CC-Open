@@ -1,0 +1,55 @@
+{
+  "locked": {
+    "tagline": ["Give And Grow With Grace.", "Find Common Ground.", "Start Your Gratus Garden."],
+    "category": "A Gamified Daily Journal.",
+    "product": "Send Gifts That Grow.",
+    "feeling": "Grow What Matters.",
+    "giving": "Grow With Gratus.",
+    "categoryName": "The Gift Economy.",
+    "presence": "Here In The Moment.",
+    "mantra": "Give Together.",
+    "statement": "There Are Many Reasons To Be Grateful In Today's World. Grow What Matters.",
+    "pitch": "A gamified daily journal. Write about anything. Get rewarded in $GRATUS every day, for every gift you give, and for being here in the moment.",
+    "notifications": {
+      "send": "{name} Sent You Some $Gratus.",
+      "gift": "{name} Sent You A Gratus Gift.",
+      "group": "{name} Has Invited You To A New Gratus Garden."
+    },
+    "wallet": "Gratus balances are in-app credits until the $GRATUS stablecoin launches. Today's growth varies daily and is never a rate. Nothing here pays interest.",
+    "family": ["Gratus Garden", "Gratus Journal", "Gratus Grace", "Gratus Gift", "Gratus Groups", "Gratus Ground", "Gratus Give", "Gratus Store", "$GRATUS"],
+    "colophon": {
+      "name": "Gratus.CC",
+      "method": "a Davara Distinct Bio-symbolic illuminate glow build · twelve laws, one new world",
+      "date": "9/2/2026",
+      "maker": "August James Domanchuk",
+      "words": "Journal Every Day. Give Gifts The Grow.",
+      "close": "Gratus In Motus. Gratitude In Motion. Give Gifts That Grow. Gratus Gives."
+    }
+  },
+  "tabs": { "garden": "Garden", "give": "Give", "plant": "Plant", "ground": "Ground", "you": "You" },
+  "headers": {
+    "garden": "Your Gratus Garden", "journal": "Gratus Journal", "give": "Gratus Give", "ground": "Gratus Ground",
+    "groups": "Gratus Groups", "store": "Gratus Store", "you": "You", "grace": "Gratus Grace", "gift": "Gratus Gift"
+  },
+  "buttons": {
+    "plant": "Plant", "tend": "Tend", "give": "Give", "open": "Open", "pass": "Pass on", "keep": "Keep", "seal": "Seal",
+    "touch": "Touch the ground", "find": "Find Common Ground", "fund": "Fund this Group", "real": "Make it real",
+    "try": "Try it first", "send": "Send Gratus", "addFriend": "Add friend", "together": "Plant together", "scan": "Scan",
+    "start": "Start Your Gratus Garden", "share": "Share as image", "export": "Export", "leave": "Tap anywhere to leave",
+    "why": "+ why", "deeper": "+ go deeper", "another": "another way in", "cancel": "Not now", "done": "Done", "back": "Back",
+    "join": "Join this Gratus Group", "yes": "Yes, this matters to me too", "invite": "Invite", "hold": "Press and hold"
+  },
+  "labels": {
+    "private": "private, always", "today": "Today", "growth": "Today's Growth", "shared": "shared with {n} gardens today",
+    "days": "days", "day": "day", "form": "form", "family": "family", "held": "held", "given": "given", "fee": "fee",
+    "path": "path", "opens": "opens", "from": "from", "to": "to", "inside": "inside", "when": "when", "what": "what",
+    "feeling": "feeling", "seeds": "seeds", "plants": "your plants", "search": "search any emoji", "fruits": "fruits",
+    "coin": "your Gratus", "ledger": "ledger", "store": "Gratus Store", "badges": "marks", "firsts": "firsts", "seasons": "seasons",
+    "settings": "settings", "mode": "mode", "night": "Night", "dawn": "Dawn", "auto": "Auto", "gardenHour": "garden hour",
+    "sound": "sound", "haptics": "haptics", "motion": "motion", "visibility": "garden visibility", "handle": "handle",
+    "carried": "days carried", "moving": "gifts on the move", "present": "present", "minutes": "minutes", "bells": "bells answered"
+  },
+  "voice": {
+    "forbidden": ["streak", "missed", "earn on your balance", "yield", "interest", "APY", "rank", "level", "tier", "badge count", "score", "we miss you", "days since", "come back"]
+  }
+}

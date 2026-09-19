@@ -1,0 +1,98 @@
+/* ═══════════════════════════════════════════════════════════════════
+   GRATUS.CC · tokens v11 — THE GRATUS GALAXY, READABLE.
+   Deep space ground, his art behind glass, mint light for growing, gold for giving,
+   a serif for the words that matter. Ink is solid and bright; glow is for glass and marks.
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: dark;
+  --ground: #050912; --chrome: rgba(7, 12, 24, .92); --raise: rgba(255, 255, 255, .04); --raise-2: rgba(255, 255, 255, .07); --wash: rgba(120, 240, 210, .06); --scrim: rgba(3, 6, 14, .66);
+  --hue: #6ED9C0; --hue-04: rgba(110, 217, 192, .06); --hue-16: rgba(110, 217, 192, .18); --hue-48: rgba(110, 217, 192, .48); --hue-76: rgba(110, 217, 192, .76);
+  --action: #1B7A63; --violet-text: #B9FFE4;
+  --ink: #FFFFFF; --ink-2: #FFFFFF; --ink-3: #F6F8FF;
+  --gold: #FFD98A; --on-gold: #2A1D04; --rose: #FF8BC5; --star: #FFF7D6;
+  --hair: rgba(255, 255, 255, .08); --hair-2: rgba(255, 255, 255, .16); --hair-hue: rgba(110, 217, 192, .35);
+  --glow: 0 0 24px rgba(110, 217, 192, .35), 0 0 64px rgba(110, 217, 192, .15);
+  --glow-gold: 0 0 24px rgba(242, 201, 125, .4), 0 0 64px rgba(242, 201, 125, .16);
+  --lit-rest: inset 0 0 24px rgba(255, 255, 255, .04);
+  --r-6: 6px; --r-8: 8px; --r-14: 14px; --r-18: 18px; --r-24: 24px; --pill: 999px;
+  --display: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+  --t-fast: 200ms; --t: 320ms; --ease: cubic-bezier(.22, .61, .36, 1);
+  --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; background: var(--ground); }
+body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 28px; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; margin: 0; color: var(--ink); text-wrap: balance; letter-spacing: 0; }
+h1 { font-size: clamp(48px, 15vw, 72px); line-height: 1; }
+h2 { font-size: 36px; line-height: 40px; }
+h3 { font-size: 26px; line-height: 32px; }
+p { margin: 0; text-wrap: pretty; }
+a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: .2em; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--violet-text); outline-offset: 3px; border-radius: var(--r-6); }
+img, svg, canvas, video { display: block; max-width: 100%; }
+::selection { background: var(--hue-48); }
+::-webkit-scrollbar { width: 0; height: 0; }
+[hidden] { display: none !important; }
+
+/* ink roles */
+.lead { font-size: 20px; line-height: 30px; color: var(--ink); }
+.body { font-size: 18px; line-height: 28px; color: var(--ink); }
+.cap { font-size: 17px; line-height: 24px; color: var(--ink); }
+.label { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--violet-text); }
+.kicker { font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); }
+.kicker.mint { color: var(--violet-text); }
+.kicker.gold { color: var(--gold); }
+.serif { font-family: var(--display); }
+.statement { font-family: var(--display); font-size: 28px; line-height: 34px; color: var(--ink); text-wrap: balance; }
+.statement.quiet { font-size: 24px; line-height: 30px; color: var(--ink); }
+.emoji { font-family: var(--emoji); line-height: 1; }
+.mono { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* glass */
+.glass { background: var(--raise); border: 1px solid var(--hair); border-radius: var(--r-18); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: var(--lit-rest); }
+.glass.lit { border-color: var(--hair-hue); box-shadow: var(--lit-rest), var(--glow); }
+.hairline { height: 1px; background: var(--hair); border: 0; margin: 0; }
+
+/* controls: pills that glow */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 22px; border-radius: var(--pill); font-family: var(--body); font-weight: 600; font-size: 17px; line-height: 22px; color: var(--ink); background: var(--raise-2); border: 1px solid var(--hair-2); transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); user-select: none; -webkit-user-select: none; touch-action: manipulation; text-decoration: none; }
+.btn:hover, .btn:focus-visible { border-color: var(--hair-hue); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn.mint { background: linear-gradient(180deg, rgba(110, 217, 192, .32), rgba(27, 122, 99, .55)); border-color: var(--hair-hue); box-shadow: var(--glow); color: var(--ink); }
+.btn.gold { background: linear-gradient(180deg, rgba(242, 201, 125, .3), rgba(242, 201, 125, .12)); border-color: rgba(242, 201, 125, .55); box-shadow: var(--glow-gold); color: var(--star); }
+.btn.solid { background: var(--action); border-color: transparent; color: #fff; }
+.btn.quiet { background: transparent; border-color: transparent; color: var(--violet-text); padding: 0 10px; min-height: 40px; }
+.btn.wide { width: 100%; }
+.btn.sm { min-height: 42px; padding: 0 16px; font-size: 15px; }
+.btn:disabled { opacity: .6; cursor: default; transform: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: var(--pill); font-size: 15px; line-height: 20px; font-weight: 600; color: var(--ink); background: var(--raise); border: 1px solid var(--hair); white-space: nowrap; transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease); }
+.chip.on { background: var(--hue-16); border-color: var(--hair-hue); color: var(--ink); }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chips.row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+.chips.row::-webkit-scrollbar { display: none; }
+.field { width: 100%; min-height: 48px; padding: 12px 16px; border-radius: var(--r-14); color: var(--ink); background: rgba(255, 255, 255, .05); border: 1px solid var(--hair-2); font-size: 18px; line-height: 26px; resize: none; transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+.field::placeholder { color: var(--violet-text); }
+.field:focus { border-color: var(--hair-hue); box-shadow: var(--glow); }
+
+/* the emoji orb: a glass sphere with its own light */
+.orb { position: relative; display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; font-family: var(--emoji); font-size: 28px; line-height: 1; color: var(--ink); background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, .14), rgba(255, 255, 255, .03) 60%); border: 1px solid var(--hair-2); box-shadow: var(--lit-rest); flex: none; transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease); }
+.orb::before { content: ""; position: absolute; inset: -1px; border-radius: 50%; background: radial-gradient(circle at 50% 60%, color-mix(in oklab, var(--h, #6ED9C0) 26%, transparent), transparent 70%); pointer-events: none; }
+.orb > * { position: relative; }
+.orb.on, .orb.lit { border-color: var(--hair-hue); box-shadow: var(--glow); }
+.orb.sm { width: 40px; height: 40px; font-size: 20px; }
+.orb.lg { width: 84px; height: 84px; font-size: 44px; }
+.orb.xl { width: 132px; height: 132px; font-size: 68px; }
+.orb.empty { color: var(--violet-text); font-family: var(--display); font-size: 28px; }
+
+/* motion: 200 and 320, fade and slide; choreography only under html.anim, landed by html.landed */
+html.anim:not(.landed) .in { opacity: 0; transform: translateY(12px); animation: rise var(--t) var(--ease) forwards; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes rise { to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes breathe { 0%, 100% { opacity: .85; } 50% { opacity: 1; } }
+@keyframes twinkle { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } html.anim .in { opacity: 1; transform: none; animation: none; } }
+@media (forced-colors: active) { .glass, .btn, .chip, .orb, .field { border: 1px solid CanvasText; } }

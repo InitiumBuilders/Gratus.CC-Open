@@ -1,0 +1,12 @@
+{
+  "note": "THE GRATUS GROWTH BOOK. Five phases every planted emoji passes through, by days of care (a day counts once, when you write about it). The evolution arcs live in evolutions.json; the recipes in recipes.json. People add their own emojis and recipes in the app; those stay on the device.",
+  "phases": [
+    { "key": "planted", "name": "Planted", "day": 0, "icon": "🌱", "meaning": "You wrote it down. A moment of gratitude has a place now." },
+    { "key": "nurtured", "name": "Nurtured", "day": 2, "icon": "💧", "meaning": "You came back to it. Attention is the water." },
+    { "key": "deepened", "name": "Deepened", "day": 5, "icon": "🌿", "meaning": "Five days of care. It has roots you can feel." },
+    { "key": "bloomed", "name": "Bloomed", "day": 9, "icon": "🌸", "meaning": "Nine days. It opens, and other people can see it." },
+    { "key": "ready", "name": "Ready to Give", "day": 13, "icon": "🎁", "meaning": "Thirteen days of gratitude. It can leave your garden as a gift and keep growing in someone else's." }
+  ],
+  "starters": ["❤️", "🌱", "☕", "🙏", "🌙", "📖", "🎵", "🐕", "🏡", "🌊", "☀️", "🕯️"],
+  "tags": ["Love", "Support", "Friendship", "Gratitude", "Health", "Friends", "Music", "Family", "Nature", "Work", "Home", "Rest"]
+}
