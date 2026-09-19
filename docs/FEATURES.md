@@ -34,6 +34,8 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 ## Give
 
 - Entering Give plays his plant growing into the light until the screen fills with white, holds it, and the page fades in. Tap to enter early.
+- **Give with Giveth** — the Emotional TRACE. Browse real Giveth projects live (GIVbacks eligible, boosted with GIVpower, or the ones nobody has given to yet), search them, read one, give on giveth.io in your own wallet, then plant a Gratus Seed: a few words about why. Dormant seeds sit in your garden as 🌱 until the project waters them, and then bloom into that project's own emoji with their reply kept inside.
+- **The Project Console** — if you run a Giveth project, claim it with its slug, read every seed people planted with their gifts, and water them with a line back.
 - Give a Gratus Gift: choose a plant, write a message, get a link. The whole journey rides in the link. The Share sheet copies it.
 - The receiver's journey: eight pages, unwrap, how it grew, the message, keep it or plant it.
 - Support a Project: the project list is imagined; the flow is real.
@@ -46,6 +48,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - The twelve laws, one line per screen, from the top bar.
 - Privacy and terms pages.
 - Export everything as a file, and restore from one, in the profile sheet.
+- The Emotional TRACE constellation in your garden: every seed you planted, bloomed or waiting.
 - A dev panel behind `?dev=1`: add days, add an earlier hand, reset.
 
 ## Not yet

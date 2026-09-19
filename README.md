@@ -6,7 +6,9 @@
 
 Gratus.CC is a gratitude journal that grows a garden. You write what you are grateful for, plant an emoji for it, and the emoji grows a phase for every day you return to it. Two emojis that share enough days make a recipe. A grown emoji can be given: a Gratus Gift carries its whole journey inside the link, and whoever opens it can keep it growing in their own garden.
 
-There are no accounts and nothing to buy. Your journal stays on your device. The only thing that leaves it is what you choose to give, and the Gratus Goals you choose to post to the shared stream.
+There are no accounts and nothing to buy. Your journal stays on your device. The only thing that leaves it is what you choose to give, the Gratus Goals you choose to post, and the Gratus Seeds you plant with a donation.
+
+Gratus also carries **the Emotional TRACE**, built on [Giveth](https://giveth.io): give to a real project, plant a seed in your own words, and when the people who run it write back, the seed blooms in your garden. See [docs/GIVETH.md](docs/GIVETH.md).
 
 Live at [www.gratus.cc](https://www.gratus.cc) and [grow-gratus-cc.vercel.app](https://grow-gratus-cc.vercel.app). It installs as an app on Android and iPhone.
 
@@ -16,7 +18,7 @@ Live at [www.gratus.cc](https://www.gratus.cc) and [grow-gratus-cc.vercel.app](h
 |---|---|
 | **Grow** | Today's question; your entry in words, a photo or your voice (kept on the device, and turned into words through ElevenLabs); the emoji you are planting; tags; your Gratus Goals with the shared stream. |
 | **Gratus** | Your garden, the Growth Book (entries, threads, folders, milestones; phases, emojis, recipes), and the Gratus Galaxy. |
-| **Give** | Give a Gratus Gift, support a project, or send a wish to tomorrow. The gifts you gave and received. |
+| **Give** | Give with Giveth and plant a Gratus Seed, give a Gratus Gift, support a project, or send a wish to tomorrow. The gifts you gave and received. |
 
 The whole app opens through one ritual: the doorway video plays until its light fills the screen, the light holds, and the app fades in behind it. Every page stands on one of his scenes, a still or a looping video, chosen by how many times you have opened the app.
 
@@ -57,6 +59,8 @@ config/             growth-book, recipes, families, evolutions, emoji names, pro
 assets/art/gfx/     his 30 scenes, the boomerang loops, the doorway and its light, the logo
 assets/audio/       his song, A Sacred Place
 api/goals.js        the shared goals stream
+api/giveth.js       a read-only window onto Giveth's public API
+api/trace.js        the Emotional TRACE: seeds, claims, water
 api/voice.js        speech to text through ElevenLabs; the key lives only in the environment
 assets/js/keep.js   recordings, kept on the device in IndexedDB
 scripts/            ship, gates, tests, the open-source publisher
@@ -77,6 +81,8 @@ node scripts/gates/open-source.mjs . --decoy  # the publish gate proves every ru
 ## Docs
 
 - [Pitch](docs/PITCH.md): what Gratus is for and why it is built this way
+- [Gratus × Giveth](docs/GIVETH.md): what Giveth built, what we use, the pitch to them, and how to start on either side
+- [The Emotional TRACE](docs/EMOTIONAL-TRACE.md): Begin, Become, Bridge, Bloom, with the data model and the six loops
 - [Architecture](docs/ARCHITECTURE.md): the scene layer, the ritual, state, growth, gifts, the goals stream, shipping
 - [Features](docs/FEATURES.md): everything in the app, and what is still imagined
 - [Guides](docs/GUIDES.md): for people who use it and people who build on it

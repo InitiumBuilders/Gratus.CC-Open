@@ -34,7 +34,7 @@ One object in `localStorage` under `gratus.galaxy.v1`:
 
 ```
 { name, entries[], plants[{emoji, planted, kept[], carried, origin, from, private}],
-  gifts{given, received}, my{emojis, recipes}, wishes[], goals[], folders[], milestones{}, sound, made{}, opens, migrated }
+  gifts{given, received}, my{emojis, recipes}, wishes[], goals[], folders[], milestones{}, seeds[], sound, made{}, opens, migrated }
 ```
 
 `entries` are the journal: day, text, emoji, tags, photo, voice, folder. `folders` are named collections an entry can be filed into. `milestones` records the day each mark first lit. `plants` are the garden: one per emoji, with the days it was kept. Older states (`gratus.v1`, `gratus.v2`) migrate on first load. Nothing here is sent anywhere.
@@ -54,6 +54,14 @@ A gift is the plant, its days, its message and the hands that held it, encoded b
 ## The goals stream
 
 `api/goals.js` is a Vercel function over `@vercel/blob`. One JSON document at `gratus/goals/feed.json`. `GET` returns the last eighty goals, newest first. `POST` takes `{text ≤ 160, name ≤ 40, emoji}` and appends. Writes are last-writer-wins and the comment in the file says so; this is the right size for now and will change when the stream matters more. Offline or without the token, the client shows seed goals labelled "as imagined" and resyncs local goals when it can.
+
+## Giveth and the Emotional TRACE
+
+`api/giveth.js` reads Giveth's public GraphQL API (`https://mainnet.serve.giveth.io/graphql`) with no key and a five-minute edge cache, and serves four lanes: GIVbacks eligible, boosted with GIVpower, projects nobody has given to yet, and everything. It never writes and never sees a wallet.
+
+`api/trace.js` holds the loop, one JSON document per project in Vercel Blob at `gratus/trace/<slug>.json`: `{ claim, seeds[] }`. A seed carries the project, the donor's words and name, an optional transaction hash, a status of `dormant` or `bloomed`, and the water when it comes. Watering requires a project key whose sha-256 hash is stored on first claim; the key itself is shown once and never kept. The donor's own copy of their seeds lives in `S.seeds` on the device, and `checkBloom()` asks the trace about dormant ones shortly after boot, playing a ceremony for anything newly watered.
+
+The whole design, its limits and the five loops still to build are in [EMOTIONAL-TRACE.md](EMOTIONAL-TRACE.md); what Giveth built and what we use is in [GIVETH.md](GIVETH.md).
 
 ## Voice
 

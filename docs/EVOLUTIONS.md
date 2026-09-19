@@ -2,6 +2,13 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v15 · Giveth, and the Emotional TRACE (2026-09-19)
+
+- **The Emotional TRACE**: Begin (plant a Gratus Seed with a donation), Become (the project reads it in its own console), Bridge (they water it), Bloom (it opens in the donor's garden with their reply inside). `api/trace.js` and the trace constellation.
+- **Give with Giveth**: a live room reading Giveth's public API, with four lanes including one for projects nobody has given to yet, and an onboarding sheet for what they built.
+- The landing page rebuilt in the new look: one statement per act, his card art, gold pills, the same scene and ritual as the app.
+- Docs: [GIVETH.md](GIVETH.md) and [EMOTIONAL-TRACE.md](EMOTIONAL-TRACE.md), with the pitch, the building blocks, the data model and the six loops.
+
 ## v14 · His new look: the home text for text, the bar as drawn, the tab intros (2026-09-19)
 
 - The home rebuilt from his mockup, text for text: the brand row (menu, logo, Gratus.CC, his two lines), Today's Gratitude with Write Today, the three doors (Gratitude Journal, Grow Your Gratus Garden!, Give Gratus Gifts with Send a Gift), Gratus Gives Together with Set Your Gratus Goals and the goals stream. The card art is cropped from his mockup.

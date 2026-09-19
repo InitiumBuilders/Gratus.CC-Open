@@ -19,7 +19,8 @@ let C = {}, S = null, tab = 'gratus', sub = null, room = null, installEvt = null
 const SCENES = {
   home: ['g31', 'g32', 'g37', 'dlong', 'g29', 'g33', 'v2', 'g15', 'g36', 'd2'], grow: ['g37', 'g33', 'v3', 'g08', 'd2', 'v1', 'g06', 'g10', 'g16', 'g09'], give: ['g34', 'g35', 'g13', 'd2', 'g14', 'g30', 'dhold', 'g09', 'g12'],
   book: ['g31', 'v1', 'g16', 'g03', 'g20', 'v3', 'g07', 'g24', 'g26', 'g25', 'g27'], galaxy: ['g36', 'g15', 'v2', 'g05'], vault: ['g17', 'v2', 'g18'], earth: ['g38', 'g23', 'v3', 'g19', 'g21'], world: ['dlong', 'g14', 'g23'], projects: ['g23', 'v1', 'g19'], goals: ['g14', 'g23', 'g04'],
-  journey: ['g13', 'dhold', 'g13', 'dlong', 'g20', 'g07', 'g19', 'v2'], ceremony: ['g22', 'g05', 'g03'], garden: ['g33', 'g11', 'g27', 'g24', 'g25']
+  journey: ['g13', 'dhold', 'g13', 'dlong', 'g20', 'g07', 'g19', 'v2'], ceremony: ['g22', 'g05', 'g03'], garden: ['g33', 'g11', 'g27', 'g24', 'g25'],
+  giveth: ['g38', 'g23', 'g35', 'g19', 'g21'], console: ['g36', 'g32', 'g31'], trace: ['g33', 'g37', 'g31']
 };
 function scene(key, i) { const list = SCENES[key]; if (typeof list === 'string') return list; return list[(((S && S.opens) || 0) + (i || 0)) % list.length]; }
 const motionOk = () => !matchMedia('(prefers-reduced-motion: reduce)').matches && !(navigator.connection && navigator.connection.saveData);
@@ -39,6 +40,7 @@ function setScene(name) {
 }
 const I = {
   menu: '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  giveth: '<svg viewBox="0 0 24 24"><path d="M12 21c-5-3.5-8-6.7-8-10a4.2 4.2 0 0 1 8-1.6A4.2 4.2 0 0 1 20 11c0 3.3-3 6.5-8 10Z"/><path d="M12 13.5v-3M10.5 12h3"/></svg>',
   feather: '<svg viewBox="0 0 24 24"><path d="M20 4c-6 0-11 4-13 10l-3 6 6-3c6-2 10-7 10-13Z"/><path d="M4 20 14 10"/></svg>',
   giftline: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13M12 8c-2 0-4-1-4-3s2-2 4 3c2-5 4-5 4-3s-2 3-4 3"/></svg>',
   user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
@@ -55,11 +57,11 @@ const I = {
 // ── time and state ──
 const pad2 = (n) => String(n).padStart(2, '0');
 function today() { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false, folders: [], milestones: {} }; }
+function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false, folders: [], milestones: {}, seeds: [] }; }
 function load() {
   try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
   if (!S || S.v !== 1) S = fresh();
-  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true; if (!Array.isArray(S.folders)) S.folders = []; if (!S.milestones || typeof S.milestones !== 'object') S.milestones = {};
+  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true; if (!Array.isArray(S.folders)) S.folders = []; if (!Array.isArray(S.seeds)) S.seeds = []; if (!S.milestones || typeof S.milestones !== 'object') S.milestones = {};
   if (!S.migrated) { S.migrated = true; try { migrate(); } catch (e) {} }
   S.opens = (S.opens || 0) + 1; save();
 }
@@ -136,6 +138,8 @@ function render() {
   else if (sub === 'vault') s = topBar({ back: true }) + viewVault();
   else if (sub === 'earth') s = topBar({ back: true }) + viewEarth();
   else if (sub === 'galaxy') s = topBar({ back: true }) + viewGalaxy();
+  else if (sub === 'giveth') s = topBar({ back: true }) + viewGiveth();
+  else if (sub === 'console') s = topBar({ back: true }) + viewConsole();
   else if (tab === 'grow') s = topBar() + viewGrow();
   else if (tab === 'give') s = topBar() + viewGive();
   else s = viewGratus();
@@ -148,6 +152,206 @@ function render() {
   wire();
 }
 
+// ══ THE EMOTIONAL TRACE · Begin → Become → Bridge → Bloom ══════════════════════
+// Giveth's rail moves the capital. This one moves what the capital was for.
+let gvLane = 'verified', gvSearch = '', gvList = null, gvState = 'idle', gvTotal = 0;
+let conSlug = '', conKey = '', conSeeds = null, conState = 'idle';
+const GVK = 'gratus.giveth.key';
+
+async function loadGiveth() {
+  if (gvState === 'loading') return; gvState = 'loading'; const lane = gvLane, q = gvSearch;
+  try {
+    const u = '/api/giveth?lane=' + encodeURIComponent(lane) + (q ? '&search=' + encodeURIComponent(q) : '') + '&limit=12';
+    const r = await fetch(u, { cache: 'no-store' }); const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.projects) throw new Error(d.error || 'no answer');
+    gvList = d.projects; gvTotal = d.total || d.projects.length; gvState = 'live';
+  } catch (e) { gvList = null; gvState = 'offline'; }
+  if (sub === 'giveth') render();
+}
+function projectRow(p) {
+  return '<button class="glass gvp" data-gv="' + esc(p.slug) + '">' +
+    (p.image ? '<img class="gvp-art" src="' + esc(p.image) + '" alt="" loading="lazy">' : '<span class="gvp-art none">' + esc(p.bloom) + '</span>') +
+    '<span class="gvp-words"><b>' + esc(p.title) + '</b>' +
+    '<span class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks</i>' : p.verified ? '<i class="gvt">Verified</i>' : '') + (p.donors === 0 ? '<i class="gvt mint">Nobody yet</i>' : '<i class="gvt">' + plural(p.donors, 'donor') + '</i>') + (p.categories[0] ? '<i class="gvt">' + esc(p.categories[0]) + '</i>' : '') + '</span>' +
+    '<span class="cap">' + esc(p.summary.slice(0, 120)) + '</span></span><span class="arrow">›</span></button>';
+}
+function viewGiveth() {
+  if (gvState === 'idle') loadGiveth();
+  const lanes = [['verified', 'GIVbacks'], ['boosted', 'Boosted'], ['unseen', 'Nobody yet'], ['all', 'All']];
+  const mine = S.seeds.slice().reverse();
+  return hero(scene('giveth'), { cls: 'room-hero', h1: 'Giveth', k1: 'Capital, on chain, zero fees.', k2: 'Gratitude, in your own words.' }) +
+    '<div class="page">' +
+    '<div class="glass card"><span class="kicker mint">Why the two of us</span>' +
+    '<p class="body">Giveth moves the money: every donation goes to the project with no fee taken, on Ethereum, Gnosis, Polygon, Optimism, Base, Celo, Arbitrum, Solana and Stellar. Verified projects are reviewed by their team, and people who give to them earn GIVbacks.</p>' +
+    '<p class="body">What the rail cannot carry is why you gave. That is what Gratus adds: a Gratus Seed, in your words, planted with the gift, answered by the people you gave to, and kept growing in your garden.</p>' +
+    '<div class="trace3"><span><b>Begin</b>You give, and plant a seed.</span><span><b>Become</b>They read it beside the capital.</span><span><b>Bridge</b>They water it. It blooms here.</span></div>' +
+    '<div class="links"><a href="https://giveth.io" target="_blank" rel="noopener">giveth.io</a><a href="https://github.com/Giveth" target="_blank" rel="noopener">their code on GitHub</a><a href="https://docs.giveth.io" target="_blank" rel="noopener">their docs</a><button id="gv-learn">What they built</button></div></div>' +
+    (mine.length ? '<div class="eyebrow"><h2>Your seeds</h2><span class="more">' + plural(mine.length, 'seed') + '</span></div><div class="rows">' + mine.slice(0, 4).map(seedRow).join('') + '</div>' : '') +
+    '<div class="eyebrow"><h2>Projects</h2>' + (gvState === 'live' ? '<span class="more">' + gvTotal.toLocaleString() + ' on Giveth</span>' : '') + '</div>' +
+    '<input class="field" id="gv-search" placeholder="Search Giveth projects..." aria-label="search Giveth projects" value="' + esc(gvSearch) + '">' +
+    '<div class="chips row">' + lanes.map(([k, n]) => '<button class="chip' + (gvLane === k ? ' on' : '') + '" data-gvlane="' + k + '">' + n + '</button>').join('') + '</div>' +
+    (gvState === 'loading' ? '<p class="cap">Asking Giveth...</p>' : '') +
+    (gvState === 'offline' ? '<p class="cap">Giveth is not answering right now. The projects live on their side; try again in a moment, or open <a href="https://giveth.io/projects" target="_blank" rel="noopener">giveth.io/projects</a>.</p>' : '') +
+    (gvList && gvList.length ? '<div class="rows">' + gvList.map(projectRow).join('') + '</div>' : gvState === 'live' ? '<p class="cap">Nothing with those words. Try another.</p>' : '') +
+    '<button class="glass opt" id="gv-console"><span class="ico">' + I.people + '</span><span class="grow"><b>I run a project</b><span>Read the seeds people planted with their gifts, and water them.</span></span><span class="arrow">›</span></button>' +
+    '<p class="cap">Gratus is not Giveth and holds no money. Giving happens on giveth.io, in your own wallet. A seed is a note, not a payment.</p>' +
+    '</div>';
+}
+function seedRow(s) {
+  const b = s.status === 'bloomed';
+  return '<button class="glass opt seedrow' + (b ? ' bloomed' : '') + '" data-seed="' + esc(s.id) + '"><span class="ico' + (b ? ' gold' : '') + '">' + esc(b ? s.bloom : '🌱') + '</span><span class="grow"><b>' + esc(s.title) + '</b><span>' + esc(b ? 'Watered · ' + (s.water && s.water.reply ? s.water.reply.slice(0, 60) : 'they wrote back') : 'Planted ' + fmtDay(s.at.slice(0, 10)) + ' · waiting to be watered') + '</span></span><span class="arrow">›</span></button>';
+}
+function givethLearnSheet() {
+  sheet('<h2>What Giveth built</h2>' +
+    '<p class="body">Giveth is a community building the future of giving with blockchain. Their code is open on GitHub and most of it is MIT licensed, like this app.</p>' +
+    '<div class="rows">' +
+    '<div class="glass opt"><span class="ico">💸</span><span class="grow"><b>Zero-fee donations</b><span>100% of a donation reaches the project. Giveth takes nothing.</span></span></div>' +
+    '<div class="glass opt"><span class="ico">✅</span><span class="grow"><b>Verified &amp; GIVbacks Eligible</b><span>A project shows action and impact, reputation, and that it is a public good. Reviewed by their team, and the badge lapses after three months of silence.</span></span></div>' +
+    '<div class="glass opt"><span class="ico">🎁</span><span class="grow"><b>GIVbacks</b><span>Give to a GIVbacks-eligible project and a share of GIV comes back to you.</span></span></div>' +
+    '<div class="glass opt"><span class="ico">⚡</span><span class="grow"><b>GIVpower</b><span>Stake GIV to boost a project: it rises in the ranking and its donors earn more GIVbacks.</span></span></div>' +
+    '<div class="glass opt"><span class="ico">🏛️</span><span class="grow"><b>GIVgarden &amp; GIVstream</b><span>Where GIV holders steer the commons, and how GIV keeps flowing to the people who take part.</span></span></div>' +
+    '<div class="glass opt"><span class="ico">🧮</span><span class="grow"><b>Quadratic funding rounds</b><span>Many small gifts pull more matching than a few large ones. Their qf-calculator and qf-dashboard are open too.</span></span></div>' +
+    '<div class="glass opt"><span class="ico">🕸️</span><span class="grow"><b>impact-graph</b><span>The GraphQL API behind every project page. Gratus reads it live, right here in this room.</span></span></div>' +
+    '<div class="glass opt"><span class="ico">🤝</span><span class="grow"><b>DeVouch</b><span>Vouching for projects through on-chain attestations, so verification does not rest on one team.</span></span></div>' +
+    '</div>' +
+    '<div class="links"><a href="https://github.com/Giveth/impact-graph" target="_blank" rel="noopener">impact-graph</a><a href="https://github.com/Giveth/giveth-dapps-v2" target="_blank" rel="noopener">giveth-dapps-v2</a><a href="https://github.com/Giveth" target="_blank" rel="noopener">all of it</a></div>');
+}
+async function projectSheet(slug) {
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>◌</span></span><h2>Opening the project</h2><span class="kicker mint">Reading Giveth</span></div>');
+  let p = (gvList || []).find((x) => x.slug === slug) || null;
+  try { const r = await fetch('/api/giveth?q=project&slug=' + encodeURIComponent(slug), { cache: 'no-store' }); const d = await r.json().catch(() => ({})); if (r.ok && d.project) p = d.project; } catch (e) {}
+  if (!p) { sh.close(); toast('Giveth is not answering right now.'); return; }
+  sh.el.innerHTML = '<div class="grabber" aria-hidden="true"></div>' +
+    (p.image ? '<img src="' + esc(p.image) + '" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:18px">' : '') +
+    '<h2>' + esc(p.title) + '</h2>' +
+    '<span class="kicker mint">' + (p.givbacks ? 'GIVbacks eligible · ' : p.verified ? 'Verified · ' : '') + plural(p.donors, 'donor') + (p.raised ? ' · $' + p.raised.toLocaleString() + ' raised' : ' · nothing given yet') + '</span>' +
+    '<p class="body">' + esc(p.summary) + '</p>' +
+    (p.categories.length ? '<div class="chips">' + p.categories.map((c) => '<span class="chip">' + esc(c) + '</span>').join('') + '</div>' : '') +
+    '<div class="actions"><button class="btn mint" id="gv-seed">Plant a Gratus Seed &amp; give ' + esc(p.bloom) + '</button><a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">Read it on Giveth</a></div>' +
+    '<p class="cap">Giving happens on giveth.io in your own wallet. Gratus never touches the money.</p>';
+  $('#gv-seed', sh.el).addEventListener('click', () => { sh.close(); seedSheet(p); });
+}
+// ── Begin: the seed goes in with the gift ──
+function seedSheet(p) {
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>🌱</span></span><h2>Plant a Gratus Seed</h2><span class="kicker mint">' + esc(p.title) + '</span></div>' +
+    '<p class="body">Write why you are giving. The people who run this project read it beside the capital, and can write back. When they do, this seed blooms in your garden.</p>' +
+    '<textarea class="field" id="sd-msg" rows="3" maxlength="280" placeholder="Why this project, today..." aria-label="your Gratus Seed"></textarea>' +
+    '<input class="field" id="sd-name" maxlength="40" placeholder="your name, or leave it empty" aria-label="your name" value="' + esc(S.name || '') + '">' +
+    '<div class="actions"><a class="btn mint" id="sd-give" href="' + esc(p.donateUrl) + '" target="_blank" rel="noopener">Give on Giveth ↗</a>' +
+    '<button class="btn" id="sd-plant">Capital sent · plant the seed</button></div>' +
+    '<input class="field" id="sd-tx" maxlength="80" placeholder="transaction hash (optional)" aria-label="transaction hash">' +
+    '<p class="cap">A seed is public to that project. Write what you would say to their face. Your journal stays on this device; only this note travels.</p>', { autofocus: true });
+  $('#sd-give', sh.el).addEventListener('click', () => toast('Give on Giveth. The seed is planted here, whenever you are ready.'));
+  $('#sd-plant', sh.el).addEventListener('click', async () => {
+    const message = $('#sd-msg', sh.el).value.trim(); if (!message) { toast('A few words. They will read them.'); return; }
+    const name = $('#sd-name', sh.el).value.trim(); const tx = $('#sd-tx', sh.el).value.trim();
+    if (name && name !== S.name) { S.name = name; }
+    const btn = $('#sd-plant', sh.el); btn.disabled = true; btn.textContent = 'Planting...';
+    try {
+      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ act: 'plant', project: p.slug, title: p.title, message, name, tx, bloom: p.bloom }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.seed) throw new Error(d.error || 'the trace refused');
+      S.seeds.push(Object.assign({}, d.seed, { slug: p.slug, image: p.image || null }));
+      save(); sh.close();
+      playCeremonies(['<div class="cer"><span class="big">🌱</span><h2>Capital sent.<br>Seed planted.</h2><p>Your words are with ' + esc(p.title) + '. When they water it, this seed blooms into ' + esc(p.bloom) + ' in your garden.</p><span class="kicker">tap to continue</span></div>'], () => { checkMilestones(); render(); });
+    } catch (e) { btn.disabled = false; btn.textContent = 'Capital sent · plant the seed'; toast(String(e.message || e)); }
+  });
+}
+function mySeedSheet(id) {
+  const s = S.seeds.find((x) => x.id === id); if (!s) return;
+  const b = s.status === 'bloomed';
+  sheet('<div class="hero-sm"><span class="orb xl' + (b ? ' lit' : '') + '"><span>' + esc(b ? s.bloom : '🌱') + '</span></span><h2>' + esc(s.title) + '</h2><span class="kicker mint">' + esc(b ? 'Bloomed' : 'Planted') + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + '</span></div>' +
+    '<span class="kicker mint">What you wrote</span><p class="lead" style="white-space:pre-wrap">' + esc(s.message) + '</p>' +
+    (b && s.water ? '<span class="kicker gold">What they wrote back</span><p class="lead" style="white-space:pre-wrap">' + esc(s.water.reply) + '</p><span class="cap">' + esc(s.water.from) + ' · ' + esc(fmtDay(s.water.at.slice(0, 10))) + '</span>' : '<p class="cap">Not watered yet. A project answers when it can; some answer in a day, some in a season. The seed keeps either way.</p>') +
+    (s.tx ? '<span class="cap">tx ' + esc(s.tx.slice(0, 18)) + '…</span>' : '') +
+    '<div class="links"><a href="https://giveth.io/project/' + esc(s.slug || s.project) + '" target="_blank" rel="noopener">The project on Giveth</a></div>');
+}
+// ── Bridge: has anyone watered what I planted ──
+async function checkBloom() {
+  const dormant = S.seeds.filter((s) => s.status !== 'bloomed'); if (!dormant.length) return;
+  const bySlug = {}; for (const s of dormant) (bySlug[s.slug || s.project] = bySlug[s.slug || s.project] || []).push(s.id);
+  const bloomed = [];
+  for (const slug of Object.keys(bySlug)) {
+    try {
+      const r = await fetch('/api/trace?project=' + encodeURIComponent(slug) + '&ids=' + bySlug[slug].join(','), { cache: 'no-store' });
+      const d = await r.json().catch(() => ({})); if (!r.ok || !d.seeds) continue;
+      for (const got of d.seeds) { const mine = S.seeds.find((x) => x.id === got.id); if (mine && got.status === 'bloomed' && mine.status !== 'bloomed') { mine.status = 'bloomed'; mine.water = got.water; bloomed.push(mine); } }
+    } catch (e) {}
+  }
+  if (!bloomed.length) return;
+  save();
+  playCeremonies(bloomed.map((s) => '<div class="cer"><span class="big">' + esc(s.bloom) + '</span><h2>Your seed bloomed.</h2><p>' + esc((s.water && s.water.from) || s.title) + ' wrote back: “' + esc(((s.water && s.water.reply) || '').slice(0, 140)) + '”</p><span class="kicker">tap to continue</span></div>'), () => { checkMilestones(); render(); });
+}
+// ── Become: the project's own console ──
+function viewConsole() {
+  const seeds = conSeeds || [];
+  return hero(scene('console'), { cls: 'room-hero', h1: 'Project Console', k1: 'The seeds people planted with their gifts.', k2: 'Read them. Water them.' }) +
+    '<div class="page">' +
+    '<div class="glass card"><span class="kicker mint">Your project</span>' +
+    '<input class="field" id="con-slug" placeholder="your Giveth project slug, e.g. earth-commons" aria-label="project slug" value="' + esc(conSlug) + '">' +
+    '<input class="field" id="con-key" placeholder="your project key" aria-label="project key" value="' + esc(conKey) + '">' +
+    '<div class="actions"><button class="btn mint" id="con-open">Open the feed</button><button class="btn" id="con-claim">Claim this project</button></div>' +
+    '<p class="cap">The key waters seeds for one project. Claiming shows it once, and only a hash of it is kept. This is a light claim, not verification: real verification lives on Giveth.</p></div>' +
+    (conState === 'loading' ? '<p class="cap">Reading the trace...</p>' : '') +
+    (conState === 'live' && !seeds.length ? '<p class="cap">No seeds yet for that project. When someone gives with a Gratus Seed, it arrives here.</p>' : '') +
+    (seeds.length ? '<div class="eyebrow"><h2>Seeds</h2><span class="more">' + plural(seeds.length, 'seed') + '</span></div><div class="rows">' + seeds.map((s) => '<div class="glass entry conseed"><span class="thumb">' + esc(s.status === 'bloomed' ? s.bloom : '🌱') + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(s.name) + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + (s.tx ? ' · on chain' : '') + '</span><span class="text">' + esc(s.message) + '</span>' + (s.water ? '<span class="cap">You watered it: ' + esc(s.water.reply) + '</span>' : '<button class="btn sm mint" data-water="' + esc(s.id) + '">Water this seed</button>') + '</span></div>').join('') + '</div>' : '') +
+    '<p class="cap">Every seed here was written by a person who gave to you. Watering one takes twenty seconds and it lands in their garden as a bloom.</p>' +
+    '</div>';
+}
+async function conLoad() {
+  if (!conSlug) { toast('Your project slug, from its Giveth address.'); return; }
+  conState = 'loading'; render();
+  try {
+    const r = await fetch('/api/trace?project=' + encodeURIComponent(conSlug), { cache: 'no-store' });
+    const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'no answer');
+    conSeeds = d.seeds || []; conState = 'live';
+    try { localStorage.setItem(GVK, JSON.stringify({ slug: conSlug, key: conKey })); } catch (e) {}
+  } catch (e) { conSeeds = null; conState = 'idle'; toast(String(e.message || e)); }
+  render();
+}
+async function conClaim() {
+  if (!conSlug) { toast('Your project slug first.'); return; }
+  if (!confirm('Claim "' + conSlug + '"? The key is shown once. Do this only for a project you run.')) return;
+  try {
+    const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'claim', project: conSlug }) });
+    const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.error || 'claim refused');
+    conKey = d.key; try { localStorage.setItem(GVK, JSON.stringify({ slug: conSlug, key: conKey })); } catch (e) {}
+    sheet('<h2>Your project key</h2><p class="body">Keep this. It waters seeds for <b>' + esc(conSlug) + '</b>, and it is shown once.</p><p class="lead mono" style="word-break:break-all;background:rgba(5,9,18,.6);padding:14px;border-radius:14px">' + esc(d.key) + '</p><button class="btn mint" id="ck-copy">Copy it</button>');
+    const cc = $('#ck-copy'); if (cc) cc.addEventListener('click', () => { navigator.clipboard.writeText(d.key).then(() => toast('Copied'), () => toast('Copy it by hand')); });
+    render();
+  } catch (e) { toast(String(e.message || e)); }
+}
+function waterSheet(seedId) {
+  const s = (conSeeds || []).find((x) => x.id === seedId); if (!s) return;
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>💧</span></span><h2>Water this seed</h2><span class="kicker mint">' + esc(s.name) + ' gave, and wrote this</span></div>' +
+    '<p class="lead" style="white-space:pre-wrap">' + esc(s.message) + '</p>' +
+    '<span class="kicker mint">Write back</span>' +
+    '<textarea class="field" id="wt-msg" rows="3" maxlength="280" placeholder="This means the world to us. We just..." aria-label="your reply"></textarea>' +
+    '<input class="field" id="wt-from" maxlength="40" placeholder="your name or the project\'s" aria-label="from" value="' + esc(s.title || conSlug) + '">' +
+    '<button class="btn mint wide" id="wt-send">Send it · their seed blooms</button>', { autofocus: true });
+  $('#wt-send', sh.el).addEventListener('click', async () => {
+    const reply = $('#wt-msg', sh.el).value.trim(); if (!reply) { toast('A few words back.'); return; }
+    const from = $('#wt-from', sh.el).value.trim();
+    const b = $('#wt-send', sh.el); b.disabled = true; b.textContent = 'Sending...';
+    try {
+      const r = await fetch('/api/trace', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ act: 'water', project: conSlug, seed: seedId, reply, from, key: conKey }) });
+      const d = await r.json().catch(() => ({})); if (!r.ok || !d.seed) throw new Error(d.error || 'the trace refused');
+      const i = conSeeds.findIndex((x) => x.id === seedId); if (i >= 0) conSeeds[i] = d.seed;
+      sh.close(); toast('Watered. It blooms in their garden.'); render();
+    } catch (e) { b.disabled = false; b.textContent = 'Send it · their seed blooms'; toast(String(e.message || e)); }
+  });
+}
+function traceBlock() {
+  if (!S.seeds.length) return '';
+  const b = S.seeds.filter((s) => s.status === 'bloomed').length;
+  return '<div class="eyebrow"><h2>The Emotional TRACE</h2><span class="more">' + b + ' of ' + S.seeds.length + ' bloomed</span></div>' +
+    '<div class="glass garden trace-garden">' + art(scene('trace')) + S.seeds.slice().reverse().slice(0, 18).map((s, i) => {
+      const bl = s.status === 'bloomed'; const r = i ? 34 + Math.min(30, 150 / Math.sqrt(Math.max(1, S.seeds.length))) * Math.sqrt(i) : 0; const a = i * Gr.GOLDEN * Math.PI / 180;
+      return '<button class="orb ' + (bl ? 'p4 lit' : 'p1') + '" data-seed="' + esc(s.id) + '" style="left:calc(50% + ' + (r * Math.cos(a)).toFixed(1) + 'px);top:calc(50% + ' + (r * Math.sin(a)).toFixed(1) + 'px);--h:' + (bl ? '#F2C97D' : '#6ED9C0') + '" aria-label="' + esc(s.title) + '"><span>' + esc(bl ? s.bloom : '🌱') + '</span></button>';
+    }).join('') + '</div>' +
+    '<p class="cap">Every seed is a gift you gave with your words. A bloom is the moment someone wrote back.</p>';
+}
 // ── GRATUS · the home: his new look, text for text ──
 function door(art, title, line, id) {
   return '<button class="hcard door" id="' + id + '"><img class="door-art" src="/assets/art/home/' + art + '.jpg" alt=""><span class="door-words"><b>' + title + '</b><span>' + line + '</span></span><span class="door-go">›</span></button>';
@@ -175,6 +379,7 @@ function viewGarden() {
     '<div class="glass stats in"><div><b>' + S.entries.length + '</b><span>Entries</span></div><div><b>' + S.plants.length + '</b><span>Plants</span></div><div><b>' + (S.gifts.given.length + S.gifts.received.length) + '</b><span>Gifts</span></div></div>' +
     '<div class="glass garden">' + art(scene('garden')) + (n ? orbs : '<div class="empty-note"><span class="orb lg empty"><span>+</span></span><p class="cap">Moments take root. Gratitude grows. A kinder world blooms.</p><button class="btn mint" id="first-plant">Plant My Gratus 🌱</button></div>') + '</div>' +
     (n ? '<p class="kicker" style="text-align:center">Gratitude turns moments into movement.</p>' : '') +
+    traceBlock() +
     '<button class="glass opt" id="open-book"><span class="ico">📖</span><span class="grow"><b>The Gratus Growth Book</b><span>Your gratitude journal, by day. The phases, the emojis, the recipes.</span></span><span class="arrow">›</span></button>' +
     (S.gifts.received.length ? '<div class="eyebrow"><h2>Gifts received</h2></div><div class="rows">' + S.gifts.received.slice().reverse().slice(0, 3).map((g) => '<div class="glass opt"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>From ' + esc(g.from || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + '</span></span></div>').join('') + '</div>' : '') +
     (entries.length ? '<div class="eyebrow"><h2>Entries</h2>' + (entries.length > 4 ? '<button class="more" id="all-entries">All ' + entries.length + '</button>' : '') + '</div><div class="rows">' + entries.slice(0, 4).map(entryCard).join('') + '</div>' : '') +
@@ -183,9 +388,9 @@ function viewGarden() {
 }
 function menuSheet() {
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">Grow Gratus Give</span></div>' +
-    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
+    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
   const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
-  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
+  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
 }
 function entryCard(e) {
   return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
@@ -276,6 +481,7 @@ function viewGive() {
     '<div class="page">' +
     '<div class="glass card"><span class="kicker mint">Choose how to give:</span>' +
     '<button class="glass opt" id="give-gift"><span class="ico gold">' + I.heart + '</span><span class="grow"><b>Give a Gratus Gift</b><span>Turn your gratitude into a gift for someone else.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="give-giveth"><span class="ico gold">' + I.giveth + '</span><span class="grow"><b>Give with Giveth</b><span>Real projects, zero fees, on chain. Plant a Gratus Seed with your gift.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-project"><span class="ico">' + I.people + '</span><span class="grow"><b>Support a Project</b><span>Give to people, places or causes that matter.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-world"><span class="ico">' + I.globe + '</span><span class="grow"><b>Give to the World</b><span>Be part of a kinder, brighter planet.</span></span><span class="arrow">›</span></button>' +
     '<p class="statement quiet" style="text-align:center">“Give what grows.”</p></div>' +
@@ -532,6 +738,8 @@ const MILESTONES = [
   ['first-recipe', 'First recipe', '✨', () => Object.keys(S.made || {}).length >= 1],
   ['first-gift', 'First gift given', '💝', () => S.gifts.given.length >= 1],
   ['received', 'A gift received', '🌟', () => S.gifts.received.length >= 1],
+  ['first-seed', 'A Gratus Seed planted', '🌱', () => S.seeds.length >= 1],
+  ['first-bloom', 'A seed watered and bloomed', '🌻', () => S.seeds.some((s) => s.status === 'bloomed')],
   ['care-30', 'Thirty days of care', '🕯️', () => careDays() >= 30],
   ['care-100', 'A hundred days of care', '🔥', () => careDays() >= 100],
 ];
@@ -674,6 +882,18 @@ function wire() {
   const js = $('#j-search'); if (js) js.addEventListener('input', () => { journalQuery = js.value; const v = js.value; render(); const n = $('#j-search'); if (n) { n.focus(); n.setSelectionRange(v.length, v.length); } });
   const gg = $('#give-gift'); if (gg) gg.addEventListener('click', () => giveSheet(null));
   const gp = $('#give-project'); if (gp) gp.addEventListener('click', () => go('give', 'projects'));
+  const gvd = $('#give-giveth'); if (gvd) gvd.addEventListener('click', () => go('give', 'giveth'));
+  $$('[data-gv]').forEach((b) => b.addEventListener('click', () => projectSheet(b.dataset.gv)));
+  $$('[data-gvlane]').forEach((b) => b.addEventListener('click', () => { gvLane = b.dataset.gvlane; gvState = 'idle'; gvList = null; render(); }));
+  const gvs = $('#gv-search'); if (gvs) { gvs.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { gvSearch = gvs.value.trim(); gvState = 'idle'; gvList = null; render(); } }); gvs.addEventListener('search', () => { gvSearch = gvs.value.trim(); gvState = 'idle'; gvList = null; render(); }); }
+  const gvl = $('#gv-learn'); if (gvl) gvl.addEventListener('click', givethLearnSheet);
+  const gvc = $('#gv-console'); if (gvc) gvc.addEventListener('click', () => go('give', 'console'));
+  $$('[data-seed]').forEach((b) => b.addEventListener('click', () => mySeedSheet(b.dataset.seed)));
+  const cs = $('#con-slug'); if (cs) cs.addEventListener('input', () => { conSlug = cs.value.trim().toLowerCase(); });
+  const ck = $('#con-key'); if (ck) ck.addEventListener('input', () => { conKey = ck.value.trim(); });
+  const co = $('#con-open'); if (co) co.addEventListener('click', conLoad);
+  const cl = $('#con-claim'); if (cl) cl.addEventListener('click', conClaim);
+  $$('[data-water]').forEach((b) => b.addEventListener('click', () => waterSheet(b.dataset.water)));
   const gw = $('#give-world'); if (gw) gw.addEventListener('click', () => go('give', 'world'));
   $$('[data-given]').forEach((b) => b.addEventListener('click', () => { const g = S.gifts.given.find((x) => x.id === b.dataset.given); if (g) shareSheet(g); }));
   $$('[data-cat]').forEach((b) => b.addEventListener('click', () => { projFilter = b.dataset.cat; render(); }));
@@ -704,10 +924,11 @@ async function boot() {
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));
   window.addEventListener('popstate', () => { if (room) closeRoom(true); if (!$('#laws').hidden) { $('#laws').hidden = true; document.body.classList.remove('room'); } render(); });
   const q = new URLSearchParams(location.search).get('tab'); const m = /^\/app\/?(\w+)?/.exec(location.pathname); const want = q || (m && m[1]) || 'gratus';
-  const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden'];
+  const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden', 'giveth', 'console'];
   if (SUBS.includes(want)) { tab = want === 'book' || want === 'galaxy' || want === 'garden' ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
   const isGift = location.pathname === '/gift' || location.pathname.endsWith('gift.html') || location.hash.startsWith('#gift');
-  const start = () => { render(); booted = true; if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
+  try { const k = JSON.parse(localStorage.getItem(GVK) || 'null'); if (k) { conSlug = k.slug || ''; conKey = k.key || ''; } } catch (e) {}
+  const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
   if (new URLSearchParams(location.search).has('nosplash')) start(); else splash(start);
 }
 boot().catch((e) => { console.error(e); const el = document.createElement('div'); el.className = 'noscript'; el.innerHTML = '<h2>Gratus could not open.</h2><p class="lead">' + esc(e && e.message || e) + '</p>'; document.body.appendChild(el); });

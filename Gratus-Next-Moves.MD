@@ -8,6 +8,19 @@ Write → plant → return → phase → recipe → give → the gift grows agai
 
 Everything on this list either makes that loop clearer, safer or faster to feel, or it is a room off the loop and waits its turn.
 
+## The Giveth arc
+
+The full brief is in [docs/GIVETH.md](docs/GIVETH.md); the architecture and the six loops are in [docs/EMOTIONAL-TRACE.md](docs/EMOTIONAL-TRACE.md). Shipped in v15: loop one, the Emotional TRACE, and the "Nobody yet" lane of loop two.
+
+- **G1. Owner verification.** A Gratus claim is first-come and light. Tie it to a verified Giveth project owner, or to a DeVouch attestation, so watering cannot be impersonated. The one thing we cannot do alone, and the first thing to ask Giveth for.
+- **G2. Confirm the gift.** Read the transaction back from Giveth's API by hash and mark the seed confirmed, so the seed and the capital are actually linked.
+- **G3. Rate limits.** Planting, watering and the voice function all need a per-device allowance before this is shared widely.
+- **G4. Per-seed documents.** One document per project is last-writer-wins; split it when the stream grows.
+- **G5. The "I See You" mark.** When a seed is the first a project ever receives, bloom it into a rare hand-sign mark.
+- **G6. Tell the project it was watered.** A steward has no way to know a bloom landed. A gentle receipt, without presence words.
+- **G7. Loops three to six**, in the order set out in EMOTIONAL-TRACE.md: reputation signal, emoji alchemy, circular flow, GIVgarden cross-pollination.
+- **G8. Send the pitch.** The pitch in GIVETH.md is written. It has not been sent to anyone at Giveth.
+
 ## Now (the next ship or two)
 
 1. ~~**Protect the journal.**~~ Done in v12.1: export and restore live in the profile sheet. Next: a reminder to export after every tenth entry, until sync exists.
@@ -60,7 +73,9 @@ These change the shape of the work. Each one is a fork.
 ## New since his answers
 
 19. **The intros and patience.** Give and Grow now open through a video every time, by his ask. Watch how it feels after a week of daily use; if it wears, play the intro once per open and keep the tap to enter.
-20. **The landing page in the new look.** The landing still carries the v10 look; bring the mockup's cards and bar to it.
+20. ~~**The landing page in the new look.**~~ Done in v15: acts with one statement each, his card art, gold pills, the Emotional TRACE named.
+21. **The console needs the app's own look.** It is functional and plain next to the rest.
+22. **A seed should be withdrawable.** Once planted it cannot be taken back, from either side.
 
 16. **The voice function needs a limit.** It is public and spends his ElevenLabs credit. Add a per-device daily allowance and a size cap smaller than six megabytes before the app is shared widely.
 17. **Recordings in the export.** The JSON export leaves recordings behind. Add a second export that packs them, or include them as data URLs when small.

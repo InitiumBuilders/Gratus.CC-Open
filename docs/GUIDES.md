@@ -34,6 +34,16 @@ On **Give**, choose **Give a Gratus Gift**, pick a grown plant and write a messa
 
 Opening a gift someone sent you: the link opens the journey directly. At the end, tap **Keep it** and it is planted in your garden with its history.
 
+### Giving with Giveth
+
+Give → **Give with Giveth** opens real projects from [giveth.io](https://giveth.io), live. Giveth takes no fee, so the whole donation reaches the project. Pick a lane: **GIVbacks** are reviewed projects whose donors earn GIV back, **Boosted** are the ones the community is lifting, and **Nobody yet** are new projects no one has given to.
+
+Open a project, read it, then give on Giveth in your own wallet. Back in Gratus, plant a **Gratus Seed**: a few words about why you gave. The project's stewards read it beside the capital, and when one of them writes back, your seed blooms in your garden and keeps their words.
+
+A seed is public to that project. Your journal is not, and never leaves your device.
+
+**If you run a project:** Give → Give with Giveth → **I run a project**. Claim your slug, keep the key it shows once, and water the seeds people plant for you. A line back takes twenty seconds.
+
 ### The song
 
 His song, A Sacred Place, plays when the app opens. The speaker button in the top bar mutes it, and the app remembers your choice.

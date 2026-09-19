@@ -123,3 +123,11 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 93. **A room opens through its own light.** Entering Give plays his plant video to the moon's flood; entering Grow plays his ring of light; the white holds 1.9 seconds and the room fades in. Every time, by his ask; a tap enters early; never twice at once; a stalled video never holds the room.
 94. **Pale gold carries every primary action.** Dark words on light gold read on any scene; the old translucent mint buttons did not.
 95. **The garden is a room.** Everything the old home held (garden, counts, the Growth Book and Galaxy doors, entries) lives at Grow Your Gratus Garden!.
+
+## v15 — GIVETH · THE EMOTIONAL TRACE · THE LANDING IN THE NEW LOOK (2026-09-19)
+96. **Giveth moves the capital; Gratus carries what it was for.** Gratus never holds money, never asks for a wallet or a key, and never brokers a donation. Giving happens on giveth.io, in the person's own wallet, to the project's own address. The app says so on the screen, twice.
+97. **The Emotional TRACE.** Begin: a seed, in the giver's words, planted with the gift. Become: the project's stewards read it in their own console, beside the capital. Bridge: a steward waters it with a line back. Bloom: the seed opens in the giver's garden into that project's own Giveth category emoji, keeping the reply inside it, through the Gate's light like every other ceremony.
+98. **A seed is public to that project, and the app says so before anyone writes one.** A journal entry is a different thing and never leaves the device. A transaction hash is optional and already public on chain.
+99. **Claiming a project is light, and named as light.** First-come by slug, a key shown once with only its hash kept. It is not verification; verification belongs to Giveth, and tying the two together is the first thing we will ask them for.
+100. **Visibility at the margins is a query, not a reward.** The "Nobody yet" lane asks Giveth for the newest projects and keeps only those with zero donors. Ranking buries them; one lane reverses that for anyone who opens it.
+101. **The landing page is acts, not sections.** One statement to a screen, his card art, the gold pills, the same scene and ritual as the app.
