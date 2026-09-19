@@ -2,6 +2,14 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v14 · His new look: the home text for text, the bar as drawn, the tab intros (2026-09-19)
+
+- The home rebuilt from his mockup, text for text: the brand row (menu, logo, Gratus.CC, his two lines), Today's Gratitude with Write Today, the three doors (Gratitude Journal, Grow Your Gratus Garden!, Give Gratus Gifts with Send a Gift), Gratus Gives Together with Set Your Gratus Goals and the goals stream. The card art is cropped from his mockup.
+- The bar as drawn: Give · Gratus · Grow, the logo in a gold ring rising from the bar, gold labels, a gold line beneath.
+- Entering Give plays his plant video until the light fills the screen, holds the white, and the page fades in; entering Grow plays his ring of light the same way. Tap to enter early.
+- Every primary action is a pale gold pill with dark words, readable on any scene. Glass carries a gold-mint hairline.
+- Eight new paintings lead the scenes (the star over the lake, the island sprout, the heart sphere, the orbs, the galaxy, the ring of light, the golden river); the garden moved to its own room.
+
 ## v13 · The logo is the core; voice; the journal's rooms; the desktop painting; MIT (2026-09-19)
 
 - The bar's centre is his logo itself, sitting in the bar, with the swaying arcs, a rising aura ring, the embers and the spill of light around it, nothing plated and nothing cut.

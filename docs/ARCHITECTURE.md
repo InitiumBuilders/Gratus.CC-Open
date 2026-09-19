@@ -18,6 +18,12 @@ Gratus.CC is a static progressive web app. There is no build step, no framework 
 
 Every open, `splash(start)` plays `explode.mp4` from its eleventh second. When the video reaches 24.4 seconds (or ends), the white field fades in, the mark and the name light up, and after 2.6 seconds the splash fades over 1.5 seconds while the app starts underneath. A tap enters early. A hard timer floods at 16 seconds if the video stalls. With reduced motion the mark shows for 1.2 seconds instead. Callbacks check for their nodes, because the splash empties itself when it leaves.
 
+## The home and the tab intros
+
+The Gratus tab is built from his mockup in `viewGratus()`: a brand row, the hero card, three door cards, the Gratus Gives Together block and the goals stream, all on `.hcard` glass with a gold-mint hairline drawn by a masked pseudo-element. The card art lives in `assets/art/home/` and is cropped from the mockup itself. The garden, counts and older doors moved to `viewGarden()` under `/app/garden`.
+
+`go(tab)` plays an intro when a person enters Give or Grow from another tab: `tabIntro()` fills `#intro` with the tab's video (`give-intro.mp4`, `grow-intro.mp4`), floods a white field at the video's bright moment, holds it 1.9 seconds, then fades while the tab renders underneath. It never runs twice at once, exits on a stall of three seconds, and a tap enters early. The first render after the opening ritual never plays an intro.
+
 ## Scenes per page
 
 `SCENES` maps each page to a list of scene names. `scene(key, i)` picks one by the number of opens, so the app changes every time it is opened and still feels the same. Home leads with the long zoom of the Gate; every list leads with a video.

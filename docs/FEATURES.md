@@ -11,6 +11,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 
 ## Grow
 
+- Entering Grow plays his ring of light until the screen fills with white, holds it, and the page fades in. Tap to enter early.
 - Today's question, drawn from the question pool.
 - The entry: text, a photo (resized on the device and kept with the entry), and your voice. A recording is kept on the device (IndexedDB) and its words come back through ElevenLabs speech to text into the entry. If the words cannot come, the recording is still kept.
 - The emoji you are planting, chosen from your palette; the first emoji is suggested by the engine.
@@ -18,9 +19,10 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Plant My Gratus: the planting ceremony through the Gate's light, then the Planted moment.
 - Gratus Goals: post what you are growing toward, as many as you like. Your goals and everyone's goals in the shared stream. Offline, the stream shows seed goals labelled "as imagined" and your goals wait on the device.
 
-## Gratus
+## Gratus (the home)
 
-- Your Gratitude Garden: every emoji you keep, sized by phase, glowing by phase.
+- His new look, text for text: Today's Gratitude and Write Today; the doors Gratitude Journal, Grow Your Gratus Garden!, Give Gratus Gifts with Send a Gift; Gratus Gives Together with Set Your Gratus Goals and the shared stream. The menu button opens every room, the song, and your sheet.
+- Your Gratus Garden, its own room: every emoji you keep, sized by phase, glowing by phase.
 - Entries, plants and gifts counts.
 - The Growth Book:
   - Journal, four rooms: Entries (today's question, the thirty-day band, search, every entry by day), Threads (one emoji followed through your days, with its phase and the day it grows next; continue a thread from any entry), Folders (make them, file entries into them from any entry, rename, delete without losing an entry), Milestones (eighteen marks on your own road: days in a row, entries, photo, voice, folder, goal, phases, recipe, gifts, days of care; a toast when one lights).
@@ -31,6 +33,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 
 ## Give
 
+- Entering Give plays his plant growing into the light until the screen fills with white, holds it, and the page fades in. Tap to enter early.
 - Give a Gratus Gift: choose a plant, write a message, get a link. The whole journey rides in the link. The Share sheet copies it.
 - The receiver's journey: eight pages, unwrap, how it grew, the message, keep it or plant it.
 - Support a Project: the project list is imagined; the flow is real.

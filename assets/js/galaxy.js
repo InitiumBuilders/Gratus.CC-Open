@@ -17,9 +17,9 @@ let C = {}, S = null, tab = 'gratus', sub = null, room = null, installEvt = null
 
 // ── his scenes, by screen. A name starting with v is a video (poster beside it). ──
 const SCENES = {
-  home: ['dlong', 'dhold', 'g29', 'v2', 'g15', 'd2', 'g11', 'v1', 'g12', 'g05'], grow: ['v3', 'g08', 'd2', 'v1', 'g06', 'g10', 'g16', 'g09'], give: ['g13', 'd2', 'g14', 'g30', 'dhold', 'g09', 'g12'],
-  book: ['v1', 'g16', 'g03', 'g20', 'v3', 'g07', 'g24', 'g26', 'g25', 'g27'], galaxy: ['g15', 'v2', 'g05'], vault: ['g17', 'v2', 'g18'], earth: ['g23', 'v3', 'g19', 'g21'], world: ['dlong', 'g14', 'g23'], projects: ['g23', 'v1', 'g19'], goals: ['g14', 'g23', 'g04'],
-  journey: ['g13', 'dhold', 'g13', 'dlong', 'g20', 'g07', 'g19', 'v2'], ceremony: ['g22', 'g05', 'g03'], garden: ['g11', 'g27', 'g24', 'g25']
+  home: ['g31', 'g32', 'g37', 'dlong', 'g29', 'g33', 'v2', 'g15', 'g36', 'd2'], grow: ['g37', 'g33', 'v3', 'g08', 'd2', 'v1', 'g06', 'g10', 'g16', 'g09'], give: ['g34', 'g35', 'g13', 'd2', 'g14', 'g30', 'dhold', 'g09', 'g12'],
+  book: ['g31', 'v1', 'g16', 'g03', 'g20', 'v3', 'g07', 'g24', 'g26', 'g25', 'g27'], galaxy: ['g36', 'g15', 'v2', 'g05'], vault: ['g17', 'v2', 'g18'], earth: ['g38', 'g23', 'v3', 'g19', 'g21'], world: ['dlong', 'g14', 'g23'], projects: ['g23', 'v1', 'g19'], goals: ['g14', 'g23', 'g04'],
+  journey: ['g13', 'dhold', 'g13', 'dlong', 'g20', 'g07', 'g19', 'v2'], ceremony: ['g22', 'g05', 'g03'], garden: ['g33', 'g11', 'g27', 'g24', 'g25']
 };
 function scene(key, i) { const list = SCENES[key]; if (typeof list === 'string') return list; return list[(((S && S.opens) || 0) + (i || 0)) % list.length]; }
 const motionOk = () => !matchMedia('(prefers-reduced-motion: reduce)').matches && !(navigator.connection && navigator.connection.saveData);
@@ -38,6 +38,9 @@ function setScene(name) {
   setTimeout(() => old.forEach((o) => o.remove()), 1600);
 }
 const I = {
+  menu: '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  feather: '<svg viewBox="0 0 24 24"><path d="M20 4c-6 0-11 4-13 10l-3 6 6-3c6-2 10-7 10-13Z"/><path d="M4 20 14 10"/></svg>',
+  giftline: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13M12 8c-2 0-4-1-4-3s2-2 4 3c2-5 4-5 4-3s-2 3-4 3"/></svg>',
   user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z"/></svg>',
   people: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c.6-3 3-5 6-5s5.4 2 6 5M14 18c.4-2 1.8-3.5 3.5-3.5S21 16 21 18"/></svg>',
@@ -104,11 +107,30 @@ function hero(sceneName, o) {
     '<div class="top-words">' + (o.brand ? '<div class="brandrow in" style="--i:0"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname">Gratus.CC</span><span class="kicker">' + esc(o.brand) + '</span></div>' : '') + (o.h1 ? '<h1 class="in" style="--i:0">' + esc(o.h1) + '</h1>' : '') + (o.k1 ? '<span class="kicker mint in" style="--i:1">' + esc(o.k1) + '</span>' : '') + (o.k2 ? '<span class="kicker in" style="--i:1">' + esc(o.k2) + '</span>' : '') + '</div>' +
     '<div class="low">' + (o.low || '') + '</div></section>';
 }
-function go(t, s) { tab = t; sub = s || null; const path = '/app' + (sub ? '/' + sub : (tab === 'gratus' ? '' : '/' + tab)); if (location.pathname.endsWith('.html')) history.replaceState(null, '', location.pathname + '?tab=' + (sub || tab)); else history.replaceState(null, '', path); render(); window.scrollTo({ top: 0 }); }
+const INTROS = { give: { src: 'give-intro', flood: 12.6, hard: 14500 }, grow: { src: 'grow-intro', flood: 9.6, hard: 11500 } };
+let booted = false, introOn = false;
+function tabIntro(t, then) {
+  const el = $('#intro'); const cfg = INTROS[t]; if (!el || !cfg || !motionOk() || introOn) { then(); return; }
+  introOn = true; let gone = false, started = false, flooded = false, moved = false, hard = 0, stall = 0;
+  const out = () => { if (gone) return; gone = true; introOn = false; clearTimeout(hard); clearTimeout(stall); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.classList.remove('out'); }, 1300); if (!started) { started = true; then(); } };
+  const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'); if (w) w.classList.add('on'); setTimeout(out, 1900); };
+  el.innerHTML = '<video muted playsinline preload="auto" poster="' + GFX(cfg.src + '-poster.jpg') + '"><source src="' + GFX(cfg.src + '.mp4') + '" type="video/mp4"></video><div class="white"></div><span class="kicker skiphint">tap to enter</span>';
+  el.hidden = false; const v = el.querySelector('video');
+  v.addEventListener('timeupdate', () => { if (v.currentTime > 0.2) moved = true; if (v.currentTime >= cfg.flood) flood(); });
+  v.addEventListener('ended', flood);
+  v.addEventListener('error', () => { if (!moved) out(); });
+  hard = setTimeout(flood, cfg.hard);
+  stall = setTimeout(() => { if (!moved) out(); }, 3200);
+  el.onclick = () => out();
+  v.muted = true; v.play().catch(() => v.play().catch(() => null));
+}
+function go(t, s) { if (booted && !s && INTROS[t] && t !== tab) { tabIntro(t, () => goNow(t, s)); return; } goNow(t, s); }
+function goNow(t, s) { tab = t; sub = s || null; const path = '/app' + (sub ? '/' + sub : (tab === 'gratus' ? '' : '/' + tab)); if (location.pathname.endsWith('.html')) history.replaceState(null, '', location.pathname + '?tab=' + (sub || tab)); else history.replaceState(null, '', path); render(); window.scrollTo({ top: 0 }); }
 function render() {
   checkMilestones();
   const root = $('#view'); let s = '';
   if (sub === 'book') s = topBar({ back: true }) + viewBook();
+  else if (sub === 'garden') s = topBar({ back: true }) + viewGarden();
   else if (sub === 'projects') s = topBar({ back: true }) + viewProjects();
   else if (sub === 'world') s = topBar({ back: true }) + viewWorld();
   else if (sub === 'vault') s = topBar({ back: true }) + viewVault();
@@ -116,29 +138,41 @@ function render() {
   else if (sub === 'galaxy') s = topBar({ back: true }) + viewGalaxy();
   else if (tab === 'grow') s = topBar() + viewGrow();
   else if (tab === 'give') s = topBar() + viewGive();
-  else s = topBar({ home: true }) + viewGratus();
+  else s = viewGratus();
   root.innerHTML = s; choreograph();
   if (tab === 'gratus' && !sub) { const t = $('.top'); if (t) t.querySelector('.left').style.visibility = 'hidden'; }
   $$('.tabs button[data-tab]').forEach((b) => { b.classList.toggle('on', b.dataset.tab === tab && !sub); });
   const back = $('#top-back'); if (back) back.addEventListener('click', () => go(sub === 'vault' || sub === 'earth' ? 'give' : tab, sub === 'vault' || sub === 'earth' ? 'world' : null));
   $('#top-you').addEventListener('click', youSheet);
-  $('#top-sound').addEventListener('click', toggleSound);
+  { const ts = $('#top-sound'); if (ts) ts.addEventListener('click', toggleSound); }
   wire();
 }
 
-// ── GRATUS · the home: his mock, then the garden ──
+// ── GRATUS · the home: his new look, text for text ──
+function door(art, title, line, id) {
+  return '<button class="hcard door" id="' + id + '"><img class="door-art" src="/assets/art/home/' + art + '.jpg" alt=""><span class="door-words"><b>' + title + '</b><span>' + line + '</span></span><span class="door-go">›</span></button>';
+}
 function viewGratus() {
+  setScene(scene('home'));
+  return '<section class="home14">' +
+    '<header class="hh"><button class="hbtn" id="home-menu" aria-label="menu">' + I.menu + '</button><div class="hbrand"><img class="hlogo" src="' + LOGO + '" alt=""><span class="hname">Gratus<em>.CC</em></span></div><button class="hbtn" id="top-you" aria-label="you">' + I.user + '</button><p class="htag">Gratus Helps You Grow Gratitude Daily<br>And Empowers You To Give Gratus Gifts.</p></header>' +
+    '<div class="hcard hero14"><div class="hero14-top"><h2>Today\'s Gratitude</h2><p>What are you grateful for today?</p></div><img class="hero14-art" src="/assets/art/home/hero-band.jpg" alt=""><button class="gpill" id="write-today">' + I.feather + '<span>Write Today</span><span class="arr">→</span></button></div>' +
+    door('journal', 'Gratitude Journal', 'Write and journal every day.', 'open-journal') +
+    door('sprout', 'Grow Your Gratus Garden!', 'Grow gratitude every day.', 'open-garden') +
+    '<div class="hcard door gifts" id="open-gifts"><img class="door-art" src="/assets/art/home/giftbox.jpg" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family.</span><button class="gpill sm" id="send-gift">' + I.giftline + '<span>Send a Gift</span><span class="arr">→</span></button></span><span class="door-go">›</span></div>' +
+    '<div class="together"><h2><i>✦</i>Gratus Gives Together<i>✦</i></h2><p>Set Your Gratus Goals</p></div>' +
+    goalsBlock() +
+    '</section>';
+}
+// ── the garden room: your plants, your counts, the doors that were the old home ──
+function viewGarden() {
   const plants = S.plants.filter((p) => !p.private).slice().sort((a, b) => daysOf(b) - daysOf(a));
   const n = plants.length; const c = Math.min(30, 150 / Math.sqrt(Math.max(1, n)));
   const orbs = plants.map((p, i) => { const r = i ? 34 + c * Math.sqrt(i) : 0; const a = i * Gr.GOLDEN * Math.PI / 180; const d = daysOf(p); return '<button class="orb p' + phaseIndex(d) + (d && (p.kept || []).includes(today()) ? ' lit' : '') + '" data-p="' + esc(p.id) + '" style="left:calc(50% + ' + (r * Math.cos(a)).toFixed(1) + 'px);top:calc(50% + ' + (r * Math.sin(a)).toFixed(1) + 'px);--h:' + (phaseIndex(d) >= 4 ? '#F2C97D' : '#6ED9C0') + '" aria-label="' + esc(nameOf(face(p)) + ', ' + plural(d, 'day')) + '"><span>' + esc(face(p)) + '</span></button>'; }).join('');
   const entries = S.entries.slice().reverse();
-  const low = '<p class="statement in" style="--i:2">Gratitude Changes Everything.</p>' +
-    '<form class="pillform in" style="--i:3" id="quick"><input id="quick-in" placeholder="What are you grateful for today?" aria-label="What are you grateful for today?" autocomplete="off"><button class="go" type="submit" aria-label="plant it">→</button></form>' +
-    '<span class="kicker in" style="--i:4">A small moment.</span><span class="kicker in" style="--i:4">A brighter tomorrow.</span>';
-  return hero(scene('home'), { cls: 'home', brand: 'A kinder world grows from here.', low }) +
+  return hero(scene('garden'), { cls: 'room-hero', h1: 'Your Gratus Garden', k1: 'Grow gratitude every day.', k2: plural(n, 'plant') + ' · ' + plural(S.plants.reduce((t, p) => t + daysOf(p), 0), 'day') + ' of care' }) +
     '<div class="page">' +
     '<div class="glass stats in"><div><b>' + S.entries.length + '</b><span>Entries</span></div><div><b>' + S.plants.length + '</b><span>Plants</span></div><div><b>' + (S.gifts.given.length + S.gifts.received.length) + '</b><span>Gifts</span></div></div>' +
-    '<div class="eyebrow"><h2>Your Gratitude Garden</h2>' + (n ? '<span class="more">' + plural(n, 'plant') + '</span>' : '') + '</div>' +
     '<div class="glass garden">' + art(scene('garden')) + (n ? orbs : '<div class="empty-note"><span class="orb lg empty"><span>+</span></span><p class="cap">Moments take root. Gratitude grows. A kinder world blooms.</p><button class="btn mint" id="first-plant">Plant My Gratus 🌱</button></div>') + '</div>' +
     (n ? '<p class="kicker" style="text-align:center">Gratitude turns moments into movement.</p>' : '') +
     '<button class="glass opt" id="open-book"><span class="ico">📖</span><span class="grow"><b>The Gratus Growth Book</b><span>Your gratitude journal, by day. The phases, the emojis, the recipes.</span></span><span class="arrow">›</span></button>' +
@@ -146,6 +180,12 @@ function viewGratus() {
     (entries.length ? '<div class="eyebrow"><h2>Entries</h2>' + (entries.length > 4 ? '<button class="more" id="all-entries">All ' + entries.length + '</button>' : '') + '</div><div class="rows">' + entries.slice(0, 4).map(entryCard).join('') + '</div>' : '') +
     '<button class="glass opt" id="open-galaxy"><span class="ico"><img src="' + LOGO + '" alt="" style="width:30px;height:30px"></span><span class="grow"><b>The Gratus Galaxy</b><span>People · Projects · A brighter planet.</span></span><span class="arrow">›</span></button>' +
     '</div>';
+}
+function menuSheet() {
+  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">Grow Gratus Give</span></div>' +
+    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
+  const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
+  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
 }
 function entryCard(e) {
   return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
@@ -606,6 +646,12 @@ function wire() {
   $$('[data-e]').forEach((b) => b.addEventListener('click', () => entrySheet(S.entries.find((x) => x.id === b.dataset.e))));
   const qk = $('#quick'); if (qk) qk.addEventListener('submit', (ev) => { ev.preventDefault(); draft.text = $('#quick-in').value.trim(); go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center' }); } }, 350); });
   const fp = $('#first-plant'); if (fp) fp.addEventListener('click', () => go('grow'));
+  const hm = $('#home-menu'); if (hm) hm.addEventListener('click', menuSheet);
+  const wt = $('#write-today'); if (wt) wt.addEventListener('click', () => { go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 120); });
+  const oj = $('#open-journal'); if (oj) oj.addEventListener('click', () => { jTab = 'entries'; go('gratus', 'book'); });
+  const ogd = $('#open-garden'); if (ogd) ogd.addEventListener('click', () => go('gratus', 'garden'));
+  const ogf = $('#open-gifts'); if (ogf) ogf.addEventListener('click', (ev) => { if (ev.target.closest('#send-gift')) return; go('give'); });
+  const sg = $('#send-gift'); if (sg) sg.addEventListener('click', (ev) => { ev.stopPropagation(); go('give'); setTimeout(() => giveSheet(null), 400); });
   const ob = $('#open-book'); if (ob) ob.addEventListener('click', () => go('gratus', 'book'));
   const og = $('#open-galaxy'); if (og) og.addEventListener('click', () => go('gratus', 'galaxy'));
   const ae = $('#all-entries'); if (ae) ae.addEventListener('click', () => { const sh = sheet('<h2>All entries</h2><div class="rows">' + S.entries.slice().reverse().map(entryCard).join('') + '</div>'); $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); })); });
@@ -658,10 +704,10 @@ async function boot() {
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));
   window.addEventListener('popstate', () => { if (room) closeRoom(true); if (!$('#laws').hidden) { $('#laws').hidden = true; document.body.classList.remove('room'); } render(); });
   const q = new URLSearchParams(location.search).get('tab'); const m = /^\/app\/?(\w+)?/.exec(location.pathname); const want = q || (m && m[1]) || 'gratus';
-  const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy'];
-  if (SUBS.includes(want)) { tab = want === 'book' || want === 'galaxy' ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
+  const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden'];
+  if (SUBS.includes(want)) { tab = want === 'book' || want === 'galaxy' || want === 'garden' ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
   const isGift = location.pathname === '/gift' || location.pathname.endsWith('gift.html') || location.hash.startsWith('#gift');
-  const start = () => { render(); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
+  const start = () => { render(); booted = true; if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
   if (new URLSearchParams(location.search).has('nosplash')) start(); else splash(start);
 }
 boot().catch((e) => { console.error(e); const el = document.createElement('div'); el.className = 'noscript'; el.innerHTML = '<h2>Gratus could not open.</h2><p class="lead">' + esc(e && e.message || e) + '</p>'; document.body.appendChild(el); });

@@ -491,3 +491,89 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 .tabs { height: calc(104px + var(--sab)); }
 #view { padding-bottom: calc(126px + var(--sab)); }
 .hero.home { padding-bottom: calc(154px + var(--sab)); }
+
+/* ── v14 · his new look: the home text for text, the bar as drawn, pale gold pills, gold-mint glass ── */
+.home14 { position: relative; z-index: 2; display: grid; gap: 14px; padding: 0 14px calc(150px + var(--sab)); }
+.hh { display: grid; grid-template-columns: 46px 1fr 46px; align-items: center; gap: 8px; padding: calc(12px + var(--sat)) 2px 4px; }
+.hbtn { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: rgba(5, 9, 18, .62); border: 1px solid rgba(242, 201, 125, .55); box-shadow: 0 0 14px rgba(242, 201, 125, .18); color: #F2C97D; }
+.hbtn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.hbrand { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
+.hlogo { width: 66px; height: 66px; flex: none; border-radius: 26%; filter: drop-shadow(0 0 12px rgba(185, 255, 228, .6)) drop-shadow(0 0 26px rgba(242, 201, 125, .45)); }
+.hwords { display: grid; gap: 2px; min-width: 0; }
+.hname { font-family: var(--display); font-size: 36px; line-height: 38px; font-weight: 600; color: #F2C97D; text-shadow: 0 0 18px rgba(242, 201, 125, .45), 0 2px 10px rgba(0, 0, 0, .8); white-space: nowrap; }
+.hname em { font-style: normal; color: #7FE7C3; }
+.htag { font-size: 14px; line-height: 18px; font-weight: 600; color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .9); }
+.hcard { position: relative; border-radius: 26px; background: linear-gradient(180deg, rgba(9, 18, 24, .84), rgba(5, 9, 18, .9)); box-shadow: 0 0 26px rgba(242, 201, 125, .12), 0 14px 34px rgba(0, 0, 0, .55); overflow: hidden; color: var(--ink); text-align: left; }
+.hcard::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; background: linear-gradient(135deg, rgba(242, 201, 125, .85), rgba(127, 231, 195, .5) 50%, rgba(242, 201, 125, .7)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; pointer-events: none; z-index: 2; }
+.hero14 { display: grid; }
+.hero14-top { position: relative; z-index: 1; text-align: center; padding: 22px 20px 6px; display: grid; gap: 4px; }
+.hero14-top h2 { font-family: var(--display); font-size: 40px; line-height: 44px; font-weight: 500; color: #FFF7D6; text-shadow: 0 2px 16px rgba(0, 0, 0, .8); }
+.hero14-top p { font-size: 18px; line-height: 24px; font-weight: 500; color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .8); }
+.hero14-art { width: 100%; height: 168px; object-fit: cover; object-position: center 40%; display: block; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%); margin-top: -10px; }
+.hero14 .gpill { justify-self: center; margin: 4px 0 20px; width: min(100% - 40px, 320px); }
+.gpill { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 56px; padding: 0 26px; border-radius: 999px; background: linear-gradient(180deg, #F7F4BC 0%, #DCE697 100%); color: #1E2A10; font-family: var(--body); font-weight: 700; font-size: 20px; line-height: 24px; border: 1px solid rgba(255, 243, 190, .95); box-shadow: 0 0 24px rgba(242, 230, 140, .45), inset 0 1px 0 #fff; text-decoration: none; }
+.gpill svg { width: 24px; height: 24px; fill: none; stroke: #1E2A10; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.gpill .arr { font-size: 22px; line-height: 1; }
+.gpill.sm { min-height: 46px; padding: 0 18px; font-size: 17px; gap: 10px; }
+.gpill.sm svg { width: 20px; height: 20px; }
+.door { display: grid; grid-template-columns: 118px 1fr 34px; align-items: center; gap: 12px; width: 100%; min-height: 108px; padding: 0 8px 0 0; }
+.door .door-art { width: 118px; height: 100%; min-height: 108px; object-fit: cover; display: block; -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent 100%); mask-image: linear-gradient(90deg, #000 70%, transparent 100%); }
+.door .door-words { display: grid; gap: 4px; padding: 14px 0; min-width: 0; }
+.door .door-words b { font-family: var(--display); font-size: 28px; line-height: 30px; font-weight: 500; color: #FFF7D6; text-shadow: 0 1px 8px rgba(0, 0, 0, .8); }
+.door .door-words > span { font-size: 16px; line-height: 22px; font-weight: 500; color: #fff; }
+.door .door-go { font-size: 30px; line-height: 1; color: #FFF7D6; text-align: center; font-weight: 500; }
+.door.gifts { min-height: 150px; }
+.door.gifts .door-art { min-height: 150px; }
+.door.gifts .gpill.sm { justify-self: start; margin-top: 8px; }
+.together { position: relative; z-index: 1; text-align: center; display: grid; gap: 4px; padding: 14px 0 4px; }
+.together h2 { font-family: var(--display); font-size: 30px; line-height: 34px; font-weight: 500; color: #FFE9B0; text-shadow: 0 0 16px rgba(242, 201, 125, .4), 0 2px 10px rgba(0, 0, 0, .9); display: flex; align-items: center; justify-content: center; gap: 12px; }
+.together h2 i { font-style: normal; color: #F2C97D; font-size: 18px; }
+.together p { font-size: 18px; line-height: 24px; font-weight: 600; color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .9); }
+.home14 .stream { border-radius: 26px; background: linear-gradient(180deg, rgba(9, 18, 24, .84), rgba(5, 9, 18, .9)); border: 1px solid rgba(242, 201, 125, .45); }
+/* the bar, as drawn: Give · Gratus · Grow, the logo in a gold ring rising from the bar, a gold line beneath */
+.tabs { height: calc(112px + var(--sab)); }
+.tabs .bar { height: 84px; margin-top: 28px; border-radius: 30px; background: linear-gradient(180deg, rgba(10, 20, 22, .92), rgba(5, 9, 18, .97)); border: 1px solid rgba(242, 201, 125, .5); overflow: visible; }
+.tabs .bar::after { content: ""; position: absolute; left: 14%; right: 14%; bottom: -1px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, #F2C97D 20%, #FFF3C4 50%, #F2C97D 80%, transparent); box-shadow: 0 0 12px rgba(242, 201, 125, .8), 0 0 28px rgba(242, 201, 125, .4); }
+.tabs button { color: #FFF3C4; font-size: 15px; font-weight: 600; gap: 6px; align-content: center; height: 100%; }
+.tabs button svg { width: 28px; height: 28px; stroke: #F2C97D; stroke-width: 1.5; filter: drop-shadow(0 0 6px rgba(242, 201, 125, .6)); }
+.tabs button.on { color: #F2C97D; }
+.tabs button.give.on { color: #F2C97D; }
+.tabs .star { align-content: start; gap: 0; padding-top: 0; }
+.tabs .star .core { width: 76px; height: 76px; border-radius: 50%; transform: translateY(-26px); background: radial-gradient(circle at 50% 40%, #12211c 0%, #050912 72%); border: 2px solid rgba(242, 201, 125, .9); box-shadow: 0 0 0 6px rgba(5, 9, 18, .9), 0 0 24px rgba(242, 201, 125, .6), 0 0 60px rgba(242, 201, 125, .3); animation: none; }
+.tabs .star .core img { width: 58px; height: 58px; border-radius: 26%; filter: drop-shadow(0 0 8px rgba(185, 255, 228, .7)) drop-shadow(0 0 18px rgba(242, 201, 125, .5)); }
+.tabs .star .core .ring { inset: -7px; border-radius: 50%; padding: 2px; }
+.tabs .star .core .ring::after { border-radius: 50%; }
+.tabs .star .core .aura { inset: -6px; border-radius: 50%; }
+.tabs .star .core::after { inset: -18px; border-radius: 50%; }
+.tabs .star span.lbl { display: block; transform: translateY(-20px); font-size: 15px; font-weight: 700; color: #F2C97D; text-shadow: 0 0 10px rgba(242, 201, 125, .5), 0 1px 6px rgba(0, 0, 0, .9); }
+.tabs .star::before { top: 42%; width: 200px; height: 90px; }
+#view { padding-bottom: calc(136px + var(--sab)); }
+.hero.home { padding-bottom: calc(160px + var(--sab)); }
+/* pale gold pills carry every primary action now: dark words on light gold read on any scene */
+.btn.mint, .btn.gold, .btn.solid { background: linear-gradient(180deg, #F7F4BC 0%, #DCE697 100%); color: #1E2A10; border-color: rgba(255, 243, 190, .95); box-shadow: 0 0 22px rgba(242, 230, 140, .4), inset 0 1px 0 #fff; font-weight: 700; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.btn.mint svg, .btn.gold svg { stroke: #1E2A10; }
+.pillform .go { background: linear-gradient(180deg, #F7F4BC 0%, #DCE697 100%); color: #1E2A10; border-color: rgba(255, 243, 190, .95); }
+.glass { border-color: rgba(242, 201, 125, .32); box-shadow: 0 0 18px rgba(242, 201, 125, .08), var(--lit-rest); }
+/* the tab intro: the scene's own video, then the light, then the room */
+#intro { position: fixed; inset: 0; z-index: 58; background: #05070f; overflow: hidden; }
+#intro video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 45%; }
+#intro .white { position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, #fffdf2 0%, #fff3c4 45%, #ffe39a 100%); opacity: 0; transition: opacity 1s ease; pointer-events: none; }
+#intro .white.on { opacity: 1; }
+#intro .skiphint { position: absolute; left: 0; right: 0; bottom: calc(28px + var(--sab)); text-align: center; text-shadow: 0 1px 10px #000; font-size: 14px; }
+#intro.out { opacity: 0; transition: opacity 1.3s ease; pointer-events: none; }
+@media (min-width: 1024px) { #intro video { object-fit: contain; background: #05070f; } .home14 { max-width: 640px; margin: 0 auto; } }
+
+/* ── v14.1 · the header on a phone: brand row, then his two lines; doors on one breath; every block on a plate ── */
+.hh { grid-template-columns: 46px 1fr 46px; grid-template-rows: auto auto; row-gap: 6px; padding: calc(12px + var(--sat)) 12px 12px; background: linear-gradient(180deg, rgba(5, 9, 18, .82), rgba(5, 9, 18, .62)); border-radius: 26px; border: 1px solid rgba(242, 201, 125, .28); margin-top: 6px; }
+.hh .htag { grid-column: 1 / -1; text-align: center; margin: 0; }
+.hlogo { width: 60px; height: 60px; }
+.hname { font-size: 38px; line-height: 42px; }
+.door { grid-template-columns: 104px 1fr 30px; gap: 12px; }
+.door .door-art { width: 104px; }
+.door .door-words b { font-size: 25px; line-height: 28px; }
+.door .door-words > span { font-size: 16px; line-height: 21px; }
+.door.gifts .gpill.sm { white-space: nowrap; font-size: 16px; padding: 0 14px; gap: 8px; min-height: 44px; }
+.door.gifts .gpill.sm .arr { font-size: 18px; }
+.together { background: linear-gradient(180deg, rgba(5, 9, 18, .78), rgba(5, 9, 18, .66)); border: 1px solid rgba(242, 201, 125, .28); border-radius: 26px; padding: 14px 16px; }
+.home14 .stream .art { display: none; }
+.tabs .star.on span.lbl { color: #F2C97D; }

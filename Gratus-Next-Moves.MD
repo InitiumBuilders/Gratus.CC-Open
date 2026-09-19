@@ -11,7 +11,7 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 ## Now (the next ship or two)
 
 1. ~~**Protect the journal.**~~ Done in v12.1: export and restore live in the profile sheet. Next: a reminder to export after every tenth entry, until sync exists.
-2. **The first move must land.** On a first open with an empty garden, the home leads straight to the entry box and the first plant; nothing else competes. Walk the empty state on a fresh device every ship.
+2. ~~**The first move must land.**~~ Done in v14: the home opens on Today's Gratitude and Write Today, his mockup text for text. Keep walking the empty state every ship.
 3. ~~**Composer, second pass.**~~ Done in v13: a voice entry keeps its recording and gets its words through ElevenLabs. Next: the photo inside the garden orb; a limit on the voice function before wide traffic.
 4. ~~**License.**~~ Done in v13: MIT for everything, code, art, video, song and words.
 5. ~~**Desktop loops.**~~ Done in v13: the scene is a painting at its own size on a blurred wall of its own light; loops re-encoded at the source width. Next: a wider two-column reading of the Growth Book on desktop.
@@ -58,6 +58,9 @@ These change the shape of the work. Each one is a fork.
 - **How do we keep the public mirror clean forever?** Every rule in the gate has a decoy that must fire before a ship; the export is gated; the clone is gated. A new kind of secret means a new rule and a new decoy, the same day.
 
 ## New since his answers
+
+19. **The intros and patience.** Give and Grow now open through a video every time, by his ask. Watch how it feels after a week of daily use; if it wears, play the intro once per open and keep the tap to enter.
+20. **The landing page in the new look.** The landing still carries the v10 look; bring the mockup's cards and bar to it.
 
 16. **The voice function needs a limit.** It is public and spends his ElevenLabs credit. Add a per-device daily allowance and a size cap smaller than six megabytes before the app is shared widely.
 17. **Recordings in the export.** The JSON export leaves recordings behind. Add a second export that packs them, or include them as data URLs when small.

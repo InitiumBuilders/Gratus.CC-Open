@@ -116,3 +116,10 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 88. **The journal has four rooms.** Entries, Threads (one emoji through your days), Folders (named, filed from any entry), Milestones (eighteen marks on your own road; a toast when one lights). The house words hold: days in a row, never a streak; marks, never a score.
 89. **On a desktop the scene is a painting.** The art is 941 pixels wide; stretching it to a wide screen made it soft. Now it stands at its own size, feathered at the edges, on a blurred wall of its own light, and the loops are re-encoded at the source width.
 90. **MIT for everything,** code, art, video, song and words, by his ruling. The colophon signs as @BuiltByAugust, linked.
+
+## v14 — HIS NEW LOOK · THE HOME TEXT FOR TEXT · THE BAR AS DRAWN · THE TAB INTROS (2026-09-19)
+91. **The home is his mockup, text for text.** Brand row with menu, logo, Gratus.CC and his two lines; Today's Gratitude with Write Today; the doors Gratitude Journal, Grow Your Gratus Garden!, Give Gratus Gifts with Send a Gift; Gratus Gives Together with Set Your Gratus Goals over the stream. The card art is his own pixels, cropped from the mockup. Only the tagline moved: on a phone it takes its own row so his two lines stay two lines.
+92. **The bar as drawn.** Give · Gratus · Grow. The logo in a gold ring rising from the bar, gold labels, a gold line beneath.
+93. **A room opens through its own light.** Entering Give plays his plant video to the moon's flood; entering Grow plays his ring of light; the white holds 1.9 seconds and the room fades in. Every time, by his ask; a tap enters early; never twice at once; a stalled video never holds the room.
+94. **Pale gold carries every primary action.** Dark words on light gold read on any scene; the old translucent mint buttons did not.
+95. **The garden is a room.** Everything the old home held (garden, counts, the Growth Book and Galaxy doors, entries) lives at Grow Your Gratus Garden!.
