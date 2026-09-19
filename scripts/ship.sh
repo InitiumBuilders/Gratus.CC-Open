@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Ship: gates → commit → deploy to production → probe the live URL. Never deploys on a red gate.
+# Ship: gates, then commit, then deploy to production, then probe the live URL.
+# Never deploys on a red gate. Five gates now: the tests, contrast, banned words,
+# slop (my prose only, never his), and the open-source scrub. The two that can
+# rot silently, slop and open-source, prove themselves against decoys first.
 set -u
 cd "$(dirname "$0")/.."
 export PATH="$HOME/.local/bin:$PATH"
@@ -7,10 +10,12 @@ echo "== gates"
 node --test scripts/tests/*.test.mjs > /tmp/gratus-tests.log 2>&1; T=$?
 node scripts/gates/contrast.mjs | tail -1; C=${PIPESTATUS[0]}
 node scripts/gates/banned.mjs | tail -1; B=${PIPESTATUS[0]}
+node scripts/gates/slop.mjs | tail -1; S=${PIPESTATUS[0]}
 grep -E '^# (pass|fail)' /tmp/gratus-tests.log
-if [ "$T" != "0" ] || [ "$C" != "0" ] || [ "$B" != "0" ]; then echo "GATES RED — not shipping"; exit 1; fi
-echo "== open-source gate (decoys first: every rule must still fire)"
-node scripts/gates/open-source.mjs . --decoy || { echo "GATE CANNOT BE TRUSTED — not shipping"; exit 1; }
+if [ "$T" != "0" ] || [ "$C" != "0" ] || [ "$B" != "0" ] || [ "$S" != "0" ]; then echo "GATES RED, not shipping"; exit 1; fi
+echo "== decoys first: a gate that has stopped biting is worse than no gate"
+node scripts/gates/slop.mjs --decoy || { echo "SLOP GATE CANNOT BE TRUSTED, not shipping"; exit 1; }
+node scripts/gates/open-source.mjs . --decoy || { echo "GATE CANNOT BE TRUSTED, not shipping"; exit 1; }
 echo "== stamp entry scripts (a returning browser must never keep an old app.js)"
 STAMP="$(date +%s)"
 sed -i -E "s#galaxy\.js\?v=[0-9a-z]+#galaxy.js?v=${STAMP}#g" app.html sw.js

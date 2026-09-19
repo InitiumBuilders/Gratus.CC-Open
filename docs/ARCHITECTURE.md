@@ -121,6 +121,7 @@ Tokens live in `tokens.css`. Every ink is white and solid; mint (`#B9FFE4`) is f
 
 - `scripts/gates/contrast.mjs` reads the tokens and computes every ink against every surface (7:1 target, 4.5 floor).
 - `scripts/gates/banned.mjs` refuses words and patterns this house never ships (presence words, money words, ranks, `repeat(auto-fit`, `rotate(360deg)`).
+- `scripts/gates/slop.mjs` refuses the mechanical habits of machine writing in my prose: a dash standing in for a decision, a contrast with nothing on the other side, a word that sounds expert and carries nothing, a run-up that announces a point instead of making it. It reads `config/his-words.json` and every value under `locked` in `config/copy.json` first, and skips whole any line containing one of August's, because a writing gate that cannot tell whose words it is judging will sand the voice off the one part of a product that has one. `--decoy` proves both directions before every ship: each rule still catches a planted violation, and his lines still come through untouched. Fenced blocks are skipped, so a document can quote the habit it exists to remove. What it cannot see is written down in [REFINEMENT.md](REFINEMENT.md).
 - `scripts/gates/open-source.mjs` refuses secrets, keys, tokens, environment files, Vercel state, personal paths, personal emails and private infrastructure names. With `--decoy` it plants one decoy per rule and proves every rule fires before anything ships.
 - `scripts/tests/gratus.test.mjs` covers the engine.
 

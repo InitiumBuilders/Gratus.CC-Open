@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-// GRATUS.CC — Grow · Gratus · Give. His scenes behind glass, one per screen, another each time the
+// GRATUS.CC. Grow · Gratus · Give. His scenes behind glass, one per screen, another each time the
 // app opens. The emoji garden, the entries, the recipes, the Growth Book, and the whole first-gift
 // journey. Everything lives on the device for now; the backend comes later. A gift travels inside
 // its own link, so the journey works with no server at all.
@@ -424,7 +424,7 @@ async function openProjectPage(slug) {
     '<span class="kicker mint">A Gratus page</span>' +
     '<h1>' + esc((p && p.title) || slug) + '</h1>' +
     (p ? '<p class="body">' + esc(p.summary) + '</p>' : '') +
-    (g ? '<span class="kicker gold">How this project answers</span><div class="gv-facts"><div class="gv-fact"><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div class="gv-fact"><b>' + g.share + '%</b><span>watered</span></div><div class="gv-fact"><b>' + (g.medianDays == null ? '—' : g.medianDays) + '</b><span>days to answer</span></div></div>'
+    (g ? '<span class="kicker gold">How this project answers</span><div class="gv-facts"><div class="gv-fact"><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div class="gv-fact"><b>' + g.share + '%</b><span>watered</span></div><div class="gv-fact"><b>' + (g.medianDays == null ? 'not yet' : g.medianDays) + '</b><span>days to answer</span></div></div>'
       : '<p class="cap">No seeds have been planted for this project yet.</p>') +
     (t && t.seeds && t.seeds.length ? '<span class="kicker mint">What people wrote, and what they were told</span><div class="rows">' + t.seeds.map((s) => '<div class="glass gv-update"><span class="kicker">' + esc(s.name) + ' · ' + esc(fmtDay(String(s.at).slice(0, 10))) + (s.first ? ' · 🫶 the first' : '') + '</span><b>' + esc(s.message) + '</b>' + (s.water ? '<span class="cap">' + esc(s.water.from) + ': ' + esc(s.water.reply) + '</span>' : '<span class="cap">Not watered yet.</span>') + '</div>').join('') + '</div>' : '') +
     (t && t.held ? '<p class="cap">' + plural(t.held, 'other seed') + ' ' + (t.held === 1 ? 'was' : 'were') + ' written to this project and kept between them. Only the person who wrote a seed can publish it.</p>' : '') +
@@ -623,7 +623,7 @@ async function projectSheet(slug) {
     '<div class="gvp-tags">' + (p.givbacks ? '<i class="gvt gold">GIVbacks eligible</i>' : p.verified ? '<i class="gvt">Verified</i>' : '<i class="gvt">Not yet verified</i>') +
       (p.qf ? '<i class="gvt gold">Matched right now</i>' : '') + (p.where ? '<i class="gvt">' + esc(p.where) + '</i>' : '') +
       (p.org ? '<i class="gvt">' + esc(p.org) + '</i>' : '') + '</div>' +
-    '<div class="gv-facts"><div class="gv-fact"><b>' + (p.raised ? money(p.raised) : '—') + '</b><span>raised</span></div>' +
+    '<div class="gv-facts"><div class="gv-fact"><b>' + money(p.raised || 0) + '</b><span>raised</span></div>' +
       '<div class="gv-fact"><b>' + (p.donors || 0).toLocaleString() + '</b><span>' + (p.donors === 1 ? 'donor' : 'donors') + '</span></div>' +
       '<div class="gv-fact"><b>' + (p.updates || 0) + '</b><span>' + (p.updates === 1 ? 'update' : 'updates') + '</span></div></div>' +
     '<p class="body">' + esc(p.summary) + '</p>' +
@@ -642,7 +642,7 @@ async function projectSheet(slug) {
   // how faithfully this project answers the people who give to it. A reading, never a comparison.
   fetch('/api/trace?project=' + encodeURIComponent(p.slug), { cache: 'no-store' }).then((r) => r.json()).then((d) => {
     const el = $('#gv-signal', sh.el); if (!el || !d || !d.signal) return; const g = d.signal;
-    el.innerHTML = '<span class="kicker mint">How this project answers</span><div class="gv-facts"><div class="gv-fact"><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div class="gv-fact"><b>' + g.share + '%</b><span>watered</span></div><div class="gv-fact"><b>' + (g.medianDays == null ? '—' : g.medianDays) + '</b><span>days to answer</span></div></div>';
+    el.innerHTML = '<span class="kicker mint">How this project answers</span><div class="gv-facts"><div class="gv-fact"><b>' + g.seeds + '</b><span>' + (g.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div class="gv-fact"><b>' + g.share + '%</b><span>watered</span></div><div class="gv-fact"><b>' + (g.medianDays == null ? 'not yet' : g.medianDays) + '</b><span>days to answer</span></div></div>';
   }).catch(() => null);
   // what they have told the world
   fetch('/api/giveth?q=updates&slug=' + encodeURIComponent(p.slug), { cache: 'no-store' }).then((r) => r.json()).then((d) => {
@@ -800,7 +800,7 @@ function viewConsole() {
     '<input class="field" id="con-key" placeholder="your project key" aria-label="project key" value="' + esc(conKey) + '">' +
     '<div class="actions"><button class="btn mint" id="con-open">Open the feed</button><button class="btn" id="con-claim">Claim this project</button></div>' +
     '<p class="cap">The key waters seeds for one project. Claiming shows it once, and only a hash of it is kept. This is a light claim, not verification: real verification lives on Giveth.</p></div>' +
-    (conSignal ? '<div class="glass card"><span class="kicker mint">How you answer</span><div class="glass stats"><div><b>' + conSignal.seeds + '</b><span>' + (conSignal.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div><b>' + conSignal.share + '%</b><span>watered</span></div><div><b>' + (conSignal.medianDays == null ? '—' : conSignal.medianDays) + '</b><span>days to answer</span></div></div><p class="cap">This is not a comparison with anyone. It is here so you can see what the people who gave to you are waiting for.</p></div>' : '') +
+    (conSignal ? '<div class="glass card"><span class="kicker mint">How you answer</span><div class="glass stats"><div><b>' + conSignal.seeds + '</b><span>' + (conSignal.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div><b>' + conSignal.share + '%</b><span>watered</span></div><div><b>' + (conSignal.medianDays == null ? 'not yet' : conSignal.medianDays) + '</b><span>days to answer</span></div></div><p class="cap">This is not a comparison with anyone. It is here so you can see what the people who gave to you are waiting for.</p></div>' : '') +
     (conState === 'loading' ? '<p class="cap">Reading the trace...</p>' : '') +
     (conState === 'live' && !seeds.length ? '<p class="cap">No seeds yet for that project. When someone gives with a Gratus Seed, it arrives here.</p>' : '') +
     (seeds.length ? '<div class="eyebrow"><h2>Seeds</h2><span class="more">' + plural(seeds.length, 'seed') + '</span></div><div class="rows">' + seeds.map((s) => '<div class="glass entry conseed"><span class="thumb">' + esc(s.status === 'bloomed' ? s.bloom : '🌱') + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(s.name) + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + (s.tx ? ' · on chain' : '') + '</span><span class="text">' + esc(s.message) + '</span>' + (s.water ? '<span class="cap">You watered it: ' + esc(s.water.reply) + '</span>' : '<button class="btn sm mint" data-water="' + esc(s.id) + '">Water this seed</button>') + '</span></div>').join('') + '</div>' : '') +
@@ -1137,7 +1137,7 @@ function viewVault() {
     '<div class="page"><div class="glass card"><textarea class="field" id="wish" rows="3" placeholder="Write your wish..." aria-label="your wish"></textarea>' +
     '<div class="chips">' + ['For Me', 'For Us', 'For Earth', 'For Future Generations'].map((s) => '<button class="chip' + (wishScope === s ? ' on' : '') + '" data-scope="' + s + '">' + s + '</button>').join('') + '</div>' +
     '<button class="btn gold wide" id="wish-send">Send to Tomorrow</button></div>' +
-    '<div class="eyebrow"><h2>Today\'s Wishes</h2></div><div class="rows">' + wishes.map((w) => '<div class="glass wish"><p>“' + esc(w.text) + '”</p><span class="cap">— ' + esc(w.scope) + ' · ' + esc(fmtDay(w.at)) + '</span></div>').join('') + '<div class="glass wish"><p>“A kinder, braver, more connected humanity.”</p><span class="cap">— A wish from Chicago</span></div></div></div>';
+    '<div class="eyebrow"><h2>Today\'s Wishes</h2></div><div class="rows">' + wishes.map((w) => '<div class="glass wish"><p>“' + esc(w.text) + '”</p><span class="cap">' + esc(w.scope) + ' · ' + esc(fmtDay(w.at)) + '</span></div>').join('') + '<div class="glass wish"><p>“A kinder, braver, more connected humanity.”</p><span class="cap">A wish from Chicago</span></div></div></div>';
 }
 function viewEarth() {
   return hero(scene('earth'), { cls: 'room-hero', h1: 'Heal Places', k1: 'A global atlas of restoration', low: '<p class="lead in" style="--i:2;text-shadow:0 2px 20px #000">Explore real-world projects restoring nature, communities and hope.</p>' }) +
@@ -1531,7 +1531,7 @@ function soundPhase(i) {
 function soundNote(i) { if (TONES[i]) tone(TONES[i], 0, 2.4, .085); }
 // a word kept: the root alone, quietly
 function soundKept() { tone(TONES[0], 0, 1.3, .06); }
-// a bloom: root, octave, third — the chord opening
+// a bloom: the root, the octave and the third above it, which is the chord opening
 function soundBloom() { [0, 2, 3].forEach((k, i) => tone(TONES[k], i * .13, 3, .075)); }
 // given: the chord falls away from the top and the root is what is left
 function soundGiven() {

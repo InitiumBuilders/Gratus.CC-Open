@@ -26,8 +26,8 @@ A thin crescent ring of white-gold light standing upright on the surface of a st
 A river of gold light winding from the bottom of the frame through a dark forested valley toward a sunrise on the far horizon, seen from high above. The river is the only warm light; the forest is deep teal-green; the sky turns from indigo to a thin band of gold. Photoreal, 9:16 for the app and 16:9 for the web, river centred, corners dark. No text, no logos, no watermark.
 
 ## Videos (15 seconds, loop, no sound)
-- **The breathing star.** The emblem from prompt 1 alone on black, its glow slowly breathing, gold motes drifting upward, a very slow rotation of the leaves. Seamless loop. 9:16 and 1:1.
-- **The ripple.** A single drop of gold light falls into still black water and the rings spread outward and fade, then another drop. Camera still, top-down at a slight angle, dark forest edges. Seamless loop. 9:16.
+- **The breathing star.** The emblem from prompt 1 alone on black, its glow slowly breathing, gold motes drifting upward, a very slow rotation of the leaves. Loops with no visible seam. 9:16 and 1:1.
+- **The ripple.** A single drop of gold light falls into still black water and the rings spread outward and fade, then another drop. Camera still, top-down at a slight angle, dark forest edges. Loops with no visible seam. 9:16.
 
 ## Also welcome, as transparent PNGs
 The three tab marks in glass: a mint leaf, the white-gold four-pointed star, a small gold gift box. Each alone on transparent, 1024×1024, soft glow baked in.

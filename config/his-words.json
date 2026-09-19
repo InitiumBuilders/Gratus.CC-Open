@@ -1,0 +1,32 @@
+{
+  "what": "Every line here was written by August. It is his. Nothing in this repository may reword, reformat, retitle or 'improve' any of it, including its spelling, its capitalisation, its punctuation and its spacing.",
+  "why": "A writing gate that cannot tell whose words it is judging is worse than no gate, because it will confidently sand the voice off the one part of the product that has a voice. This file is how scripts/gates/slop.mjs knows to look away. Every value inside config/copy.json's `locked` block is also his and is skipped wholesale.",
+  "howToAdd": "When August writes a line and it goes into the product, add it here in the same breath. A line that is his and is not listed here is a line a gate may one day rewrite.",
+  "his": [
+    "Gratus means honor.",
+    "Gratitude Moves Worlds.",
+    "Give what grows.",
+    "Gratus Helps You Grow Gratitude Daily",
+    "And Empowers You To Give Gratus Gifts.",
+    "Today's Gratitude",
+    "What are you grateful for today?",
+    "Write Today",
+    "Gratitude Journal",
+    "Write and journal every day.",
+    "Grow Your Gratus Garden!",
+    "Grow gratitude every day.",
+    "Give Gratus Gifts",
+    "Send meaningful gifts to friends + family.",
+    "Gratus Gives Together",
+    "Set Your Gratus Goals",
+    "Plant Today",
+    "A Brighter Tomorrow",
+    "A small moment. A brighter tomorrow.",
+    "Turn Gratitude",
+    "Into Impact",
+    "Give the Gift That Keeps On Giving.",
+    "Plant My Gratus",
+    "Start Your Gratus Garden",
+    "A Sacred Place"
+  ]
+}

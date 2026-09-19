@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-// GRATUS.CC — one screen. A Gratus is a gift made of days.
+// GRATUS.CC: one screen. A Gratus is a gift made of days.
 // You keep one line a day and the Gratus gains a day. You can give it: it leaves you and
 // arrives with whoever opens the link, carrying every hand that held it. Your lines stay here.
 // No accounts. No feed. Nothing to buy. Days are the only thing that counts, and only presence counts one.

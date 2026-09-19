@@ -8,6 +8,10 @@ Write → plant → return → phase → recipe → give → the gift grows agai
 
 Everything on this list either makes that loop clearer, safer or faster to feel, or it is a room off the loop and waits its turn.
 
+## How the polish is done
+
+The ladder, the strategy prompt and the standing list of next moves live in [docs/REFINEMENT.md](docs/REFINEMENT.md). The writing gate is the floor of it and runs on every ship.
+
 ## The next big moves
 
 - ~~**A Vibe should let you know it is alive.**~~ Shipped in v21: a mark on the room and a line above the rooms when it holds words you have not read. What the room holds is on the server, what you have read is on your device, and the difference is the mark. Completed in v22: the first room opens by itself, so the room itself counts what arrived since your last look. Still open: it is read when you are looking at the Vibes room, not while you are elsewhere.

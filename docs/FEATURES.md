@@ -34,14 +34,14 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 ## Give
 
 - Entering Give plays his plant growing into the light until the screen fills with white, holds it, and the page fades in. Tap to enter early.
-- **Give with Giveth** — the Emotional TRACE. Browse real Giveth projects live: four lanes (GIVbacks eligible, boosted with GIVpower, the ones nobody has given to yet, everything), Giveth's own categories, search, and Show more through the whole catalogue. Open a project and see what it has raised, how many donors, how many updates, where it works, which chains it accepts, its organisation, every way to contact it, its recent updates, the gifts that have just arrived, and how faithfully it answers the people who give. Then give on giveth.io in your own wallet and plant a Gratus Seed: a few words about why. Dormant seeds sit in your garden as 🌱 until the project waters them, and then bloom into that project's own emoji with their reply kept inside.
-- **The Project Console** — if you run a Giveth project, claim it with its slug, read every seed people planted with their gifts, and water them with a line back. You also see how you answer: seeds received, the share you have watered, and the median days it takes.
-- **A project's own Gratus page** at `/p/<slug>` — public, shareable by the steward, showing how they answer and the words of anyone who chose to publish theirs.
-- **The answer** — a bloom is not the end. Either side can keep speaking, and the thread lives inside the seed.
-- **Your words, your choice** — a seed is private to the project by default. Only the person who wrote it can publish it, from their own seed sheet.
-- **I see you** — a seed that is the first a project has ever received blooms into 🫶 instead of the project's own emoji, and says so.
-- **Pass it on** — when a steward waters a seed they can name a project they are grateful for. The donor sees it inside their bloom and can continue the flow, or look at projects like the one they gave to.
-- **Giveth confirms it** — plant a seed with a transaction hash and Gratus checks it against that project's recent gifts on Giveth, then records what arrived.
+- **Give with Giveth**: the Emotional TRACE. Browse real Giveth projects live: four lanes (GIVbacks eligible, boosted with GIVpower, the ones nobody has given to yet, everything), Giveth's own categories, search, and Show more through the whole catalogue. Open a project and see what it has raised, how many donors, how many updates, where it works, which chains it accepts, its organisation, every way to contact it, its recent updates, the gifts that have just arrived, and how faithfully it answers the people who give. Then give on giveth.io in your own wallet and plant a Gratus Seed: a few words about why. Dormant seeds sit in your garden as 🌱 until the project waters them, and then bloom into that project's own emoji with their reply kept inside.
+- **The Project Console**: if you run a Giveth project, claim it with its slug, read every seed people planted with their gifts, and water them with a line back. You also see how you answer: seeds received, the share you have watered, and the median days it takes.
+- **A project's own Gratus page** at `/p/<slug>`: public, shareable by the steward, showing how they answer and the words of anyone who chose to publish theirs.
+- **The answer**: a bloom is not the end. Either side can keep speaking, and the thread lives inside the seed.
+- **Your words, your choice**: a seed is private to the project by default. Only the person who wrote it can publish it, from their own seed sheet.
+- **I see you**: a seed that is the first a project has ever received blooms into 🫶 instead of the project's own emoji, and says so.
+- **Pass it on**: when a steward waters a seed they can name a project they are grateful for. The donor sees it inside their bloom and can continue the flow, or look at projects like the one they gave to.
+- **Giveth confirms it**: plant a seed with a transaction hash and Gratus checks it against that project's recent gifts on Giveth, then records what arrived.
 - **Grow a Gratus Gift for a project** — dedicate an emoji to a Giveth project. Every day you write about it, it grows. At Ready to Give it can be given to them, carrying every day you held it.
 - Give a Gratus Gift: choose a plant, write a message, get a link. The whole journey rides in the link. The Share sheet copies it.
 - The receiver's journey: eight pages, unwrap, how it grew, the message, keep it or plant it.
@@ -77,7 +77,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Privacy and terms pages.
 - **Your Gratus Passage** — a link that shows what grew: your emojis and their days, the seeds that bloomed, the marks you have earned. It carries not one word of your journal. The whole page rides inside the link, like a Gratus Gift, so nothing is uploaded and there is nothing to delete later.
 - Export everything as a file, and restore from one, in the profile sheet.
-- **Sunlight** — paste the public address you give with on Giveth and Gratus reads how much you tend the commons there. Read only; Gratus never connects a wallet or signs anything.
+- **Sunlight**: paste the public address you give with on Giveth and Gratus reads how much you tend the commons there. Read only; Gratus never connects a wallet or signs anything.
 - The Emotional TRACE constellation in your garden: every seed you planted, bloomed or waiting.
 - A dev panel behind `?dev=1`: add days, add an earlier hand, reset.
 

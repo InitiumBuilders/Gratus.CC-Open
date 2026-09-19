@@ -73,6 +73,8 @@ docs/               pitch, architecture, features, guides, evolutions, image pro
 node --test scripts/tests/*.test.mjs        # the engine: phases, recipes, gifts, migration
 node scripts/gates/contrast.mjs             # every ink on every surface, computed from tokens.css
 node scripts/gates/banned.mjs               # words and patterns this house never ships
+node scripts/gates/slop.mjs                 # machine writing in my prose, never in his
+node scripts/gates/slop.mjs --decoy          # proves it still bites, and that his words are safe
 node scripts/gates/open-source.mjs . --decoy  # the publish gate proves every rule still fires
 ```
 
@@ -92,6 +94,8 @@ node scripts/gates/open-source.mjs . --decoy  # the publish gate proves every ru
 - [Image prompts](docs/IMAGE-PROMPTS.md): the prompts behind the scenes still to be made
 
 ## Open source
+
+August's own lines are listed in `config/his-words.json`, and the writing gate reads that file and looks away from every one of them. See [docs/REFINEMENT.md](docs/REFINEMENT.md) for how the polish is done and the prompt to run it again anywhere.
 
 This repository is the public mirror of the app that runs at gratus.cc. Every push passes `scripts/gates/open-source.mjs`. If you find anything in here that should not be, open an issue and it will be removed the same day.
 

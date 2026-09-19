@@ -1,4 +1,4 @@
-// THE EMOJI ENGINE — evolutions, the forge, the trove. Pure, deterministic, tested.
+// THE EMOJI ENGINE: evolutions, the forge, the trove. Pure, deterministic, tested.
 // In the Gratus Garden the thing that grows IS the emoji. Days tended move it through the
 // Fibonacci forms (garden.js). Some emojis also TRANSITION: at the schedule's days they become
 // the next emoji of their chain, each with a name and a line. Two emojis tended on the same day
@@ -26,7 +26,7 @@ export function stageIndex(seedEmoji, days, evo) {
 export function stage(seedEmoji, days, evo) { const c = chainOf(seedEmoji, evo); if (!c) return null; return c.chain.stages[stageIndex(seedEmoji, days, evo)]; }
 export function currentEmoji(seedEmoji, days, evo) { const s = stage(seedEmoji, days, evo); return s ? s.emoji : seedEmoji; }
 
-// what comes next, and in how many days — null at the end of a chain or off any chain
+// what comes next, and in how many days: null at the end of a chain or off any chain
 export function nextStage(seedEmoji, days, evo) {
   const c = chainOf(seedEmoji, evo); if (!c) return null;
   const i = stageIndex(seedEmoji, days, evo); if (i >= c.chain.stages.length - 1) return null;

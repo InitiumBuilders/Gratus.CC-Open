@@ -2,6 +2,18 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v30 · The slop gate (2026-09-19)
+
+- **A fifth gate, and the first one that judges writing.** It refuses the mechanical habits of machine prose across the repository: a dash standing in for a decision about how two clauses relate, a contrast with nothing on the other side of it, a word that sounds expert and carries nothing, a run-up that announces a point instead of making it.
+- **It knows whose words it is reading.** `config/his-words.json` holds August's lines, every value under `locked` in `config/copy.json` is his as well, and any line containing one is skipped whole. The decoy run proves both directions before every ship: each rule still catches a planted violation, and his lines still come through untouched.
+- **One hundred and twenty-eight hits on the first run, and zero now.** Four of them were not writing at all. They were a dash standing where the interface had never decided what to show, and removing them meant choosing the word: `not yet` for an answer that has not come, `$0` for a project that has raised nothing.
+- **[docs/REFINEMENT.md](REFINEMENT.md)** carries the ladder, the strategy prompt, what a gate cannot catch, and the next moves in order.
+- The first thing the gate did after being wired into the ship was fail the build on the heading style these notes had used for thirty versions, and on a sentence quoting one of the words it hunts. Both were fair.
+
+## v29 · An audit that cries wolf (2026-09-19)
+
+- The overflow audit stopped reporting elements inside a parent that clips, because nothing in one can widen the document.
+
 ## v28 · The standing, before anything is standing (2026-09-19)
 
 - **Grow says what a first word does.** The standing showed nothing at all when the garden was empty, which hid it from the one person most likely to need it: someone opening the tab for the first time, with no reason to know that a word is a day of care on something rather than a note in a list.

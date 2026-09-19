@@ -91,7 +91,7 @@ Giveth's information flows are excellent on the money side: zero fees, on-chain 
 
 A donation today is mathematically perfect and emotionally silent. The Emotional TRACE closes that loop. Full architecture in [EMOTIONAL-TRACE.md](EMOTIONAL-TRACE.md); in one paragraph:
 
-**Begin** — a donor plants a Gratus Seed with their gift: a few words about why, tied to the project and, optionally, the transaction. **Become** — the project's stewards read the seeds beside the capital, in a console built for them. **Bridge** — a steward waters a seed with a line back. **Bloom** — the seed in the donor's garden opens into that project's own emoji and keeps the reply inside it, permanently.
+**Begin**: a donor plants a Gratus Seed with their gift: a few words about why, tied to the project and, optionally, the transaction. **Become**: the project's stewards read the seeds beside the capital, in a console built for them. **Bridge**: a steward waters a seed with a line back. **Bloom**: the seed in the donor's garden opens into that project's own emoji and keeps the reply inside it, permanently.
 
 The capital funds the work. The seed funds the morale. The bloom funds the next gift.
 
@@ -148,12 +148,12 @@ The full reasoning is in [EMOTIONAL-TRACE.md](EMOTIONAL-TRACE.md). In short:
 
 | # | Loop | State |
 |---|---|---|
-| 1 | **Emotional TRACE** — Begin, Become, Bridge, Bloom | Shipped, v15 |
-| 2 | **The "I See You" catalyst** — the Nobody yet lane, and a 🫶 mark for a project's first-ever seed | Shipped, v16 |
-| 3 | **Human-in-the-loop responsiveness** — seeds received, share watered, days to answer | Shipped, v16 |
-| 4 | **Harmonic emoji alchemy** — twelve marks needing both a gift and inner work | Shipped, v16 |
-| 5 | **Circular Gratus flow** — a steward passes it on; the donor continues the flow | Shipped as a prompt, v16 |
-| 6 | **GIVgarden cross-pollination** — a public address read as sunlight | Shipped, v16 |
+| 1 | **Emotional TRACE**: Begin, Become, Bridge, Bloom | Shipped, v15 |
+| 2 | **The "I See You" catalyst**: the Nobody yet lane, and a 🫶 mark for a project's first-ever seed | Shipped, v16 |
+| 3 | **Human-in-the-loop responsiveness**: seeds received, share watered, days to answer | Shipped, v16 |
+| 4 | **Harmonic emoji alchemy**: twelve marks needing both a gift and inner work | Shipped, v16 |
+| 5 | **Circular Gratus flow**: a steward passes it on; the donor continues the flow | Shipped as a prompt, v16 |
+| 6 | **GIVgarden cross-pollination**: a public address read as sunlight | Shipped, v16 |
 
 The two that touch money or keys, 5 and 6, ship in the only form this app will carry them: a prompt the person acts on, and a read-only look at a public address. No custody, no connection, no signature.
 

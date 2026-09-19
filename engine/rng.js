@@ -8,7 +8,7 @@ export function hash32(str) {
   return h >>> 0;
 }
 
-// mulberry32 — small, fast, good enough for petals and sigils
+// mulberry32: small, fast, good enough for petals and sigils
 export function rng(seed) {
   let a = (typeof seed === 'number' ? seed : hash32(seed)) >>> 0;
   return function () {

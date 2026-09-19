@@ -1,4 +1,4 @@
-# LESSONS.md — honest
+# LESSONS.md: honest
 
 ## What is done and verified
 - Engine: 24 tests, every rule in §17.3 that the engine owns. Contrast gate: 112 pairs, 0 fails (16 warns above 4.5:1 and below 7:1, listed by the script). Banned-pattern gate: 0 hits.

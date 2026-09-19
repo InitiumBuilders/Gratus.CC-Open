@@ -1,4 +1,4 @@
-// Gate 1 — contrast, v4 (Quiet Light). Every ink the app paints against every surface it paints
+// Gate 1: contrast, v4 (Quiet Light). Every ink the app paints against every surface it paints
 // on: the ground, the chrome, the raised surfaces, the hue wash and fills, the solid action, and
 // gold. Fail < 4.5:1, warn < 7:1. Computed, never eyeballed. Ink is solid; alpha is for surfaces.
 import fs from 'node:fs';

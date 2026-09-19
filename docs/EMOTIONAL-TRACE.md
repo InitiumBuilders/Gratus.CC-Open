@@ -70,10 +70,10 @@ Read-only, no key, five-minute edge cache, against `https://mainnet.serve.giveth
 
 | In the prompt | In this app |
 |---|---|
-| `<GratusDonationModal/>` | `seedSheet(project)` — the seed field, the name, the optional tx, "Give on Giveth ↗" and "Capital sent · plant the seed". |
-| `<ProjectSeedFeed/>` | `viewConsole()` at `/app/console` — slug, key, claim, and the feed of seeds. |
-| `<WaterSeedButton/>` | `waterSheet(seedId)` — the seed, a reply field, "Send it · their seed blooms". |
-| `<GratusGarden/>` | `traceBlock()` in the garden room — dormant seeds as 🌱, bloomed as the project's emoji, each opening `mySeedSheet()` with both messages. |
+| `<GratusDonationModal/>` | `seedSheet(project)`: the seed field, the name, the optional tx, "Give on Giveth ↗" and "Capital sent · plant the seed". |
+| `<ProjectSeedFeed/>` | `viewConsole()` at `/app/console`: slug, key, claim, and the feed of seeds. |
+| `<WaterSeedButton/>` | `waterSheet(seedId)`: the seed, a reply field, "Send it · their seed blooms". |
+| `<GratusGarden/>` | `traceBlock()` in the garden room: dormant seeds as 🌱, bloomed as the project's emoji, each opening `mySeedSheet()` with both messages. |
 | State management | `S.seeds` in `localStorage`; `checkBloom()` polls the trace for dormant seeds 1.5s after boot and plays a ceremony for anything newly watered. |
 
 ### The bloom emoji
@@ -101,22 +101,22 @@ Chosen from the project's own Giveth category, so a bloom says something true ab
 
 All six are shipped. Loops 5 and 6 are shipped in the form that does not require custody or a signature, which is the only form this app will ever ship them in.
 
-### 1 · Emotional TRACE — shipped, v15
+### 1 · Emotional TRACE: shipped, v15
 Begin, Become, Bridge, Bloom, as above.
 
-### 2 · The "I See You" catalyst — shipped, v16
+### 2 · The "I See You" catalyst: shipped, v16
 In any decentralised network, the critical points are the under-resourced nodes at the edges. The **Nobody yet** lane queries Giveth's newest projects and keeps only those with zero donors. When a seed is the first a project has ever received, the trace marks it `first`, its bloom becomes 🫶 instead of the project's category emoji, and the ceremony reads **"I see you."** **The leverage is in the query, not the reward:** ordering algorithms bury new projects, and one lane reverses that for anyone who opens it.
 
-### 3 · Human-in-the-loop responsiveness — shipped, v16
+### 3 · Human-in-the-loop responsiveness: shipped, v16
 The count of seeds a project receives, the share it waters, and the median days it takes: a qualitative signal money cannot buy and volume cannot fake, because it needs a person to read and write back. `signalOf()` in `api/trace.js` computes it from the same document; it appears on the project sheet under **How this project answers**, and at the top of the project's own console under **How you answer**. **Guard held:** it orders nobody against anybody, there is no list, and the house gate refuses the words that would make it one. It caught me writing one of them in a comment that was denying it. Next: offer it to Giveth for GIVbacks review, and to DeVouch as an attestation.
 
-### 4 · Harmonic emoji alchemy — shipped, v16
+### 4 · Harmonic emoji alchemy: shipped, v16
 Twelve marks in `config/alchemy.json`, each needing both halves of a person. A gift to an Environment & Energy project plus three days written makes 🌍 Resilient Earth. A first-ever seed plus two days written makes 🫶 First Light. Thirty days, a photo, a voice entry and a gift makes 🕊️ Taught By Light. Conditions available: `entryDays`, `gave`, `gaveCategory`, `gaveUnseen`, `bloomed`, `phase`, `gifts`, `goals`, `folders`, `voice`, `photo`, `sun`. Everything is checked on the device, nothing is sent anywhere, and an unmade mark shows its own progress in plain words. Proof-of-growth, not proof-of-purchase.
 
-### 5 · Circular Gratus flow — shipped as a prompt, v16
+### 5 · Circular Gratus flow: shipped as a prompt, v16
 Capital flowing along lines of gratitude instead of isolated choices. Automating a share of GIVbacks yield needs custody, which Gratus does not do and will not. So it ships as a prompt, and the person signs: when a steward waters a seed they may **pass it on**, naming a Giveth project they are grateful for and why. The donor sees that inside their bloom and can **continue the flow** straight into that project. Beside it, **others like this one** reads Giveth's own `similarProjectsBySlug`. Gratitude routes the attention; the wallet stays the person's.
 
-### 6 · GIVgarden cross-pollination — shipped as sunlight, v16
+### 6 · GIVgarden cross-pollination: shipped as sunlight, v16
 Taking part in Giveth's commons acts as sunlight in the personal garden. `userByAddress` answers without authentication, so a person can paste the **public** address they give with and Gratus reads how much they take part: projects boosted with GIVpower, gifts given, projects liked. Those become a sunlight reading from 0 to 5, which feeds the alchemy marks (🔆 The Commons needs sunlight 2 and five days written). **Read only, always:** Gratus never asks anyone to connect a wallet, never asks for a key or a seed phrase, and never signs anything.
 
 ## Reference: the Prisma model
