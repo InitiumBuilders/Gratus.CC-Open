@@ -12,9 +12,9 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 
 1. ~~**Protect the journal.**~~ Done in v12.1: export and restore live in the profile sheet. Next: a reminder to export after every tenth entry, until sync exists.
 2. **The first move must land.** On a first open with an empty garden, the home leads straight to the entry box and the first plant; nothing else competes. Walk the empty state on a fresh device every ship.
-3. **Composer, second pass.** Photo and voice exist (photo resized on the device, voice through the browser's speech recognition). Next: show the photo inside the garden orb and let a voice entry keep its recording.
-4. **License.** Choose it (see the first question below) and add it. Without a license the mirror is public, not open.
-5. **Desktop loops.** The boomerang videos are 640px portrait and upscale softly on a desktop. Render 1080px versions for `#scene` when the viewport is wide.
+3. ~~**Composer, second pass.**~~ Done in v13: a voice entry keeps its recording and gets its words through ElevenLabs. Next: the photo inside the garden orb; a limit on the voice function before wide traffic.
+4. ~~**License.**~~ Done in v13: MIT for everything, code, art, video, song and words.
+5. ~~**Desktop loops.**~~ Done in v13: the scene is a painting at its own size on a blurred wall of its own light; loops re-encoded at the source width. Next: a wider two-column reading of the Growth Book on desktop.
 
 ## Next
 
@@ -26,7 +26,7 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 
 ## Later
 
-11. **Identity and sync**, only after the question below is answered.
+11. **Accounts and the cloud Gratus profile.** His answer: local for now; in a few updates, optional accounts with a cloud profile and sync. Design the profile first (name, mark, garden summary, what is public), then the sync (entries, plants, folders, recordings).
 12. **One real project behind Give**, with one partner, with the flow that exists.
 13. **Gratus Earth, Vault and World** as real data, in that order, one at a time.
 14. **A reminder that does not nag**, if the answer below allows one.
@@ -36,16 +36,16 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 
 These change the shape of the work. Each one is a fork.
 
-1. **License.** Code under MIT, with the art, the song and the words kept under your own terms (all rights reserved, or CC BY-NC-ND)? Or everything under one license? The mirror is public now and carries no license yet.
-2. **Identity.** Does the journal stay on the device forever, with export and restore as the only backup, or do we add optional accounts and sync across devices? Sync changes the privacy promise on the landing page and needs a server that holds words.
+1. ~~**License.**~~ Answered: MIT, everything. Shipped in v13.
+2. ~~**Identity.**~~ Answered: all local for now; accounts, a cloud Gratus profile and sync in a few updates. On the list as move 11.
 3. **What giving means.** When you give a Gratus, does it leave your garden (the gift keeps moving) or does it stay with you and also grow with them? Today it stays. Your law says the gift must keep moving; I want the ruling, because it defines the whole Give tab.
 4. **The stream's rules.** Goals are public and anonymous. What is not allowed, who removes it, and do you want a report control before more people arrive?
 5. **How days count.** A plant grows only on days you write about that emoji. Should any journal day feed every plant instead? And should a missed day do anything at all, or is a Gratus never punished for silence?
 6. **Reminders.** The house rule bans presence words like "come back". Is a single daily nudge at a time the person chooses welcome, or does Gratus never call anyone?
 7. **Which room becomes real first.** Support a Project, Gratus Earth or the Vault? And with whom?
-8. **Desktop.** Is desktop a first-class experience with a wider layout, or the phone app centred on a scene, as now?
-9. **Voice recordings.** A voice entry becomes text today. Should the recording itself be kept on the device too, and could it ride inside a gift?
-10. **The name on the colophon.** Your full name appears on the landing page and now in a public repository. Keep it, or sign as August?
+8. ~~**Desktop.**~~ Answered: first-class. The painting layout shipped in v13; the wider Growth Book is next.
+9. ~~**Voice recordings.**~~ Answered: live. Recordings kept on the device and transcribed through ElevenLabs, shipped in v13. Open: should a recording ride inside a gift?
+10. ~~**The name on the colophon.**~~ Answered: @BuiltByAugust, linked to x.com/BuiltByAugust. Shipped in v13.
 
 ## Questions I asked myself, and my answers
 
@@ -57,6 +57,12 @@ These change the shape of the work. Each one is a fork.
 - **How do we keep the scenes and still read every word?** Bright scene above, dark plate below, scrim bands where words cross the scene, dark glass under every control. Never white on bright. Verified by screenshot at 375 on every page, every ship.
 - **How do we keep the public mirror clean forever?** Every rule in the gate has a decoy that must fire before a ship; the export is gated; the clone is gated. A new kind of secret means a new rule and a new decoy, the same day.
 
+## New since his answers
+
+16. **The voice function needs a limit.** It is public and spends his ElevenLabs credit. Add a per-device daily allowance and a size cap smaller than six megabytes before the app is shared widely.
+17. **Recordings in the export.** The JSON export leaves recordings behind. Add a second export that packs them, or include them as data URLs when small.
+18. **Milestones as ceremonies.** A lit milestone is a toast today. Give the big ones (seven days in a row, Bloomed, first gift) the Gate's light.
+
 ## Done this arc
 
-- v7 to v12 in one day: his mockups, his scenes, the Gate, the scene layer, readable type, the core in the bar, open source with a gated mirror, the docs.
+- v7 to v13 in one day: his mockups, his scenes, the Gate, the scene layer, readable type, the core in the bar, open source with a gated mirror, the docs, voice, the journal's rooms, the desktop painting, MIT.

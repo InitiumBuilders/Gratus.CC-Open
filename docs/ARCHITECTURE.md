@@ -9,7 +9,7 @@ Gratus.CC is a static progressive web app. There is no build step, no framework 
 1. `#scene`: a fixed, full-viewport layer that carries the current scene. A scene is either a still (`assets/art/gfx/gNN.jpg`) or a boomerang video (`v1 v2 v3 dhold dlong d2`, each with a poster). `setScene(name)` appends a new layer, fades it in over 1.4 seconds with a timer (not a paint callback, which never fires in a hidden tab), and removes the old one. A gradient scrim sits over the scene so words read.
 2. `.stars`: a light field of twinkling points.
 3. `#view`: the page. A hero on top, then `.page`, a dark glass column for everything below the hero. The scene stays bright behind the hero and dims behind the column.
-4. `.tabs`: the fixed bar with Grow, Gratus and Give. The centre is a squircle holding his logo, sitting half in the bar, with two swaying arcs of light, five rising embers and a glow that spills onto the bar.
+4. `.tabs`: the fixed bar with Grow, Gratus and Give. The centre is his logo itself, a 60px squircle image sitting in the bar with no plate behind it, with two swaying arcs of light, an aura ring that rises and fades, five rising embers and a glow that spills onto the bar.
 5. `#splash`, `#room`, `#laws`, `#sheets`, `#ceremony`, `#toast`: the overlays.
 
 `index.html` is the landing page. It carries its own copy of the scene layer and the ritual so it behaves like the app without loading it.
@@ -28,10 +28,10 @@ One object in `localStorage` under `gratus.galaxy.v1`:
 
 ```
 { name, entries[], plants[{emoji, planted, kept[], carried, origin, from, private}],
-  gifts{given, received}, my{emojis, recipes}, wishes[], goals[], sound, made{}, opens, migrated }
+  gifts{given, received}, my{emojis, recipes}, wishes[], goals[], folders[], milestones{}, sound, made{}, opens, migrated }
 ```
 
-`entries` are the journal: day, text, emoji, tags. `plants` are the garden: one per emoji, with the days it was kept. Older states (`gratus.v1`, `gratus.v2`) migrate on first load. Nothing here is sent anywhere.
+`entries` are the journal: day, text, emoji, tags, photo, voice, folder. `folders` are named collections an entry can be filed into. `milestones` records the day each mark first lit. `plants` are the garden: one per emoji, with the days it was kept. Older states (`gratus.v1`, `gratus.v2`) migrate on first load. Nothing here is sent anywhere.
 
 ## Growth
 
@@ -48,6 +48,16 @@ A gift is the plant, its days, its message and the hands that held it, encoded b
 ## The goals stream
 
 `api/goals.js` is a Vercel function over `@vercel/blob`. One JSON document at `gratus/goals/feed.json`. `GET` returns the last eighty goals, newest first. `POST` takes `{text ≤ 160, name ≤ 40, emoji}` and appends. Writes are last-writer-wins and the comment in the file says so; this is the right size for now and will change when the stream matters more. Offline or without the token, the client shows seed goals labelled "as imagined" and resyncs local goals when it can.
+
+## Voice
+
+`api/voice.js` is a Vercel function. The recording arrives as the raw request body (webm, mp4 or ogg from `MediaRecorder`), is checked for origin, a `X-Gratus: voice` header and size (six megabytes), and is posted to ElevenLabs speech to text (`scribe_v1`) with the key from `ELEVENLABS_API_KEY`. The function returns `{ text, language }` and keeps nothing. The key is in the Vercel environment of both projects and in no file; the open-source gate knows its shape.
+
+On the device, `assets/js/keep.js` is a small IndexedDB store keyed by entry id. The composer records with `MediaRecorder`, shows the recording to hear back, sends it for words, and on planting keeps the blob under the new entry's id. The entry carries `voice: { mime, dur }`; the entry sheet plays it from the keep. Recordings are not in the JSON export, and the sheet says so.
+
+## The desktop
+
+At 1024px and wider the scene layer has two children: `.back`, the poster of the same scene, blurred and darkened, scaled to cover; and `.fore`, the painting or the video at its own aspect, `object-fit: contain`, centred, feathered at its vertical edges with a mask. The source art is 941×1672, so on a desktop it is shown at or under its own size and stays sharp; the blurred wall carries the colour to the edges. Under 1024px only `.fore` shows and covers. The content column widens to 760px, the statement to 52px.
 
 ## Song
 

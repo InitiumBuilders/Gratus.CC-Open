@@ -2,6 +2,14 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v13 · The logo is the core; voice; the journal's rooms; the desktop painting; MIT (2026-09-19)
+
+- The bar's centre is his logo itself, sitting in the bar, with the swaying arcs, a rising aura ring, the embers and the spill of light around it, nothing plated and nothing cut.
+- Voice entries: a real recording kept on the device, its words through ElevenLabs speech to text (`api/voice.js`); hear it back in the composer and in the entry.
+- The journal has four rooms: Entries, Threads, Folders, Milestones. Continue a thread from any entry; file entries into folders; eighteen milestones light on your own road.
+- On a desktop the scene is a painting at its own size on a wall of its own blurred light; the boomerang loops re-encoded at the source width.
+- MIT license for everything; the colophon signs as @BuiltByAugust with the link.
+
 ## v12.1 · Restore, and the empty garden reads (2026-09-19)
 
 - Restore from a file beside Export everything in the profile sheet; the file is checked before anything is replaced.

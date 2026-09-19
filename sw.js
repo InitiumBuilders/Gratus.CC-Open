@@ -1,6 +1,6 @@
 // Offline-first shell. Everything lives on the device for now.
-const V = 'gratus-1789834457';
-const SHELL = ['/app.html', '/assets/css/tokens.css?v=23', '/assets/css/galaxy.css?v=23', '/assets/js/galaxy.js?v=1789834457', '/assets/js/ui.js?v=12',
+const V = 'gratus-1789836200';
+const SHELL = ['/app.html', '/assets/css/tokens.css?v=24', '/assets/css/galaxy.css?v=24', '/assets/js/galaxy.js?v=1789836200', '/assets/js/ui.js?v=12', '/assets/js/keep.js?v=13',
   '/engine/gratus.js?v=12', '/engine/emoji.js?v=12', '/engine/rng.js?v=12',
   '/config/evolutions.json?v=12', '/config/emoji-names.json?v=12', '/config/prompts.json?v=12', '/config/copy.json?v=12', '/config/growth-book.json?v=12', '/config/recipes.json?v=12',
   '/assets/art/gfx/logo.png', '/assets/art/gfx/g11.jpg', '/assets/art/gfx/g08.jpg', '/assets/art/gfx/g13.jpg', '/assets/art/gfx/g15.jpg', '/assets/art/gfx/g20.jpg', '/assets/art/gfx/g22.jpg', '/assets/art/gfx/g27.jpg', '/assets/art/gfx/v3-poster.jpg',

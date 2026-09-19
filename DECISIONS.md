@@ -109,3 +109,10 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 ## v12.1 — RESTORE (2026-09-19)
 84. **The journal can come back.** Restore from a file sits beside Export everything. The file is checked (version, entries, plants) and the person confirms before anything on the device is replaced; the state object is replaced in place so nothing holds a stale reference.
 85. **The empty garden reads.** His three lines stand on a dark pool inside the scene, with the scene still around them.
+
+## v13 — THE LOGO IS THE CORE · VOICE · THE JOURNAL'S ROOMS · THE DESKTOP PAINTING · MIT (2026-09-19)
+86. **The logo is the core.** No plate behind it. A 60px squircle image sitting in the bar, its centre on the bar's centre, with the two swaying arcs seven pixels out, an aura ring that rises and fades every 4.6 seconds, five embers, and a spill of light on the bar. Nothing is clipped because nothing wraps it.
+87. **A voice entry is a recording and its words.** The recording is kept on the device in IndexedDB under the entry's id; its words come through `api/voice.js` and ElevenLabs speech to text, with the key only in the Vercel environment. If the words cannot come, the recording is still kept. The open-source gate knows the key's shape.
+88. **The journal has four rooms.** Entries, Threads (one emoji through your days), Folders (named, filed from any entry), Milestones (eighteen marks on your own road; a toast when one lights). The house words hold: days in a row, never a streak; marks, never a score.
+89. **On a desktop the scene is a painting.** The art is 941 pixels wide; stretching it to a wide screen made it soft. Now it stands at its own size, feathered at the edges, on a blurred wall of its own light, and the loops are re-encoded at the source width.
+90. **MIT for everything,** code, art, video, song and words, by his ruling. The colophon signs as @BuiltByAugust, linked.

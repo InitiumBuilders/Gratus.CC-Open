@@ -16,8 +16,8 @@
 <link rel="apple-touch-icon" href="/assets/brand/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css?v=23">
-<link rel="stylesheet" href="/assets/css/galaxy.css?v=23">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=24">
+<link rel="stylesheet" href="/assets/css/galaxy.css?v=24">
 <style>
   body { background: var(--ground); }
   .site { position: relative; z-index: 2; }
@@ -118,7 +118,7 @@
   <div class="hairline" style="width:64px;margin:16px 0;background:rgba(255,255,255,.3)"></div>
   <b style="color:var(--ink)">Gratus.CC</b>
   <span>a Davara Distinct Bio-symbolic illuminate glow build · twelve laws, one new world</span>
-  <span>9/2/2026 · August James Domanchuk</span>
+  <span>9/2/2026 · <a href="https://x.com/BuiltByAugust" target="_blank" rel="noopener">@BuiltByAugust</a></span>
   <span>Journal Every Day. Give Gifts The Grow.</span>
   <span>Gratus In Motus. Gratitude In Motion. Give Gifts That Grow. Gratus Gives.</span>
   <span><a href="/app/laws">The twelve laws</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
@@ -128,8 +128,8 @@
   const GFX = (n) => '/assets/art/gfx/' + n; const h = document.documentElement; const ok = !matchMedia('(prefers-reduced-motion: reduce)').matches && !(navigator.connection && navigator.connection.saveData);
   if (ok && !document.hidden) h.classList.add('anim');
   // the scene is the screen: the Gate zooming out, forward and back, forever
-  const scene = document.getElementById('scene'); const layer = document.createElement('div'); layer.className = 'layer in'; layer.style.backgroundImage = 'url(' + GFX('dlong-poster.jpg') + ')';
-  if (ok) layer.innerHTML = '<video autoplay muted loop playsinline poster="' + GFX('dlong-poster.jpg') + '" aria-hidden="true"><source src="' + GFX('dlong.mp4') + '" type="video/mp4"></video>';
+  const scene = document.getElementById('scene'); const layer = document.createElement('div'); layer.className = 'layer in';
+  layer.innerHTML = '<div class="back" style="background-image:url(' + GFX('dlong-poster.jpg') + ')"></div>' + (ok ? '<video class="fore" autoplay muted loop playsinline poster="' + GFX('dlong-poster.jpg') + '" aria-hidden="true"><source src="' + GFX('dlong.mp4') + '" type="video/mp4"></video>' : '<img class="fore" src="' + GFX('dlong-poster.jpg') + '" alt="">');
   scene.appendChild(layer);
   // the opening ritual, every time: the doorway, the light, a held white, then the page
   const sp = document.getElementById('splash');

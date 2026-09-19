@@ -18,7 +18,11 @@ Two emojis that appear together on three or more days make a recipe. Sixty recip
 
 ### Your journal
 
-The Growth Book's Journal tab holds every entry by day, the last thirty days as a band, and a search box. Your entries never leave your phone unless you put them in a gift.
+The Growth Book's Journal has four rooms. **Entries** holds every entry by day, the last thirty days as a band, and a search box. **Threads** follows one emoji through your days; tap a thread to read it and continue it. **Folders** are collections you name; open any entry and choose a folder to file it. **Milestones** marks your own road: days in a row, entries, your first photo and voice, a plant Nurtured or Bloomed, a recipe, a gift. Nothing in it compares you with anyone. Your entries never leave your phone unless you put them in a gift.
+
+### Your voice
+
+On Grow, tap **Voice** and speak. Tap again to stop. You hear the recording back, and its words arrive in the entry box a moment later. The recording is kept on your device with the entry; the words come through a voice service that keeps nothing.
 
 ### Gratus Goals
 

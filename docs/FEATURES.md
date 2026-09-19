@@ -12,7 +12,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 ## Grow
 
 - Today's question, drawn from the question pool.
-- The entry: text, a photo (resized on the device and kept with the entry), and voice where the browser offers speech recognition.
+- The entry: text, a photo (resized on the device and kept with the entry), and your voice. A recording is kept on the device (IndexedDB) and its words come back through ElevenLabs speech to text into the entry. If the words cannot come, the recording is still kept.
 - The emoji you are planting, chosen from your palette; the first emoji is suggested by the engine.
 - Tags (Love, Support, Friendship, Gratitude, Health, Friends, Music, Family, Nature, Work, Home, Rest, and your own).
 - Plant My Gratus: the planting ceremony through the Gate's light, then the Planted moment.
@@ -23,7 +23,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Your Gratitude Garden: every emoji you keep, sized by phase, glowing by phase.
 - Entries, plants and gifts counts.
 - The Growth Book:
-  - Journal: today's question, the last thirty days as a band, search, every entry by day.
+  - Journal, four rooms: Entries (today's question, the thirty-day band, search, every entry by day), Threads (one emoji followed through your days, with its phase and the day it grows next; continue a thread from any entry), Folders (make them, file entries into them from any entry, rename, delete without losing an entry), Milestones (eighteen marks on your own road: days in a row, entries, photo, voice, folder, goal, phases, recipe, gifts, days of care; a toast when one lights).
   - Phases: Planted, Nurtured, Deepened, Bloomed, Ready to Give, with the day each begins and what it means.
   - Emojis: your palette, evolution arcs, and adding your own.
   - Recipes: sixty recipes, the ones you have made lit, and adding your own.
@@ -39,6 +39,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 
 ## Everywhere
 
+- On a desktop the scene is a painting at its own size on a wall of its own blurred light, with the content column at 760px. On a phone the scene covers.
 - The twelve laws, one line per screen, from the top bar.
 - Privacy and terms pages.
 - Export everything as a file, and restore from one, in the profile sheet.

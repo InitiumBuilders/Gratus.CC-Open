@@ -14,8 +14,8 @@ Live at [www.gratus.cc](https://www.gratus.cc) and [grow-gratus-cc.vercel.app](h
 
 | Tab | What happens there |
 |---|---|
-| **Grow** | Today's question, your entry, the emoji you are planting, tags, and your Gratus Goals with the shared stream. |
-| **Gratus** | Your garden, the Growth Book (journal, phases, emojis, recipes), and the Gratus Galaxy. |
+| **Grow** | Today's question; your entry in words, a photo or your voice (kept on the device, and turned into words through ElevenLabs); the emoji you are planting; tags; your Gratus Goals with the shared stream. |
+| **Gratus** | Your garden, the Growth Book (entries, threads, folders, milestones; phases, emojis, recipes), and the Gratus Galaxy. |
 | **Give** | Give a Gratus Gift, support a project, or send a wish to tomorrow. The gifts you gave and received. |
 
 The whole app opens through one ritual: the doorway video plays until its light fills the screen, the light holds, and the app fades in behind it. Every page stands on one of his scenes, a still or a looping video, chosen by how many times you have opened the app.
@@ -57,6 +57,8 @@ config/             growth-book, recipes, families, evolutions, emoji names, pro
 assets/art/gfx/     his 30 scenes, the boomerang loops, the doorway and its light, the logo
 assets/audio/       his song, A Sacred Place
 api/goals.js        the shared goals stream
+api/voice.js        speech to text through ElevenLabs; the key lives only in the environment
+assets/js/keep.js   recordings, kept on the device in IndexedDB
 scripts/            ship, gates, tests, the open-source publisher
 docs/               pitch, architecture, features, guides, evolutions, image prompts
 ```
@@ -87,7 +89,7 @@ node scripts/gates/open-source.mjs . --decoy  # the publish gate proves every ru
 
 This repository is the public mirror of the app that runs at gratus.cc. Every push passes `scripts/gates/open-source.mjs`. If you find anything in here that should not be, open an issue and it will be removed the same day.
 
-The license is being chosen. Until it is, the code is published for reading and learning; ask before reusing the art, the song or the words, which belong to August.
+MIT, for everything in the repository: the code, the art, the video, the song and the words. See [LICENSE](LICENSE). Built by [@BuiltByAugust](https://x.com/BuiltByAugust).
 
 ## Colophon
 
@@ -95,7 +97,7 @@ Gratus.CC
 
 a Davara Distinct Bio-symbolic illuminate glow build · twelve laws, one new world
 
-9/2/2026 · August James Domanchuk
+9/2/2026 · [@BuiltByAugust](https://x.com/BuiltByAugust)
 
 Journal Every Day. Give Gifts The Grow.
 

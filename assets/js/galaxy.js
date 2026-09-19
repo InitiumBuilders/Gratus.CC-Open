@@ -8,6 +8,7 @@ import * as Gr from '../../engine/gratus.js?v=12';
 import * as E from '../../engine/emoji.js?v=12';
 import { newId } from '../../engine/rng.js?v=12';
 import { esc, $, $$, sheet, toast, fmtDay } from './ui.js?v=12';
+import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
 const KEY = 'gratus.galaxy.v1';
 const GFX = (n) => '/assets/art/gfx/' + n;
@@ -30,8 +31,9 @@ let sceneNow = null;
 function setScene(name) {
   const root = $('#scene'); if (!root || sceneNow === name) return; sceneNow = name;
   const old = Array.from(root.children); const layer = document.createElement('div'); layer.className = 'layer';
-  if (name[0] === 'v' || name[0] === 'd') { const poster = GFX(name + '-poster.jpg'); layer.style.backgroundImage = 'url(' + poster + ')'; if (motionOk()) layer.innerHTML = '<video autoplay muted loop playsinline poster="' + poster + '" aria-hidden="true"><source src="' + GFX(name + '.mp4') + '" type="video/mp4"></video>'; }
-  else layer.style.backgroundImage = 'url(' + GFX(name + '.jpg') + ')';
+  const video = name[0] === 'v' || name[0] === 'd'; const poster = video ? GFX(name + '-poster.jpg') : GFX(name + '.jpg');
+  layer.innerHTML = '<div class="back" style="background-image:url(' + poster + ')"></div>' +
+    (video && motionOk() ? '<video class="fore" autoplay muted loop playsinline poster="' + poster + '" aria-hidden="true"><source src="' + GFX(name + '.mp4') + '" type="video/mp4"></video>' : '<img class="fore" src="' + poster + '" alt="" aria-hidden="true">');
   root.appendChild(layer); setTimeout(() => layer.classList.add('in'), 40);
   setTimeout(() => old.forEach((o) => o.remove()), 1600);
 }
@@ -50,11 +52,11 @@ const I = {
 // ── time and state ──
 const pad2 = (n) => String(n).padStart(2, '0');
 function today() { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false }; }
+function fresh() { return { v: 1, name: '', entries: [], plants: [], gifts: { given: [], received: [] }, my: { emojis: [], recipes: [] }, wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false, folders: [], milestones: {} }; }
 function load() {
   try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
   if (!S || S.v !== 1) S = fresh();
-  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true;
+  if (!Array.isArray(S.goals)) S.goals = []; if (S.sound == null) S.sound = true; if (!Array.isArray(S.folders)) S.folders = []; if (!S.milestones || typeof S.milestones !== 'object') S.milestones = {};
   if (!S.migrated) { S.migrated = true; try { migrate(); } catch (e) {} }
   S.opens = (S.opens || 0) + 1; save();
 }
@@ -104,6 +106,7 @@ function hero(sceneName, o) {
 }
 function go(t, s) { tab = t; sub = s || null; const path = '/app' + (sub ? '/' + sub : (tab === 'gratus' ? '' : '/' + tab)); if (location.pathname.endsWith('.html')) history.replaceState(null, '', location.pathname + '?tab=' + (sub || tab)); else history.replaceState(null, '', path); render(); window.scrollTo({ top: 0 }); }
 function render() {
+  checkMilestones();
   const root = $('#view'); let s = '';
   if (sub === 'book') s = topBar({ back: true }) + viewBook();
   else if (sub === 'projects') s = topBar({ back: true }) + viewProjects();
@@ -145,19 +148,20 @@ function viewGratus() {
     '</div>';
 }
 function entryCard(e) {
-  return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
+  return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
 }
 
 // ── GROW · plant today ──
-let draft = { text: '', emoji: null, tags: [], photo: null };
+let draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
 function viewGrow() {
   const pal = palette();
   return hero(scene('grow'), { h1: 'Grow', k1: 'Plant Today', k2: 'A Brighter Tomorrow', low: '<p class="statement in" style="--i:2">What are you grateful for today?</p>' }) +
     '<div class="page">' +
     '<div class="glass card">' +
     '<textarea class="field" id="write" rows="3" placeholder="Start your gratitude entry..." aria-label="your gratitude entry">' + esc(draft.text) + '</textarea>' +
-    '<div class="tools"><span class="chip on">' + I.text + ' Text</span><label class="chip" id="photo-chip">' + I.cam + ' Photo<input type="file" id="photo" accept="image/*" hidden></label>' + ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window ? '<button class="chip" id="voice">' + I.mic + ' Voice</button>' : '') + '</div>' +
+    '<div class="tools"><span class="chip on">' + I.text + ' Text</span><label class="chip" id="photo-chip">' + I.cam + ' Photo<input type="file" id="photo" accept="image/*" hidden></label>' + (navigator.mediaDevices && window.MediaRecorder ? '<button class="chip" id="voice">' + I.mic + ' Voice</button>' : '') + '</div>' +
     '<div class="photoprev" id="photoprev" hidden></div>' +
+    '<div class="glass voiceprev" id="voiceprev"' + (draft.voice ? '' : ' hidden') + '><span class="kicker mint">Your voice · ' + fmtDur(draft.voiceDur) + '</span><audio controls id="voice-audio"></audio><button class="btn sm quiet" id="voice-drop">Remove the recording</button></div>' +
     '<span class="kicker mint">The emoji you are planting</span>' +
     '<div class="pick" id="pick">' + pal.map((e) => '<button class="orb' + (draft.emoji === e ? ' on' : '') + '" data-pick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '<button class="orb empty" id="pick-any" aria-label="any emoji"><span>+</span></button></div>' +
     '<span class="kicker mint">Tags</span><div class="chips" id="tags">' + C.book.tags.concat(draft.tags.filter((t) => !C.book.tags.includes(t))).map((t) => '<button class="chip' + (draft.tags.includes(t) ? ' on' : '') + '" data-tag="' + esc(t) + '">' + esc(t) + '</button>').join('') + '<button class="chip" id="tag-any">+ tag</button></div>' +
@@ -195,14 +199,14 @@ function addGoal(text) {
 function plantNow() {
   const text = ($('#write') ? $('#write').value : draft.text).trim(); const emoji = draft.emoji;
   if (!text && !emoji) { toast('A word or an emoji. Either grows.'); return; }
-  const t = today(); const e = { id: newId('e'), day: t, at: new Date().toISOString(), text, emoji, tags: draft.tags.slice(), photo: draft.photo };
-  S.entries.push(e);
+  const t = today(); const e = { id: newId('e'), day: t, at: new Date().toISOString(), text, emoji, tags: draft.tags.slice(), photo: draft.photo, voice: draft.voice ? { mime: draft.voice.type || 'audio/webm', dur: draft.voiceDur } : null, folder: null };
+  S.entries.push(e); if (draft.voice) keepPut(e.id, draft.voice).catch(() => toast('The recording could not be kept on this device.'));
   let p = emoji ? plantFor(emoji) : null; let isNew = false; const before = p ? face(p) : null;
   if (emoji && !p) { p = { id: newId('p'), emoji, planted: t, kept: [], carried: 0, origin: 'planted', from: null }; S.plants.push(p); isNew = true; }
   if (p && !p.kept.includes(t)) p.kept.push(t);
   const made = [];
   for (const r of allRecipes()) { if (S.made[r.id]) continue; const st = recipeState(r); if (st.made) { S.made[r.id] = t; made.push(r); if (!plantFor(r.result)) S.plants.push({ id: newId('p'), emoji: r.result, planted: t, kept: [t], carried: 0, origin: 'recipe', from: r.name }); } }
-  save(); draft = { text: '', emoji: null, tags: [], photo: null };
+  save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
   const after = p ? face(p) : null; const d = p ? daysOf(p) : 0; const ph = p ? phaseOf(d) : null;
   const seq = [];
   if (p && before && after !== before) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><span class="kicker mint">' + esc(before + ' → ' + after) + '</span><h2>' + esc(nameOf(after)) + '</h2><p class="lead">' + esc((E.stage(p.emoji, d, C.evo) || {}).line || '') + '</p><span class="kicker">tap to continue</span></div>');
@@ -298,15 +302,23 @@ function viewGalaxy() {
 
 // ── THE GROWTH BOOK ──
 let bookTab = 'journal', recipeCat = 'all', qOffset = 0, journalQuery = '';
+let jTab = 'entries';
 function viewJournal() {
   const t = today(); const pool = Gr.questionPool(C.prompts); const q = Gr.question(pool, t + ':j', qOffset);
   const days = new Set(S.entries.map((e) => e.day)); const band = []; for (let i = 29; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); band.push('<i class="' + (days.has(k) ? (k === t ? 'gold' : 'lit') : '') + '" title="' + k + '"></i>'); }
-  const qq = journalQuery.trim().toLowerCase(); const list = S.entries.filter((e) => !qq || (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim()).slice().reverse();
-  const byDay = []; for (const e of list) { const last = byDay[byDay.length - 1]; if (last && last.day === e.day) last.items.push(e); else byDay.push({ day: e.day, items: [e] }); }
+  let body = '';
+  if (jTab === 'threads') body = viewThreads();
+  else if (jTab === 'folders') body = viewFolders();
+  else if (jTab === 'milestones') body = viewMilestones();
+  else {
+    const qq = journalQuery.trim().toLowerCase(); const list = S.entries.filter((e) => !qq || (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim()).slice().reverse();
+    const byDay = []; for (const e of list) { const last = byDay[byDay.length - 1]; if (last && last.day === e.day) last.items.push(e); else byDay.push({ day: e.day, items: [e] }); }
+    body = '<input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
+      (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map(entryCard).join('') + '</div>').join('') : '<p class="cap">' + (qq ? 'Nothing with those words.' : 'Nothing written yet. Every entry you plant lives here, by day.') + '</p>');
+  }
   return '<div class="glass card"><span class="kicker mint">Today\'s question</span><h3 class="q"><button id="j-q" aria-label="another question">' + esc(q) + '</button></h3><button class="btn mint" id="j-write">Write today\'s entry 🌱</button></div>' +
     '<div class="glass card"><div class="dayhead"><b>' + plural(days.size, 'day') + ' written</b><span class="cap">the last thirty</span></div><div class="band">' + band.join('') + '</div></div>' +
-    '<input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
-    (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map(entryCard).join('') + '</div>').join('') : '<p class="cap">' + (qq ? 'Nothing with those words.' : 'Nothing written yet. Every entry you plant lives here, by day.') + '</p>');
+    '<div class="glass seg" style="grid-template-columns:repeat(4,1fr)">' + [['entries', 'Entries'], ['threads', 'Threads'], ['folders', 'Folders'], ['milestones', 'Milestones']].map(([k, n]) => '<button class="' + (jTab === k ? 'on' : '') + '" data-jt="' + k + '">' + n + '</button>').join('') + '</div>' + body;
 }
 function viewBook() {
   const ph = C.book.phases; let body = '';
@@ -414,15 +426,103 @@ function saveGift() {
 
 // ── sheets: entries, you, the laws ──
 function entrySheet(e) {
-  const sh = sheet('<span class="kicker mint">' + esc(fmtDay(e.day)) + (e.emoji ? ' · ' + esc(e.emoji) : '') + '</span>' + (e.photo ? '<img src="' + e.photo + '" alt="" style="border-radius:14px;max-height:280px;width:100%;object-fit:cover">' : '') + '<p class="lead" style="white-space:pre-wrap">' + esc(e.text) + '</p>' + (e.tags && e.tags.length ? '<div class="chips">' + e.tags.map((t) => '<span class="chip">' + esc(t) + '</span>').join('') + '</div>' : '') + '<div class="links"><button id="en-del">Delete</button></div><p class="cap">Deleting an entry never takes a day from an emoji.</p>');
-  $('#en-del', sh.el).addEventListener('click', () => { if (!confirm('Delete this entry?')) return; S.entries = S.entries.filter((x) => x.id !== e.id); save(); sh.close(); render(); });
+  const folders = S.folders.map((f) => '<button class="chip' + (e.folder === f.id ? ' on' : '') + '" data-efold="' + esc(f.id) + '">📁 ' + esc(f.name) + '</button>').join('');
+  const sh = sheet('<span class="kicker mint">' + esc(fmtDay(e.day)) + (e.emoji ? ' · ' + esc(e.emoji) + ' ' + esc(nameOf(e.emoji)) : '') + '</span>' +
+    (e.photo ? '<img src="' + e.photo + '" alt="" style="border-radius:14px;max-height:280px;width:100%;object-fit:cover">' : '') +
+    '<p class="lead" style="white-space:pre-wrap">' + esc(e.text || '(an emoji, no words)') + '</p>' +
+    (e.voice ? '<div class="glass voiceprev"><span class="kicker mint">Your voice · ' + fmtDur(e.voice.dur) + '</span><audio controls id="en-audio"></audio></div>' : '') +
+    (e.tags && e.tags.length ? '<div class="chips">' + e.tags.map((t) => '<span class="chip">' + esc(t) + '</span>').join('') + '</div>' : '') +
+    '<span class="kicker mint">Folder</span><div class="chips">' + folders + '<button class="chip" id="en-newfolder">+ new folder</button></div>' +
+    '<div class="actions">' + (e.emoji ? '<button class="btn mint" id="en-thread">Continue this thread ' + esc(e.emoji) + '</button>' : '') + '<button class="btn quiet" id="en-del">Delete this entry</button></div>' +
+    '<p class="cap">Deleting an entry never takes a day from an emoji.</p>');
+  if (e.voice) keepGet(e.id).then((b) => { const au = $('#en-audio', sh.el); if (!au) return; if (b) au.src = URL.createObjectURL(b); else au.outerHTML = '<p class="cap">The recording is not on this device.</p>'; }).catch(() => null);
+  $$('[data-efold]', sh.el).forEach((b) => b.addEventListener('click', () => { e.folder = e.folder === b.dataset.efold ? null : b.dataset.efold; save(); $$('[data-efold]', sh.el).forEach((x) => x.classList.toggle('on', x.dataset.efold === e.folder)); toast(e.folder ? 'Filed in ' + folderOf(e.folder).name : 'Taken out of its folder'); render(); }));
+  $('#en-newfolder', sh.el).addEventListener('click', () => { sh.close(); newFolder((f) => { e.folder = f.id; save(); render(); toast('Filed in ' + f.name); }); });
+  const th = $('#en-thread', sh.el); if (th) th.addEventListener('click', () => { sh.close(); continueThread(e.emoji); });
+  $('#en-del', sh.el).addEventListener('click', () => { if (!confirm('Delete this entry?')) return; S.entries = S.entries.filter((x) => x.id !== e.id); if (e.voice) keepDel(e.id).catch(() => null); save(); sh.close(); render(); });
 }
+function folderOf(id) { return S.folders.find((f) => f.id === id) || null; }
+function newFolder(then) {
+  const sh = sheet('<h2>A new folder</h2><p class="body">A person, a season, a place. Entries you file here stay easy to find.</p><input class="field" id="nf-name" placeholder="name the folder" maxlength="40" aria-label="folder name"><button class="btn mint" id="nf-go">Make the folder</button>', { autofocus: true });
+  $('#nf-go', sh.el).addEventListener('click', () => { const name = $('#nf-name', sh.el).value.trim(); if (!name) { toast('A name'); return; } const f = { id: newId('f'), name, made: today() }; S.folders.push(f); save(); sh.close(); if (then) then(f); else render(); });
+}
+function folderSheet(f) {
+  const es = S.entries.filter((e) => e.folder === f.id).slice().reverse();
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>📁</span></span><h2>' + esc(f.name) + '</h2><span class="kicker mint">' + plural(es.length, 'entry').replace('entrys', 'entries') + ' · since ' + esc(fmtDay(f.made)) + '</span></div>' +
+    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">Nothing filed here yet. Open any entry and choose this folder.</p>') +
+    '<div class="two"><input class="field" id="fo-name" value="' + esc(f.name) + '" maxlength="40" aria-label="folder name"><button class="btn" id="fo-save">Rename</button></div><div class="links"><button id="fo-del">Delete the folder</button></div><p class="cap">Deleting a folder keeps every entry; they simply leave the folder.</p>');
+  $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); }));
+  $('#fo-save', sh.el).addEventListener('click', () => { const n = $('#fo-name', sh.el).value.trim(); if (!n) return; f.name = n; save(); sh.close(); render(); toast('Renamed'); });
+  $('#fo-del', sh.el).addEventListener('click', () => { if (!confirm('Delete the folder "' + f.name + '"? The entries stay.')) return; S.entries.forEach((e) => { if (e.folder === f.id) e.folder = null; }); S.folders = S.folders.filter((x) => x.id !== f.id); save(); sh.close(); render(); });
+}
+function threadEntries(emoji) { const p = plantFor(emoji); return S.entries.filter((e) => e.emoji === emoji || (p && (e.emoji === p.emoji || e.emoji === face(p)))); }
+function threadSheet(emoji) {
+  const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const ph = phaseOf(d); const nx = nextPhase(d); const es = threadEntries(emoji).slice().reverse();
+  const sh = sheet('<div class="hero-sm"><span class="orb xl' + (p ? ' lit' : '') + '"><span>' + esc(p ? face(p) : emoji) + '</span></span><h2>' + esc(nameOf(emoji)) + '</h2><span class="kicker mint">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + '</span></div>' +
+    '<button class="btn mint wide" id="th-go">Continue this thread ' + esc(emoji) + '</button>' +
+    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">No words yet on this thread. Write about it today and the day counts.</p>'));
+  $('#th-go', sh.el).addEventListener('click', () => { sh.close(); continueThread(emoji); });
+  $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); }));
+}
+function continueThread(emoji) { draft.emoji = emoji; go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 80); }
+// ── milestones: the journal's own way of marking the road; never a score, never a comparison ──
+function daysInRow() {
+  const set = new Set(S.entries.map((e) => e.day)); let n = 0; const d = new Date();
+  const key = () => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  if (!set.has(key())) d.setDate(d.getDate() - 1);
+  while (set.has(key())) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+const careDays = () => S.plants.reduce((n, p) => n + daysOf(p), 0);
+const wordCount = () => S.entries.reduce((n, e) => n + (e.text || '').split(/\s+/).filter(Boolean).length, 0);
+const MILESTONES = [
+  ['first-entry', 'First entry', '✦', () => S.entries.length >= 1],
+  ['three-in-row', 'Three days in a row', '🌱', () => daysInRow() >= 3],
+  ['seven-in-row', 'Seven days in a row', '🌿', () => daysInRow() >= 7],
+  ['thirty-in-row', 'Thirty days in a row', '🌳', () => daysInRow() >= 30],
+  ['ten-entries', 'Ten entries', '📖', () => S.entries.length >= 10],
+  ['fifty-entries', 'Fifty entries', '📚', () => S.entries.length >= 50],
+  ['first-photo', 'A photo kept', '📷', () => S.entries.some((e) => e.photo)],
+  ['first-voice', 'Your voice kept', '🎙️', () => S.entries.some((e) => e.voice)],
+  ['first-folder', 'First folder', '📁', () => S.folders.length >= 1],
+  ['first-goal', 'A goal posted', '🎯', () => S.goals.length >= 1],
+  ['nurtured', 'A plant Nurtured', '💧', () => S.plants.some((p) => daysOf(p) >= 2)],
+  ['bloomed', 'A plant Bloomed', '🌸', () => S.plants.some((p) => daysOf(p) >= 9)],
+  ['ready', 'Ready to Give', '🎁', () => S.plants.some((p) => daysOf(p) >= 13)],
+  ['first-recipe', 'First recipe', '✨', () => Object.keys(S.made || {}).length >= 1],
+  ['first-gift', 'First gift given', '💝', () => S.gifts.given.length >= 1],
+  ['received', 'A gift received', '🌟', () => S.gifts.received.length >= 1],
+  ['care-30', 'Thirty days of care', '🕯️', () => careDays() >= 30],
+  ['care-100', 'A hundred days of care', '🔥', () => careDays() >= 100],
+];
+function checkMilestones() {
+  if (!S) return; const now = today(); const lit = [];
+  for (const [id, name, , test] of MILESTONES) { let ok = false; try { ok = test(); } catch (e) { ok = false; } if (!S.milestones[id] && ok) { S.milestones[id] = now; lit.push(name); } }
+  if (lit.length) { save(); setTimeout(() => toast('Milestone · ' + lit[0]), 600); }
+}
+function viewMilestones() {
+  const row = daysInRow(); const lit = MILESTONES.filter(([id]) => S.milestones[id]).length;
+  return '<div class="glass stats"><div><b>' + row + '</b><span>' + (row === 1 ? 'day in a row' : 'days in a row') + '</span></div><div><b>' + S.entries.length + '</b><span>' + (S.entries.length === 1 ? 'entry' : 'entries') + '</span></div><div><b>' + careDays() + '</b><span>days of care</span></div></div>' +
+    '<div class="glass stats"><div><b>' + wordCount() + '</b><span>words</span></div><div><b>' + S.plants.length + '</b><span>' + (S.plants.length === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + lit + '</b><span>of ' + MILESTONES.length + ' marks</span></div></div>' +
+    '<p class="cap">Milestones mark your own road. Nothing here compares you with anyone.</p>' +
+    '<div class="miles">' + MILESTONES.map(([id, name, ico]) => { const when = S.milestones[id]; return '<div class="glass mile' + (when ? ' lit' : '') + '"><span class="orb"><span>' + ico + '</span></span><span>' + esc(name) + '</span>' + (when ? '<span class="when">' + esc(fmtDay(when)) + '</span>' : '') + '</div>'; }).join('') + '</div>';
+}
+function viewThreads() {
+  const th = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)).map((p) => { const em = face(p); const es = threadEntries(p.emoji); const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d); const last = es[es.length - 1];
+    return '<button class="glass thread" data-thread="' + esc(p.emoji) + '"><span class="orb' + (d >= 9 ? ' lit' : '') + '"><span>' + esc(em) + '</span></span><span class="grow"><b>' + esc(nameOf(em)) + '</b><span class="cap">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + '</span>' + (last && last.text ? '<span class="line">' + esc(last.text) + '</span>' : '') + '</span><span class="arrow">›</span></button>'; }).join('');
+  return '<p class="cap">A thread is one emoji, followed through your days. Continue a thread and it grows.</p>' + (th ? '<div class="rows">' + th + '</div>' : '<p class="cap">Plant an emoji and its thread begins here.</p>');
+}
+function viewFolders() {
+  const fl = S.folders.map((f) => { const n = S.entries.filter((e) => e.folder === f.id).length; return '<button class="glass opt" data-folder="' + esc(f.id) + '"><span class="ico">📁</span><span class="grow"><b>' + esc(f.name) + '</b><span>' + plural(n, 'entry').replace('entrys', 'entries') + '</span></span><span class="arrow">›</span></button>'; }).join('');
+  return '<button class="btn wide" id="new-folder">+ New folder</button>' + (fl ? '<div class="rows">' + fl + '</div>' : '<p class="cap">Folders hold entries you want to find again: a person, a season, a place. Make one, then file entries into it from any entry.</p>');
+}
+
 function youSheet() {
   const col = C.copy.locked.colophon; const d = S.plants.reduce((n, p) => n + daysOf(p), 0);
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:88px;height:88px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>' + esc(S.name || 'You') + '</h2><span class="kicker mint">' + esc(S.entries.length + (S.entries.length === 1 ? ' entry' : ' entries') + ' · ' + plural(S.plants.length, 'plant') + ' · ' + plural(d, 'day') + ' of care') + '</span></div>' +
     '<input class="field" id="you-name" placeholder="your name, for the gifts you give" maxlength="40" aria-label="your name" value="' + esc(S.name || '') + '">' +
     '<div class="actions"><button class="btn" id="you-save">Save</button>' + (installEvt || /iphone|ipad|android/i.test(navigator.userAgent) ? '<button class="btn mint" id="you-install">Add Gratus to your phone</button>' : '') + '<button class="btn" id="you-laws">The twelve laws</button><button class="btn" id="you-export">Export everything</button><label class="btn" id="you-restore">Restore from a file<input type="file" id="you-file" accept="application/json,.json" hidden></label><button class="btn quiet" id="you-reset">Start over on this device</button></div>' +
-    '<div class="cap" style="display:grid;gap:4px;padding-top:8px"><b style="color:var(--ink)">' + esc(col.name) + '</b><span>' + esc(col.method) + '</span><span>' + esc(col.date) + ' · ' + esc(col.maker) + '</span><span style="color:var(--ink-2)">' + esc(col.words) + '</span><span style="color:var(--ink-2)">' + esc(col.close) + '</span><span><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span></div>');
+    '<div class="cap" style="display:grid;gap:4px;padding-top:8px"><b style="color:var(--ink)">' + esc(col.name) + '</b><span>' + esc(col.method) + '</span><span>' + esc(col.date) + ' · <a href="' + esc(col.makerUrl || '#') + '" target="_blank" rel="noopener">' + esc(col.maker) + '</a></span><span style="color:var(--ink-2)">' + esc(col.words) + '</span><span style="color:var(--ink-2)">' + esc(col.close) + '</span><span>Voice recordings stay on this device and are not in the export.</span><span><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span></div>');
   $('#you-save', sh.el).addEventListener('click', () => { S.name = $('#you-name', sh.el).value.trim(); save(); sh.close(); toast('Saved'); });
   const ins = $('#you-install', sh.el); if (ins) ins.addEventListener('click', () => { sh.close(); promptInstall(); });
   $('#you-laws', sh.el).addEventListener('click', () => { sh.close(); openLaws(); });
@@ -457,6 +557,35 @@ function toggleSound() { const a = $('#song'); S.sound = !S.sound; save(); if (S
 const SAY = /[.!?]$|^tap to|· tap to/i;
 function sayKickers() { document.querySelectorAll('.kicker:not(.say)').forEach((k) => { if (SAY.test(k.textContent.trim())) k.classList.add('say'); }); }
 new MutationObserver(sayKickers).observe(document.body, { childList: true, subtree: true });
+// ── the voice: a real recording, kept on the device, and its words through the Gratus voice service ──
+let rec = null, recChunks = [], recStart = 0, recTimer = 0, recStream = null;
+const fmtDur = (s) => Math.floor((s || 0) / 60) + ':' + pad2((s || 0) % 60);
+async function startRec(btn) {
+  try { recStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { toast('Gratus needs the microphone for a voice entry.'); return; }
+  const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'].find((m) => MediaRecorder.isTypeSupported(m)) || '';
+  try { rec = new MediaRecorder(recStream, mime ? { mimeType: mime } : undefined); } catch (e) { toast('Recording is not available here.'); recStream.getTracks().forEach((t) => t.stop()); return; }
+  recChunks = []; recStart = Date.now();
+  rec.ondataavailable = (ev) => { if (ev.data && ev.data.size) recChunks.push(ev.data); };
+  rec.onstop = () => {
+    const blob = new Blob(recChunks, { type: rec.mimeType || mime || 'audio/webm' }); const dur = Math.round((Date.now() - recStart) / 1000);
+    recStream.getTracks().forEach((t) => t.stop()); rec = null; clearTimeout(recTimer);
+    const b = $('#voice'); if (b) { b.classList.remove('on'); b.innerHTML = I.mic + ' Voice'; }
+    if (dur < 1 || !blob.size) { toast('Too short to keep.'); return; }
+    draft.voice = blob; draft.voiceDur = dur; showVoice(); transcribe(blob);
+  };
+  rec.start(); btn.classList.add('on'); btn.innerHTML = I.mic + ' Recording · tap to stop'; toast('Listening');
+  recTimer = setTimeout(stopRec, 120000);
+}
+function stopRec() { if (rec && rec.state !== 'inactive') rec.stop(); }
+function showVoice() { const v = $('#voiceprev'); if (!v) return; if (!draft.voice) { v.hidden = true; return; } v.hidden = false; const k = $('.kicker', v); if (k) k.textContent = 'Your voice · ' + fmtDur(draft.voiceDur); const a = $('#voice-audio', v); if (a) a.src = URL.createObjectURL(draft.voice); }
+async function transcribe(blob) {
+  toast('Listening back');
+  try {
+    const r = await fetch('/api/voice', { method: 'POST', headers: { 'Content-Type': blob.type || 'audio/webm', 'X-Gratus': 'voice' }, body: blob });
+    const j = r.ok ? await r.json() : null; const text = j && j.text; if (!text) throw new Error('no words');
+    const w = $('#write'); const cur = (w ? w.value : draft.text).trim(); draft.text = (cur + (cur ? ' ' : '') + text).trim(); if (w) w.value = draft.text; toast('Heard you');
+  } catch (e) { toast('Kept the recording. The words can come later.'); }
+}
 function splash(then) {
   const el = $('#splash'); if (!el) { then(); return; }
   let gone = false, started = false;
@@ -486,7 +615,9 @@ function wire() {
   $$('[data-tag]').forEach((b) => b.addEventListener('click', () => { const t = b.dataset.tag; draft.tags = draft.tags.includes(t) ? draft.tags.filter((x) => x !== t) : draft.tags.concat([t]); b.classList.toggle('on', draft.tags.includes(t)); }));
   const ta = $('#tag-any'); if (ta) ta.addEventListener('click', () => { const t = prompt('A tag'); if (t && t.trim()) { draft.tags.push(t.trim().slice(0, 24)); draft.text = $('#write') ? $('#write').value : draft.text; render(); } });
   const ph = $('#photo'); if (ph) ph.addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const img = new Image(); const url = URL.createObjectURL(f); img.onload = () => { const s = Math.min(1, 360 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); draft.photo = c.toDataURL('image/jpeg', .72); URL.revokeObjectURL(url); const pv = $('#photoprev'); pv.hidden = false; pv.innerHTML = '<img src="' + draft.photo + '" alt=""><button class="chip" id="photo-rm">remove</button>'; $('#photo-rm').addEventListener('click', () => { draft.photo = null; pv.hidden = true; pv.innerHTML = ''; }); }; img.src = url; });
-  const vc = $('#voice'); if (vc) vc.addEventListener('click', () => { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; const rec = new SR(); vc.classList.add('on'); rec.onresult = (ev) => { const s = Array.from(ev.results).map((x) => x[0].transcript).join(' '); const tw = $('#write'); tw.value = (tw.value ? tw.value + ' ' : '') + s; draft.text = tw.value; }; rec.onend = () => vc.classList.remove('on'); rec.onerror = () => vc.classList.remove('on'); try { rec.start(); } catch (e) { vc.classList.remove('on'); } });
+  const vc = $('#voice'); if (vc) vc.addEventListener('click', () => { if (rec) stopRec(); else startRec(vc); });
+  const vd = $('#voice-drop'); if (vd) vd.addEventListener('click', () => { draft.voice = null; draft.voiceDur = 0; showVoice(); });
+  if (draft.voice) showVoice();
   const pl = $('#plant'); if (pl) pl.addEventListener('click', plantNow);
   const gpst = $('#goal-post'); if (gpst) gpst.addEventListener('click', () => { const t = $('#goal-in').value.trim(); if (!t) { toast('A goal, in your words.'); return; } addGoal(t); });
   const gin = $('#goal-in'); if (gin) gin.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); $('#goal-post').click(); } });
@@ -506,6 +637,10 @@ function wire() {
   const ws = $('#wish-send'); if (ws) ws.addEventListener('click', () => { const t = $('#wish').value.trim(); if (!t) { toast('A wish, in your words.'); return; } S.wishes.push({ id: newId('w'), text: t.slice(0, 300), scope: wishScope, at: today() }); save(); render(); toast('Sent to tomorrow.'); });
   $$('[data-node]').forEach((b) => b.addEventListener('click', () => { const n = b.dataset.node; if (n === 'give') go('give'); else go('give', n); }));
   $$('[data-book]').forEach((b) => b.addEventListener('click', () => { bookTab = b.dataset.book; render(); }));
+  $$('[data-jt]').forEach((b) => b.addEventListener('click', () => { jTab = b.dataset.jt; render(); }));
+  $$('[data-thread]').forEach((b) => b.addEventListener('click', () => threadSheet(b.dataset.thread)));
+  $$('[data-folder]').forEach((b) => b.addEventListener('click', () => { const f = folderOf(b.dataset.folder); if (f) folderSheet(f); }));
+  const nf = $('#new-folder'); if (nf) nf.addEventListener('click', () => newFolder());
   $$('[data-arc]').forEach((b) => b.addEventListener('click', () => arcSheet(b.dataset.arc)));
   $$('[data-chain]').forEach((b) => b.addEventListener('click', () => { const ch = C.evo.chains.find((x) => x.id === b.dataset.chain); arcSheet(ch.stages[0].emoji); }));
   $$('[data-rcat]').forEach((b) => b.addEventListener('click', () => { recipeCat = b.dataset.rcat; render(); }));

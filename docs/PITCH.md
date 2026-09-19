@@ -38,6 +38,6 @@ The next moves are in [Gratus-Next-Moves.MD](../Gratus-Next-Moves.MD). In one li
 
 ## Colophon
 
-Gratus.CC · a Davara Distinct Bio-symbolic illuminate glow build · twelve laws, one new world · 9/2/2026 · August James Domanchuk
+Gratus.CC · a Davara Distinct Bio-symbolic illuminate glow build · twelve laws, one new world · 9/2/2026 · [@BuiltByAugust](https://x.com/BuiltByAugust)
 
 Journal Every Day. Give Gifts The Grow. Gratus In Motus. Gratitude In Motion. Give Gifts That Grow. Gratus Gives.

@@ -22,6 +22,7 @@ const RULES = [
   ['slack token', /\bxox[bpsa]-[A-Za-z0-9-]{10,}/, 'slack = xoxb-DECOYDECOYDECOY-1'],
   ['jwt', /\beyJ[A-Za-z0-9_-]{16,}\.eyJ[A-Za-z0-9_-]{16,}/, 'jwt eyJDECOYDECOYDECOYDECOY.eyJDECOYDECOYDECOYDECOY.sig'],
   ['anthropic key', /\bsk-ant-[A-Za-z0-9_-]{10,}/, 'ANTHROPIC_API_KEY=sk-ant-DECOYDECOYDECOY'],
+  ['elevenlabs key', /\bsk_[a-f0-9]{32,}\b/, 'ELEVENLABS_API_KEY=sk_0123456789abcdef0123456789abcdef01234567'],
   ['private relay name', /[Ss]emble[ -]?[Cc]ortex/, 'relay: SembleCortex'],
   ['tailscale funnel host', /[a-z0-9-]+\.ts\.net\b/, 'https://decoy-host.ts.net/oc'],
   ['personal home path', /\/home\/[a-z][a-z0-9_-]*\/|Users[\\/]Initi/, 'cd /home/initium/hermes-workspace'],

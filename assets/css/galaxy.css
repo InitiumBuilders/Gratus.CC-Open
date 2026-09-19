@@ -426,3 +426,54 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 
 /* the empty garden: the words stand on a dark pool, the scene stays around them */
 .garden .empty-note::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse 70% 62% at 50% 55%, rgba(5, 9, 18, .84) 0%, rgba(5, 9, 18, .6) 55%, rgba(5, 9, 18, 0) 100%); }
+
+/* ── v13 · the logo is the core: no plate, sitting in the bar; ring, aura, embers and the light around it, nothing cut ── */
+.tabs { height: calc(100px + var(--sab)); }
+.tabs .bar { height: 84px; margin-top: 16px; overflow: visible; }
+.tabs .star { align-content: center; padding: 0; gap: 0; }
+.tabs .star .core { width: 60px; height: 60px; margin: 0; border-radius: 27%; background: none; border: 0; box-shadow: none; overflow: visible; animation: corebreathe 5s ease-in-out infinite; }
+@keyframes corebreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.tabs .star .core img { width: 60px; height: 60px; border-radius: 27%; filter: drop-shadow(0 0 10px rgba(185, 255, 228, .8)) drop-shadow(0 0 26px rgba(255, 217, 138, .6)); animation: none; }
+.tabs .star.on .core img { filter: drop-shadow(0 0 12px rgba(185, 255, 228, .95)) drop-shadow(0 0 34px rgba(255, 217, 138, .78)); }
+.tabs .star .core .ring { inset: -7px; border-radius: 36%; padding: 2px; }
+.tabs .star .core .ring::after { border-radius: inherit; }
+.tabs .star .core::after { inset: -16px; border-radius: 42%; background: radial-gradient(circle, rgba(255, 217, 138, .4) 0%, rgba(185, 255, 228, .14) 52%, transparent 72%); }
+.tabs .star .core .aura { position: absolute; inset: -7px; border-radius: 36%; border: 1.5px solid rgba(255, 236, 190, .9); box-shadow: 0 0 14px rgba(255, 217, 138, .6), inset 0 0 14px rgba(255, 217, 138, .3); opacity: 0; pointer-events: none; animation: aura 4.6s ease-out infinite; }
+@keyframes aura { 0% { transform: scale(.94); opacity: .8; } 70% { opacity: .2; } 100% { transform: scale(1.55); opacity: 0; } }
+.tabs .star .core .embers i { top: 54%; }
+.tabs .star::before { top: 50%; width: 190px; height: 76px; }
+.tabs .star span.lbl { display: none; }
+#view { padding-bottom: calc(122px + var(--sab)); }
+.hero.home { padding-bottom: calc(150px + var(--sab)); }
+
+/* ── v13 · the scene on a desktop: the painting at its own size, on a wall of its own blurred light ── */
+#scene .layer { background: none; }
+#scene .layer .back, #scene .layer .fore { position: absolute; inset: 0; }
+#scene .layer .back { display: none; background: center 30% / cover no-repeat; }
+#scene .layer .fore { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; display: block; max-width: none; }
+@media (min-width: 1024px) {
+  #scene .layer .back { display: block; filter: blur(36px) brightness(.6) saturate(1.15); transform: scale(1.14); }
+  #scene .layer .fore { left: 50%; right: auto; width: auto; height: 100%; max-width: 100%; transform: translateX(-50%); object-fit: contain; object-position: center; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%); }
+  #view { max-width: 760px; }
+  .hero .statement { font-size: 52px; line-height: 1.08; }
+  .hero .pillform { max-width: 560px; }
+  .garden { height: 460px; }
+  .tabs .bar { width: min(100%, 560px); }
+}
+
+/* ── v13 · the journal's rooms: threads, folders, milestones; the voice ── */
+.thread { display: flex; align-items: center; gap: 12px; padding: 12px 14px; width: 100%; text-align: left; color: var(--ink); }
+.thread .grow { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.thread b { font-size: 19px; font-weight: 600; }
+.thread .line { font-size: 16px; line-height: 22px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thread .arrow { color: var(--violet-text); font-size: 20px; font-weight: 600; }
+.miles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.mile { display: grid; justify-items: center; align-content: start; gap: 6px; padding: 14px 8px; text-align: center; font-size: 14px; font-weight: 600; line-height: 18px; color: var(--ink); }
+.mile .orb { filter: grayscale(1) brightness(.75); }
+.mile.lit .orb { filter: none; box-shadow: var(--glow-gold); border-color: rgba(255, 217, 138, .6); }
+.mile .when { font-size: 14px; color: var(--violet-text); font-weight: 700; }
+.voiceprev { display: grid; gap: 8px; padding: 12px 14px; }
+.voiceprev audio { width: 100%; height: 40px; }
+#voice.on { background: rgba(255, 120, 120, .28); border-color: rgba(255, 150, 150, .7); color: #fff; }
+.actions { display: grid; gap: 10px; }
+.two { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
