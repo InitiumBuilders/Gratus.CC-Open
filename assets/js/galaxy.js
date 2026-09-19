@@ -962,7 +962,14 @@ let draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDu
 // would do to it, so the daily act has a stake. It counts care, never absence:
 // it says what a word does, never what not writing did.
 function standingBlock() {
-  if (!S.plants.length) return '';
+  if (!S.plants.length) {
+    const first = C.book.phases[0], next = C.book.phases[1];
+    return '<div class="glass card standing empty">' +
+      '<span class="stand-ring" style="--pct:0"><span class="stand-face">' + first.icon + '</span></span>' +
+      '<span class="stand-words"><span class="kicker gold">Nothing planted yet</span>' +
+      '<b>Your first word plants something.</b>' +
+      '<span class="cap">Pick an emoji to carry it. Write about it again on another day and it becomes ' + esc(next.name) + '.</span></span></div>';
+  }
   const rows = S.plants.map((p) => { const d = daysOf(p); return { p, d, nx: nextPhase(d), ph: phaseOf(d) }; });
   const moving = rows.filter((x) => x.nx).sort((a, b) => (a.nx.day - a.d) - (b.nx.day - b.d));
   const ready = rows.filter((x) => !x.nx);

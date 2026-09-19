@@ -2,6 +2,11 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v28 · The standing, before anything is standing (2026-09-19)
+
+- **Grow says what a first word does.** The standing showed nothing at all when the garden was empty, which hid it from the one person most likely to need it: someone opening the tab for the first time, with no reason to know that a word is a day of care on something rather than a note in a list.
+- The record of v27 was corrected. Setting the scroll position from a debugger in that browser pane dispatches no scroll event and drives no observation, so the observer it blamed was very likely fine. The replacement stands because its behaviour can be driven and read from outside.
+
 ## v27 · An effect you can prove is running (2026-09-19)
 
 - **Depth changed hands.** It watched a one pixel mark at the hero's end with an IntersectionObserver, and that observer was never once seen to deliver. It now reads the scroll position and compares it with a boolean, doing nothing at all when the boolean has not changed, which is almost every event. The effect is the same and it can be watched from outside.

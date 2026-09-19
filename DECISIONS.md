@@ -201,3 +201,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 
 ## v27 — AN EFFECT YOU CAN PROVE IS RUNNING (2026-09-19)
 147. **An effect nobody can prove is running has no business shipping.** The depth pass hung on an IntersectionObserver watching a one pixel mark inside a container that clips, and no observation was ever delivered. It was replaced with a passive scroll read that can be driven and measured from outside. Cheapness is worth less than being checkable.
+
+## v28 — THE STANDING, BEFORE ANYTHING IS STANDING (2026-09-19)
+148. **A panel that explains the thing hides itself from the person who needs explaining to.** The standing returned nothing when the garden was empty, so it never appeared for a first visit. It now stands at zero and says what a first word does.
+149. **A lesson about an instrument is not a lesson about the code.** v27 recorded that an observer never fired. The observer was very likely fine; the pane driving it dispatches no event for a scripted scroll. The record was corrected rather than quietly left standing, because a public repository that carries a wrong technical claim teaches it to whoever reads it next.

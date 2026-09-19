@@ -856,3 +856,7 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 .vibehead .actions { grid-auto-flow: row; grid-template-columns: 1fr 1fr; gap: 8px; }
 .vibehead .actions .btn { white-space: nowrap; }
 .vibehead .actions #vb-leave { grid-column: 1 / -1; }
+
+/* ═══ v28 · the standing, before anything is standing ═════════════════════ */
+.standing.empty .stand-ring { background: conic-gradient(rgba(255, 217, 138, .22) 0, rgba(255, 255, 255, .1) 0); }
+.standing.empty .stand-face { opacity: .92; }
