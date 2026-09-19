@@ -197,7 +197,7 @@ let vibeNow = null, vibeState = 'idle';
 // What a room holds is on the server; what you have read is on your device.
 // vibeCounts is the first half, x.seen the second, and the difference is the mark.
 // Six rooms at most per look, because this is a courtesy, not a service.
-let vibeCounts = null;
+let vibeCounts = null, vibeFresh = 0;
 const vibeUnread = (x) => { const n = vibeCounts && vibeCounts[x.code]; return typeof n === 'number' ? Math.max(0, n - (Number(x.seen) || 0)) : 0; };
 async function loadVibeCounts() {
   if (!S.vibes.length) return;
@@ -218,8 +218,12 @@ async function loadVibe(code, quiet) {
     const d = await r.json().catch(() => ({}));
     if (!r.ok || !d.vibe) throw new Error(d.error || 'no answer');
     vibeNow = d.vibe; vibeState = 'live';
-    const mine = S.vibes.find((v) => v.code === code); if (mine) { mine.name = d.vibe.name; mine.seen = Number(d.vibe.count) || 0; save(); }
-    if (vibeCounts) vibeCounts[code] = Number(d.vibe.count) || 0;
+    const mine = S.vibes.find((v) => v.code === code);
+    const count = Number(d.vibe.count) || 0;
+    // the first time you walk in, nothing here is new: it is simply the room
+    vibeFresh = mine && typeof mine.seen === 'number' ? Math.max(0, count - mine.seen) : 0;
+    if (mine) { mine.name = d.vibe.name; mine.seen = count; save(); }
+    if (vibeCounts) vibeCounts[code] = count;
   } catch (e) { vibeState = 'offline'; }
   if (sub === 'vibes') render();
 }
@@ -250,6 +254,7 @@ function viewVibes() {
       '<div class="pick">' + palette().slice(0, 8).map((e) => '<button class="orb" data-vpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
       '<button class="btn mint wide" id="vb-post">Say it ✦</button>' +
       '<p class="cap">Everyone with the code can read this. Write what you would say out loud in the room.</p></div>' +
+      (vibeFresh ? '<p class="vibeline"><i class="vibemark"></i>' + (vibeFresh === 1 ? 'One new word in the room.' : vibeFresh + ' new words in the room.') + '</p>' : '') +
       (v.posts.length ? '<div class="eyebrow"><h2>The room</h2><span class="more">' + v.posts.length + ' shown' + '</span></div><div class="rows">' +
         v.posts.map((p) => '<div class="glass vpost"><span class="orb sm"><span>' + esc(p.emoji) + '</span></span><span class="grow"><span class="kicker">' + esc(p.name) + ' · ' + esc(fmtDay(String(p.at).slice(0, 10))) + '</span><b>' + esc(p.text) + '</b></span></div>').join('') + '</div>'
         : '<p class="cap">Nobody has said anything here yet. Be the first; it makes the room exist.</p>') : '') +

@@ -173,3 +173,7 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 129. **A full-bleed fixed layer is one viewport wide, and a viewport includes the scrollbar.** That is where the landing page's fourteen extra pixels came from, and no card was at fault. The document clips its horizontal axis. The audit that finds real runaways measures elements against the client width directly, so the net can never hide the reading.
 130. **A frame waiting on a picture holds something.** A project's bloom on a soft ground, until the image arrives from IPFS and paints over it. An empty black rectangle is the worst thing a card can show.
 131. **A room can be returned to.** A Vibe carries a mark when it holds words you have not read: the count is the server's, the reading is the device's, and the difference is the mark. Not a notification, not a presence word, and it never says anything about how long you were away.
+
+## v22 — THE ROOM SAYS WHAT ARRIVED (2026-09-19)
+132. **A signal that the app itself consumes is not a signal.** The mark on a room could never appear for the first room, because arriving at Vibes opens that room and opening it marks it read. The room now states what arrived since the last look, and the mark stays for the rooms you are not in.
+133. **Nothing is new the first time.** A room you have just joined states no count; it is simply the room.

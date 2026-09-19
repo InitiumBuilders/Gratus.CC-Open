@@ -10,7 +10,7 @@ Everything on this list either makes that loop clearer, safer or faster to feel,
 
 ## The next big moves
 
-- ~~**A Vibe should let you know it is alive.**~~ Shipped in v21: a mark on the room and a line above the rooms when it holds words you have not read. What the room holds is on the server, what you have read is on your device, and the difference is the mark. Still open: it is read when you are looking at the Vibes room, not while you are elsewhere.
+- ~~**A Vibe should let you know it is alive.**~~ Shipped in v21: a mark on the room and a line above the rooms when it holds words you have not read. What the room holds is on the server, what you have read is on your device, and the difference is the mark. Completed in v22: the first room opens by itself, so the room itself counts what arrived since your last look. Still open: it is read when you are looking at the Vibes room, not while you are elsewhere.
 - **A Vibe's own Passage.** What the room grew together, as a link.
 
 

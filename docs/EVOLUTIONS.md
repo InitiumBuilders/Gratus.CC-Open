@@ -2,6 +2,11 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v22 · The room says what arrived (2026-09-19)
+
+- **The first room opens by itself when you arrive**, which marked it read before the mark on it could ever be seen. So the room says it instead: a line above the feed counting the words that arrived since your last look. The mark on a room's chip still stands for the rooms you are not in.
+- The first time you walk into a room, nothing in it is new. It is simply the room.
+
 ## v21 · Fourteen pixels, and a room that answers (2026-09-19)
 
 - **The landing page was 389 pixels wide inside a 375 pixel window.** Not a card: the fixed star layer, which is one viewport width, and a viewport width includes the scrollbar gutter. The document now clips its horizontal axis.
