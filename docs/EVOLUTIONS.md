@@ -2,6 +2,14 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v32 · The Return (2026-09-19)
+
+- **A gift can come back.** Giving has always been one way here. A gift travels inside its own link, grows in someone else's garden, and the person who gave it never finds out. The Return is the other half.
+- **It is offered, never taken.** Every gift link carries a random sixteen character number made on the giver's device. When the person who received the gift chooses to, one tap sends back that it landed, or that the plant reached a phase. Saying no is silent and final for that event, and nothing is ever sent on its own.
+- **What goes back is a phase and an emoji.** No name, no words, nothing from a journal, and the day rather than the clock. The giver's own note of who they gave it to never leaves their device, so the sentence they read is assembled out of one thing the server knows and one thing only their phone knows.
+- **The giver hears it.** A return arrives as a held screen and the chord as far as the phase it reached. You hear a chord that someone else's care completed, for a plant that is no longer yours.
+- Voice recordings are capped at two megabytes, down from six. The daily allowance bounds how often; this bounds how much each one costs.
+
 ## v31 · The sound reaches the last two rooms (2026-09-19)
 
 - **A Vibe sounds when your words land in it.** Saying a true thing out loud in a room is a keeping, so it sounds like one: the root alone. It was the only room in the app with nothing to hear.

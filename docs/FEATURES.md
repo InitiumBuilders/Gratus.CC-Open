@@ -49,6 +49,11 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Give to the World: Gratus Earth (heal places), Gratus Vault (a wish for tomorrow), Gratus World. Rooms exist; the data is imagined.
 - Gifts you gave and received, with links.
 
+## The Return
+
+- A gift you gave can tell you that it landed, and that it kept growing. The person who received it chooses, one tap per event, and never has to. What comes back is the phase and the emoji, and it arrives as a held screen with the chord as far as that phase.
+- It carries no name, no words and nothing from anyone's journal. Who you gave it to is a note on your own device and stays there.
+
 ## The Gratus Sound
 
 - Five phases, five notes of one chord, and the chord is built by the growing rather than by the app. A crossing sounds its note and every note under it. A bloom opens the chord. Giving plays it and lets it fall back to the root alone.

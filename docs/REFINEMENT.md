@@ -159,8 +159,8 @@ prompt in section 4 could not name a single habit it exists to remove.
 1. Rotate the ElevenLabs key. It was once pasted into a chat window, and a key
    that has been seen outside the environment is a key to replace. Moving the
    new one takes one `vercel env` call per project and it never touches a file.
-2. Cap voice uploads below six megabytes. The daily allowance shipped in v20
-   bounds how often, and nothing yet bounds how large.
+2. ~~Cap voice uploads below six megabytes.~~ Shipped in v32 at two megabytes,
+   about forty seconds of speech.
 3. Send the Giveth pitch. It has been written since v15 and sits in
    [GIVETH.md](GIVETH.md) section 5. The channels are their forum, their
    Discord, a GitHub discussion on `Giveth/impact-graph`, or their account on X.
@@ -171,9 +171,9 @@ prompt in section 4 could not name a single habit it exists to remove.
 4. ~~A room's own sound.~~ Shipped in v31. A Vibe sounds the root when your
    words land in it, and a Passage sounds the chord as far as the furthest
    plant in the garden it shows.
-5. A gift that reports back. Giving is the deepest act in the product and the
-   giver never learns that the thing kept growing. This is the loop with one
-   half missing, and closing it is the largest remaining move.
+5. ~~A gift that reports back.~~ Shipped in v32 as the Return. What is still
+   open is the second hop: a gift that is passed on rather than kept has no way
+   to tell the first giver that it travelled again.
 6. The project console still looks plainer than every room around it.
 7. Teach the slop gate one shape a grep can almost see: a one sentence paragraph
    that repeats a noun phrase from the paragraph above it.

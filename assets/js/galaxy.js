@@ -1069,7 +1069,7 @@ function plantNow() {
   else if (p && !crossed) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><h2>' + esc(ph.name + '.') + '</h2><p class="lead">' + esc(nameOf(after)) + ' · ' + esc(plural(d, 'day')) + '. ' + esc(ph.meaning) + '</p>' + (nextPhase(d) ? '<span class="kicker mint">' + esc(nextPhase(d).name + ' in ' + plural(nextPhase(d).day - d, 'day')) + '</span>' : '<span class="kicker gold">Ready to give</span>') + '<span class="kicker">tap to continue</span></div>');
   else if (!p) seq.push({ html: '<div class="cer"><span class="big">✦</span><h2>Kept.</h2><p class="lead">A moment of gratitude has a place now.</p><span class="kicker">tap to continue</span></div>', on: soundKept });
   for (const r of made) seq.push('<div class="cer"><span class="big">' + esc(r.result) + '</span><span class="kicker mint">' + esc(r.formula.join(' + ') + ' → ' + r.result) + '</span><h2>' + esc(r.name) + '</h2><p class="lead">' + esc(r.statement) + '</p><span class="kicker">a recipe came together · tap to continue</span></div>');
-  playCeremonies(seq, () => { go('gratus'); });
+  playCeremonies(seq, () => { go('gratus'); if (crossed && p) offerReturn(p, 'grew', ph.name); });
 }
 function playCeremonies(list, done) {
   const root = $('#ceremony'); let k = 0; let gate = motionOk();
@@ -1100,7 +1100,7 @@ function viewGive() {
     '<button class="glass opt" id="give-world"><span class="ico">' + I.globe + '</span><span class="grow"><b>Give to the World</b><span>Be part of a kinder, brighter planet.</span></span><span class="arrow">›</span></button>' +
     '<p class="statement quiet" style="text-align:center">“Give what grows.”</p></div>' +
     partnerCard() +
-    (S.gifts.given.length ? '<div class="eyebrow"><h2>Gifts you gave</h2></div><div class="rows">' + S.gifts.given.slice().reverse().slice(0, 4).map((g) => '<button class="glass opt" data-given="' + esc(g.id) + '"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>To ' + esc(g.to || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + '</span></span><span class="arrow">link</span></button>').join('') + '</div>' : '') +
+    (S.gifts.given.length ? '<div class="eyebrow"><h2>Gifts you gave</h2></div><div class="rows">' + S.gifts.given.slice().reverse().slice(0, 4).map((g) => '<button class="glass opt" data-given="' + esc(g.id) + '"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>To ' + esc(g.to || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + (Number(g.seen) ? ' · ' + esc(plural(Number(g.seen), 'word') + ' back') : '') + '</span></span><span class="arrow">link</span></button>').join('') + '</div>' : '') +
     '<p class="kicker" style="text-align:center">Give today. A brighter tomorrow.</p></div>';
 }
 function partnerCard() {
@@ -1297,11 +1297,99 @@ function addRecipeSheet() {
 // ── GIVING A GRATUS GIFT ──
 function encodeGift(g) { const bytes = new TextEncoder().encode(JSON.stringify(g)); let bin = ''; bytes.forEach((b) => { bin += String.fromCharCode(b); }); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 function decodeGift(code) { try { const bin = atob(code.replace(/-/g, '+').replace(/_/g, '/')); const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0)); return JSON.parse(new TextDecoder().decode(bytes)); } catch (e) { return null; } }
+// Sixteen hex characters made here, on this device, and shared with nobody but
+// whoever holds the gift link. It is the only thing the two sides of a gift have
+// in common, and it is a number, so it can never be read backwards into a person.
+function echoId() {
+  const a = new Uint8Array(8);
+  (window.crypto || window.msCrypto).getRandomValues(a);
+  return Array.from(a).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+const phaseByName = (name) => C.book.phases.findIndex((p) => p.name === name);
+// ═══ THE RETURN ═══
+//
+// A gift has always been one way. It travels inside its link, it grows in
+// someone else's garden, and the person who gave it never finds out. This is the
+// other half, and it is built so that it can only ever be offered, never taken:
+// every return is a tap the person receiving the gift chooses, once per event,
+// and saying no is silent and final for that event.
+//
+// What goes back is a phase and an emoji. No name, no words, nothing from a
+// journal. The giver's own note of who they gave it to never leaves their
+// device, so the sentence "the gift you gave to Sara reached Bloomed" is
+// assembled here, out of one thing the server knows and one thing only this
+// device knows.
+
+// the receiver, choosing
+function returnSheet(p, kind, phase) {
+  const who = p.from || 'them';
+  const mark = kind === 'landed' ? 'It landed' : 'It reached ' + phase;
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(face(p)) + '</span></span>' +
+    '<h2>Send a word back?</h2><span class="kicker mint">' + esc(mark) + '</span></div>' +
+    '<p class="body">' + esc(who) + ' gave this away and has no way of knowing what happened to it. One tap says ' +
+    esc(kind === 'landed' ? 'it arrived and you kept it' : 'it reached ' + phase) + '.</p>' +
+    '<p class="cap">It sends the phase and the emoji. It sends no name, no words, and nothing from your journal. If you would rather not, nothing is sent and you will not be asked about this again.</p>' +
+    '<div class="actions"><button class="btn mint" id="rt-yes">Tell ' + esc(who) + '</button><button class="btn quiet" id="rt-no">Not this time</button></div>');
+  const done = () => { (p.told = p.told || []).push(kind === 'landed' ? 'landed' : phase); save(); sh.close(); };
+  $('#rt-no', sh.el).addEventListener('click', done);
+  $('#rt-yes', sh.el).addEventListener('click', async () => {
+    const b = $('#rt-yes', sh.el); b.disabled = true; b.textContent = 'Sending...';
+    try {
+      await fetch('/api/echo', { method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ echo: p.echo, kind, phase: kind === 'landed' ? '' : phase, emoji: face(p) }) });
+      toast('Sent');
+    } catch (e) { toast('It could not be sent. The plant is still yours.'); }
+    done();
+  });
+}
+// offered once per event, and only for a plant that came from someone
+function offerReturn(p, kind, phase) {
+  if (!p || !p.echo || !p.from) return false;
+  const mark = kind === 'landed' ? 'landed' : phase;
+  if ((p.told || []).includes(mark)) return false;
+  setTimeout(() => returnSheet(p, kind, phase), 400);
+  return true;
+}
+
+// the giver, hearing it arrive
+async function checkReturns() {
+  const mine = S.gifts.given.filter((x) => x.echo).slice(-20);
+  if (!mine.length) return;
+  let got = {};
+  try {
+    const r = await fetch('/api/echo?ids=' + mine.map((x) => x.echo).join(','), { cache: 'no-store' });
+    if (!r.ok) return;
+    const d = await r.json(); got = d.returns || {};
+  } catch (e) { return; }
+  const seq = [];
+  for (const x of mine) {
+    const notes = got[x.echo]; if (!notes || !notes.length) continue;
+    const seen = Number(x.seen) || 0;
+    if (notes.length <= seen) continue;
+    for (const n of notes.slice(seen)) {
+      const who = x.to || 'someone';
+      const landed = n.kind === 'landed';
+      const i = landed ? -1 : phaseByName(n.phase);
+      seq.push({
+        html: '<div class="cer cross"><span class="big">' + esc(n.emoji || x.emoji) + '</span>' +
+          '<span class="kicker gold">' + esc('The gift you gave to ' + who) + '</span>' +
+          '<h2>' + esc(landed ? 'It landed.' : n.phase + '.') + '</h2>' +
+          '<p class="lead">' + esc(landed ? 'It arrived, and they kept it.' : 'It is still growing, in a garden that is not yours.') + '</p>' +
+          '<span class="kicker">tap to continue</span></div>',
+        on: () => (landed || i < 0 ? soundKept() : soundPhase(i)),
+      });
+    }
+    x.seen = notes.length;
+  }
+  if (!seq.length) return;
+  save();
+  playCeremonies(seq, () => render());
+}
 function buildGift(p, to, from, message) {
   const d = daysOf(p); const kept = (p.kept || []).slice().sort(); const mine = S.entries.filter((e) => e.emoji === p.emoji || e.emoji === face(p));
   const journey = C.book.phases.filter((ph) => ph.day <= d).map((ph) => { const day = kept[Math.min(kept.length - 1, ph.day)] || p.planted; const en = mine.find((e) => e.day === day && e.text); return { phase: ph.name, icon: ph.icon, day, line: en ? en.text.split('\n')[0].slice(0, 90) : null }; });
   const tags = []; for (const e of mine) for (const t of e.tags || []) if (!tags.includes(t)) tags.push(t);
-  return { v: 1, id: newId('gift'), emoji: face(p), seed: p.emoji, days: d, from: from || 'Someone', to: to || '', message: message || '', at: today(), journey, reflections: mine.length, acts: tags.length, tags: tags.slice(0, 4) };
+  return { v: 1, id: newId('gift'), e: echoId(), emoji: face(p), seed: p.emoji, days: d, from: from || 'Someone', to: to || '', message: message || '', at: today(), journey, reflections: mine.length, acts: tags.length, tags: tags.slice(0, 4) };
 }
 function giveSheet(pre) {
   const plants = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)); if (!plants.length) { toast('Plant something first. A gift is grown.'); go('grow'); return; }
@@ -1312,7 +1400,7 @@ function giveSheet(pre) {
   $('#g-wrap', sh.el).addEventListener('click', () => {
     const to = $('#g-to', sh.el).value.trim(), msg = $('#g-msg', sh.el).value.trim(), from = $('#g-from', sh.el).value.trim(); if (!msg) { toast('A few words for them.'); return; }
     const g = buildGift(chosen, to, from, msg); const link = location.origin + '/gift#' + encodeGift(g);
-    S.gifts.given.push({ id: g.id, emoji: g.emoji, to, at: today(), days: g.days, link }); S.name = from || S.name; save(); soundGiven(); sh.close();
+    S.gifts.given.push({ id: g.id, echo: g.e, seen: 0, emoji: g.emoji, to, at: today(), days: g.days, link }); S.name = from || S.name; save(); soundGiven(); sh.close();
     playCeremonies(['<div class="cer"><span class="big">' + esc(g.emoji) + '</span><h2>Wrapped.</h2><p class="lead">' + esc(plural(g.days, 'day')) + ' of gratitude, for ' + esc(to || 'someone') + '. Share the link; the journey opens on their phone.</p><span class="kicker">tap to share</span></div>'], () => shareSheet(S.gifts.given[S.gifts.given.length - 1]));
   });
 }
@@ -1353,9 +1441,10 @@ function renderJourney() {
 function saveGift() {
   const { g, choice, o } = room; if (o.preview) { toast('This is your own gift, previewed.'); return; }
   if (S.gifts.received.some((x) => x.id === g.id)) return;
-  S.gifts.received.push({ id: g.id, emoji: g.emoji, from: g.from, at: today(), days: g.days, message: g.message, choice });
-  if (!plantFor(g.seed)) S.plants.push({ id: newId('p'), emoji: g.seed, planted: today(), kept: [today()], carried: g.days, origin: 'gift', from: g.from, private: choice === 'private' });
+  S.gifts.received.push({ id: g.id, echo: g.e || null, emoji: g.emoji, from: g.from, at: today(), days: g.days, message: g.message, choice });
+  if (!plantFor(g.seed)) S.plants.push({ id: newId('p'), emoji: g.seed, planted: today(), kept: [today()], carried: g.days, origin: 'gift', from: g.from, echo: g.e || null, told: [], private: choice === 'private' });
   save(); toast(choice === 'private' ? 'Kept, privately.' : 'In your garden.');
+  offerReturn(plantFor(g.seed), 'landed', '');
 }
 
 // ── sheets: entries, you, the laws ──
@@ -1719,7 +1808,7 @@ async function boot() {
   const isPassage = location.pathname === '/passage';
   const projPage = /^\/p\/([a-z0-9:-]+)/.exec(location.pathname);
   try { const k = JSON.parse(localStorage.getItem(GVK) || 'null'); if (k) { conSlug = k.slug || ''; conKey = k.key || ''; } } catch (e) {}
-  const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000);
+  const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000); setTimeout(checkReturns, 2600);
     if (isPassage) { const c = location.hash.replace(/^#/, ''); const g = c ? decodeGift(c) : null; if (g) { openPassage(g, false); return; } toast('That Passage link is incomplete.'); }
     if (projPage) { openProjectPage(projPage[1]); return; }
     const vc = new URLSearchParams(location.search).get('code');

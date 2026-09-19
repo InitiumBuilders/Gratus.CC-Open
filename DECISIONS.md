@@ -220,3 +220,10 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 ## v31 · THE SOUND REACHES THE LAST TWO ROOMS (2026-09-19)
 157. **Saying a true thing in a room is a keeping, so it sounds like one.** The root alone, the same note a kept word plays in the garden. The law that nothing sounds on an ordinary tap still holds, because this is not navigation.
 158. **A Passage sounds the chord as far as the furthest plant it shows.** What grew is the whole point of the page, and the chord is how this app says what grew. From a shared link it is silent, because the browser has had no gesture, and arriving somewhere you were invited should be quiet anyway.
+
+## v32 · THE RETURN (2026-09-19)
+159. **A gift may come back, and it may only ever be offered.** Every return is a tap the person who received the gift chooses, once per event. Saying no is silent and final for that event, and nothing is sent on its own. A delivery receipt would have been easier and it would have turned a gift into surveillance.
+160. **What travels back is a phase and an emoji.** No name, no words, no journal, and the day rather than the clock. When someone tapped is their business.
+161. **The name is assembled on the phone, never on the server.** The giver typed who they gave it to, and that note never leaves their device. The store holds a phase against a random number and nothing in it can be read backwards into a person.
+162. **The giver hears the chord for a plant that is no longer theirs.** This is the deepest thing the sound can do and it was the reason to build the sound at all.
+163. **A recording is capped at two megabytes, not six.** The daily allowance bounds how often a device transcribes; this bounds what each one costs. A cap only a very long recording can reach is not a cap.

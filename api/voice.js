@@ -47,7 +47,10 @@ async function reserve(req) {
 }
 
 const ORIGINS = ['https://www.gratus.cc', 'https://gratus.cc', 'https://gratus-in-motus.vercel.app', 'https://grow-gratus-cc.vercel.app'];
-const MAX = 6_000_000; // about two minutes of opus
+// About forty seconds of opus. The daily allowance bounds how often a device may
+// transcribe; this bounds how much each one costs. A gratitude entry spoken aloud
+// is short, and a cap that only a very long recording can reach is not a cap.
+const MAX = 2_000_000;
 
 function fromGratus(req) {
   const o = req.headers.origin || '';
