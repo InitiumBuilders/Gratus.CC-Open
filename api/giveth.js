@@ -24,8 +24,10 @@ const ONE = `query($slug:String!){
     countUniqueDonors totalReactions categories{ name mainCategory{ title } } adminUser{ name }
     addresses{ networkId chainType isRecipient } }
 }`;
-const SIMILAR = `query($slug:String,$take:Int){
-  similarProjectsBySlug(slug:$slug, take:$take){
+// their similarProjectsBySlug refuses a variable-typed slug, so it is inlined through a strict sanitiser
+const safeSlug = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9:-]/g, '').slice(0, 120);
+const SIMILAR = (slug, take) => `{
+  similarProjectsBySlug(slug:"${slug}", take:${take}){
     projects{ id title slug verified isGivbackEligible descriptionSummary image totalDonations countUniqueDonors
       categories{ name mainCategory{ title } } }
   }
@@ -100,7 +102,7 @@ export default async function handler(req, res) {
     if (q === 'similar') {
       const slug = String(req.query.slug || '').slice(0, 120);
       if (!slug) { res.status(400).json({ error: 'a slug' }); return; }
-      const d = await ask(SIMILAR, { slug, take: 6 });
+      const d = await ask(SIMILAR(safeSlug(slug), 6));
       res.status(200).json({ projects: ((d.similarProjectsBySlug || {}).projects || []).map(trim) });
       return;
     }
