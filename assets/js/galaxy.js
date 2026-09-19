@@ -173,6 +173,13 @@ function viewGuides() {
     '<div class="loopline">' + [['✍️', 'Write', 'One honest line about today.'], ['🌱', 'Plant', 'An emoji carries it.'], ['↩︎', 'Return', 'It grows on the days you write about it.'], ['✨', 'Make', 'Two threads together make a recipe.'], ['🎁', 'Give', 'When it is ready, it can leave your hands.']].map(([i2, n, l]) => '<div class="loopstep"><span class="ls-ico">' + i2 + '</span><b>' + n + '</b><span>' + l + '</span></div>').join('<i class="ls-join" aria-hidden="true"></i>') + '</div>' +
     '<div class="eyebrow"><h2>How a Gratus grows</h2></div>' +
     '<div class="rows">' + ph.map((p, k) => '<div class="glass phase"><span class="ico' + (k === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.meaning) + '</span></span><span class="day">day ' + p.day + '</span></div>').join('') + '</div>' +
+    '<div class="eyebrow"><h2>The Gratus Sound</h2><span class="more">five notes</span></div>' +
+    '<div class="glass card"><p class="body">The five phases are five notes of one chord. Planted is the root. Nurtured is the fifth above it, Deepened the octave, Bloomed the third above that, and Ready to Give the fifth above that. When a plant crosses into a phase you hear its note and every note underneath it, so the chord is built by the growing. Giving plays the whole chord and lets it fall back to the root, which is what you are left holding.</p>' +
+    '<div class="notes">' + ph.map((p, k) => '<button class="chip note" data-note="' + k + '">' + p.icon + ' ' + esc(p.name) + '<i>' + esc(TONE_NAMES[k] || '') + '</i></button>').join('') + '</div>' +
+    '<button class="btn mint wide" data-note="given">Hear what giving sounds like</button>' +
+    (S.sound ? '<p class="cap">Tap one to hear the chord as far as that phase. Nothing here sounds on an ordinary tap; only a crossing, a bloom, a keeping and a giving.</p>'
+             : '<p class="cap">The sound is off right now. The switch is at the top of the screen.</p>') +
+    '</div>' +
     '<div class="eyebrow"><h2>What we promise</h2></div>' +
     '<div class="rows">' +
     guide('🔒', 'Your journal never leaves this device.', 'Not to us, not to anyone. The only things that travel are what you choose to give: a gift, a goal, a seed, a vibe.') +
@@ -228,6 +235,29 @@ async function loadVibe(code, quiet) {
   if (sub === 'vibes') render();
 }
 const unreadRooms = () => S.vibes.filter((x) => vibeUnread(x) > 0).length;
+// the emojis people used in a room, most said first. It is a tally of what was
+// said, never a ranking of who said it.
+function roomField(posts) {
+  const tally = {};
+  (posts || []).forEach((p) => { const e = p.emoji || '✦'; tally[e] = (tally[e] || 0) + 1; });
+  return Object.keys(tally).map((e) => [e, tally[e]]).sort((a, b) => b[1] - a[1]).slice(0, 14);
+}
+// A room's Passage carries its SHAPE and nothing else: no code, so it cannot let
+// anyone in, and no words, so it cannot carry what was said. The code is shared
+// deliberately or not at all.
+function vibePassageOf(v) {
+  return { v: 1, k: 'vibe', n: (v.name || '').slice(0, 40), e: v.emoji || '✦', at: today(),
+    c: [v.count || 0, v.voices || 0], f: roomField(v.posts) };
+}
+function vibePassageSheet(v) {
+  const link = location.origin + '/passage#' + encodeGift(vibePassageOf(v));
+  const sh = sheet('<div class="hero-sm"><span class="orb xl lit"><span>' + esc(v.emoji || '✦') + '</span></span><h2>' + esc(v.name) + '</h2><span class="kicker mint">A room, seen from outside</span></div>' +
+    '<p class="body">This link shows what the room grew: how many said something, how many voices, and the emojis they used. It carries <b>no code</b>, so it cannot let anyone in, and <b>not one word</b> of what was said.</p>' +
+    '<div class="actions"><button class="btn mint" id="vp-share">Share what grew</button><button class="btn" id="vp-see">See it first</button></div>' +
+    '<p class="cap">To let someone into the room, share the code instead. That is a separate thing you do on purpose.</p>');
+  $('#vp-share', sh.el).addEventListener('click', () => shareOrCopy(v.name, 'What this room grew.', link).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
+  $('#vp-see', sh.el).addEventListener('click', () => { sh.close(); openPassage(vibePassageOf(v), true); });
+}
 function viewVibes() {
   const v = vibeNow;
   if (vibeCounts === null && S.vibes.length) loadVibeCounts();
@@ -248,7 +278,8 @@ function viewVibes() {
     (vibeState === 'offline' && !v ? '<p class="cap">No vibe answered on that code. Check it and try again.</p>' : '') +
     (v ? '<div class="glass card vibehead"><span class="v-ico">' + esc(v.emoji) + '</span><div><b>' + esc(v.name) + '</b>' + (v.about ? '<span class="body">' + esc(v.about) + '</span>' : '') +
         '<span class="cap">' + plural(v.count, 'gratitude') + ' · ' + plural(v.voices, 'voice') + ' · code <b class="mono">' + esc(v.code) + '</b></span></div>' +
-        '<div class="actions"><button class="btn sm" id="vb-share">Share the code</button><button class="btn sm quiet" id="vb-leave">Leave this room</button></div></div>' +
+        '<div class="actions"><button class="btn sm" id="vb-share">Share the code</button><button class="btn sm" id="vb-passage">Share what grew</button><button class="btn sm quiet" id="vb-leave">Leave this room</button></div></div>' +
+      (roomField(v.posts).length ? '<div class="eyebrow"><h2>What this room grew</h2><span class="more">' + plural(roomField(v.posts).length, 'kind') + '</span></div><div class="roomfield">' + roomField(v.posts).map((x) => '<span class="rf"><span class="orb sm"><span>' + esc(x[0]) + '</span></span><b>' + x[1] + '</b></span>').join('') + '</div>' : '') +
       '<div class="glass card"><span class="kicker mint">Say one true thing</span>' +
       '<textarea class="field" id="vb-text" rows="2" maxlength="280" placeholder="What are you grateful for, right now..." aria-label="your gratitude"></textarea>' +
       '<div class="pick">' + palette().slice(0, 8).map((e) => '<button class="orb" data-vpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
@@ -287,6 +318,23 @@ function makeVibeSheet() {
   });
 }
 // ══ THE PASSAGE · what a garden looks like from outside. Never a word of the journal. ══════════
+function openRoomPassage(g, mine) {
+  const root = $('#room'); if (!root) return;
+  root.innerHTML = '<div class="room-page passage">' + art(scene('vibes', 1)) +
+    '<div class="rhead"><span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="pa-x" aria-label="close">✕</button></div>' +
+    '<div class="rbody">' +
+    '<span class="kicker mint">A Gratus Vibe</span>' +
+    '<h1>' + esc(g.n || 'A room') + '</h1>' +
+    '<div class="glass stats"><div><b>' + (g.c[0] || 0) + '</b><span>' + (g.c[0] === 1 ? 'gratitude' : 'gratitudes') + '</span></div><div><b>' + (g.c[1] || 0) + '</b><span>' + (g.c[1] === 1 ? 'voice' : 'voices') + '</span></div></div>' +
+    (g.f && g.f.length ? '<span class="kicker mint">What it grew</span><div class="roomfield">' + g.f.map((x) => '<span class="rf"><span class="orb sm"><span>' + esc(x[0]) + '</span></span><b>' + (x[1] || 0) + '</b></span>').join('') + '</div>' : '') +
+    '<p class="cap">No code is in this page, so it cannot let anyone into the room, and not one word of what was said is here either.</p>' +
+    (mine ? '' : '<a class="btn mint wide" href="/app/vibes">Start a room of your own ✦</a>') +
+    '<p class="statement quiet" style="text-align:center">“Gratus means honor.”</p>' +
+    '</div></div>';
+  root.hidden = false; document.body.classList.add('room');
+  const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/passage') history.replaceState(null, '', '/app'); };
+  $('#pa-x', root).addEventListener('click', close);
+}
 function passageOf() {
   const plants = S.plants.filter((p) => !p.private).slice().sort((a, b) => daysOf(b) - daysOf(a)).slice(0, 40);
   return {
@@ -309,6 +357,7 @@ function passageSheet() {
   $('#pa-see', sh.el).addEventListener('click', () => { sh.close(); openPassage(passageOf(), true); });
 }
 function openPassage(g, mine) {
+  if (g && g.k === 'vibe') return openRoomPassage(g, mine);
   const root = $('#room'); if (!root) return;
   const phase = (d) => phaseOf(d).name;
   root.innerHTML = '<div class="room-page passage">' + art(scene('journey', 3)) +
@@ -969,15 +1018,16 @@ function plantNow() {
   const seq = [];
   if (crossed) seq.push({
     html: '<div class="cer cross"><span class="big">' + esc(after) + '</span>' +
-      '<span class="kicker gold">' + esc(nameOf(after)) + ' has crossed</span>' +
+      '<span class="kicker gold">' + esc(nameOf(after)) + (phNow === 0 ? ' begins' : ' has crossed') + '</span>' +
       '<h2>' + esc(ph.name) + '.</h2>' +
       '<p class="lead">' + esc(ph.meaning) + '</p>' +
       '<span class="kicker mint">' + esc(plural(d, 'day') + ' of care \u00b7 ' + TONE_NAMES[Math.min(phNow, TONE_NAMES.length - 1)]) + '</span>' +
       '<span class="kicker">tap to continue</span></div>',
     on: () => soundPhase(phNow),
   });
+  // a crossing already said the phase; saying it twice makes the moment ordinary
   if (p && before && after !== before) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><span class="kicker mint">' + esc(before + ' → ' + after) + '</span><h2>' + esc(nameOf(after)) + '</h2><p class="lead">' + esc((E.stage(p.emoji, d, C.evo) || {}).line || '') + '</p><span class="kicker">tap to continue</span></div>');
-  else if (p) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><h2>' + esc(isNew ? 'Planted.' : ph.name + '.') + '</h2><p class="lead">' + esc(nameOf(after)) + ' · ' + esc(plural(d, 'day')) + '. ' + esc(ph.meaning) + '</p>' + (nextPhase(d) ? '<span class="kicker mint">' + esc(nextPhase(d).name + ' in ' + plural(nextPhase(d).day - d, 'day')) + '</span>' : '<span class="kicker gold">Ready to give</span>') + '<span class="kicker">tap to continue</span></div>');
+  else if (p && !crossed) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><h2>' + esc(ph.name + '.') + '</h2><p class="lead">' + esc(nameOf(after)) + ' · ' + esc(plural(d, 'day')) + '. ' + esc(ph.meaning) + '</p>' + (nextPhase(d) ? '<span class="kicker mint">' + esc(nextPhase(d).name + ' in ' + plural(nextPhase(d).day - d, 'day')) + '</span>' : '<span class="kicker gold">Ready to give</span>') + '<span class="kicker">tap to continue</span></div>');
   else seq.push({ html: '<div class="cer"><span class="big">✦</span><h2>Kept.</h2><p class="lead">A moment of gratitude has a place now.</p><span class="kicker">tap to continue</span></div>', on: soundKept });
   for (const r of made) seq.push('<div class="cer"><span class="big">' + esc(r.result) + '</span><span class="kicker mint">' + esc(r.formula.join(' + ') + ' → ' + r.result) + '</span><h2>' + esc(r.name) + '</h2><p class="lead">' + esc(r.statement) + '</p><span class="kicker">a recipe came together · tap to continue</span></div>');
   playCeremonies(seq, () => { go('gratus'); });
@@ -1584,6 +1634,8 @@ function wire() {
     on('#gd-write', () => quickWrite()); on('#gd-book', () => go('gratus', 'book')); on('#gd-vibes', () => go('gratus', 'vibes'));
     on('#gd-giveth', () => go('give', 'giveth')); on('#gd-laws', openLaws); }
   $$('[data-vopen]').forEach((b) => b.addEventListener('click', () => loadVibe(b.dataset.vopen)));
+  $$('[data-note]').forEach((b) => b.addEventListener('click', () => { const v = b.dataset.note; if (v === 'given') soundGiven(); else soundPhase(Number(v)); }));
+  { const vp = $('#vb-passage'); if (vp && vibeNow) vp.addEventListener('click', () => vibePassageSheet(vibeNow)); }
   { const mk = $('#vb-make'); if (mk) mk.addEventListener('click', makeVibeSheet);
     const jn = $('#vb-join'); if (jn) jn.addEventListener('click', () => { const c = ($('#vb-code').value || '').trim().toUpperCase(); if (!c) { toast('A code.'); return; } if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '✦' }); save(); } loadVibe(c); });
     const sv = $('#vb-share'); if (sv && vibeNow) sv.addEventListener('click', () => shareOrCopy('Come into ' + vibeNow.name, 'A Gratus Vibe. The code is ' + vibeNow.code, location.origin + '/app/vibes?code=' + vibeNow.code).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));

@@ -813,3 +813,13 @@ html { overflow-x: clip; }
 /* THE CROSSING · the one card in the app that is allowed to be loud */
 .cer.cross .big { filter: drop-shadow(0 0 30px rgba(255, 217, 138, .55)); }
 .cer.cross h2 { color: #FFE9B0; }
+
+/* ═══ v24 · the sound made learnable, and a room with a face ══════════════ */
+
+.notes { display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0 4px; }
+.chip.note { min-height: 46px; flex-direction: column; align-items: flex-start; gap: 0; padding: 6px 13px; line-height: 19px; }
+.chip.note i { font-style: normal; font-size: 12px; line-height: 15px; font-weight: 600; color: #FFD98A; }
+
+.roomfield { display: flex; flex-wrap: wrap; gap: 10px; padding: 2px 0; }
+.rf { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px 5px 5px; border-radius: 999px; background: rgba(5, 9, 18, .55); border: 1px solid var(--hair); }
+.rf b { font-family: var(--display); font-size: 19px; line-height: 20px; font-weight: 600; color: #FFE9B0; }

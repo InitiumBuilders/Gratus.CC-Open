@@ -2,6 +2,13 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v24 · The sound made learnable, and a room with a face (2026-09-19)
+
+- **The Gratus Sound has a page.** Guides now says what the five notes mean and lets you hear the chord as far as any phase, so the grammar can be learned rather than only felt.
+- **A crossing no longer repeats itself.** The held card said the phase and then an ordinary card said it again, which made the moment ordinary. The crossing now replaces that card instead of preceding it. The first phase of a new plant says it begins, because nothing has been crossed yet.
+- **A room has a face.** A Vibe shows the emojis people used in it, most said first. It is a tally of what was said, never a ranking of who said it.
+- **A room can be shown without being opened.** A Vibe's Passage carries its shape: how many said something, how many voices, and what it grew. It carries no code, so it cannot let anyone in, and not one word of what was said. Letting someone in stays a separate thing you do on purpose.
+
 ## v23 · The Gratus Sound, the crossing, and the frame (2026-09-19)
 
 - **A picture is shown at its own shape.** Sixty real Giveth images were measured first: none portrait, a tenth square, nearly half between 1.35 and 2.6, a third near 3, a few as wide as 7 to 1. No single band could serve them, which is why cropping cut the subject out and fitting left a black moat. The band now takes each picture's own shape, clamped to what a card can hold, and fills it. Between 1.2 and 3.2 that is an exact fit: nothing cropped, nothing empty.

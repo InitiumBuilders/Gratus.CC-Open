@@ -51,6 +51,10 @@ Planting, reaching a phase, making a recipe and harvesting each open through the
 
 `api/vibes.js` keeps one JSON document per room in Vercel Blob at `gratus/vibes/<code>.json`: a name, a line about it, a mark, and the posts. A code is six characters from a 32-letter alphabet with no ambiguous glyphs, because it is read aloud and typed by hand. `make` returns the code and a keeper key, shown once, whose sha-256 is stored; the keeper can take a post down. `post` writes a short gratitude with a name and an emoji, capped at 400 a day and 400 kept, with a two-minute dedupe. On the device, `S.vibes` holds the rooms a person has joined, each with a `seen` count: what the room holds is on the server, what you have read is on your device, and the difference is the mark that says a room has words you have not read. At most six rooms are asked at a time, because this is a courtesy and not a service. A vibe link is `/app/vibes?code=XXXXXX`.
 
+## A room's Passage
+
+`vibePassageOf()` encodes a Vibe's shape into the link exactly as a garden's Passage does: the name, the mark, how many said something, how many voices, and the emoji tally from `roomField()`. It deliberately carries neither the code nor the words. A room's code is the only thing that grants entry, so a page that showed what a room grew and also carried its code would open the room to anyone the page reached. Sharing what grew and letting someone in are two separate acts, and the sheet says so.
+
 ## The Passage
 
 `/passage#<code>` shows a garden from outside. The whole page is base64url-encoded into the link, exactly like a Gratus Gift: the name, each plant's emoji and day count and dedication, the seeds that bloomed, the milestones and the alchemy marks, and four counts. **No journal text is ever included**, and nothing is uploaded, so there is nothing to delete later; the link simply stops being shared.

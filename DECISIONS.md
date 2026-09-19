@@ -183,3 +183,9 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 135. **The five phases are five notes of one chord.** Planted is the root, Nurtured the fifth, Deepened the octave, Bloomed the third above, Ready to Give the fifth above. A crossing sounds its note and everything under it, so the chord is built by the growing rather than played at it. This is the meaning made audible, not decoration laid on top.
 136. **Giving falls back to the root.** The chord plays from the top down and the root is what is left. What remains after you give is the thing you started with.
 137. **The sound is synthesised, never recorded.** It carries no bytes, it cannot fail to load, it can be retuned by changing a number, and it is silent the moment the one sound switch is off. It never sounds on an ordinary tap: only a crossing, a bloom, a keeping and a giving.
+
+## v24 — THE SOUND MADE LEARNABLE, AND A ROOM WITH A FACE (2026-09-19)
+138. **A held moment is held once.** The crossing card said the phase and an ordinary card said it again straight after. Saying a thing twice is how a moment becomes ordinary, so the crossing replaces that card rather than preceding it.
+139. **A meaning you cannot learn is decoration.** The five notes are in Guides with what each one is, and any of them can be heard on a tap. A grammar nobody can read is not a grammar.
+140. **A room's Passage carries no code and no words.** Showing what a room grew and letting someone into it are separate acts. A page that did both would open the room to everyone it ever reached.
+141. **A tally is not a ranking.** A room shows which emojis were used and how often. It never shows who, and it never orders people.
