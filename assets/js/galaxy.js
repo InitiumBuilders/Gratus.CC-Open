@@ -148,7 +148,7 @@ function render() {
   else if (tab === 'grow') s = topBar() + viewGrow();
   else if (tab === 'give') s = topBar() + viewGive();
   else s = viewGratus();
-  root.innerHTML = s; choreograph();
+  root.innerHTML = s; choreograph(); frameArt(root);
   if (tab === 'gratus' && !sub) { const t = $('.top'); if (t) t.querySelector('.left').style.visibility = 'hidden'; }
   $$('.tabs button[data-tab]').forEach((b) => { b.classList.toggle('on', b.dataset.tab === tab && !sub); });
   const back = $('#top-back'); if (back) back.addEventListener('click', () => go(sub === 'vault' || sub === 'earth' ? 'give' : tab, sub === 'vault' || sub === 'earth' ? 'world' : null));
@@ -450,6 +450,30 @@ async function loadCats() {
   try { const r = await fetch('/api/giveth?q=cats', { cache: 'no-store' }); const d = await r.json().catch(() => ({}));
     if (r.ok && d.categories && d.categories.length) { gvCats = d.categories; if (sub === 'giveth') render(); } } catch (e) {}
 }
+// ── THE FRAME ──
+// Sixty real Giveth pictures were measured before this was written: none portrait,
+// 10% square logos, 45% between 1.35 and 2.6, a third near 3, a few up to 7:1.
+// A fixed band could only ever be wrong for most of them: `cover` cut the subject
+// out and `contain` left a black moat. So the BAND TAKES THE PICTURE'S OWN SHAPE,
+// clamped to what a card can hold, and then fills it. Between 1.2 and 3.2 that is
+// an exact fit: nothing cropped and nothing empty. Outside it, the picture is
+// zoomed to the nearest shape the card allows, centred a little above the middle
+// because that is where subjects sit.
+const AR_MIN = 1.2, AR_MAX = 3.2, AR_DEFAULT = 2.25;
+function frameArt(root) {
+  $$('.gvp img', root || document).forEach((img) => {
+    if (img.dataset.framed) return;
+    const set = () => {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      if (!w || !h) return;
+      img.dataset.framed = '1';
+      const art = img.closest('.gvp-art');
+      if (art) art.style.setProperty('--ar', Math.min(AR_MAX, Math.max(AR_MIN, w / h)).toFixed(3));
+    };
+    if (img.complete) set(); else img.addEventListener('load', set, { once: true });
+  });
+}
+
 const money = (n) => n >= 1000000 ? '$' + (n / 1000000).toFixed(1) + 'M' : n >= 1000 ? '$' + Math.round(n / 1000) + 'k' : '$' + Math.round(n || 0);
 function projectRow(p) {
   return '<button class="glass gvp" data-gv="' + esc(p.slug) + '">' +
@@ -684,6 +708,7 @@ async function checkBloom() {
   }
   if (!bloomed.length) return;
   save();
+  soundBloom();
   playCeremonies(bloomed.map((s) => '<div class="cer"><span class="big">' + esc(s.bloom) + '</span><h2>Your seed bloomed.</h2><p>' + esc((s.water && s.water.from) || s.title) + ' wrote back: “' + esc(((s.water && s.water.reply) || '').slice(0, 140)) + '”</p><span class="kicker">tap to continue</span></div>'), () => { checkMilestones(); checkAlchemy(); render(); });
 }
 // ── Become: the project's own console ──
@@ -852,10 +877,39 @@ function entryCard(e) {
 
 // ── GROW · plant today ──
 let draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
+// ── THE STANDING ──
+// A word written today is not an entry, it is a day of care on something that is
+// growing. This says which plant is nearest its next crossing and what one word
+// would do to it, so the daily act has a stake. It counts care, never absence:
+// it says what a word does, never what not writing did.
+function standingBlock() {
+  if (!S.plants.length) return '';
+  const rows = S.plants.map((p) => { const d = daysOf(p); return { p, d, nx: nextPhase(d), ph: phaseOf(d) }; });
+  const moving = rows.filter((x) => x.nx).sort((a, b) => (a.nx.day - a.d) - (b.nx.day - b.d));
+  const ready = rows.filter((x) => !x.nx);
+  const x = moving[0] || ready[0];
+  if (!x) return '';
+  const tended = (x.p.kept || []).includes(today());
+  const away = x.nx ? x.nx.day - x.d : 0;
+  const prev = (C.book.phases[phaseIndex(x.d)] || {}).day || 0;
+  const pct = x.nx ? Math.max(6, Math.round(((x.d - prev) / (x.nx.day - prev)) * 100)) : 100;
+  const line = !x.nx
+    ? esc(nameOf(face(x.p))) + ' is ready to give.'
+    : away <= 1
+      ? (tended ? esc(nameOf(face(x.p))) + ' crosses into ' + esc(x.nx.name) + ' with tomorrow\u2019s word.'
+                : 'One word today and ' + esc(nameOf(face(x.p))) + ' crosses into ' + esc(x.nx.name) + '.')
+      : esc(nameOf(face(x.p))) + ' is ' + esc(plural(away, 'day')) + ' from ' + esc(x.nx.name) + '.';
+  return '<div class="glass card standing">' +
+    '<span class="stand-ring" style="--pct:' + pct + '"><span class="stand-face">' + esc(face(x.p)) + '</span></span>' +
+    '<span class="stand-words"><span class="kicker gold">' + esc(x.ph.name) + ' \u00b7 ' + esc(plural(x.d, 'day') + ' of care') + '</span>' +
+    '<b>' + line + '</b>' +
+    '<span class="cap">' + esc(x.ph.meaning) + '</span></span></div>';
+}
 function viewGrow() {
   const pal = palette();
   return hero(scene('grow'), { h1: 'Grow', k1: 'Plant Today', k2: 'A Brighter Tomorrow', low: '<p class="statement in" style="--i:2">What are you grateful for today?</p>' }) +
     '<div class="page">' +
+    standingBlock() +
     '<div class="glass card">' +
     '<textarea class="field" id="write" rows="3" placeholder="Start your gratitude entry..." aria-label="your gratitude entry">' + esc(draft.text) + '</textarea>' +
     '<div class="tools"><span class="chip on">' + I.text + ' Text</span><label class="chip" id="photo-chip">' + I.cam + ' Photo<input type="file" id="photo" accept="image/*" hidden></label>' + (navigator.mediaDevices && window.MediaRecorder ? '<button class="chip" id="voice">' + I.mic + ' Voice</button>' : '') + '</div>' +
@@ -902,25 +956,41 @@ function plantNow() {
   const t = today(); const e = { id: newId('e'), day: t, at: new Date().toISOString(), text, emoji, tags: draft.tags.slice(), photo: draft.photo, voice: draft.voice ? { mime: draft.voice.type || 'audio/webm', dur: draft.voiceDur } : null, folder: null };
   S.entries.push(e); if (draft.voice) keepPut(e.id, draft.voice).catch(() => toast('The recording could not be kept on this device.'));
   let p = emoji ? plantFor(emoji) : null; let isNew = false; const before = p ? face(p) : null;
+  // the phase BEFORE today's word, so a crossing can be told from an ordinary day
+  const phPre = p ? phaseIndex(daysOf(p)) : -1;
   if (emoji && !p) { p = { id: newId('p'), emoji, planted: t, kept: [], carried: 0, origin: 'planted', from: null }; S.plants.push(p); isNew = true; }
   if (p && !p.kept.includes(t)) p.kept.push(t);
   const made = [];
   for (const r of allRecipes()) { if (S.made[r.id]) continue; const st = recipeState(r); if (st.made) { S.made[r.id] = t; made.push(r); if (!plantFor(r.result)) S.plants.push({ id: newId('p'), emoji: r.result, planted: t, kept: [t], carried: 0, origin: 'recipe', from: r.name }); } }
   save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
   const after = p ? face(p) : null; const d = p ? daysOf(p) : 0; const ph = p ? phaseOf(d) : null;
+  const phNow = p ? phaseIndex(d) : -1;
+  const crossed = p && phNow > phPre;
   const seq = [];
+  if (crossed) seq.push({
+    html: '<div class="cer cross"><span class="big">' + esc(after) + '</span>' +
+      '<span class="kicker gold">' + esc(nameOf(after)) + ' has crossed</span>' +
+      '<h2>' + esc(ph.name) + '.</h2>' +
+      '<p class="lead">' + esc(ph.meaning) + '</p>' +
+      '<span class="kicker mint">' + esc(plural(d, 'day') + ' of care \u00b7 ' + TONE_NAMES[Math.min(phNow, TONE_NAMES.length - 1)]) + '</span>' +
+      '<span class="kicker">tap to continue</span></div>',
+    on: () => soundPhase(phNow),
+  });
   if (p && before && after !== before) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><span class="kicker mint">' + esc(before + ' → ' + after) + '</span><h2>' + esc(nameOf(after)) + '</h2><p class="lead">' + esc((E.stage(p.emoji, d, C.evo) || {}).line || '') + '</p><span class="kicker">tap to continue</span></div>');
   else if (p) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><h2>' + esc(isNew ? 'Planted.' : ph.name + '.') + '</h2><p class="lead">' + esc(nameOf(after)) + ' · ' + esc(plural(d, 'day')) + '. ' + esc(ph.meaning) + '</p>' + (nextPhase(d) ? '<span class="kicker mint">' + esc(nextPhase(d).name + ' in ' + plural(nextPhase(d).day - d, 'day')) + '</span>' : '<span class="kicker gold">Ready to give</span>') + '<span class="kicker">tap to continue</span></div>');
-  else seq.push('<div class="cer"><span class="big">✦</span><h2>Kept.</h2><p class="lead">A moment of gratitude has a place now.</p><span class="kicker">tap to continue</span></div>');
+  else seq.push({ html: '<div class="cer"><span class="big">✦</span><h2>Kept.</h2><p class="lead">A moment of gratitude has a place now.</p><span class="kicker">tap to continue</span></div>', on: soundKept });
   for (const r of made) seq.push('<div class="cer"><span class="big">' + esc(r.result) + '</span><span class="kicker mint">' + esc(r.formula.join(' + ') + ' → ' + r.result) + '</span><h2>' + esc(r.name) + '</h2><p class="lead">' + esc(r.statement) + '</p><span class="kicker">a recipe came together · tap to continue</span></div>');
   playCeremonies(seq, () => { go('gratus'); });
 }
 function playCeremonies(list, done) {
   const root = $('#ceremony'); let k = 0; let gate = motionOk();
   const next = () => {
-    const html = list.shift(); if (!html) { root.hidden = true; root.innerHTML = ''; if (done) done(); return; }
+    const item = list.shift(); if (!item) { root.hidden = true; root.innerHTML = ''; if (done) done(); return; }
+    // a card may carry its own note: a string is a card with nothing to say aloud
+    const html = typeof item === 'string' ? item : item.html;
+    const on = typeof item === 'string' ? null : item.on;
     root.hidden = false; root.onclick = null;
-    const show = () => { root.innerHTML = art(scene('ceremony', k++)) + '<div class="flash on"></div>' + html.replace('<div class="cer">', '<div class="cer reveal">'); let t = 0; const close = () => { clearTimeout(t); root.onclick = null; next(); }; root.onclick = close; t = setTimeout(close, 5600); };
+    const show = () => { root.innerHTML = art(scene('ceremony', k++)) + '<div class="flash on"></div>' + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0; const close = () => { clearTimeout(t); root.onclick = null; next(); }; root.onclick = close; t = setTimeout(close, 5600); };
     if (gate) {
       gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.jpg') + '"><source src="' + GFX('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
       const v = root.querySelector('video'); let fired = false; const fire = () => { if (fired) return; fired = true; clearTimeout(tm); show(); };
@@ -1153,7 +1223,7 @@ function giveSheet(pre) {
   $('#g-wrap', sh.el).addEventListener('click', () => {
     const to = $('#g-to', sh.el).value.trim(), msg = $('#g-msg', sh.el).value.trim(), from = $('#g-from', sh.el).value.trim(); if (!msg) { toast('A few words for them.'); return; }
     const g = buildGift(chosen, to, from, msg); const link = location.origin + '/gift#' + encodeGift(g);
-    S.gifts.given.push({ id: g.id, emoji: g.emoji, to, at: today(), days: g.days, link }); S.name = from || S.name; save(); sh.close();
+    S.gifts.given.push({ id: g.id, emoji: g.emoji, to, at: today(), days: g.days, link }); S.name = from || S.name; save(); soundGiven(); sh.close();
     playCeremonies(['<div class="cer"><span class="big">' + esc(g.emoji) + '</span><h2>Wrapped.</h2><p class="lead">' + esc(plural(g.days, 'day')) + ' of gratitude, for ' + esc(to || 'someone') + '. Share the link; the journey opens on their phone.</p><span class="kicker">tap to share</span></div>'], () => shareSheet(S.gifts.given[S.gifts.given.length - 1]));
   });
 }
@@ -1327,12 +1397,67 @@ function openLaws() {
   const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); };
   $('#laws-x', root).addEventListener('click', close); $('#laws-done', root).addEventListener('click', () => { close(); go('grow'); });
 }
+// ═══ THE GRATUS SOUND ═══
+//
+// Five phases, five notes of one chord: Planted is the root, Nurtured the fifth,
+// Deepened the octave, Bloomed the third above it, Ready to Give the fifth above
+// it. A plant crossing into a phase sounds its note AND everything underneath it,
+// so the chord is built by the growing, not by the app. Giving plays the whole
+// chord and lets it fall back to the root alone: what remains after you give.
+//
+// Nothing here is a recording. It is synthesised, so it costs no bytes, it can be
+// tuned by changing a number, and it can never fail to load. It obeys the one
+// sound switch the app already has, it is never played on an ordinary tap, and it
+// sits under his song rather than over it.
+const TONES = [146.83, 220.00, 293.66, 369.99, 440.00]; // D3 · A3 · D4 · F#4 · A4
+const TONE_NAMES = ['the root', 'the fifth', 'the octave', 'the third above', 'the fifth above'];
+let AC = null;
+function audioCtx() {
+  if (!S.sound) return null;
+  try {
+    const Ctor = window.AudioContext || window.webkitAudioContext; if (!Ctor) return null;
+    if (!AC) AC = new Ctor();
+    if (AC.state === 'suspended') AC.resume();
+    return AC;
+  } catch (e) { return null; }
+}
+// one struck note with a long tail: a triangle for body, a sine an octave up and
+// slightly detuned for shimmer, through a soft lowpass so nothing is ever shrill
+function tone(hz, at, dur, peak) {
+  const ac = audioCtx(); if (!ac) return;
+  const t0 = ac.currentTime + at;
+  const o = ac.createOscillator(), o2 = ac.createOscillator();
+  const g2 = ac.createGain(), lp = ac.createBiquadFilter(), g = ac.createGain();
+  o.type = 'triangle'; o.frequency.value = hz;
+  o2.type = 'sine'; o2.frequency.value = hz * 2.004; g2.gain.value = .34;
+  lp.type = 'lowpass'; lp.frequency.value = 2100; lp.Q.value = .5;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.linearRampToValueAtTime(peak, t0 + .04);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(g); g.connect(ac.destination);
+  o.start(t0); o2.start(t0); o.stop(t0 + dur + .1); o2.stop(t0 + dur + .1);
+}
+// the chord as far as this phase: the sound of everything the plant has already been
+function soundPhase(i) {
+  for (let k = 0; k <= i && k < TONES.length; k++) tone(TONES[k], k * .17, 3.2 - k * .24, .085 - k * .007);
+}
+function soundNote(i) { if (TONES[i]) tone(TONES[i], 0, 2.4, .085); }
+// a word kept: the root alone, quietly
+function soundKept() { tone(TONES[0], 0, 1.3, .06); }
+// a bloom: root, octave, third — the chord opening
+function soundBloom() { [0, 2, 3].forEach((k, i) => tone(TONES[k], i * .13, 3, .075)); }
+// given: the chord falls away from the top and the root is what is left
+function soundGiven() {
+  for (let k = TONES.length - 1; k >= 0; k--) tone(TONES[k], (TONES.length - 1 - k) * .15, 1.5, .06);
+  tone(TONES[0], 1.0, 4.2, .095);
+}
+
 // the song: his, on every open, one tap to mute. Browsers wait for a touch before sound; the first touch starts it.
 function songInit() {
   const a = $('#song'); if (!a) return; a.volume = .55;
   const start = () => { if (!S.sound) return; a.play().catch(() => null); };
   start();
-  const once = () => { start(); document.removeEventListener('pointerdown', once); document.removeEventListener('keydown', once); };
+  const once = () => { start(); audioCtx(); document.removeEventListener('pointerdown', once); document.removeEventListener('keydown', once); };
   document.addEventListener('pointerdown', once); document.addEventListener('keydown', once);
   document.addEventListener('visibilitychange', () => { if (document.hidden) a.pause(); else start(); });
 }

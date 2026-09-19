@@ -784,3 +784,32 @@ html { overflow-x: clip; }
   background: #B9FFE4; box-shadow: 0 0 10px rgba(185, 255, 228, .9); flex: none;
 }
 .vibeline { display: flex; align-items: center; gap: 9px; font-size: 15px; line-height: 21px; font-weight: 600; color: #B9FFE4; }
+
+/* ═══ v23 · the frame, the standing, the crossing ═════════════════════════ */
+
+/* THE FRAME. The band takes the picture's own shape (set per card in JS from the
+   picture's natural size, clamped to what a card can hold) and then fills it.
+   Between 1.2 and 3.2 that is an exact fit: nothing cropped and nothing empty.
+   `contain` is gone; it was what left the black moat. */
+.gvp .gvp-art { height: auto; aspect-ratio: var(--ar, 2.25); transition: aspect-ratio .3s var(--ease); }
+.gvp .gvp-art img { position: relative; width: 100%; height: 100%; object-fit: cover; object-position: center 45%; z-index: 2; }
+/* the wash is now only seen THROUGH a transparent logo, so it has to read as light
+   rather than as a dark smear: brighter, more saturated, spread wider */
+.gvp .gvp-art .gvp-wash { inset: -18%; filter: blur(26px) saturate(1.9) brightness(.92); opacity: .9; }
+/* the scrim only darkens the last third, where the words begin */
+.gvp .gvp-art::after { background: linear-gradient(180deg, transparent 64%, rgba(5, 9, 18, .8) 100%); }
+
+/* THE STANDING · what one word today would do */
+.standing { display: grid; grid-template-columns: 74px 1fr; gap: 16px; align-items: center; }
+.stand-words { display: grid; gap: 5px; min-width: 0; }
+.stand-words b { font-family: var(--display); font-size: 23px; line-height: 27px; font-weight: 500; color: #FFF7D6; text-wrap: balance; }
+.stand-ring {
+  position: relative; width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(#FFD98A calc(var(--pct) * 1%), rgba(255, 255, 255, .1) 0);
+}
+.stand-ring::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: rgba(5, 9, 18, .92); }
+.stand-face { position: relative; font-family: var(--emoji); font-size: 32px; line-height: 1; }
+
+/* THE CROSSING · the one card in the app that is allowed to be loud */
+.cer.cross .big { filter: drop-shadow(0 0 30px rgba(255, 217, 138, .55)); }
+.cer.cross h2 { color: #FFE9B0; }

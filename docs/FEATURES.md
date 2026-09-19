@@ -49,6 +49,19 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Give to the World: Gratus Earth (heal places), Gratus Vault (a wish for tomorrow), Gratus World. Rooms exist; the data is imagined.
 - Gifts you gave and received, with links.
 
+## The Gratus Sound
+
+- Five phases, five notes of one chord, and the chord is built by the growing rather than by the app. A crossing sounds its note and every note under it. A bloom opens the chord. Giving plays it and lets it fall back to the root alone.
+- It is synthesised rather than recorded, it obeys the one sound switch in the bar, it never sounds on an ordinary tap, and it sits under his song rather than over it.
+
+## The crossing
+
+- When the day's word carries a plant into a new phase, the screen stops and says so, and the phase sounds. Only when something actually moved.
+
+## The standing
+
+- At the top of Grow: the plant nearest its next crossing, how far it has come, and what one word today would do to it.
+
 ## Gratus Guides
 
 - Why any of this exists: the mission, the vision, the five-step loop, how a Gratus grows, and the five things the app promises. A door from the home and from the menu.

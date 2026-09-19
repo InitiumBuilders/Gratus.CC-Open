@@ -177,3 +177,9 @@ Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default th
 ## v22 — THE ROOM SAYS WHAT ARRIVED (2026-09-19)
 132. **A signal that the app itself consumes is not a signal.** The mark on a room could never appear for the first room, because arriving at Vibes opens that room and opening it marks it read. The room now states what arrived since the last look, and the mark stays for the rooms you are not in.
 133. **Nothing is new the first time.** A room you have just joined states no count; it is simply the room.
+
+## v23 — THE GRATUS SOUND, THE CROSSING, AND THE FRAME (2026-09-19)
+134. **The frame takes the picture's shape, not the other way round.** Sixty real Giveth images were measured before a line was written. No fixed band can serve a spread that runs from square to seven to one, which is why cropping lost the subject and fitting left a black moat. Each card's band is given its own picture's aspect, clamped to what a card can hold, and filled. Inside the clamp nothing is cropped and nothing is empty.
+135. **The five phases are five notes of one chord.** Planted is the root, Nurtured the fifth, Deepened the octave, Bloomed the third above, Ready to Give the fifth above. A crossing sounds its note and everything under it, so the chord is built by the growing rather than played at it. This is the meaning made audible, not decoration laid on top.
+136. **Giving falls back to the root.** The chord plays from the top down and the root is what is left. What remains after you give is the thing you started with.
+137. **The sound is synthesised, never recorded.** It carries no bytes, it cannot fail to load, it can be retuned by changing a number, and it is silent the moment the one sound switch is off. It never sounds on an ordinary tap: only a crossing, a bloom, a keeping and a giving.

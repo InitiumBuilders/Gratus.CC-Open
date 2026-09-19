@@ -79,6 +79,16 @@ A gift is the plant, its days, its message and the hands that held it, encoded b
 
 The whole design, its limits and the five loops still to build are in [EMOTIONAL-TRACE.md](EMOTIONAL-TRACE.md); what Giveth built and what we use is in [GIVETH.md](GIVETH.md).
 
+## The frame
+
+A project's picture arrives from Giveth at whatever shape its steward uploaded. Sixty real ones were measured before this was designed: none portrait, about a tenth square, nearly half between 1.35 and 2.6, a third near 3, and a handful as wide as 7 to 1. A single fixed band cannot serve that spread, and both of the obvious answers fail it: `cover` crops the subject out of a square logo, `contain` leaves a black moat around it. So `frameArt()` reads each image's natural size once it has loaded and sets `--ar` on its frame, clamped between `AR_MIN` 1.2 and `AR_MAX` 3.2, and the CSS gives the frame that aspect ratio with `object-fit: cover`. Inside the clamp there is no crop and no remainder. Outside it, the picture is zoomed to the nearest shape a card can hold, centred slightly above the middle because that is where subjects sit. The blurred wash of the image survives underneath, now bright rather than dark, because it is what shows through a logo with a transparent background.
+
+## The Gratus Sound
+
+`TONES` is five frequencies: D3, A3, D4, F sharp 4, A4. They are the root, the fifth, the octave, the third above the octave and the fifth above it, which is one chord spelled out across the five growth phases in order. `soundPhase(i)` plays every note up to and including `i`, so a crossing sounds everything the plant has already been. `soundGiven()` plays the chord from the top downwards and then holds the root alone. `tone()` is a triangle oscillator for body plus a sine an octave up and slightly detuned for shimmer, through a lowpass at 2100 Hz so nothing is ever shrill, with a fast attack and a long exponential tail.
+
+Nothing is a sample, so the sound adds no bytes to the app and cannot fail to load. `audioCtx()` returns nothing at all when the sound switch is off, and the context is resumed on the same first gesture that starts his song, because browsers will not make sound before one.
+
 ## Voice
 
 `api/voice.js` is a Vercel function. The recording arrives as the raw request body (webm, mp4 or ogg from `MediaRecorder`), is checked for origin, a `X-Gratus: voice` header and size (six megabytes), and is posted to ElevenLabs speech to text (`scribe_v1`) with the key from `ELEVENLABS_API_KEY`. The function returns `{ text, language }` and keeps nothing. The key is in the Vercel environment of both projects and in no file; the open-source gate knows its shape.

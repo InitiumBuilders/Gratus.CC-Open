@@ -2,6 +2,13 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v23 · The Gratus Sound, the crossing, and the frame (2026-09-19)
+
+- **A picture is shown at its own shape.** Sixty real Giveth images were measured first: none portrait, a tenth square, nearly half between 1.35 and 2.6, a third near 3, a few as wide as 7 to 1. No single band could serve them, which is why cropping cut the subject out and fitting left a black moat. The band now takes each picture's own shape, clamped to what a card can hold, and fills it. Between 1.2 and 3.2 that is an exact fit: nothing cropped, nothing empty.
+- **The Gratus Sound.** Five phases, five notes of one chord. Planted is the root, Nurtured the fifth, Deepened the octave, Bloomed the third above it, Ready to Give the fifth above it. Crossing into a phase sounds its note and everything underneath, so the chord is built by the growing. Giving plays the chord and lets it fall back to the root alone: what remains after you give. None of it is a recording; it is synthesised, so it costs nothing to carry and can never fail to load.
+- **The crossing.** A plant changing phase is the app's held moment: the screen stops, the name of the phase stands alone, and its note sounds. It happens only when the day's word actually moved something.
+- **The standing**, at the top of Grow: which plant is nearest its next crossing, its ring, and what one word today would do to it.
+
 ## v22 · The room says what arrived (2026-09-19)
 
 - **The first room opens by itself when you arrive**, which marked it read before the mark on it could ever be seen. So the room says it instead: a line above the feed counting the words that arrived since your last look. The mark on a room's chip still stands for the rooms you are not in.
