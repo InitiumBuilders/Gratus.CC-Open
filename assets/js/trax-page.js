@@ -24,6 +24,9 @@ fetch('/api/trax').then((r) => r.json()).then((d) => {
   document.getElementById('range').textContent = days.length
     ? days[0].day + ' to ' + days[days.length - 1].day
     : 'Nothing counted yet. The first view lands the first bar.';
+  document.getElementById('acct').innerHTML = d.accounts == null
+    ? '<div class="num"><b>\u00b7</b><span>Gratus accounts could not be counted</span></div>'
+    : '<div class="num"><b>' + N(d.accounts) + (d.accountsMore ? '+' : '') + '</b><span>Gratus accounts, all time</span></div>';
   document.getElementById('not').innerHTML = Object.entries(d.notMeasured || {})
     .map(([k, v]) => '<li><b>' + k + '</b>: ' + v + '</li>').join('');
 }).catch(() => { document.getElementById('note').textContent = 'Trax could not be reached.'; });

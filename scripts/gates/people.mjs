@@ -131,5 +131,15 @@ say(me.code === 200 && me.body.friends === 1, 'the account knows how many people
 const big = await call(acct, post({ act: 'friends', token: CAI }));
 say(big.code === 200, 'an account with a private page still has a list of its own');
 
+// The number on /trax said there were no accounts to count. That was true the day it was
+// written and false the day accounts shipped, so it is a number now, read off the names of
+// the records and never out of one.
+const trax = (await import(path.join(root, 'api/trax.js'))).default;
+const seen = await call(trax, { method: 'GET', headers: {}, query: {} });
+say(seen.code === 200 && seen.body.accounts === 3, 'trax counts the three accounts this gate made  (' + seen.body.accounts + ')');
+const saw = JSON.stringify(seen.body);
+say(!saw.includes('ava@example.org') && !saw.includes('ava'), 'and never says who any of them are');
+say(!/there are no accounts yet/.test(saw), 'and no longer claims there are none');
+
 console.log('G32 your people: ' + (fails ? 'FAIL - ' + fails : 'PASS'));
 process.exit(fails ? 1 : 0);

@@ -1,7 +1,7 @@
 // G24 · THE MANUAL WAS ACTUALLY WRITTEN.
 //
 // A gate that proves the docs do not lie proves nothing about docs that were
-// never written. This counts them: twenty-four guides, each a file with complete
+// never written. This counts them: twenty-five guides, each a file with complete
 // front matter, and every one listed at /guided.
 //
 // Mutant: delete one guide file. This must go red.
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DIR = path.join(root, 'docs/guides');
-const WANT = 24;
+const WANT = 25;
 const FRONT = ['title', 'audience', 'time', 'updated', 'verified-against'];
 
 let fails = 0;

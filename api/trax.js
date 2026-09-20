@@ -145,9 +145,17 @@ export default async function handler(req, res) {
     // floor rather than an exact number: a gift can be planted on a device that never
     // reports, and this counts what it has seen.
     out.growing = Math.max(0, out.windows.all.gifts - out.windows.all.planted);
+    // Accounts are counted from the names of their records, so nothing anybody wrote is
+    // read to produce this number and no account is opened to be added up. It is a
+    // lifetime figure and does not belong in the windows above it.
+    try {
+      const acct = await list({ prefix: 'gratus/acct/', token: TOKEN });
+      out.accounts = acct.blobs.filter((b) => /\/acct\/[0-9a-f]+\.json$/.test(b.pathname)).length;
+      out.accountsMore = acct.hasMore === true;
+    } catch (e) { out.accounts = null; }
     out.notMeasured = {
-      accounts: 'there are no accounts yet, so there is nothing to count',
-      hoursGrowing: 'time in the app is counted; time spent thinking about somebody is not',
+      'Who the accounts are': 'accounts are counted, and an email address is never stored, so there is nothing here anybody could be asked for',
+      'Hours anything has been growing': 'time in the app is counted; time spent thinking about somebody is not',
     };
     out.daily = days.slice(-30).map((d) => ({ day: d, views: (docs[d] || {}).view || 0, gifts: (docs[d] || {}).gift || 0 }));
     res.status(200).json(out);
