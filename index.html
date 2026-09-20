@@ -39,6 +39,15 @@
   .cta .gpill { width: 100%; }
   .plate { width: 100%; border-radius: 26px; overflow: hidden; border: 1px solid rgba(242, 201, 125, .4); box-shadow: 0 0 30px rgba(242, 201, 125, .14), 0 18px 44px rgba(0, 0, 0, .6); }
   .plate img { width: 100%; height: auto; display: block; }
+  /* a real screen, in a phone, photographed rather than drawn */
+  .screens { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: min(100%, 460px); justify-items: center; }
+  .screens.one { grid-template-columns: 1fr; width: min(100%, 260px); }
+  .screen { width: 100%; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .14);
+    box-shadow: 0 0 26px rgba(110, 217, 192, .12), 0 16px 40px rgba(0, 0, 0, .66); background: var(--ground); }
+  .screen img { width: 100%; height: auto; display: block; }
+  .bignum { font-family: var(--display); font-weight: 500; font-size: clamp(44px, 13vw, 78px); line-height: 1.02;
+    color: #FFF7D6; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; text-shadow: 0 2px 26px rgba(0, 0, 0, .85); }
+  .bignum.waiting { font-size: clamp(22px, 6vw, 30px); color: var(--ink-3); }
   .trio { display: grid; gap: 12px; width: 100%; }
   .step { padding: 18px 20px; display: grid; gap: 6px; text-align: left; }
   .step b { font-family: var(--display); font-size: 27px; line-height: 30px; font-weight: 500; color: #FFE9B0; }
@@ -77,7 +86,7 @@
   <span class="kicker mint">Every day</span>
   <h2 class="line">Today's Gratitude</h2>
   <p class="lead">What are you grateful for today? Write it, speak it, or keep a photo of it. Then plant an emoji for it, and it grows a phase for every day you return to it.</p>
-  <div class="plate"><img src="/assets/art/home/hero-band.webp" alt="A star rising over still water, held in green leaves" loading="lazy"></div>
+  <div class="screens"><div class="screen"><img src="/assets/art/shots/write.webp" alt="The Gratus writing screen on a phone" width="390" height="844" loading="lazy"></div><div class="screen"><img src="/assets/art/shots/journal.webp" alt="The Gratus journal, by day" width="390" height="844" loading="lazy"></div></div>
   <a class="gpill" href="/app/grow">🌱<span>Write Today</span><span class="arr">→</span></a>
 </section>
 
@@ -89,6 +98,23 @@
     <a class="hcard door" href="/app/garden"><img class="door-art" src="/assets/art/home/sprout.webp" alt=""><span class="door-words"><b>Grow Your Gratus Garden!</b><span>Grow gratitude every day. Planted, Nurtured, Deepened, Bloomed, Ready to Give.</span></span><span class="door-go">›</span></a>
     <a class="hcard door" href="/app/give"><img class="door-art" src="/assets/art/home/giftbox.webp" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family. The whole journey rides inside the link.</span></span><span class="door-go">›</span></a>
   </div>
+</section>
+
+<section class="act wrap">
+  <span class="kicker mint">Nothing here shrinks</span>
+  <h2 class="line">A garden that only ever grows.</h2>
+  <p class="lead">Every emoji you plant grows a phase for each day you write about it: Planted, Nurtured, Deepened, Bloomed, Ready to Give. Miss a week and nothing is taken away. There are no streaks to break here.</p>
+  <div class="screens one"><div class="screen"><img src="/assets/art/shots/garden.webp" alt="A Gratus garden with five things growing" width="390" height="844" loading="lazy"></div></div>
+  <a class="gpill sm" href="/app/garden">🌱<span>Start Your Gratus Garden</span><span class="arr">→</span></a>
+</section>
+
+<section class="act wrap" id="giveth-act">
+  <span class="kicker gold">What Giveth has moved</span>
+  <b class="bignum waiting" id="gv-total">Reading Giveth...</b>
+  <p class="lead" id="gv-said">Given through Giveth to real projects, with nothing taken on the way. Read from their own API as this page opened.</p>
+  <p class="lead" id="gv-quiet" hidden>Giveth is not answering right now. Every figure on this page is read from them as it opens and none of it is kept on this side, which is why there is nothing in its place.</p>
+  <template id="gv-shape"><span>given through Giveth by {people} people to {projects} projects, with nothing taken on the way. Read from their own API as this page opened.</span></template>
+  <a class="gpill sm" href="/app/giveth">🤝<span>See the whole picture</span><span class="arr">→</span></a>
 </section>
 
 <section class="act wrap">
@@ -107,7 +133,7 @@
   <span class="kicker mint">Every gift carries a story</span>
   <h2 class="line">Gratus Gives Gifts That Keep On Growing</h2>
   <p class="lead">Someone grows an emoji with days of gratitude and wraps it with a message. You unwrap it, walk its journey, and choose how to keep it. Then it keeps growing in your garden.</p>
-  <div class="plate"><img src="/assets/art/mock/gift-journey.webp" alt="The eight pages of a Gratus Gift" loading="lazy"></div>
+  <div class="plate"><img src="/assets/art/home/hero-band.webp" alt="A star rising over still water, held in green leaves" width="1200" height="600" loading="lazy"></div>
   <a class="gpill sm" href="/gift">🎁<span>Open a sample gift</span><span class="arr">→</span></a>
 </section>
 
@@ -122,7 +148,8 @@
 <section class="act wrap">
   <span class="kicker mint">On your phone</span>
   <h2 class="line">Add Gratus to your home screen.</h2>
-  <p class="lead">On Android, in Chrome, open the menu and choose “Add to Home screen”. On iPhone, in Safari, tap Share, then “Add to Home Screen”. Gratus opens full screen and works offline. There are no accounts and nothing to buy. Your journal stays on your device.</p>
+  <p class="lead">On Android, in Chrome, open the menu and choose “Add to Home screen”. On iPhone, in Safari, tap Share, then “Add to Home Screen”. Gratus opens full screen and works offline, and your journal stays on your device either way.</p>
+  <p class="lead"><b>Opening a gift somebody sends you is free, for ever, with no account.</b> Growing your own garden is free for a week, and $24 a month after that. An account is optional: it keeps a sealed copy of your garden that nobody here can read, and gives you a page at gratus.cc/gg/your-name.</p>
   <a class="gpill" href="/app">✦<span>Open the app</span><span class="arr">→</span></a>
 </section>
 

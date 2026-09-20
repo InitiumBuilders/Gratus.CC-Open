@@ -29,3 +29,29 @@ document.querySelectorAll('.kicker').forEach((k) => { if (/[.!?]$/.test(k.textCo
 const st = document.querySelector('.stars'); let s = '';
 for (let i = 0; i < 90; i++) s += '<i style="left:' + (1 + Math.random() * 97).toFixed(1) + '%;top:' + (1 + Math.random() * 97).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>';
 st.innerHTML = s;
+
+// The figure on the Giveth act is read from Giveth, every time this page opens, and it is
+// never written down here. Not one sentence below is authored in this file either: the
+// words live in index.html, and this moves a number into them or reveals the line that
+// says nobody answered. A number nobody could reach is not a zero, and this one is a claim
+// about somebody else's work.
+const total = document.getElementById('gv-total');
+if (total) {
+  const said = document.getElementById('gv-said');
+  const quiet = document.getElementById('gv-quiet');
+  const shape = document.getElementById('gv-shape');
+  fetch('/api/giveth-stats', { cache: 'no-store' }).then((r) => r.json()).then((d) => {
+    if (d.error || d.usd == null || !(d.usd > 0)) throw new Error('quiet');
+    total.textContent = '$' + Math.round(d.usd).toLocaleString();
+    total.classList.remove('waiting');
+    if (said && shape && d.donors && d.listed) {
+      said.textContent = shape.content.textContent
+        .replace('{people}', Number(d.donors).toLocaleString())
+        .replace('{projects}', Number(d.listed).toLocaleString());
+    }
+  }).catch(() => {
+    total.hidden = true;
+    if (said) said.hidden = true;
+    if (quiet) quiet.hidden = false;
+  });
+}

@@ -41,6 +41,10 @@
       "destination": "/give-and-grow.html"
     },
     {
+      "source": "/reference",
+      "destination": "/reference.html"
+    },
+    {
       "source": "/docs",
       "destination": "/docs.html"
     },
