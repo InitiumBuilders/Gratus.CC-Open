@@ -1,0 +1,34 @@
+{
+  "note": "Real partners only. Nothing here is invented: no quote anybody did not say, no rating nobody gave, no count nobody counted. If a line cannot be sourced it does not go in this file.",
+  "presented": "Gratus.CC presented by Outlier.Systems",
+  "partners": [
+    {
+      "name": "Giveth.IO",
+      "url": "https://giveth.io",
+      "mark": "G",
+      "role": "The capital rail",
+      "what": "Zero-fee donations to verified public-good projects, given from your own wallet. Gratus reads their public impact graph and never touches a donation."
+    },
+    {
+      "name": "Intuition.Systems",
+      "url": "https://intuition.systems",
+      "mark": "I",
+      "role": "Identity and trust",
+      "what": "A protocol for portable identity and staked trust. Where a Gratus claim can be made once and carried anywhere."
+    },
+    {
+      "name": "Dash.org",
+      "url": "https://dash.org",
+      "mark": "D",
+      "role": "Payments",
+      "what": "Open, fast, low-fee digital cash. The rail for giving that does not need a bank between two people."
+    },
+    {
+      "name": "Outlier.Systems",
+      "url": "https://outlier.systems",
+      "mark": "O",
+      "role": "Presented by",
+      "what": "The house Gratus.CC is built in."
+    }
+  ]
+}

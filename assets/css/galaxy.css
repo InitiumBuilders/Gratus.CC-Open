@@ -967,3 +967,59 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 
 /* a chosen chip says so, and says it the same way everywhere */
 .chip[aria-pressed="true"], .chip.on { border-color: var(--hair-hue); }
+
+/* ═══ THE JOURNAL, AS A JOURNAL ════════════════════════════════════
+   It read like a form: system type, flat panel, an input box. A journal is a warm surface
+   you write on, so the surfaces you write on and read back are warm now. Still dark,
+   because the whole app is, but ink and paper rather than glass and chrome: a deep warm
+   ground, a faint rule to write along, a margin line down the left the way a notebook has
+   one, and the serif for the words themselves. Nothing else on the screen changes. */
+:root {
+  --paper: linear-gradient(180deg, rgba(38, 29, 17, .86), rgba(26, 20, 12, .92));
+  --paper-ink: #F6EBD8;
+  --paper-rule: rgba(246, 235, 216, .07);
+  --paper-margin: rgba(242, 201, 125, .34);
+}
+.pillform, .entry, .entrycard, .glass.entry, [data-e] {
+  background: var(--paper);
+  border-color: rgba(242, 201, 125, .16);
+}
+.entry, .entrycard, [data-e] {
+  background-image:
+    linear-gradient(180deg, rgba(38, 29, 17, .86), rgba(26, 20, 12, .92)),
+    repeating-linear-gradient(180deg, transparent 0 27px, var(--paper-rule) 27px 28px);
+  border-left: 2px solid var(--paper-margin);
+  border-radius: 6px 20px 20px 6px;
+}
+[data-e] b, .entry b, .entrycard b,
+[data-e] .grow > b { color: var(--paper-ink); }
+[data-e] .line, .entry .line, .entrycard .line,
+[data-e] .grow > span { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; line-height: 28px; color: var(--paper-ink); }
+.pillform input, .pillform textarea, textarea.field {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 19px; line-height: 28px; color: var(--paper-ink);
+}
+textarea.field {
+  background: var(--paper);
+  background-image:
+    linear-gradient(180deg, rgba(38, 29, 17, .86), rgba(26, 20, 12, .92)),
+    repeating-linear-gradient(180deg, transparent 0 27px, var(--paper-rule) 27px 28px);
+  border-left: 2px solid var(--paper-margin);
+  border-radius: 6px 18px 18px 6px;
+  padding-left: 16px;
+}
+textarea.field::placeholder, .pillform input::placeholder { color: rgba(246, 235, 216, .55); }
+
+/* the first walk: one idea to a screen, a way out on every one */
+#tour { position: fixed; inset: 0; z-index: 46; display: grid; place-items: center; padding: 24px;
+  background: rgba(3, 6, 14, .93); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+#tour[hidden] { display: none; }
+.tourcard { width: min(440px, 100%); display: grid; gap: 14px; text-align: center;
+  border: 1px solid var(--hair-2); border-radius: 28px; padding: 26px 22px calc(22px + var(--sab));
+  background: linear-gradient(180deg, rgba(22, 27, 46, .92), rgba(6, 9, 18, .96)); }
+.tourcard h2 { font-size: clamp(26px, 7vw, 34px); line-height: 1.16; margin: 0; }
+.tourcard .body { margin: 0; }
+.tourdots { display: flex; gap: 7px; justify-content: center; margin: 4px 0 2px; }
+.tourdots i { width: 7px; height: 7px; border-radius: 50%; background: var(--hair-2); }
+.tourdots i.on { background: var(--violet-text); box-shadow: var(--glow); }
+body.touring { overflow: hidden; }

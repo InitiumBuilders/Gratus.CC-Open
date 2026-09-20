@@ -52,7 +52,14 @@
     "Gratus Ground",
     "Gratus Give",
     "Gratus Store",
-    "$GRATUS"
+    "$GRATUS",
+    "Gratus.CC:",
+    "Give And Grow What Matters Most",
+    "Give Your First Gratus Gift Today!",
+    "Gratus Gives Gifts That Keep On Growing",
+    "#GrowTheDifference",
+    "#GrowWithGratus",
+    "Gratus.CC presented by Outlier.Systems"
   ],
   "retiredNote": "These are August’s lines from config/copy.json → locked. Nothing rendered them, so they were published copy that the product never said. They were moved here on 2026-09-19 rather than deleted, because they are his and the words are not lost. The writing gate reads this list and looks away from every line in it. Retiring a line is not a ruling on it: whether $GRATUS is retired or deferred is his to answer.",
   "retired": {
@@ -87,5 +94,13 @@
       "Gratus Store",
       "$GRATUS"
     ]
+  },
+  "blocks": {
+    "messaging-2026-09-19": {
+      "owner": true,
+      "given": "2026-09-19",
+      "note": "Given by August, verbatim. Spelling, capitals, punctuation and the blank lines between are his. Never edited, never shortened, never re-cased.",
+      "block": "Gratus.CC:\n\nGive And Grow What Matters Most\n\nGive Your First Gratus Gift Today!\n\nGratus Gives Gifts That Keep On Growing\n\n#GrowTheDifference\n#GrowWithGratus\n"
+    }
   }
 }

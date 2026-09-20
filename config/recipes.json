@@ -2,78 +2,1095 @@
   "note": "GRATUS MODELS. Emojis kept together on the same day, three days over, become a model: a small, named pattern of how something grows, gets built, begins, pays, coordinates, or heals. The formula is the emojis; the result is the emoji the model gives you, planted in your field; the statement is the law; the loop is the mechanism in one line. Statements are plain and the owner may refine any of them.",
   "days": 3,
   "categories": {
-    "growth": { "name": "Growth", "line": "How things grow.", "loop": "spiral" },
-    "building": { "name": "Building", "line": "How things get built.", "loop": "stack" },
-    "startup": { "name": "Startup", "line": "How things begin.", "loop": "beam" },
-    "profit": { "name": "Profit", "line": "How things pay.", "loop": "vessel" },
-    "coordination": { "name": "Coordination", "line": "How people move together.", "loop": "vesica" },
-    "care": { "name": "Care", "line": "How people heal.", "loop": "horizon" }
+    "growth": {
+      "name": "Growth",
+      "line": "How things grow.",
+      "loop": "spiral"
+    },
+    "building": {
+      "name": "Building",
+      "line": "How things get built.",
+      "loop": "stack"
+    },
+    "startup": {
+      "name": "Startup",
+      "line": "How things begin.",
+      "loop": "beam"
+    },
+    "profit": {
+      "name": "Profit",
+      "line": "How things pay.",
+      "loop": "vessel"
+    },
+    "coordination": {
+      "name": "Coordination",
+      "line": "How people move together.",
+      "loop": "vesica"
+    },
+    "care": {
+      "name": "Care",
+      "line": "How people heal.",
+      "loop": "horizon"
+    }
   },
   "models": [
-    { "id": "compound-morning", "name": "Compound Morning", "cat": "growth", "formula": ["☕", "📖"], "result": "🧠", "statement": "Small daily input, kept, becomes a capacity.", "loop": "input every day → capacity → better input" },
-    { "id": "seed-and-water", "name": "Seed and Water", "cat": "growth", "formula": ["🌱", "💧"], "result": "🌿", "statement": "Attention is the water. What you attend to grows.", "loop": "attend → grow → attend more" },
-    { "id": "slow-sun", "name": "Slow Sun", "cat": "growth", "formula": ["🌱", "☀️"], "result": "🌻", "statement": "Growth follows the light you give it, on its own schedule.", "loop": "light daily → growth → patience" },
-    { "id": "walk-it-off", "name": "Walk It Off", "cat": "growth", "formula": ["🚶", "🌳"], "result": "🌄", "statement": "A walk turns weight into ground.", "loop": "motion → clarity → motion" },
-    { "id": "the-long-book", "name": "The Long Book", "cat": "growth", "formula": ["📖", "🌙"], "result": "💡", "statement": "Reading at night rewrites the morning.", "loop": "night input → sleep → morning idea" },
-    { "id": "body-first", "name": "Body First", "cat": "growth", "formula": ["💪", "🍞"], "result": "🔋", "statement": "Fuel, then effort, then rest.", "loop": "fuel → work → rest → fuel" },
-    { "id": "practice-loop", "name": "Practice Loop", "cat": "growth", "formula": ["🎵", "🔁"], "result": "🎼", "statement": "Repetition with attention is how skill grows.", "loop": "repeat → notice → adjust → repeat" },
-    { "id": "still-point", "name": "Still Point", "cat": "growth", "formula": ["🧘", "🌊"], "result": "🕊️", "statement": "Stillness widens the channel everything moves through.", "loop": "still → wide → flow" },
-    { "id": "yearly-ring", "name": "Yearly Ring", "cat": "growth", "formula": ["⏳", "🌳"], "result": "🌲", "statement": "One ring a year. No shortcut, and no loss.", "loop": "time → ring → strength" },
-    { "id": "rain-to-river", "name": "Rain to River", "cat": "growth", "formula": ["🌧️", "🌊"], "result": "🌈", "statement": "Hard days gather into a current.", "loop": "hard day → gather → current" },
-
-    { "id": "brick-a-day", "name": "Brick a Day", "cat": "building", "formula": ["🧱", "✅"], "result": "🏡", "statement": "One brick, kept, is a wall by spring.", "loop": "brick daily → wall → shelter" },
-    { "id": "sketch-then-build", "name": "Sketch Then Build", "cat": "building", "formula": ["✏️", "🛠️"], "result": "🏗️", "statement": "Draw it before you build it.", "loop": "sketch → build → sketch again" },
-    { "id": "keystone", "name": "Keystone", "cat": "building", "formula": ["🔑", "🧱"], "result": "🏛️", "statement": "Find the piece the rest depend on. Place it first.", "loop": "keystone → arch holds → load spreads" },
-    { "id": "the-workshop", "name": "The Workshop", "cat": "building", "formula": ["🏠", "🛠️"], "result": "🪑", "statement": "A place for the work makes the work happen.", "loop": "place → work → place kept" },
-    { "id": "blueprint", "name": "Blueprint", "cat": "building", "formula": ["📝", "🎯"], "result": "🗺️", "statement": "Notes with an aim become a plan.", "loop": "note → aim → plan → notes" },
-    { "id": "thread-and-needle", "name": "Thread and Needle", "cat": "building", "formula": ["🧵", "🪡"], "result": "🧣", "statement": "Small joins make strong cloth.", "loop": "join → cloth → join" },
-    { "id": "fix-it", "name": "Fix It", "cat": "building", "formula": ["🛠️", "💡"], "result": "🔧", "statement": "A repair is an idea with its hands dirty.", "loop": "break → idea → fix → understand" },
-    { "id": "ship-it", "name": "Ship It", "cat": "building", "formula": ["🛠️", "🚀"], "result": "📦", "statement": "Share it before it is perfect.", "loop": "build → ship → learn → build" },
-    { "id": "foundation", "name": "Foundation", "cat": "building", "formula": ["🪨", "🏠"], "result": "🏰", "statement": "What you build on decides what you can build.", "loop": "rock → house → weather held" },
-    { "id": "sharp-tools", "name": "Sharp Tools", "cat": "building", "formula": ["⚙️", "🛠️"], "result": "✨", "statement": "Care for the tool and the tool cares for you.", "loop": "maintain → tool → work → maintain" },
-
-    { "id": "first-light", "name": "First Light", "cat": "startup", "formula": ["💡", "☀️"], "result": "🌅", "statement": "An idea is a morning. Get up.", "loop": "idea → act → next idea" },
-    { "id": "two-founders", "name": "Two Founders", "cat": "startup", "formula": ["🤝", "💡"], "result": "🌱", "statement": "An idea with a hand in it can stand.", "loop": "idea + hand → stand → walk" },
-    { "id": "ask-ten-people", "name": "Ask Ten People", "cat": "startup", "formula": ["📞", "📝"], "result": "🧭", "statement": "Ask ten people before you plan.", "loop": "ask → learn → ask better" },
-    { "id": "smallest-thing", "name": "Smallest Thing", "cat": "startup", "formula": ["🎯", "🧩"], "result": "🔑", "statement": "Build the smallest piece that proves the whole.", "loop": "piece → proof → next piece" },
-    { "id": "runway", "name": "Runway", "cat": "startup", "formula": ["💰", "⏳"], "result": "✈️", "statement": "Time is the runway. Money only buys time.", "loop": "cash → time → tries → cash" },
-    { "id": "pivot", "name": "Pivot", "cat": "startup", "formula": ["🧭", "🔁"], "result": "🎯", "statement": "When the map is wrong, turn. Keep the compass.", "loop": "wrong map → turn → same aim" },
-    { "id": "word-of-mouth", "name": "Word of Mouth", "cat": "startup", "formula": ["💬", "🎁"], "result": "📣", "statement": "A gift told twice is a market.", "loop": "give → tell → give" },
-    { "id": "launch-day", "name": "Launch Day", "cat": "startup", "formula": ["🚀", "🎉"], "result": "🎈", "statement": "A launch is a beginning wearing a party hat.", "loop": "launch → learn → launch again" },
-    { "id": "night-shift", "name": "Night Shift", "cat": "startup", "formula": ["🌙", "💻"], "result": "🌟", "statement": "The quiet hours build what the loud hours sell.", "loop": "night → build → day → sell" },
-    { "id": "founders-rest", "name": "Founder's Rest", "cat": "startup", "formula": ["🧘", "🚀"], "result": "😴", "statement": "Rest is part of the sprint.", "loop": "rest → sprint → rest" },
-
-    { "id": "value-first", "name": "Value First", "cat": "profit", "formula": ["🎁", "💰"], "result": "🌳", "statement": "Give value first. Money is the echo.", "loop": "value → thanks → money → value" },
-    { "id": "counted", "name": "Counted", "cat": "profit", "formula": ["💰", "📝"], "result": "📊", "statement": "What you count, you can keep.", "loop": "count → keep → count" },
-    { "id": "set-aside", "name": "Set Aside", "cat": "profit", "formula": ["💰", "🌱"], "result": "🏦", "statement": "A tenth, set aside, becomes what you lean on.", "loop": "set aside → grow → lean → set aside" },
-    { "id": "fair-scale", "name": "Fair Scale", "cat": "profit", "formula": ["⚖️", "🤝"], "result": "🔔", "statement": "A fair deal is repeated. An unfair one is remembered.", "loop": "fair → repeat → trust" },
-    { "id": "return-customer", "name": "Return Customer", "cat": "profit", "formula": ["🔁", "❤️"], "result": "💝", "statement": "Loved once, returned twice. Profit is return.", "loop": "love → return → profit" },
-    { "id": "plain-price", "name": "Plain Price", "cat": "profit", "formula": ["💵", "✅"], "result": "🛒", "statement": "Price it plainly.", "loop": "plain → trust → sale" },
-    { "id": "slow-money", "name": "Slow Money", "cat": "profit", "formula": ["🐢", "💰"], "result": "🪙", "statement": "Money that took time stays.", "loop": "time → money → stays" },
-    { "id": "the-tab", "name": "The Tab", "cat": "profit", "formula": ["🍞", "💵"], "result": "🍽️", "statement": "Bread today, bread tomorrow. That is the whole ledger.", "loop": "earn → eat → earn" },
-    { "id": "split", "name": "Split", "cat": "profit", "formula": ["💰", "👥"], "result": "🍕", "statement": "Share the upside and the upside grows.", "loop": "share → grow → share" },
-    { "id": "enough", "name": "Enough", "cat": "profit", "formula": ["💰", "🧘"], "result": "☮️", "statement": "Knowing enough is the largest profit.", "loop": "enough → free → give" },
-
-    { "id": "common-ground", "name": "Common Ground", "cat": "coordination", "formula": ["🤝", "🌱"], "result": "🌾", "statement": "Keep the same thing, both accept it. That is a team.", "loop": "same seed → accept → ground → grow" },
-    { "id": "same-page", "name": "Same Page", "cat": "coordination", "formula": ["📝", "👥"], "result": "📄", "statement": "Put the plan in one line everyone sees.", "loop": "line → share → align → act" },
-    { "id": "the-call", "name": "The Call", "cat": "coordination", "formula": ["📞", "❤️"], "result": "💞", "statement": "A call closes distance faster than a plan.", "loop": "call → close → call" },
-    { "id": "circle", "name": "Circle", "cat": "coordination", "formula": ["👥", "🔁"], "result": "⭕", "statement": "Return to the same people on purpose.", "loop": "meet → return → trust → return" },
-    { "id": "handoff", "name": "Handoff", "cat": "coordination", "formula": ["🤝", "🔁"], "result": "🏃", "statement": "Pass it on cleanly and it keeps moving.", "loop": "hand → hand → motion" },
-    { "id": "bridge", "name": "Bridge", "cat": "coordination", "formula": ["🌉", "👥"], "result": "🤲", "statement": "Two shores need one span. Be the span.", "loop": "shore → span → shore" },
-    { "id": "one-bell", "name": "One Bell", "cat": "coordination", "formula": ["🔔", "👥"], "result": "🎺", "statement": "One signal everyone hears saves a hundred messages.", "loop": "signal → gather → act" },
-    { "id": "shared-table", "name": "Shared Table", "cat": "coordination", "formula": ["🍞", "👥"], "result": "🍲", "statement": "Eat together. Decide after.", "loop": "eat → decide → eat" },
-    { "id": "open-door", "name": "Open Door", "cat": "coordination", "formula": ["🚪", "🤝"], "result": "🔓", "statement": "An open door is a rule that needs no meeting.", "loop": "open → enter → open" },
-    { "id": "two-yeses", "name": "Two Yeses", "cat": "coordination", "formula": ["✅", "🤝"], "result": "💍", "statement": "Nothing shared without two yeses.", "loop": "ask → yes → yes → shared" },
-
-    { "id": "kept-light", "name": "Kept Light", "cat": "care", "formula": ["🕯️", "🙏"], "result": "☀️", "statement": "Thanks and a candle, kept, become morning.", "loop": "keep → light → morning" },
-    { "id": "rest-is-growth", "name": "Rest Is Growth", "cat": "care", "formula": ["😴", "🌱"], "result": "🌷", "statement": "Rest is also growth.", "loop": "rest → grow → rest" },
-    { "id": "held", "name": "Held", "cat": "care", "formula": ["😨", "🤝"], "result": "🫂", "statement": "Fear, with a hand in it, loosens.", "loop": "fear + hand → loosen → breathe" },
-    { "id": "named", "name": "Named", "cat": "care", "formula": ["😢", "✏️"], "result": "📜", "statement": "A feeling named is a feeling held.", "loop": "feel → name → hold" },
-    { "id": "the-walk-home", "name": "The Walk Home", "cat": "care", "formula": ["🚶", "🏠"], "result": "🛋️", "statement": "The way home is part of the day.", "loop": "out → home → out" },
-    { "id": "repair", "name": "Repair", "cat": "care", "formula": ["💔", "🙏"], "result": "🩹", "statement": "Hurt and thanks in the same day: that is repair.", "loop": "hurt → thanks → repair" },
-    { "id": "tend-the-person", "name": "Tend the Person", "cat": "care", "formula": ["❤️", "🌱"], "result": "🌺", "statement": "Tend the person, not just the feeling.", "loop": "person → return → person" },
-    { "id": "present", "name": "Present", "cat": "care", "formula": ["🧘", "🔔"], "result": "🕰️", "statement": "The ground asks if you're here. You answer with a touch.", "loop": "ask → answer → here" },
-    { "id": "given-hands", "name": "Given Hands", "cat": "care", "formula": ["🙏", "🤝"], "result": "🌎", "statement": "Thanks, with hands, reaches the world.", "loop": "thanks + hands → world" },
-    { "id": "morning-after", "name": "Morning After", "cat": "care", "formula": ["🌧️", "🌅"], "result": "🌤️", "statement": "Every hard night has a morning after it.", "loop": "night → morning → night held" }
+    {
+      "id": "compound-morning",
+      "name": "Compound Morning",
+      "cat": "growth",
+      "formula": [
+        "☕",
+        "📖"
+      ],
+      "result": "🧠",
+      "statement": "Small daily input, kept, becomes a capacity.",
+      "loop": "input every day → capacity → better input"
+    },
+    {
+      "id": "seed-and-water",
+      "name": "Seed and Water",
+      "cat": "growth",
+      "formula": [
+        "🌱",
+        "💧"
+      ],
+      "result": "🌿",
+      "statement": "Attention is the water. What you attend to grows.",
+      "loop": "attend → grow → attend more"
+    },
+    {
+      "id": "slow-sun",
+      "name": "Slow Sun",
+      "cat": "growth",
+      "formula": [
+        "🌱",
+        "☀️"
+      ],
+      "result": "🌻",
+      "statement": "Growth follows the light you give it, on its own schedule.",
+      "loop": "light daily → growth → patience"
+    },
+    {
+      "id": "walk-it-off",
+      "name": "Walk It Off",
+      "cat": "growth",
+      "formula": [
+        "🚶",
+        "🌳"
+      ],
+      "result": "🌄",
+      "statement": "A walk turns weight into ground.",
+      "loop": "motion → clarity → motion"
+    },
+    {
+      "id": "the-long-book",
+      "name": "The Long Book",
+      "cat": "growth",
+      "formula": [
+        "📖",
+        "🌙"
+      ],
+      "result": "💡",
+      "statement": "Reading at night rewrites the morning.",
+      "loop": "night input → sleep → morning idea"
+    },
+    {
+      "id": "body-first",
+      "name": "Body First",
+      "cat": "growth",
+      "formula": [
+        "💪",
+        "🍞"
+      ],
+      "result": "🔋",
+      "statement": "Fuel, then effort, then rest.",
+      "loop": "fuel → work → rest → fuel"
+    },
+    {
+      "id": "practice-loop",
+      "name": "Practice Loop",
+      "cat": "growth",
+      "formula": [
+        "🎵",
+        "🔁"
+      ],
+      "result": "🎼",
+      "statement": "Repetition with attention is how skill grows.",
+      "loop": "repeat → notice → adjust → repeat"
+    },
+    {
+      "id": "still-point",
+      "name": "Still Point",
+      "cat": "growth",
+      "formula": [
+        "🧘",
+        "🌊"
+      ],
+      "result": "🕊️",
+      "statement": "Stillness widens the channel everything moves through.",
+      "loop": "still → wide → flow"
+    },
+    {
+      "id": "yearly-ring",
+      "name": "Yearly Ring",
+      "cat": "growth",
+      "formula": [
+        "⏳",
+        "🌳"
+      ],
+      "result": "🌲",
+      "statement": "One ring a year. No shortcut, and no loss.",
+      "loop": "time → ring → strength"
+    },
+    {
+      "id": "rain-to-river",
+      "name": "Rain to River",
+      "cat": "growth",
+      "formula": [
+        "🌧️",
+        "🌊"
+      ],
+      "result": "🌈",
+      "statement": "Hard days gather into a current.",
+      "loop": "hard day → gather → current"
+    },
+    {
+      "id": "brick-a-day",
+      "name": "Brick a Day",
+      "cat": "building",
+      "formula": [
+        "🧱",
+        "✅"
+      ],
+      "result": "🏡",
+      "statement": "One brick, kept, is a wall by spring.",
+      "loop": "brick daily → wall → shelter"
+    },
+    {
+      "id": "sketch-then-build",
+      "name": "Sketch Then Build",
+      "cat": "building",
+      "formula": [
+        "✏️",
+        "🛠️"
+      ],
+      "result": "🏗️",
+      "statement": "Draw it before you build it.",
+      "loop": "sketch → build → sketch again"
+    },
+    {
+      "id": "keystone",
+      "name": "Keystone",
+      "cat": "building",
+      "formula": [
+        "🔑",
+        "🧱"
+      ],
+      "result": "🏛️",
+      "statement": "Find the piece the rest depend on. Place it first.",
+      "loop": "keystone → arch holds → load spreads"
+    },
+    {
+      "id": "the-workshop",
+      "name": "The Workshop",
+      "cat": "building",
+      "formula": [
+        "🏠",
+        "🛠️"
+      ],
+      "result": "🪑",
+      "statement": "A place for the work makes the work happen.",
+      "loop": "place → work → place kept"
+    },
+    {
+      "id": "blueprint",
+      "name": "Blueprint",
+      "cat": "building",
+      "formula": [
+        "📝",
+        "🎯"
+      ],
+      "result": "🗺️",
+      "statement": "Notes with an aim become a plan.",
+      "loop": "note → aim → plan → notes"
+    },
+    {
+      "id": "thread-and-needle",
+      "name": "Thread and Needle",
+      "cat": "building",
+      "formula": [
+        "🧵",
+        "🪡"
+      ],
+      "result": "🧣",
+      "statement": "Small joins make strong cloth.",
+      "loop": "join → cloth → join"
+    },
+    {
+      "id": "fix-it",
+      "name": "Fix It",
+      "cat": "building",
+      "formula": [
+        "🛠️",
+        "💡"
+      ],
+      "result": "🔧",
+      "statement": "A repair is an idea with its hands dirty.",
+      "loop": "break → idea → fix → understand"
+    },
+    {
+      "id": "ship-it",
+      "name": "Ship It",
+      "cat": "building",
+      "formula": [
+        "🛠️",
+        "🚀"
+      ],
+      "result": "📦",
+      "statement": "Share it before it is perfect.",
+      "loop": "build → ship → learn → build"
+    },
+    {
+      "id": "foundation",
+      "name": "Foundation",
+      "cat": "building",
+      "formula": [
+        "🪨",
+        "🏠"
+      ],
+      "result": "🏰",
+      "statement": "What you build on decides what you can build.",
+      "loop": "rock → house → weather held"
+    },
+    {
+      "id": "sharp-tools",
+      "name": "Sharp Tools",
+      "cat": "building",
+      "formula": [
+        "⚙️",
+        "🛠️"
+      ],
+      "result": "✨",
+      "statement": "Care for the tool and the tool cares for you.",
+      "loop": "maintain → tool → work → maintain"
+    },
+    {
+      "id": "first-light",
+      "name": "First Light",
+      "cat": "startup",
+      "formula": [
+        "💡",
+        "☀️"
+      ],
+      "result": "🌅",
+      "statement": "An idea is a morning. Get up.",
+      "loop": "idea → act → next idea"
+    },
+    {
+      "id": "two-founders",
+      "name": "Two Founders",
+      "cat": "startup",
+      "formula": [
+        "🤝",
+        "💡"
+      ],
+      "result": "🌱",
+      "statement": "An idea with a hand in it can stand.",
+      "loop": "idea + hand → stand → walk"
+    },
+    {
+      "id": "ask-ten-people",
+      "name": "Ask Ten People",
+      "cat": "startup",
+      "formula": [
+        "📞",
+        "📝"
+      ],
+      "result": "🧭",
+      "statement": "Ask ten people before you plan.",
+      "loop": "ask → learn → ask better"
+    },
+    {
+      "id": "smallest-thing",
+      "name": "Smallest Thing",
+      "cat": "startup",
+      "formula": [
+        "🎯",
+        "🧩"
+      ],
+      "result": "🔑",
+      "statement": "Build the smallest piece that proves the whole.",
+      "loop": "piece → proof → next piece"
+    },
+    {
+      "id": "runway",
+      "name": "Runway",
+      "cat": "startup",
+      "formula": [
+        "💰",
+        "⏳"
+      ],
+      "result": "✈️",
+      "statement": "Time is the runway. Money only buys time.",
+      "loop": "cash → time → tries → cash"
+    },
+    {
+      "id": "pivot",
+      "name": "Pivot",
+      "cat": "startup",
+      "formula": [
+        "🧭",
+        "🔁"
+      ],
+      "result": "🎯",
+      "statement": "When the map is wrong, turn. Keep the compass.",
+      "loop": "wrong map → turn → same aim"
+    },
+    {
+      "id": "word-of-mouth",
+      "name": "Word of Mouth",
+      "cat": "startup",
+      "formula": [
+        "💬",
+        "🎁"
+      ],
+      "result": "📣",
+      "statement": "A gift told twice is a market.",
+      "loop": "give → tell → give"
+    },
+    {
+      "id": "launch-day",
+      "name": "Launch Day",
+      "cat": "startup",
+      "formula": [
+        "🚀",
+        "🎉"
+      ],
+      "result": "🎈",
+      "statement": "A launch is a beginning wearing a party hat.",
+      "loop": "launch → learn → launch again"
+    },
+    {
+      "id": "night-shift",
+      "name": "Night Shift",
+      "cat": "startup",
+      "formula": [
+        "🌙",
+        "💻"
+      ],
+      "result": "🌟",
+      "statement": "The quiet hours build what the loud hours sell.",
+      "loop": "night → build → day → sell"
+    },
+    {
+      "id": "founders-rest",
+      "name": "Founder's Rest",
+      "cat": "startup",
+      "formula": [
+        "🧘",
+        "🚀"
+      ],
+      "result": "😴",
+      "statement": "Rest is part of the sprint.",
+      "loop": "rest → sprint → rest"
+    },
+    {
+      "id": "value-first",
+      "name": "Value First",
+      "cat": "profit",
+      "formula": [
+        "🎁",
+        "💰"
+      ],
+      "result": "🌳",
+      "statement": "Give value first. Money is the echo.",
+      "loop": "value → thanks → money → value"
+    },
+    {
+      "id": "counted",
+      "name": "Counted",
+      "cat": "profit",
+      "formula": [
+        "💰",
+        "📝"
+      ],
+      "result": "📊",
+      "statement": "What you count, you can keep.",
+      "loop": "count → keep → count"
+    },
+    {
+      "id": "set-aside",
+      "name": "Set Aside",
+      "cat": "profit",
+      "formula": [
+        "💰",
+        "🌱"
+      ],
+      "result": "🏦",
+      "statement": "A tenth, set aside, becomes what you lean on.",
+      "loop": "set aside → grow → lean → set aside"
+    },
+    {
+      "id": "fair-scale",
+      "name": "Fair Scale",
+      "cat": "profit",
+      "formula": [
+        "⚖️",
+        "🤝"
+      ],
+      "result": "🔔",
+      "statement": "A fair deal is repeated. An unfair one is remembered.",
+      "loop": "fair → repeat → trust"
+    },
+    {
+      "id": "return-customer",
+      "name": "Return Customer",
+      "cat": "profit",
+      "formula": [
+        "🔁",
+        "❤️"
+      ],
+      "result": "💝",
+      "statement": "Loved once, returned twice. Profit is return.",
+      "loop": "love → return → profit"
+    },
+    {
+      "id": "plain-price",
+      "name": "Plain Price",
+      "cat": "profit",
+      "formula": [
+        "💵",
+        "✅"
+      ],
+      "result": "🛒",
+      "statement": "Price it plainly.",
+      "loop": "plain → trust → sale"
+    },
+    {
+      "id": "slow-money",
+      "name": "Slow Money",
+      "cat": "profit",
+      "formula": [
+        "🐢",
+        "💰"
+      ],
+      "result": "🪙",
+      "statement": "Money that took time stays.",
+      "loop": "time → money → stays"
+    },
+    {
+      "id": "the-tab",
+      "name": "The Tab",
+      "cat": "profit",
+      "formula": [
+        "🍞",
+        "💵"
+      ],
+      "result": "🍽️",
+      "statement": "Bread today, bread tomorrow. That is the whole ledger.",
+      "loop": "earn → eat → earn"
+    },
+    {
+      "id": "split",
+      "name": "Split",
+      "cat": "profit",
+      "formula": [
+        "💰",
+        "👥"
+      ],
+      "result": "🍕",
+      "statement": "Share the upside and the upside grows.",
+      "loop": "share → grow → share"
+    },
+    {
+      "id": "enough",
+      "name": "Enough",
+      "cat": "profit",
+      "formula": [
+        "💰",
+        "🧘"
+      ],
+      "result": "☮️",
+      "statement": "Knowing enough is the largest profit.",
+      "loop": "enough → free → give"
+    },
+    {
+      "id": "common-ground",
+      "name": "Common Ground",
+      "cat": "coordination",
+      "formula": [
+        "🤝",
+        "🌱"
+      ],
+      "result": "🌾",
+      "statement": "Keep the same thing, both accept it. That is a team.",
+      "loop": "same seed → accept → ground → grow"
+    },
+    {
+      "id": "same-page",
+      "name": "Same Page",
+      "cat": "coordination",
+      "formula": [
+        "📝",
+        "👥"
+      ],
+      "result": "📄",
+      "statement": "Put the plan in one line everyone sees.",
+      "loop": "line → share → align → act"
+    },
+    {
+      "id": "the-call",
+      "name": "The Call",
+      "cat": "coordination",
+      "formula": [
+        "📞",
+        "❤️"
+      ],
+      "result": "💞",
+      "statement": "A call closes distance faster than a plan.",
+      "loop": "call → close → call"
+    },
+    {
+      "id": "circle",
+      "name": "Circle",
+      "cat": "coordination",
+      "formula": [
+        "👥",
+        "🔁"
+      ],
+      "result": "⭕",
+      "statement": "Return to the same people on purpose.",
+      "loop": "meet → return → trust → return"
+    },
+    {
+      "id": "handoff",
+      "name": "Handoff",
+      "cat": "coordination",
+      "formula": [
+        "🤝",
+        "🔁"
+      ],
+      "result": "🏃",
+      "statement": "Pass it on cleanly and it keeps moving.",
+      "loop": "hand → hand → motion"
+    },
+    {
+      "id": "bridge",
+      "name": "Bridge",
+      "cat": "coordination",
+      "formula": [
+        "🌉",
+        "👥"
+      ],
+      "result": "🤲",
+      "statement": "Two shores need one span. Be the span.",
+      "loop": "shore → span → shore"
+    },
+    {
+      "id": "one-bell",
+      "name": "One Bell",
+      "cat": "coordination",
+      "formula": [
+        "🔔",
+        "👥"
+      ],
+      "result": "🎺",
+      "statement": "One signal everyone hears saves a hundred messages.",
+      "loop": "signal → gather → act"
+    },
+    {
+      "id": "shared-table",
+      "name": "Shared Table",
+      "cat": "coordination",
+      "formula": [
+        "🍞",
+        "👥"
+      ],
+      "result": "🍲",
+      "statement": "Eat together. Decide after.",
+      "loop": "eat → decide → eat"
+    },
+    {
+      "id": "open-door",
+      "name": "Open Door",
+      "cat": "coordination",
+      "formula": [
+        "🚪",
+        "🤝"
+      ],
+      "result": "🔓",
+      "statement": "An open door is a rule that needs no meeting.",
+      "loop": "open → enter → open"
+    },
+    {
+      "id": "two-yeses",
+      "name": "Two Yeses",
+      "cat": "coordination",
+      "formula": [
+        "✅",
+        "🤝"
+      ],
+      "result": "💍",
+      "statement": "Nothing shared without two yeses.",
+      "loop": "ask → yes → yes → shared"
+    },
+    {
+      "id": "kept-light",
+      "name": "Kept Light",
+      "cat": "care",
+      "formula": [
+        "🕯️",
+        "🙏"
+      ],
+      "result": "☀️",
+      "statement": "Thanks and a candle, kept, become morning.",
+      "loop": "keep → light → morning"
+    },
+    {
+      "id": "rest-is-growth",
+      "name": "Rest Is Growth",
+      "cat": "care",
+      "formula": [
+        "😴",
+        "🌱"
+      ],
+      "result": "🌷",
+      "statement": "Rest is also growth.",
+      "loop": "rest → grow → rest"
+    },
+    {
+      "id": "held",
+      "name": "Held",
+      "cat": "care",
+      "formula": [
+        "😨",
+        "🤝"
+      ],
+      "result": "🫂",
+      "statement": "Fear, with a hand in it, loosens.",
+      "loop": "fear + hand → loosen → breathe"
+    },
+    {
+      "id": "named",
+      "name": "Named",
+      "cat": "care",
+      "formula": [
+        "😢",
+        "✏️"
+      ],
+      "result": "📜",
+      "statement": "A feeling named is a feeling held.",
+      "loop": "feel → name → hold"
+    },
+    {
+      "id": "the-walk-home",
+      "name": "The Walk Home",
+      "cat": "care",
+      "formula": [
+        "🚶",
+        "🏠"
+      ],
+      "result": "🛋️",
+      "statement": "The way home is part of the day.",
+      "loop": "out → home → out"
+    },
+    {
+      "id": "repair",
+      "name": "Repair",
+      "cat": "care",
+      "formula": [
+        "💔",
+        "🙏"
+      ],
+      "result": "🩹",
+      "statement": "Hurt and thanks in the same day: that is repair.",
+      "loop": "hurt → thanks → repair"
+    },
+    {
+      "id": "tend-the-person",
+      "name": "Tend the Person",
+      "cat": "care",
+      "formula": [
+        "❤️",
+        "🌱"
+      ],
+      "result": "🌺",
+      "statement": "Tend the person, not just the feeling.",
+      "loop": "person → return → person"
+    },
+    {
+      "id": "present",
+      "name": "Present",
+      "cat": "care",
+      "formula": [
+        "🧘",
+        "🔔"
+      ],
+      "result": "🕰️",
+      "statement": "The ground asks if you're here. You answer with a touch.",
+      "loop": "ask → answer → here"
+    },
+    {
+      "id": "given-hands",
+      "name": "Given Hands",
+      "cat": "care",
+      "formula": [
+        "🙏",
+        "🤝"
+      ],
+      "result": "🌎",
+      "statement": "Thanks, with hands, reaches the world.",
+      "loop": "thanks + hands → world"
+    },
+    {
+      "id": "morning-after",
+      "name": "Morning After",
+      "cat": "care",
+      "formula": [
+        "🌧️",
+        "🌅"
+      ],
+      "result": "🌤️",
+      "statement": "Every hard night has a morning after it.",
+      "loop": "night → morning → night held"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "long-light",
+      "cat": "growth",
+      "formula": [
+        "☀️",
+        "🌱"
+      ],
+      "result": "🌳",
+      "name": "The Long Light",
+      "statement": "Growth is ordinary light, applied for longer than it stays interesting.",
+      "loop": "A small input kept up every day compounds past the point where effort and result still look related.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "night-school",
+      "cat": "growth",
+      "formula": [
+        "🌙",
+        "📚"
+      ],
+      "result": "🧠",
+      "name": "The Night School",
+      "statement": "What you return to in the quiet is what you actually become.",
+      "loop": "Attention given when nobody is watching sets the direction the rest of the day inherits.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "luck-surface",
+      "cat": "growth",
+      "formula": [
+        "🏃",
+        "🍀"
+      ],
+      "result": "⚡",
+      "name": "Luck Surface",
+      "statement": "Luck is a surface area, and moving makes it bigger.",
+      "loop": "More attempts put you in contact with more chance, and chance only ever reaches things already in motion.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "honest-mirror",
+      "cat": "growth",
+      "formula": [
+        "🪞",
+        "💬"
+      ],
+      "result": "🧭",
+      "name": "The Honest Mirror",
+      "statement": "You cannot steer by a story you are protecting.",
+      "loop": "Saying the real thing out loud to one person turns a feeling into a direction you can walk.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "small-hammer",
+      "cat": "building",
+      "formula": [
+        "🛠️",
+        "⏰"
+      ],
+      "result": "🪚",
+      "name": "The Small Hammer",
+      "statement": "A thing built in an hour a day outlives a thing built in a weekend.",
+      "loop": "Short sessions keep the whole shape in your head, and a shape you can hold is a shape you can finish.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "first-brick",
+      "cat": "building",
+      "formula": [
+        "🧱",
+        "🌱"
+      ],
+      "result": "🏗️",
+      "name": "The First Brick",
+      "statement": "The first brick is not the hardest. The second one, on an ordinary Tuesday, is.",
+      "loop": "Starting runs on excitement and excitement expires; continuing runs on a decision already made.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "sharpened-axe",
+      "cat": "building",
+      "formula": [
+        "🪓",
+        "📚"
+      ],
+      "result": "⚙️",
+      "name": "The Sharpened Axe",
+      "statement": "Time spent on the tool is not time taken from the work.",
+      "loop": "Every improvement to how you work is paid back by everything you do afterwards, forever.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "load-bearing",
+      "cat": "building",
+      "formula": [
+        "🪨",
+        "🤝"
+      ],
+      "result": "🏛️",
+      "name": "Load Bearing",
+      "statement": "Find the one wall holding the roof up, and treat it differently from the others.",
+      "loop": "Most parts of a system can fail quietly. Naming the one that cannot is most of the engineering.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "one-true-user",
+      "cat": "startup",
+      "formula": [
+        "👤",
+        "❤️"
+      ],
+      "result": "💡",
+      "name": "One True User",
+      "statement": "One person who would be upset if it vanished beats a thousand who would shrug.",
+      "loop": "Depth of need is measurable and breadth is not, so build for the person you can actually hear.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "smallest-door",
+      "cat": "startup",
+      "formula": [
+        "🚪",
+        "✨"
+      ],
+      "result": "🔑",
+      "name": "The Smallest Door",
+      "statement": "Make the first step so small that refusing it takes more effort than doing it.",
+      "loop": "Adoption is lost at the threshold, not at the feature list. Lower the threshold and the list gets read.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "told-twice",
+      "cat": "startup",
+      "formula": [
+        "💬",
+        "💬"
+      ],
+      "result": "📣",
+      "name": "Told Twice",
+      "statement": "You do not have a thing until somebody explains it to somebody else, correctly, without you.",
+      "loop": "A message survives a retelling only when it is simple, and only a message that survives retelling travels.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "boring-rail",
+      "cat": "startup",
+      "formula": [
+        "🚂",
+        "🔧"
+      ],
+      "result": "🛤️",
+      "name": "The Boring Rail",
+      "statement": "Put the excitement in what you make, never in what you make it on.",
+      "loop": "Dull, proven foundations spend none of your attention, which leaves all of it for the part only you can do.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "honest-price",
+      "cat": "profit",
+      "formula": [
+        "💰",
+        "🤝"
+      ],
+      "result": "⚖️",
+      "name": "The Honest Price",
+      "statement": "A price that embarrasses you is a price that will not survive a hard year.",
+      "loop": "Charging what a thing is worth funds the care it needs; charging less quietly withdraws that care later.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "second-sale",
+      "cat": "profit",
+      "formula": [
+        "🎁",
+        "🔁"
+      ],
+      "result": "💎",
+      "name": "The Second Sale",
+      "statement": "The first sale is persuasion. The second is proof.",
+      "loop": "Everything true about a product shows up in whether the same person comes a second time.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "own-the-rail",
+      "cat": "profit",
+      "formula": [
+        "🛤️",
+        "🔑"
+      ],
+      "result": "🏦",
+      "name": "Own The Rail",
+      "statement": "Whoever owns the road takes a toll from everything that travels it.",
+      "loop": "Value settles where the flow is constrained, so build near the constraint or accept somebody else’s toll.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "give-first",
+      "cat": "profit",
+      "formula": [
+        "🎁",
+        "🌱"
+      ],
+      "result": "🌞",
+      "name": "Give First",
+      "statement": "Generosity that costs you something is the only kind anybody notices.",
+      "loop": "A real gift creates an obligation nobody asked for and everybody feels, and it keeps growing on its own.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "one-throat",
+      "cat": "coordination",
+      "formula": [
+        "🧭",
+        "🤝"
+      ],
+      "result": "🎯",
+      "name": "One Throat",
+      "statement": "A decision with two owners has none.",
+      "loop": "Naming the single person who decides converts an argument into a choice that can actually be made.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "shared-map",
+      "cat": "coordination",
+      "formula": [
+        "🗺️",
+        "💬"
+      ],
+      "result": "🧭",
+      "name": "The Shared Map",
+      "statement": "Most disagreements are two people describing different maps in the same words.",
+      "loop": "Drawing the thing you are both talking about ends more arguments than any amount of talking about it.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "slow-yes",
+      "cat": "coordination",
+      "formula": [
+        "⏳",
+        "🤝"
+      ],
+      "result": "🕊️",
+      "name": "The Slow Yes",
+      "statement": "A fast yes and a slow no cost the same, and one of them is a lie.",
+      "loop": "Saying no early returns time to both people; saying yes late spends it twice and buys resentment.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "written-down",
+      "cat": "coordination",
+      "formula": [
+        "✍️",
+        "🤝"
+      ],
+      "result": "📜",
+      "name": "Written Down",
+      "statement": "A thing that was only ever said was only ever half agreed.",
+      "loop": "Writing it down finds the disagreement while it is still cheap, which is the entire point of writing it down.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "held-not-fixed",
+      "cat": "care",
+      "formula": [
+        "🤗",
+        "💬"
+      ],
+      "result": "🫂",
+      "name": "Held, Not Fixed",
+      "statement": "Most pain is asking to be witnessed, not solved.",
+      "loop": "Offering a solution answers a question nobody asked; staying answers the one they did.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "own-oxygen",
+      "cat": "care",
+      "formula": [
+        "😴",
+        "❤️"
+      ],
+      "result": "🪷",
+      "name": "Own Oxygen",
+      "statement": "You cannot pour from a cup you keep refusing to fill.",
+      "loop": "Rest is not the reward for care, it is the input, and skipping the input eventually stops the output.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "small-return",
+      "cat": "care",
+      "formula": [
+        "☕",
+        "📞"
+      ],
+      "result": "💌",
+      "name": "The Small Return",
+      "statement": "The message you almost did not send is usually the one that lands.",
+      "loop": "Low-effort contact, repeated, keeps a relationship alive far better than rare and heavy contact.",
+      "days": 3,
+      "owner": false
+    },
+    {
+      "id": "long-thread",
+      "cat": "care",
+      "formula": [
+        "🧵",
+        "❤️"
+      ],
+      "result": "🩷",
+      "name": "The Long Thread",
+      "statement": "What you keep returning to is what you are actually loving.",
+      "loop": "Love is not felt once and stored; it is a thread pulled through many ordinary days and it shows in the count.",
+      "days": 3,
+      "owner": false
+    }
   ]
 }

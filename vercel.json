@@ -31,6 +31,22 @@
     {
       "source": "/terms",
       "destination": "/terms.html"
+    },
+    {
+      "source": "/the-story",
+      "destination": "/story.html"
+    },
+    {
+      "source": "/give-and-grow",
+      "destination": "/give-and-grow.html"
+    },
+    {
+      "source": "/docs",
+      "destination": "/docs.html"
+    },
+    {
+      "source": "/trax",
+      "destination": "/trax.html"
     }
   ],
   "headers": [

@@ -23,12 +23,13 @@
 // without a browser. scripts/gates/migration.mjs does exactly that, against a
 // captured fixture, and the mutant that restores the old line turns it red.
 
-export const STATE_V = 3;
+export const STATE_V = 4;
 
 export function fresh() {
   return {
     v: STATE_V,
     feel: true,
+    tour: '',
     name: '', entries: [], plants: [],
     gifts: { given: [], received: [] },
     my: { emojis: [], recipes: [] },
@@ -56,6 +57,15 @@ export const LADDER = {
     // and it should not also take away the quietest feedback in the app.
     if (typeof s.feel !== 'boolean') s.feel = true;
     s.v = 3;
+    return s;
+  },
+  3: (s) => {
+    // Anybody already holding a garden has been here, so the first walk is already behind
+    // them and offering it would be the app forgetting who it is talking to.
+    if (typeof s.tour !== 'string') {
+      s.tour = ((s.plants && s.plants.length) || (s.entries && s.entries.length)) ? 'seen' : '';
+    }
+    s.v = 4;
     return s;
   },
 };

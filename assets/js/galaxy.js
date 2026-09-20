@@ -10,6 +10,8 @@ import { newId } from '../../engine/rng.js?v=12';
 import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=14';
 import { glyphSvg } from '../../engine/glyph.js?v=17';
 import { VIEWS, titleOf } from './views.js?v=17';
+import { STEPS } from './tour.js?v=18';
+import { beat, watchTime } from './trax.js?v=18';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
@@ -1065,7 +1067,7 @@ function viewGarden() {
 }
 
 function menuSheet() {
-  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">Grow Gratus Give</span></div>' +
+  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">' + esc(T('locked.headline', 'Give And Grow What Matters Most')) + '</span><span class="kicker">' + esc(T('locked.promise', 'Gratus Gives Gifts That Keep On Growing')) + '</span><span class="kicker gold">' + esc(T('locked.tags', '#GrowTheDifference #GrowWithGratus')) + '</span></div>' +
     '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
   const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
   on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-guides', () => go('gratus', 'guides')); on('#m-vibes', () => go('gratus', 'vibes')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
@@ -1209,19 +1211,28 @@ function playCeremonies(list, done) {
 // ── GIVE · turn gratitude into impact ──
 function viewGive() {
   return hero(scene('give'), { h1: 'Give', k1: 'Turn Gratitude', k2: 'Into Impact', low: '<p class="statement in" style="--i:2">Give the Gift That Keeps On Giving.</p>' }) +
-    '<div class="page">' +
+    '<div class="page">' + '<p class="kicker mint" id="his-call" style="text-align:center;font-weight:600"></p>' +
     '<div class="glass card"><span class="kicker mint">Choose how to give:</span>' +
     '<button class="glass opt" id="give-gift"><span class="ico gold">' + I.gift + '</span><span class="grow"><b>Give a Gratus Gift</b><span>Turn your gratitude into a gift for someone else.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-giveth"><span class="ico gold">' + I.giveth + '</span><span class="grow"><b>Give with Giveth</b><span>Real projects, zero fees, on chain. Plant a Gratus Seed with your gift.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-project"><span class="ico">' + I.people + '</span><span class="grow"><b>Support a Project</b><span>Give to people, places or causes that matter.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-world"><span class="ico">' + I.globe + '</span><span class="grow"><b>Give to the World</b><span>Be part of a kinder, brighter planet.</span></span><span class="arrow">›</span></button>' +
     '<p class="statement quiet" style="text-align:center">“Give what grows.”</p></div>' +
-    partnerCard() +
+    partnerCard('Giveth.IO') +
     (S.gifts.given.length ? '<div class="eyebrow"><h2>Gifts you gave</h2></div><div class="rows">' + S.gifts.given.slice().reverse().slice(0, 4).map((g) => '<button class="glass opt" data-given="' + esc(g.id) + '"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>To ' + esc(g.to || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + (Number(g.seen) ? ' · ' + esc(plural(Number(g.seen), 'word') + ' back') : '') + '</span></span><span class="arrow">link</span></button>').join('') + '</div>' : '') +
     '<p class="kicker" style="text-align:center">Give today. A brighter tomorrow.</p></div>';
 }
-function partnerCard() {
-  return '<a class="glass partner" href="https://giveth.io" target="_blank" rel="noopener"><span class="logo">G</span><span class="grow"><b>Giveth.io</b><span class="verified">✓ Verified Partner</span><span class="quote">“Giveth is real. Transparent, community driven, and actually moves resources to where they create the most good.”</span><span class="stars-row">★★★★★ 4.8</span></span><span class="arrow" style="color:var(--violet-text)">›</span></a>';
+// Partners, as they actually are. What used to be here carried a quote nobody at Giveth
+// ever said and a five star rating nobody ever gave, printed as if both were facts. An app
+// about gratitude cannot put words in somebody's mouth to look established.
+function partnerCard(only) {
+  const list = ((C.partners && C.partners.partners) || []).filter((p) => !only || p.name === only);
+  if (!list.length) return '';
+  return list.map((p) => '<a class="glass partner" href="' + esc(p.url) + '" target="_blank" rel="noopener">' +
+    '<span class="logo">' + esc(p.mark) + '</span><span class="grow"><b>' + esc(p.name) + '</b>' +
+    '<span class="verified">' + esc(p.role) + '</span>' +
+    '<span class="quote">' + esc(p.what) + '</span></span>' +
+    '<span class="arrow" style="color:var(--violet-text)">›</span></a>').join('');
 }
 const PROJECTS = [
   { name: 'Reforest Together', line: 'Trees for a thriving tomorrow.', tag: 'Climate', n: '1.2K', art: 'g23' },
@@ -1237,7 +1248,7 @@ function viewProjects() {
   const cats = ['All', 'Climate', 'People', 'Education', 'Health', 'Communities', 'Arts'];
   const list = PROJECTS.filter((p) => projFilter === 'All' || p.tag === projFilter || (projFilter === 'People' && p.tag === 'Community'));
   return hero(scene('projects'), { cls: 'room-hero', h1: 'All Projects', k1: 'Give to people, places or causes that matter.' }) +
-    '<div class="page">' + partnerCard() +
+    '<div class="page">' + partnerCard('Giveth.IO') +
     '<div class="chips row">' + cats.map((c) => '<button class="chip' + (projFilter === c ? ' on' : '') + '" data-cat="' + c + '">' + c + '</button>').join('') + '</div>' +
     '<div class="projects">' + (list.length ? list.map((p) => '<a class="glass project" href="https://giveth.io/projects" target="_blank" rel="noopener"><span class="pic" style="background-image:url(' + GFX(p.art + '.webp') + ')"></span><span class="grow"><span class="tag">' + esc(p.tag) + '</span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.line) + '</span><span class="n">' + esc(p.n) + ' ♡</span></span></a>').join('') : '<p class="cap">Nothing under that yet.</p>') + '</div>' +
     '<p class="cap" style="text-align:center">Projects shown as imagined. Live giving connects when the backend arrives.</p></div>';
@@ -1272,8 +1283,14 @@ function viewGalaxy() {
     '<button class="node" style="left:78%;top:28%" data-node="earth"><span class="ico">🌳</span>Places</button>' +
     '<button class="node" style="left:22%;top:76%" data-node="projects"><span class="ico">🌱</span>Projects</button>' +
     '<button class="node" style="left:80%;top:78%" data-node="projects"><span class="ico">🤝</span>Partners</button></div>' +
-    '<div class="glass stats"><div><b>1,248</b><span>Projects</span></div><div><b>193</b><span>Partners</span></div><div><b>78</b><span>Countries</span></div></div><p class="kicker" style="text-align:center">∞ Possibilities · as imagined · Gratitude connects us all.</p>' +
-    '<div class="glass card"><span class="kicker mint">Our Partners</span><div class="chips">' + ['Giveth', 'Ripple Effect', 'Gitcoin', 'Open Source', 'Regen'].map((p) => '<span class="chip">' + p + '</span>').join('') + '</div></div>' +
+    // The three numbers that used to sit here, 1,248 projects and 193 partners and 78
+    // countries, were invented and printed as fact. These are counted: your own garden,
+    // and the partners in config/partners.json, which holds only real ones.
+    '<div class="glass stats"><div><b>' + S.plants.length + '</b><span>Growing</span></div><div><b>' +
+      S.plants.reduce((t, p) => t + daysOf(p), 0) + '</b><span>Days of care</span></div><div><b>' +
+      ((C.partners && C.partners.partners) || []).length + '</b><span>Partners</span></div></div>' +
+    '<p class="kicker" style="text-align:center">' + esc(T('locked.presented', 'Gratus.CC presented by Outlier.Systems')) + '</p>' +
+    '<div class="glass card"><span class="kicker mint">Our partners</span><div class="rows">' + partnerCard() + '</div></div>' +
     '<p class="statement" style="text-align:center;font-style:italic">Gratitude Moves Worlds.</p><p class="kicker" style="text-align:center">Grow what gives.</p></div>';
 }
 
@@ -1515,6 +1532,7 @@ function giveSheet(pre) {
   const sub2 = () => { const d = daysOf(chosen); $('#gsub', sh.el).textContent = nameOf(face(chosen)) + ' · ' + plural(d, 'day') + ' · ' + phaseOf(d).name + (phaseIndex(d) < 4 ? ' · gifts grow best at Ready to Give (day ' + C.book.phases[4].day + ')' : ''); }; sub2();
   $$('[data-gp]', sh.el).forEach((b) => b.addEventListener('click', () => { chosen = S.plants.find((p) => p.id === b.dataset.gp); $$('[data-gp]', sh.el).forEach((x) => x.classList.toggle('on', x === b)); sub2(); }));
   $('#g-wrap', sh.el).addEventListener('click', () => {
+    beat('gift');   // one count. No emoji, no words, no recipient, no giver.
     const to = $('#g-to', sh.el).value.trim(), msg = $('#g-msg', sh.el).value.trim(), from = $('#g-from', sh.el).value.trim(); if (!msg) { toast('A few words for them.'); return; }
     const g = buildGift(chosen, to, from, msg); const link = location.origin + '/gift#' + encodeGift(g);
     S.gifts.given.push({ id: g.id, echo: g.e, seen: 0, emoji: g.emoji, to, at: today(), days: g.days, link }); S.name = from || S.name; save(); soundGiven(); sh.close();
@@ -1877,6 +1895,39 @@ function plantQuick(p) {
 }
 
 
+// ── the first walk ──
+// Shown once, to somebody who has never been here, and never again unless they ask. It is
+// six screens with one idea on each and a way out on every one of them.
+let tourAt = 0;
+function tourShow() {
+  const root = $('#tour'); if (!root) return;
+  const s = STEPS[tourAt]; if (!s) { tourEnd(true); return; }
+  root.innerHTML = '<div class="tourcard">' +
+    '<span class="kicker mint">' + esc(s.k) + '</span>' +
+    '<h2>' + esc(s.h) + '</h2>' +
+    '<p class="body">' + esc(s.p) + '</p>' +
+    '<div class="tourdots" aria-hidden="true">' + STEPS.map((x, i) => '<i' + (i === tourAt ? ' class="on"' : '') + '></i>').join('') + '</div>' +
+    '<button class="btn mint wide" id="tour-next">' + (tourAt === STEPS.length - 1 ? 'Write my first one' : 'Next') + '</button>' +
+    '<button class="btn sm quiet" id="tour-skip">Skip the walk</button></div>';
+  root.hidden = false;
+  document.body.classList.add('touring');
+  $('#tour-next', root).addEventListener('click', () => { tourAt++; feel('tap'); tourShow(); });
+  $('#tour-skip', root).addEventListener('click', () => tourEnd(false));
+  root.querySelector('.tourcard').focus && root.querySelector('.tourcard').focus();
+}
+function tourEnd(finished) {
+  const root = $('#tour'); if (root) { root.hidden = true; root.innerHTML = ''; }
+  document.body.classList.remove('touring');
+  S.tour = 'seen'; save();
+  if (finished) { goNow('grow'); setTimeout(() => { const f = $('#write') || $('textarea.field'); if (f) f.focus(); }, 420); }
+}
+function tourMaybe() {
+  if (S.tour === 'seen') return;
+  if (S.plants.length || S.entries.length) { S.tour = 'seen'; save(); return; }   // not their first time
+  if (location.search.includes('nosplash')) return;
+  tourAt = 0;
+  setTimeout(tourShow, 700);
+}
 // ── the network going away ──
 // Almost everything here works with no connection at all: writing, the garden, the
 // journal, the glyph. A few things do not, and somebody who taps one of those deserves to
@@ -2003,6 +2054,9 @@ function wire() {
   setFeel(() => !!(S && S.feel));
   wireSwipe();
   wireConnectivity();
+  tourMaybe();
+  beat('view');
+  watchTime();
   wireCoinHold();
   hiddenLines();
   { const gs = $('#glyph-share'); if (gs) gs.addEventListener('click', () => {
@@ -2047,6 +2101,7 @@ function wire() {
   const jw = $('#j-write'); if (jw) jw.addEventListener('click', () => { draft.text = draft.text || ''; go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center' }); } }, 350); });
   const js = $('#j-search'); if (js) js.addEventListener('input', () => { journalQuery = js.value; const v = js.value; render(); const n = $('#j-search'); if (n) { n.focus(); n.setSelectionRange(v.length, v.length); } });
   const gg = $('#give-gift'); if (gg) gg.addEventListener('click', () => giveSheet(null));
+  { const c = $('#his-call'); if (c) c.textContent = T('locked.call', 'Give Your First Gratus Gift Today!'); }
   const gp = $('#give-project'); if (gp) gp.addEventListener('click', () => go('give', 'projects'));
   const gvd = $('#give-giveth'); if (gvd) gvd.addEventListener('click', () => go('give', 'giveth'));
   $$('[data-gv]').forEach((b) => b.addEventListener('click', () => projectSheet(b.dataset.gv)));
@@ -2121,8 +2176,8 @@ function wire() {
 
 // ── boot ──
 async function boot() {
-  const [evo, names, prompts, copy, book, recipes, alchemy, families] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy', 'families'].map((n) => fetch('/config/' + n + '.json?v=17').then((r) => r.json())));
-  C = { evo, names, prompts, copy, book, recipes, alchemy, families }; load(); stars(); songInit();
+  const [evo, names, prompts, copy, book, recipes, alchemy, families, partners] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy', 'families', 'partners'].map((n) => fetch('/config/' + n + '.json?v=18').then((r) => r.json())));
+  C = { evo, names, prompts, copy, book, recipes, alchemy, families, partners }; load(); stars(); songInit();
   if ('serviceWorker' in navigator && !location.search.includes('dev=1')) navigator.serviceWorker.register('/sw.js').catch(() => null);
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));

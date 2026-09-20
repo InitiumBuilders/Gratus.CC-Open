@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trax · Gratus.CC</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#050912">
+<link rel="icon" href="/assets/brand/icon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=36">
+<link rel="stylesheet" href="/assets/css/page.css?v=1">
+<style>
+  .nums { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); margin: 18px 0 8px; }
+  @media (min-width: 620px) { .nums { grid-template-columns: repeat(4, 1fr); } }
+  .num { border: 1px solid var(--hair-2); border-radius: 20px; padding: 16px 14px;
+    background: rgba(255,255,255,.02); text-align: center; }
+  .num b { display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 38px;
+    line-height: 1.05; font-variant-numeric: lining-nums tabular-nums; color: #fff; }
+  .num span { font-size: 13px; color: var(--violet-text); }
+  .tabs2 { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0 4px; }
+  .tabs2 button { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--hair-2);
+    background: rgba(255,255,255,.02); color: var(--ink); font-size: 15px; font-weight: 600; }
+  .tabs2 button.on { border-color: var(--hair-hue); box-shadow: var(--glow); color: #fff; }
+  .spark { display: flex; align-items: flex-end; gap: 3px; height: 90px; margin: 18px 0 6px; }
+  .spark i { flex: 1; min-width: 2px; background: linear-gradient(180deg, var(--violet-text), rgba(110,217,192,.25));
+    border-radius: 3px 3px 0 0; }
+  .note { font-size: 14px; color: var(--ink-2); }
+</style>
+</head>
+<body class="doc">
+<nav class="docnav"><a class="brand" href="/"><img src="/assets/art/gfx/logo.webp" alt=""><span>Gratus<em>.CC</em></span></a><a class="pill" href="/app">Open the app</a></nav>
+<main class="wrap">
+  <p class="kick">Trax</p>
+  <h1>What is actually happening</h1>
+  <p class="lead">Every number here is one this app counted. Nothing is estimated and nothing is
+     projected. Where something has not been measured it says so instead of showing a zero that
+     looks like a measurement.</p>
+
+  <div class="tabs2" id="win">
+    <button data-w="today" class="on">Today</button>
+    <button data-w="week">7 days</button>
+    <button data-w="month">30 days</button>
+    <button data-w="year">Year</button>
+    <button data-w="all">Lifetime</button>
+  </div>
+  <div class="nums" id="nums"></div>
+  <p class="note" id="note"></p>
+
+  <h2>Views, last 30 days</h2>
+  <div class="spark" id="spark"></div>
+  <p class="note" id="range"></p>
+
+  <h2>Not measured</h2>
+  <ul id="not"></ul>
+
+  <h2>What a beat carries</h2>
+  <p>A word from a fixed list and a small number. No journal text, no names, no emojis, no links.
+     A device counts once a day toward people, by a salted hash that never leaves the server and
+     is never an address. That is the whole of it, and
+     <a href="https://github.com/InitiumBuilders/Gratus.CC-Open/blob/master/api/trax.js">the file is readable</a>.</p>
+</main>
+<footer class="docfoot">
+  <p class="presented">Gratus.CC presented by Outlier.Systems</p>
+  <nav><a href="/the-story">The story</a> · <a href="/docs">Docs</a> · <a href="/app">The app</a></nav>
+</footer>
+<script type="module">
+const N = (n) => (n == null ? '·' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+let data = null, win = 'today';
+const draw = () => {
+  if (!data) return;
+  const w = (data.windows || {})[win] || {};
+  document.getElementById('nums').innerHTML = [
+    [N(w.views), 'Views'], [N(w.people), 'People'], [w.hours == null ? '·' : w.hours, 'Hours in the app'],
+    [N(w.gifts), 'Gifts wrapped'], [N(w.planted), 'Gifts planted'], [N(w.seeds), 'Seeds planted'],
+    [N(w.days), 'Days of care'], [N(data.growing), 'Out there growing'],
+  ].map(([v, k]) => '<div class="num"><b>' + v + '</b><span>' + k + '</span></div>').join('');
+  document.getElementById('note').textContent =
+    'Counted across ' + N(data.counted) + ' days' + (data.since ? ', since ' + data.since : '') + '.';
+};
+fetch('/api/trax').then((r) => r.json()).then((d) => {
+  if (d.error) { document.getElementById('note').textContent = d.error; return; }
+  data = d; draw();
+  const days = d.daily || [];
+  const top = Math.max(1, ...days.map((x) => x.views));
+  document.getElementById('spark').innerHTML = days.map((x) =>
+    '<i style="height:' + Math.max(3, Math.round(x.views / top * 100)) + '%" title="' + x.day + ': ' + x.views + '"></i>').join('');
+  document.getElementById('range').textContent = days.length
+    ? days[0].day + ' to ' + days[days.length - 1].day
+    : 'Nothing counted yet. The first view lands the first bar.';
+  document.getElementById('not').innerHTML = Object.entries(d.notMeasured || {})
+    .map(([k, v]) => '<li><b>' + k + '</b>: ' + v + '</li>').join('');
+}).catch(() => { document.getElementById('note').textContent = 'Trax could not be reached.'; });
+document.getElementById('win').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  win = b.dataset.w;
+  [...document.querySelectorAll('#win button')].forEach((x) => x.classList.toggle('on', x === b));
+  draw();
+});
+</script>
+</body>
+</html>

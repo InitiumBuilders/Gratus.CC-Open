@@ -1,0 +1,56 @@
+/* THE READING PAGES · the story, give and grow, the docs.
+   One column, phone first, nothing that needs JavaScript to be read. */
+body.doc { background: var(--ground); color: var(--ink); font-family: Inter, system-ui, sans-serif;
+  margin: 0; padding: 0 0 80px; -webkit-font-smoothing: antialiased; }
+.doc .wrap { width: min(720px, calc(100% - 40px)); margin: 0 auto; }
+.docnav { position: sticky; top: 0; z-index: 9; display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 12px 20px; background: rgba(5,9,18,.86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hair-2); }
+.docnav .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none;
+  font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; min-height: 44px; }
+.docnav .brand img { width: 30px; height: 30px; }
+.docnav .brand em { font-style: normal; color: var(--violet-text); }
+.docnav .pill { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 999px;
+  background: linear-gradient(180deg, rgba(24,104,82,.92), rgba(12,66,52,.96)); border: 1px solid rgba(185,255,228,.6);
+  color: #fff; text-decoration: none; font-weight: 600; font-size: 15px; }
+
+.doc h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: clamp(38px, 11vw, 66px);
+  line-height: 1.06; margin: 40px 0 10px; letter-spacing: normal; text-wrap: balance; }
+.doc h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: clamp(27px, 7vw, 38px);
+  line-height: 1.16; margin: 48px 0 12px; text-wrap: balance; }
+.doc h3 { font-size: 19px; line-height: 26px; margin: 30px 0 8px; font-weight: 600; }
+.doc p { font-size: 17px; line-height: 28px; margin: 0 0 18px; max-width: 62ch; text-wrap: pretty; }
+.doc .lead { font-size: 20px; line-height: 31px; color: #fff; }
+.doc .kick { font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--violet-text);
+  font-weight: 600; margin: 0 0 8px; }
+.doc a { color: var(--violet-text); }
+.doc ul, .doc ol { font-size: 17px; line-height: 28px; padding-left: 22px; max-width: 62ch; }
+.doc li { margin: 0 0 10px; }
+.doc strong { color: #fff; }
+
+/* one line, one room: a statement gets the screen to itself */
+.act { min-height: 74svh; display: grid; align-content: center; }
+.act .line { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600;
+  font-size: clamp(32px, 9vw, 58px); line-height: 1.08; margin: 0; text-wrap: balance; }
+.act .under { margin-top: 18px; color: var(--violet-text); font-size: 17px; line-height: 27px; }
+
+.card { border: 1px solid var(--hair-2); border-radius: 24px; padding: 22px; margin: 18px 0;
+  background: rgba(255,255,255,.02); }
+.card h3 { margin-top: 0; }
+.grid { display: grid; gap: 14px; }
+@media (min-width: 720px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+
+.guides { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 10px; }
+.guides a { display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  min-height: 60px; padding: 14px 18px; border: 1px solid var(--hair-2); border-radius: 18px;
+  text-decoration: none; color: var(--ink); background: rgba(255,255,255,.02); }
+.guides b { font-size: 17px; font-weight: 600; display: block; }
+.guides span { font-size: 14px; color: var(--violet-text); }
+
+.docfoot { width: min(720px, calc(100% - 40px)); margin: 70px auto 0; padding-top: 26px;
+  border-top: 1px solid var(--hair-2); text-align: center; }
+.docfoot .tags { font-weight: 600; color: var(--violet-text); font-size: 15px; }
+.docfoot .presented { font-size: 15px; color: var(--ink-2); }
+.docfoot nav { font-size: 15px; line-height: 30px; }
+.docfoot a { color: var(--violet-text); min-height: 44px; display: inline-block; padding: 8px 4px; }
+.docfoot .mit { font-size: 14px; color: var(--ink-2); }

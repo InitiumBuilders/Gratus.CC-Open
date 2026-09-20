@@ -8,7 +8,12 @@
       "makerUrl": "https://x.com/BuiltByAugust",
       "words": "Journal Every Day. Give Gifts The Grow.",
       "close": "Gratus In Motus. Gratitude In Motion. Give Gifts That Grow. Gratus Gives."
-    }
+    },
+    "headline": "Give And Grow What Matters Most",
+    "call": "Give Your First Gratus Gift Today!",
+    "promise": "Gratus Gives Gifts That Keep On Growing",
+    "tags": "#GrowTheDifference #GrowWithGratus",
+    "presented": "Gratus.CC presented by Outlier.Systems"
   },
   "tabs": {
     "garden": "Garden",
@@ -142,5 +147,11 @@
     "imagined": true,
     "what": "A gratitude journal that grows a garden.",
     "sample": "Open a sample gift"
-  }
+  },
+  "ownerKeys": [
+    "headline",
+    "call",
+    "promise",
+    "tags"
+  ]
 }
