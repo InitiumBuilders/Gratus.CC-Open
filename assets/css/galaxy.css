@@ -92,7 +92,10 @@ html.landed .art { opacity: 1; animation: none; }
 .photoprev img { max-height: 140px; border-radius: var(--r-14); }
 
 /* ── the growth book ── */
-.seg { display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px; gap: 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, minmax(max-content, 1fr)); padding: 4px; gap: 4px;
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.seg::-webkit-scrollbar { display: none; }
+.seg button { white-space: nowrap; padding: 0 12px; }
 .seg button { min-height: 44px; border-radius: var(--pill); font-size: 14px; font-weight: 500; color: var(--ink-3); }
 .seg button.on { background: var(--hue-16); color: var(--ink); border: 1px solid var(--hair-hue); }
 .phase { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; }
@@ -731,7 +734,14 @@ a.gpill { color: #1E2A10; }
   mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
 }
 .chips.row::-webkit-scrollbar, .phaseline::-webkit-scrollbar { display: none; }
-.chips.row .chip { font-size: 14px; padding: 0 15px; min-height: 44px; min-width: 52px; }
+/* ⚠ A FLEX ITEM'S IMPLICIT min-width: auto IS THE ONLY THING STOPPING IT SHRINKING BELOW
+   ITS OWN TEXT, and writing any min-width at all replaces it. This row is a nowrap flex
+   scroller; when `min-width: 52px` went on to make the short chips wide enough to tap,
+   every long one became free to shrink to fifty-two pixels, and "Environment",
+   "Community", "Education" and "Health" spilled out of their pills and printed on top of
+   each other. It shipped, and he photographed it on his phone.
+   flex: 0 0 auto is the fix: a chip is exactly as wide as its word, and the row scrolls. */
+.chips.row .chip { flex: 0 0 auto; font-size: 14px; padding: 0 15px; min-height: 44px; min-width: 52px; }
 
 /* the phase legend was five chips wrapping 2 + 2 + 1, an orphan on its own line.
    One row, scrolled, on every width. */
@@ -1143,3 +1153,73 @@ html.wrapped .tabs .star span.lbl { color: #FFD98A; }
   .mark-turn { animation: none; }
   .launch { display: none; }
 }
+
+/* ══ MOTUS · A VALUE IN MOTION ══════════════════════════════════════════════════════
+   Four movements on the Giveth page, and every one of them is the thing itself arriving
+   rather than an effect laid over it. The figures are correct in the markup before any
+   of this runs, so a page with no script is a page with the right numbers on it.
+
+   Transform and opacity only. Each runs once, when it is looked at. Under reduced motion
+   every one of them is simply already there. ═══════════════════════════════════════ */
+
+/* the months, drawing themselves in the order they happened */
+.gvbarline.armed i { transform-origin: 50% 100%; transform: scaleY(0); }
+.gvbarline.armed.drawn i {
+  transform: scaleY(1);
+  transition: transform .5s cubic-bezier(.18, .9, .3, 1);
+  transition-delay: var(--wait, 0ms);
+}
+
+/* where it went, growing from nothing, largest first */
+.gvbars.armed .gvbar i { transform-origin: 0 50%; transform: scaleX(0); }
+.gvbars.armed.grown .gvbar i {
+  transform: scaleX(1);
+  transition: transform .72s cubic-bezier(.16, 1, .3, 1);
+  transition-delay: var(--wait, 0ms);
+}
+/* the figure beside a bar arrives with it, not before it */
+.gvbars.armed .gvbar .gvbv { opacity: 0; }
+.gvbars.armed.grown .gvbar .gvbv { opacity: 1; transition: opacity .4s ease-out; transition-delay: calc(var(--wait, 0ms) + 240ms); }
+
+/* THE TRACE. Begin, Become, Bridge: one light travels down through all three, because a
+   seed goes out, is read, and comes back. The thread is the path; the light is the seed. */
+.trace3 { position: relative; }
+.trace3::before {
+  content: ""; position: absolute; left: 13px; top: 8px; bottom: 8px; width: 2px;
+  background: linear-gradient(180deg, var(--hue-16), var(--hue-48), var(--gold));
+  opacity: 0; transform: scaleY(0); transform-origin: 50% 0;
+}
+.trace3.flowing::before { opacity: .7; transform: scaleY(1); transition: transform .9s cubic-bezier(.16, 1, .3, 1), opacity .4s ease-out; }
+.trace3::after {
+  content: ""; position: absolute; left: 9px; top: 8px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--star); box-shadow: 0 0 14px var(--gold), 0 0 30px rgba(242, 201, 125, .5);
+  opacity: 0;
+}
+.trace3.flowing::after { animation: seedRuns 2.4s cubic-bezier(.4, 0, .5, 1) .5s forwards; }
+@keyframes seedRuns {
+  0%   { opacity: 0; transform: translateY(0) scale(.6); }
+  12%  { opacity: 1; transform: translateY(6%) scale(1); }
+  82%  { opacity: 1; transform: translateY(calc(100% - 18px)) scale(1); }
+  100% { opacity: 0; transform: translateY(calc(100% - 18px)) scale(1.8); }
+}
+.trace3 > span, .trace3 > div { position: relative; padding-left: 16px; }
+
+/* the three words themselves land one after the other, in the order the seed passes them */
+.trace3.armed > * { opacity: .35; }
+.trace3.armed.flowing > * { opacity: 1; transition: opacity .5s ease-out; }
+.trace3.armed.flowing > :nth-child(2) { transition-delay: .5s; }
+.trace3.armed.flowing > :nth-child(3) { transition-delay: 1s; }
+
+/* a number that is counting reads as one column of digits, never a jumping line */
+.gvnum, .gvfacts b, .gvbv { font-variant-numeric: lining-nums tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gvbarline i, .gvbar i { transform: none; }
+  .gvbar .gvbv, .trace3 > * { opacity: 1; }
+  .trace3::before { opacity: .7; transform: none; }
+  .trace3.flowing::after { animation: none; }
+}
+
+/* the tallest month, named under the line it belongs to */
+.gvpeak { margin-top: 10px; font-size: 15px; line-height: 22px; color: var(--ink-3); }
+.gvpeak b { color: var(--gold); font-variant-numeric: lining-nums tabular-nums; font-weight: 500; }

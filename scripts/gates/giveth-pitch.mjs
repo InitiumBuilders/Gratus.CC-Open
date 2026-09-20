@@ -121,9 +121,6 @@ const bars = await page.evaluate(() => document.querySelectorAll('.gvbarline i')
 say(bars === (d.months || []).length, 'one bar for each month  (' + bars + ')');
 const drawn = await page.evaluate(() => [...document.querySelectorAll('.gvbarline i')].every((x) => x.getBoundingClientRect().height > 0));
 say(drawn, 'and every bar is drawn rather than implied');
-const catBars = await page.evaluate(() => [...document.querySelectorAll('.gvbar i')].map((x) => Math.round(x.getBoundingClientRect().width)));
-say(catBars.length >= 5 && catBars[0] >= catBars[catBars.length - 1] && catBars[catBars.length - 1] > 0,
-  'the category bars fall from largest to smallest and none is invisible  (' + catBars.join(' ') + ')');
 
 const edge = await page.evaluate(() => {
   const n = document.querySelector('.gvnum');
@@ -149,6 +146,14 @@ say(fold.facts && fold.facts.b <= barTop, 'and so do the three facts under it  (
 say(!/tabs|scrim|art\b/.test(String(fold.onTop || '')), 'and nothing is painted over them  (' + fold.onTop + ')');
 const spill = await page.evaluate(() => Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth));
 say(spill === 0, 'and nothing on the page pushes it sideways  (' + spill + 'px)');
+
+// LAST, because it scrolls: the kinds arrive when somebody reaches them, and everything
+// above this point had to read the page as it sits before anybody touches it.
+await page.evaluate(() => document.querySelector('.gvbars').scrollIntoView({ block: 'center' }));
+await page.waitForTimeout(1700);
+const catBars = await page.evaluate(() => [...document.querySelectorAll('.gvbar i')].map((x) => Math.round(x.getBoundingClientRect().width)));
+say(catBars.length >= 5 && catBars[0] >= catBars[catBars.length - 1] && catBars[catBars.length - 1] > 0,
+  'the category bars fall from largest to smallest and none is invisible  (' + catBars.join(' ') + ')');
 
 await close(); await b.close(); await srv.close();
 console.log('G34 the Giveth pitch: ' + (fails ? 'FAIL - ' + fails : 'PASS'));

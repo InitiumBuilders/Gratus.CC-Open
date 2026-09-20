@@ -172,7 +172,9 @@
     "h1": "Every month since ",
     "h2": "Where it went",
     "h3": "And then matched",
-    "numbers": "The numbers"
+    "numbers": "The numbers",
+    "peak": "The fullest month so far was ",
+    "peakEnd": "."
   },
   "menu": {
     "title": "Everywhere",

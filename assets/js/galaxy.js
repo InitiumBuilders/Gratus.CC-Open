@@ -17,6 +17,7 @@ import * as Bill from './billing.js?v=21';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 import { paintMarks, passingNow, launch as markLaunch } from './giftmark.js?v=39';
+import { countUp, onSeen, drawMonths, growBars, armMonths, armBars, armTrace } from './motus.js?v=41';
 
 const KEY = 'gratus.galaxy.v1';
 const GFX = (n) => '/assets/art/gfx/' + n;
@@ -635,6 +636,8 @@ async function loadGivethStats() {
 const usd = (n) => '$' + Math.round(Number(n) || 0).toLocaleString();
 // A figure Giveth did not send reads as a dash. It never reads as none.
 const count = (n) => (n == null || !Number.isFinite(Number(n)) ? '\u00b7' : Number(n).toLocaleString());
+// only a figure that is really there is given something to count toward
+const toAttr = (n) => (n == null || !Number.isFinite(Number(n)) ? '' : ' data-to="' + Math.round(Number(n)) + '"');
 const usdShort = (n) => {
   const v = Number(n) || 0;
   if (v >= 1e6) return '$' + (v / 1e6).toFixed(v >= 1e7 ? 0 : 1) + 'M';
@@ -648,13 +651,41 @@ const monthName = (d) => {
 };
 
 // the one figure that carries the claim, sitting in the hero where it can reign
+// MOTUS. Every figure on this page is already correct in the markup; what follows is the
+// arriving. Nothing moves until it is looked at, and nothing moves twice.
+function wireMotus() {
+  $$('[data-to]').forEach((el) => {
+    if (el.dataset.ran) return;
+    el.dataset.ran = '1';
+    const to = Number(el.dataset.to);
+    const money = el.classList.contains('gvnum');
+    const fmt = money ? usd : (n) => Math.round(n).toLocaleString();
+    // The figure is NEVER emptied until the moment it starts counting. Zeroing it up front
+    // means a figure nobody scrolled to sits at nought for ever, which is the same lie the
+    // page already told once about somebody else's money.
+    onSeen(el, () => {
+      el.textContent = fmt(0);
+      requestAnimationFrame(() => countUp(el, to, { ms: money ? 1700 : 1100, fmt }));
+    }, 0.2);
+  });
+  const line = $('.gvbarline');
+  if (line && !line.dataset.ran) { line.dataset.ran = '1'; armMonths(line); onSeen(line, () => drawMonths(line), 0.25); }
+  const bars = $('.gvbars');
+  if (bars && !bars.dataset.ran) { bars.dataset.ran = '1'; armBars(bars); onSeen(bars, () => growBars(bars), 0.2); }
+  const trace = $('.trace3');
+  if (trace && !trace.dataset.ran) { trace.dataset.ran = '1'; armTrace(trace); onSeen(trace, () => trace.classList.add('flowing'), 0.35); }
+}
+
 function givethNumber() {
   if (gvStatsState === 'idle') loadGivethStats();
   const d = gvStats;
   if (gvStatsState === 'offline') return '<span class="kicker">' + esc(T('giveth.quiet', '')) + '</span>';
   if (!d) return '<span class="kicker">' + esc(T('giveth.reading', '')) + '</span>';
   if (d.usd == null || !(d.usd > 0)) return '<span class="kicker">' + esc(T('giveth.noTotal', '')) + '</span>';
-  return '<b class="gvnum">' + esc(usd(d.usd)) + '</b><span class="gvsub">' + esc(T('giveth.under', '')) + '</span>';
+  // The figure is written into the page as itself, so it is right with no script at all.
+  // The count is something that happens to a number that is already correct.
+  return '<b class="gvnum" data-to="' + Math.round(d.usd) + '">' + esc(usd(d.usd)) + '</b>'
+    + '<span class="gvsub">' + esc(T('giveth.under', '')) + '</span>';
 }
 
 function givethPitch() {
@@ -673,6 +704,7 @@ function givethPitch() {
   const ms = d.months || [];
   const top = Math.max(1, ...ms.map((m) => m.usd));
   const line = ms.map((m) => '<i style="height:' + Math.max(2, Math.round(m.usd / top * 100)) + '%" title="' + esc(monthName(m.d)) + ': ' + esc(usdShort(m.usd)) + '"></i>').join('');
+  const worth = (n) => Math.max(4, Math.round(n / cTop * 100));
   const cats = (d.categories || []).slice(0, 8);
   const cTop = Math.max(1, ...cats.map((c) => c.usd));
 
@@ -680,17 +712,25 @@ function givethPitch() {
   // unreachable with no word from the parser: the page rendered, empty, and measured as
   // if the whole pitch had never been written.
   return '<div class="glass stats in gvfacts">' +
-    '<div><b>' + esc(count(d.donors)) + '</b><span>people gave</span></div>' +
-    '<div><b>' + esc(count(d.listed)) + '</b><span>projects</span></div>' +
-    '<div><b>' + esc(count(d.verified)) + '</b><span>verified</span></div></div>' +
+    '<div><b' + toAttr(d.donors) + '>' + esc(count(d.donors)) + '</b><span>people gave</span></div>' +
+    '<div><b' + toAttr(d.listed) + '>' + esc(count(d.listed)) + '</b><span>projects</span></div>' +
+    '<div><b' + toAttr(d.verified) + '>' + esc(count(d.verified)) + '</b><span>verified</span></div></div>' +
 
     (ms.length ? '<div class="eyebrow"><h2>' + esc(T('giveth.h1', '')) + esc(monthName(d.since)) + '</h2><span class="more">' + ms.length + ' months</span></div>' +
       '<div class="glass card gvline"><div class="gvbarline">' + line + '</div>' +
-      '<span class="cap">' + esc(monthName(ms[0].d)) + ' to ' + esc(monthName(ms[ms.length - 1].d)) + '. ' + esc(T('giveth.months', '')) + '</span></div>' : '') +
+      '<span class="cap">' + esc(monthName(ms[0].d)) + ' to ' + esc(monthName(ms[ms.length - 1].d)) + '. ' + esc(T('giveth.months', '')) + '</span>' +
+      (() => {
+        // the tallest bar, named, so the line has a size as well as a shape
+        const high = ms.reduce((a, m) => (m.usd > a.usd ? m : a), ms[0]);
+        return high && high.usd > 0
+          ? '<p class="gvpeak">' + esc(T('giveth.peak', '')) + '<b>' + esc(monthName(high.d)) + '</b>, at <b>'
+            + esc(usdShort(high.usd)) + '</b>' + esc(T('giveth.peakEnd', '')) + '</p>'
+          : '';
+      })() + '</div>' : '') +
 
     (cats.length ? '<div class="eyebrow"><h2>' + esc(T('giveth.h2', '')) + '</h2><span class="more">' + (d.categories || []).length + ' kinds</span></div>' +
       '<div class="glass card gvbars">' + cats.map((c) => '<div class="gvbar"><span class="gvbn">' + esc(c.title) + '</span>' +
-        '<i style="width:' + Math.max(4, Math.round(c.usd / cTop * 100)) + '%"></i>' +
+        '<i style="width:' + worth(c.usd) + '%"></i>' +
         '<span class="gvbv">' + esc(usdShort(c.usd)) + '</span></div>').join('') +
       '<span class="cap">' + esc(T('giveth.kinds', '')) + '</span></div>' : '') +
 
@@ -1547,7 +1587,7 @@ function viewJournal() {
         : '<p class="cap">' + (filtering ? 'Nothing here with that filter.' : 'Nothing written yet. Every entry you plant lives here, by day.') + '</p>');
   }
   return '<div class="glass card"><span class="kicker mint">Today\'s question</span><h3 class="q"><button id="j-q" aria-label="another question">' + esc(q) + '</button></h3><button class="btn mint" id="j-write">Write today\'s entry 🌱</button></div>' +
-    '<div class="glass seg" style="grid-template-columns:repeat(4,1fr)">' + [['entries', 'Entries'], ['threads', 'Threads'], ['folders', 'Folders'], ['milestones', 'Milestones']].map(([k, n]) => '<button class="' + (jTab === k ? 'on' : '') + '" data-jt="' + k + '">' + n + '</button>').join('') + '</div>' + body;
+    '<div class="glass seg" style="grid-template-columns:repeat(4,minmax(max-content,1fr))">' + [['entries', 'Entries'], ['threads', 'Threads'], ['folders', 'Folders'], ['milestones', 'Milestones']].map(([k, n]) => '<button class="' + (jTab === k ? 'on' : '') + '" data-jt="' + k + '">' + n + '</button>').join('') + '</div>' + body;
 }
 function viewBook() {
   const ph = C.book.phases; let body = '';
@@ -1568,7 +1608,7 @@ function viewBook() {
   else { const cats = C.recipes.categories; const list = allRecipes().filter((r) => recipeCat === 'all' || r.cat === recipeCat); body = '<div class="chips row"><button class="chip' + (recipeCat === 'all' ? ' on' : '') + '" data-rcat="all">All</button>' + Object.keys(cats).map((k) => '<button class="chip' + (recipeCat === k ? ' on' : '') + '" data-rcat="' + k + '">' + esc(cats[k].name) + '</button>').join('') + '<button class="chip' + (recipeCat === 'mine' ? ' on' : '') + '" data-rcat="mine">Mine</button></div>' +
     alchemyBlock() + '<div class="eyebrow"><h2>Recipes</h2></div><button class="btn wide" id="add-recipe">+ Add a recipe</button><div class="rows">' + list.map((r) => { const st = recipeState(r); return '<button class="glass recipe' + (st.made ? ' made' : '') + '" data-recipe="' + esc(r.id) + '"><span class="f">' + r.formula.map(esc).join('<span class="op">+</span>') + '<span class="op">→</span>' + esc(r.result) + '</span><span class="cat">' + esc(r.cat === 'mine' ? 'Mine' : (cats[r.cat] || {}).name || '') + '</span><span class="name">' + esc(r.name) + '</span><span class="line">' + esc(r.statement) + (st.made ? ' · made' : ' · ' + st.days + ' of ' + st.need + ' days together') + '</span></button>'; }).join('') + '</div>'; }
   return hero(scene('book'), { cls: 'room-hero', h1: 'Growth Book', k1: 'Your Gratitude Journal', k2: 'Journal · Phases · Emojis · Recipes' }) +
-    '<div class="page"><div class="glass seg" style="grid-template-columns:repeat(5,1fr)">' + [['journal', 'Journal'], ['phases', 'Phases'], ['paths', 'Pathways'], ['emojis', 'Emojis'], ['recipes', 'Recipes']].map(([k, n]) => '<button class="' + (bookTab === k ? 'on' : '') + '" aria-pressed="' + (bookTab === k ? 'true' : 'false') + '" data-book="' + k + '">' + n + '</button>').join('') + '</div>' + body + '</div>';
+    '<div class="page"><div class="glass seg" style="grid-template-columns:repeat(5,minmax(max-content,1fr))">' + [['journal', 'Journal'], ['phases', 'Phases'], ['paths', 'Pathways'], ['emojis', 'Emojis'], ['recipes', 'Recipes']].map(([k, n]) => '<button class="' + (bookTab === k ? 'on' : '') + '" aria-pressed="' + (bookTab === k ? 'true' : 'false') + '" data-book="' + k + '">' + n + '</button>').join('') + '</div>' + body + '</div>';
 }
 function arcSheet(emoji) {
   const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const seed = p ? p.emoji : emoji; const arc = E.arc(seed, d, C.evo); const sch = E.schedule(C.evo); const ph = phaseOf(d); const nx = nextPhase(d);
@@ -2715,6 +2755,7 @@ function wire() {
   { const vp = $('#vb-passage'); if (vp && vibeNow) vp.addEventListener('click', () => vibePassageSheet(vibeNow)); }
   { const mk = $('#vb-make'); if (mk) mk.addEventListener('click', makeVibeSheet);
     const ga = $('#gv-again'); if (ga) ga.addEventListener('click', () => { gvStatsState = 'idle'; loadGivethStats(); render(); });
+    wireMotus();
     const jn = $('#vb-join'); if (jn) jn.addEventListener('click', () => { const c = ($('#vb-code').value || '').trim().toUpperCase(); if (!c) { toast('A code.'); return; } if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '✦' }); save(); } loadVibe(c); });
     const sv = $('#vb-share'); if (sv && vibeNow) sv.addEventListener('click', () => shareOrCopy('Come into ' + vibeNow.name, 'A Gratus Vibe. The code is ' + vibeNow.code, location.origin + '/app/vibes?code=' + vibeNow.code).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
     const bg = $('#vb-bring'); if (bg && vibeNow) bg.addEventListener('click', () => bringSheet(vibeNow));
