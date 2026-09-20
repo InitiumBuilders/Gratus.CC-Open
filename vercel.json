@@ -126,5 +126,16 @@
         }
       ]
     }
-  ]
+  ],
+  "crons": [
+    {
+      "path": "/api/giveth-stats",
+      "schedule": "0 4 * * *"
+    }
+  ],
+  "functions": {
+    "api/giveth-stats.js": {
+      "maxDuration": 60
+    }
+  }
 }
