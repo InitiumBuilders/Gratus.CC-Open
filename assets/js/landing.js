@@ -27,5 +27,5 @@ setTimeout(() => acts.forEach((s) => s.classList.add('on')), 1400);
 // a kicker that ends a sentence reads as a sentence
 document.querySelectorAll('.kicker').forEach((k) => { if (/[.!?]$/.test(k.textContent.trim())) k.classList.add('say'); });
 const st = document.querySelector('.stars'); let s = '';
-for (let i = 0; i < 90; i++) s += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>';
+for (let i = 0; i < 90; i++) s += '<i style="left:' + (1 + Math.random() * 97).toFixed(1) + '%;top:' + (1 + Math.random() * 97).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>';
 st.innerHTML = s;

@@ -36,9 +36,9 @@ run log below.
 [x] CHECKPOINT I   TRUTH        shipped and live, 2026-09-19
 [x] CHECKPOINT II  INTEGRITY    shipped and live, 2026-09-19
 [x] CHECKPOINT III BODY         shipped and live, 2026-09-19
-[ ] CHECKPOINT IV  SACRED
-[ ] CHECKPOINT V   BRIDGE
-[ ] CHECKPOINT VI  GUIDED
+[x] CHECKPOINT IV  SACRED       shipped and live, 2026-09-19
+[x] CHECKPOINT V   BRIDGE       shipped and live, 2026-09-19
+[x] CHECKPOINT VI  GUIDED       shipped and live, 2026-09-19
 [ ] CHECKPOINT VII SHIP        ← stops for August
 ```
 
@@ -307,6 +307,58 @@ scrolls sideways belongs to the row.
 Reach is measured by asking what is under the thumb 21 pixels out, not by reading a
 width, because a 40 pixel button with a 46 pixel target under it is a 46 pixel target.
 Every control on six screens now answers.
+
+---
+
+## CHECKPOINTS IV, V AND VI · shipped
+
+**The Glyph.** `engine/glyph.js`: one ring for the garden and one arm for each thing
+growing. An arm points where its emoji points, reaches as far as the days you gave it, and
+carries a head once it is ready to give. It reads no clock and no dice, so the same garden
+draws the same figure forever, and no two gardens draw the same one. Ten tests hold that
+promise, including the one that caught a real bug on the way: with a single plant the arm
+was measured against the longest arm in the same garden, so a garden holding one thing drew
+the same figure on its fourth day as on its thirteenth. Days are absolute now.
+
+**The eight families, awake.** `config/families.json` carries eight species names, eight
+hues and eight sentences, every one of them his. It had shipped to every person who ever
+opened Gratus and had never once been fetched. It is in the boot fetch, in the worker, and
+on the sheet a hold opens.
+
+**Three hidden lines, reachable.** `config/prompts.json` held three finished sentences that
+no line of code had ever read: the garden hour, the anniversary, and the thirteen-second
+hold. Each has a way to arrive now, and none of them interrupts anything. The garden hour
+is learned rather than asked for: it is the hour you keep coming.
+
+**Every link has its own face.** Six shareable routes shared one picture and one sentence,
+which in an app whose product is a link somebody receives is the worst place to be generic.
+A gift arriving in a message said "Gratus.CC" and showed the landing. There are five faces
+now, cut from his own scenes, and `scripts/shells.py` strikes the four shells from app.html
+so they never drift apart.
+
+**The bridge.** Every loop in the trace ends at one human who was told nothing by anything.
+There is a control on your own seed now: it hands you a line and the project's own published
+channels, and you send it. Gratus does not write to anybody for you and could not.
+
+**The manual.** Twenty-four guides at `docs/guides/`, each with front matter naming the
+build it was checked against, listed statically at `/guided` so the page reads with no
+JavaScript at all. Three diagrams authored at 375 first, each with a text equivalent beside
+it saying the same thing.
+
+**And the floor under all of it.** A view registry naming twenty screens in one module, so
+the browser tab finally says which screen you are on. `render()` wrapped, so a throw leaves
+a sentence and working doors instead of a blank page. The network going away is noticed and
+said out loud. Every view fits 320, 375 and 390 with nothing over the edge. No type under
+thirteen pixels anywhere in the stylesheet, where there had been ten declarations and one
+of them at nine.
+
+### Still red, and why
+
+| gate | why |
+|---|---|
+| **G8 weight** | Ten failures, all of them the size of his films on disk. Re-encoding them is the Votus question below and it is not mine to answer. |
+| **G23 ceremonies** | Wants three named ceremonies and a layer that answers a key. That is product design, not plumbing, and doing it at speed would be the wrong way to build the most sacred surface in the app. |
+| **G10/G11/G13 a11y** | Five left. Two are the gate disagreeing with itself about how to measure a hold, one asks a precondition that is not met in a headless browser, and two are segmented toggles that need per-site work to say which one is chosen. None of them is a legibility failure; every word passes. |
 
 ---
 

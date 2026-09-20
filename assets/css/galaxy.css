@@ -71,7 +71,7 @@ html.landed .art { opacity: 1; animation: none; }
 .entry .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .entry .text { color: var(--ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
 .entry .tags { display: flex; gap: 6px; flex-wrap: wrap; }
-.entry .tags span { font-size: 12px; line-height: 16px; padding: 3px 9px; border-radius: var(--pill); border: 1px solid var(--hair); color: var(--ink-3); }
+.entry .tags span { font-size: 13px; line-height: 16px; padding: 3px 9px; border-radius: var(--pill); border: 1px solid var(--hair); color: var(--ink-3); }
 
 /* ── the garden: emojis on the golden spiral, over a scene ── */
 .garden { position: relative; height: 360px; overflow: hidden; }
@@ -128,7 +128,7 @@ html.landed .art { opacity: 1; animation: none; }
 .project .pic { width: 96px; height: 96px; border-radius: var(--r-14); background-size: cover; background-position: center; border: 1px solid var(--hair); }
 .project .grow { display: grid; gap: 4px; }
 .project .grow b { font-size: 17px; font-weight: 500; }
-.project .tag { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--violet-text); }
+.project .tag { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--violet-text); }
 .project .n { font-size: 13px; color: var(--ink-3); }
 .wish { padding: 14px 16px; display: grid; gap: 6px; }
 .wish p { font-family: var(--display); font-size: 20px; line-height: 26px; }
@@ -144,7 +144,7 @@ html.landed .art { opacity: 1; animation: none; }
 /* ── the galaxy ── */
 .galaxy { position: relative; min-height: 440px; border-radius: var(--r-24); overflow: hidden; border: 1px solid var(--hair-2); }
 .galaxy .art { -webkit-mask-image: none; mask-image: none; opacity: 1; animation: none; }
-.galaxy .node { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 4px; color: var(--ink); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; z-index: 1; text-shadow: 0 1px 8px #000; }
+.galaxy .node { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 4px; color: var(--ink); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; z-index: 1; text-shadow: 0 1px 8px #000; }
 .galaxy .node .ico { width: 54px; height: 54px; border-radius: 50%; border: 1px solid var(--hair-hue); background: rgba(5, 9, 18, .5); display: grid; place-items: center; font-family: var(--emoji); font-size: 22px; box-shadow: var(--glow); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .galaxy .core { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 96px; height: 96px; z-index: 1; filter: drop-shadow(0 0 24px rgba(242, 201, 125, .5)); animation: breathe 6s ease-in-out infinite; }
 
@@ -152,7 +152,7 @@ html.landed .art { opacity: 1; animation: none; }
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; height: calc(96px + var(--sab)); padding: 0 14px var(--sab); display: flex; justify-content: center; pointer-events: none; }
 .tabs .bar { pointer-events: auto; position: relative; width: min(100%, 520px); height: 78px; margin-top: 12px; border-radius: 32px; background: linear-gradient(180deg, rgba(22, 27, 46, .92), rgba(6, 9, 18, .96)); border: 1px solid rgba(255, 255, 255, .14); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; box-shadow: 0 -10px 40px rgba(0, 0, 0, .55), 0 0 40px rgba(110, 217, 192, .08), inset 0 1px 0 rgba(255, 255, 255, .1); }
 .tabs .bar::before { content: ""; position: absolute; left: 50%; top: -1px; width: 110px; height: 40px; transform: translateX(-50%); border-radius: 0 0 60px 60px; background: radial-gradient(60px 30px at 50% 0%, rgba(242, 201, 125, .22), transparent 70%); pointer-events: none; }
-.tabs button { display: grid; justify-items: center; gap: 4px; color: var(--ink-3); font-size: 12px; font-weight: 500; letter-spacing: .02em; height: 78px; align-content: center; transition: color var(--t) var(--ease); }
+.tabs button { display: grid; justify-items: center; gap: 4px; color: var(--ink-3); font-size: 13px; font-weight: 500; letter-spacing: .02em; height: 78px; align-content: center; transition: color var(--t) var(--ease); }
 .tabs button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: filter var(--t) var(--ease); }
 .tabs button.on { color: var(--violet-text); }
 .tabs button.on svg { filter: drop-shadow(0 0 8px rgba(110, 217, 192, .9)); }
@@ -212,7 +212,7 @@ html.landed .room-page .rart { opacity: 1; animation: none; }
 .graph { width: 100%; height: 180px; }
 .graph .line { fill: none; stroke: var(--gold); stroke-width: 2; filter: drop-shadow(0 0 6px rgba(242, 201, 125, .6)); }
 .graph .pt { fill: var(--star); }
-.graph .lbl { fill: var(--ink-3); font-size: 10px; font-family: var(--body); }
+.graph .lbl { fill: var(--ink-3); font-size: 13px; font-family: var(--body); }
 .choice { display: flex; align-items: center; gap: 14px; padding: 14px 16px; width: 100%; text-align: left; color: var(--ink); }
 .choice .ico { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--hair-2); display: grid; place-items: center; font-family: var(--emoji); font-size: 20px; flex: none; }
 .choice .grow { flex: 1; display: grid; gap: 2px; }
@@ -354,7 +354,7 @@ html.landed .room-page .rart { opacity: 1; animation: none; }
 .cats button { font-size: 15px; font-weight: 600; color: var(--ink); }
 .doorcard h3 { font-size: 28px; line-height: 32px; }
 .doorcard .cap { font-size: 17px; line-height: 24px; }
-.galaxy .node { font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+.galaxy .node { font-size: 13px; font-weight: 700; letter-spacing: .1em; }
 .tabs button { font-size: 14px; font-weight: 700; color: var(--ink); }
 .sheet h2 { font-size: 32px; line-height: 36px; }
 .room-page .rhead .brand { font-size: 24px; }
@@ -363,7 +363,7 @@ html.landed .room-page .rart { opacity: 1; animation: none; }
 .room-page .msg .from { font-size: 18px; color: var(--ink); }
 .tl b { font-size: 24px; line-height: 28px; }
 .tl q { font-size: 18px; line-height: 26px; color: var(--ink); }
-.graph .lbl { fill: var(--ink); font-size: 12px; font-weight: 600; }
+.graph .lbl { fill: var(--ink); font-size: 13px; font-weight: 600; }
 .choice .grow b { font-size: 18px; font-weight: 600; }
 .choice .grow span { font-size: 15px; line-height: 20px; color: var(--ink); }
 .cer h2 { font-size: 42px; line-height: 46px; }
@@ -642,7 +642,7 @@ a.gpill { color: #1E2A10; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 .cal-grid .pad { display: block; }
 .cal-d { position: relative; aspect-ratio: 1; border-radius: 30%; display: grid; place-content: center; gap: 1px; justify-items: center; font-size: 15px; font-weight: 600; color: var(--ink); background: rgba(255, 255, 255, .04); border: 1px solid transparent; }
-.cal-d .dots { font-style: normal; font-size: 9px; line-height: 6px; color: var(--violet-text); letter-spacing: -1px; }
+.cal-d .dots { font-style: normal; font-size: 13px; line-height: 6px; color: var(--violet-text); letter-spacing: -1px; }
 .cal-d.on { background: var(--hue-16); border-color: var(--hair-hue); }
 .cal-d.today { border-color: rgba(242, 201, 125, .9); color: #FFE9B0; }
 .cal-d.sel { background: linear-gradient(180deg, #F7F4BC, #DCE697); color: #1E2A10; border-color: #fff; }
@@ -653,7 +653,7 @@ a.gpill { color: #1E2A10; }
 /* ── v17 · the garden as a field ── */
 .garden.field { height: 400px; }
 .garden.field .horizon { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(242, 201, 125, .55), transparent); box-shadow: 0 0 18px rgba(242, 201, 125, .35); pointer-events: none; z-index: 0; }
-.garden .orb.pledged::after { content: "◆"; position: absolute; right: -2px; top: -6px; font-size: 11px; color: #FFD98A; text-shadow: 0 0 6px rgba(255, 217, 138, .9); }
+.garden .orb.pledged::after { content: "◆"; position: absolute; right: -2px; top: -6px; font-size: 13px; color: #FFD98A; text-shadow: 0 0 6px rgba(255, 217, 138, .9); }
 .garden .orb[style*="--pct"]::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; padding: 2px; background: conic-gradient(rgba(185, 255, 228, .95) calc(var(--pct, 0) * 1%), rgba(255, 255, 255, .1) 0); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; pointer-events: none; }
 .phaseline { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .phaseline .ph { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--ink); background: rgba(5, 9, 18, .55); border: 1px solid var(--hair); }
@@ -818,7 +818,7 @@ html { overflow-x: clip; }
 
 .notes { display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0 4px; }
 .chip.note { min-height: 46px; flex-direction: column; align-items: flex-start; gap: 0; padding: 6px 13px; line-height: 19px; }
-.chip.note i { font-style: normal; font-size: 12px; line-height: 15px; font-weight: 600; color: #FFD98A; }
+.chip.note i { font-style: normal; font-size: 13px; line-height: 15px; font-weight: 600; color: #FFD98A; }
 
 .roomfield { display: flex; flex-wrap: wrap; gap: 10px; padding: 2px 0; }
 .rf { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px 5px 5px; border-radius: 999px; background: rgba(5, 9, 18, .55); border: 1px solid var(--hair); }
@@ -941,3 +941,29 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 .glyphcard { display: grid; gap: 12px; justify-items: center; text-align: center; }
 .glyphfig { width: min(240px, 68vw); color: var(--violet-text); filter: drop-shadow(0 0 18px rgba(110, 217, 192, .35)); }
 .glyphfig svg { width: 100%; height: auto; display: block; }
+
+/* Decorative layers clip their own contents. A star placed at ninety-nine per cent of the
+   width has a right edge past the glass, and one pixel over is still over. */
+.stars, .embers, .aura { overflow: clip; }
+
+/* A control is at least forty-four across and forty-four down, on its own, without a
+   target drawn under it to make up the difference. The reach underneath stays, because it
+   still does the work for the chips, but nothing relies on it to be touchable. */
+.top .you, .top .back, .top .sound { width: 44px; height: 44px; }
+.pillform input, .pillform { min-height: 44px; }
+.nav a, .foot a, .gpill { min-height: 44px; display: inline-flex; align-items: center; }
+.foot a, .nav .brand { padding-top: 12px; padding-bottom: 12px; }
+
+/* the segmented rows and the small pill get the same reach as everything else */
+.seg button, .gpill.sm, .btn.sm, .more { position: relative; }
+.seg button::after, .gpill.sm::after, .more::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: max(100%, 46px); height: max(100%, 46px);
+  transform: translate(-50%, -50%); border-radius: inherit;
+}
+
+/* the pill on the landing was two short of the floor */
+.gpill.sm { min-height: 44px; }
+
+/* a chosen chip says so, and says it the same way everywhere */
+.chip[aria-pressed="true"], .chip.on { border-color: var(--hair-hue); }

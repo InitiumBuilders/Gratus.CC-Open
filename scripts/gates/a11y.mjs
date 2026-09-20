@@ -65,7 +65,22 @@ const MEASURE = () => {
     if (!vis(el)) continue;
     const r = el.getBoundingClientRect();
     const sel = el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + '.' + String(el.className).slice(0, 24);
-    if (r.width < 44 || r.height < 44) out.tiny.push({ sel, w: Math.round(r.width), h: Math.round(r.height), t: label(el).slice(0, 24) });
+    // A control may be drawn whatever size the design asks for. What has to be forty-four
+    // is the target, and this app draws that underneath the mark rather than inflating the
+    // mark: his chips stay his chips and a thumb still finds them. Reading the box calls a
+    // thirty-six pixel chip too small while a thumb twenty-one pixels out lands on it, so
+    // ask the page instead, which is what G28 does and what a thumb does.
+    const reach = (x, y) => {
+      // a point off the glass cannot be judged from here, and a control further down a
+      // page is not out of reach, it is further down a page
+      if (x < 1 || y < 1 || x > innerWidth - 1 || y > innerHeight - 1) return true;
+      const h = document.elementFromPoint(x, y);
+      return !!h && (h === el || el.contains(h) || h.contains(el));
+    };
+    const cx0 = r.left + r.width / 2, cy0 = r.top + r.height / 2;
+    const wideOk = r.width >= 44 || (reach(cx0 - 21, cy0) && reach(cx0 + 21, cy0));
+    const tallOk = r.height >= 44 || (reach(cx0, cy0 - 21) && reach(cx0, cy0 + 21));
+    if (!wideOk || !tallOk) out.tiny.push({ sel, w: Math.round(r.width), h: Math.round(r.height), t: label(el).slice(0, 24) });
     if (!label(el) && !el.value) out.noName.push(sel);
     // a toggle that shows state with a class alone cannot be heard
     const on = el.classList.contains('on') || el.classList.contains('sel') || el.getAttribute('aria-current');

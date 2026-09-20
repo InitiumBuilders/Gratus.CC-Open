@@ -9,6 +9,7 @@ import * as E from '../../engine/emoji.js?v=12';
 import { newId } from '../../engine/rng.js?v=12';
 import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=14';
 import { glyphSvg } from '../../engine/glyph.js?v=17';
+import { VIEWS, titleOf } from './views.js?v=17';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
@@ -138,7 +139,7 @@ function depthWatch(root) {
   window.addEventListener('scroll', depthOff, { passive: true });
   depthOff();
 }
-function stars() { const el = $('.stars'); if (!el || el.children.length) return; let s = ''; for (let i = 0; i < 70; i++) s += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>'; el.innerHTML = s; }
+function stars() { const el = $('.stars'); if (!el || el.children.length) return; let s = ''; for (let i = 0; i < 70; i++) s += '<i style="left:' + (1 + Math.random() * 97).toFixed(1) + '%;top:' + (1 + Math.random() * 97).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>'; el.innerHTML = s; }
 
 // ── shell ──
 function topBar(o) {
@@ -171,7 +172,28 @@ function tabIntro(t, then) {
 }
 function go(t, s) { if (booted && !s && INTROS[t] && t !== tab) { tabIntro(t, () => goNow(t, s)); return; } goNow(t, s); }
 function goNow(t, s) { tab = t; sub = s || null; const path = '/app' + (sub ? '/' + sub : (tab === 'gratus' ? '' : '/' + tab)); if (location.pathname.endsWith('.html')) history.replaceState(null, '', location.pathname + '?tab=' + (sub || tab)); else history.replaceState(null, '', path); render(); window.scrollTo({ top: 0 }); }
+// The app is one render away from a blank screen at all times: anything that throws part
+// way through building a view leaves whatever was there before, or nothing. This is the
+// floor under that. It never hides the fault, it says it out loud and keeps the doors
+// working, because a person who cannot reach the bar cannot get anywhere at all.
 function render() {
+  try {
+    renderNow();
+  } catch (e) {
+    try {
+      const v = $('#view');
+      if (v) v.innerHTML = '<div class="page"><div class="glass"><div class="eyebrow"><h2>That screen did not draw</h2></div>' +
+        '<p class="body">Nothing of yours is lost: your garden is on this device and it is untouched. The doors below still work.</p>' +
+        '<p class="cap mono" style="word-break:break-all">' + esc(String((e && e.message) || e).slice(0, 160)) + '</p>' +
+        '<button class="btn" onclick="location.reload()">Try again</button></div></div>';
+    } catch (e2) { /* nothing left to do but let the page stand */ }
+    if (window.console && console.error) console.error(e);
+  }
+}
+
+function renderNow() {
+  document.title = titleOf(tab, sub);   // the registry decides, so every screen says which one it is
+  void VIEWS;
   checkMilestones(); checkAlchemy();
   const root = $('#view'); let s = '';
   if (sub === 'book') s = topBar({ back: true }) + viewBook();
@@ -1357,7 +1379,7 @@ function viewBook() {
   else { const cats = C.recipes.categories; const list = allRecipes().filter((r) => recipeCat === 'all' || r.cat === recipeCat); body = '<div class="chips row"><button class="chip' + (recipeCat === 'all' ? ' on' : '') + '" data-rcat="all">All</button>' + Object.keys(cats).map((k) => '<button class="chip' + (recipeCat === k ? ' on' : '') + '" data-rcat="' + k + '">' + esc(cats[k].name) + '</button>').join('') + '<button class="chip' + (recipeCat === 'mine' ? ' on' : '') + '" data-rcat="mine">Mine</button></div>' +
     alchemyBlock() + '<div class="eyebrow"><h2>Recipes</h2></div><button class="btn wide" id="add-recipe">+ Add a recipe</button><div class="rows">' + list.map((r) => { const st = recipeState(r); return '<button class="glass recipe' + (st.made ? ' made' : '') + '" data-recipe="' + esc(r.id) + '"><span class="f">' + r.formula.map(esc).join('<span class="op">+</span>') + '<span class="op">→</span>' + esc(r.result) + '</span><span class="cat">' + esc(r.cat === 'mine' ? 'Mine' : (cats[r.cat] || {}).name || '') + '</span><span class="name">' + esc(r.name) + '</span><span class="line">' + esc(r.statement) + (st.made ? ' · made' : ' · ' + st.days + ' of ' + st.need + ' days together') + '</span></button>'; }).join('') + '</div>'; }
   return hero(scene('book'), { cls: 'room-hero', h1: 'Growth Book', k1: 'Your Gratitude Journal', k2: 'Journal · Phases · Emojis · Recipes' }) +
-    '<div class="page"><div class="glass seg" style="grid-template-columns:repeat(4,1fr)">' + [['journal', 'Journal'], ['phases', 'Phases'], ['emojis', 'Emojis'], ['recipes', 'Recipes']].map(([k, n]) => '<button class="' + (bookTab === k ? 'on' : '') + '" data-book="' + k + '">' + n + '</button>').join('') + '</div>' + body + '</div>';
+    '<div class="page"><div class="glass seg" style="grid-template-columns:repeat(4,1fr)">' + [['journal', 'Journal'], ['phases', 'Phases'], ['emojis', 'Emojis'], ['recipes', 'Recipes']].map(([k, n]) => '<button class="' + (bookTab === k ? 'on' : '') + '" aria-pressed="' + (bookTab === k ? 'true' : 'false') + '" data-book="' + k + '">' + n + '</button>').join('') + '</div>' + body + '</div>';
 }
 function arcSheet(emoji) {
   const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const seed = p ? p.emoji : emoji; const arc = E.arc(seed, d, C.evo); const sch = E.schedule(C.evo); const ph = phaseOf(d); const nx = nextPhase(d);
@@ -1855,6 +1877,26 @@ function plantQuick(p) {
 }
 
 
+// ── the network going away ──
+// Almost everything here works with no connection at all: writing, the garden, the
+// journal, the glyph. A few things do not, and somebody who taps one of those deserves to
+// be told which it is rather than watching a spinner.
+let offlineSaid = false;
+function wireConnectivity() {
+  if (window.__gratusNet) return;
+  window.__gratusNet = 1;
+  addEventListener('offline', () => {
+    offlineSaid = true;
+    document.body.classList.add('offline');
+    toast('No connection. Writing, your garden and your journal all still work.', 4200);
+  });
+  addEventListener('online', () => {
+    document.body.classList.remove('offline');
+    if (offlineSaid) { offlineSaid = false; toast('Back online.'); }
+  });
+  if (navigator.onLine === false) document.body.classList.add('offline');
+}
+
 // ── the bridge ──
 // Every loop in the trace ends at one human: a steward who writes back. Until somebody
 // tells them, nothing ever has. This does not message anyone and never could: it hands the
@@ -1960,6 +2002,7 @@ function wireCoinHold() {
 function wire() {
   setFeel(() => !!(S && S.feel));
   wireSwipe();
+  wireConnectivity();
   wireCoinHold();
   hiddenLines();
   { const gs = $('#glyph-share'); if (gs) gs.addEventListener('click', () => {

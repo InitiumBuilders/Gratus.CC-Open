@@ -172,6 +172,16 @@ export function longPress(el, opts) {
   el.addEventListener('pointerleave', cancel);
   el.addEventListener('click', (e) => { if (fired) { e.preventDefault(); e.stopPropagation(); fired = false; } }, true);
   el.addEventListener('contextmenu', (e) => e.preventDefault());
+  // The same act, from a keyboard. Holding Enter or the space bar reaches it, and so does
+  // the context-menu key, which is what a hold means to anybody using one.
+  el.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    if (e.key === 'ContextMenu' || ((e.key === 'Enter' || e.key === ' ') && e.shiftKey)) {
+      e.preventDefault(); fired = true; feel('hold'); if (act) act(e); return;
+    }
+    if (e.key === 'Enter' || e.key === ' ') { cancel(); timer = setTimeout(() => { fired = true; feel('hold'); if (act) act(e); }, o.ms); }
+  });
+  el.addEventListener('keyup', (e) => { if (e.key === 'Enter' || e.key === ' ') cancel(); });
 }
 
 export function fmtDay(day) {
