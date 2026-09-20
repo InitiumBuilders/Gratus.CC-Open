@@ -15,6 +15,16 @@
 //   seed     a seed was planted with a gift to a project.
 //   days     days of care added. This is the real "growing" number.
 //
+// HOW A COUNT IS KEPT, AND WHY IT IS KEPT TWO WAYS
+//   Views and seconds go into one document per day, read, changed and written back. Two
+//   of them landing in the same instant can lose one, which for a view is a rounding error
+//   and is written down rather than hidden.
+//
+//   A gift, a planting, a seed and a day of care cannot be lost that way, because losing
+//   one of those is losing the only record that it happened. Each writes its own small
+//   object whose NAME carries the count, so nothing is read, nothing is changed, and
+//   nothing can be overwritten. Adding them up is reading a list of names.
+//
 // WHAT NEVER ARRIVES HERE
 //   Journal text. Names. Emojis. Links. Anything that could identify a person or say what
 //   they wrote. A beat is a word from a fixed list and a small number.
@@ -27,6 +37,9 @@ const sha = (s) => createHash('sha256').update(String(s)).digest('hex');
 const SALT = process.env.GRATUS_SALT || sha('gratus/trax/' + String(TOKEN)).slice(0, 32);
 const whoOf = (req) => sha(String(req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '').split(',')[0].trim() + '·' + SALT).slice(0, 12);
 const EVENTS = ['view', 'secs', 'gift', 'plant', 'seed', 'days'];
+// the ones where losing a count means losing the only record that it happened
+const EXACT = new Set(['gift', 'plant', 'seed', 'days']);
+const ONE = (day, ev, n) => 'gratus/trax/' + day + '/' + ev + '.' + n + '.' + Math.random().toString(36).slice(2, 10) + '.json';
 const dayOf = (d) => d.toISOString().slice(0, 10);
 const CAP = { view: 400, secs: 43200, gift: 200, plant: 200, seed: 200, days: 400 };
 
@@ -65,6 +78,12 @@ export default async function handler(req, res) {
       if (!Number.isFinite(n) || n < 1) n = 1;
       n = Math.min(n, CAP[ev]);
       const day = dayOf(new Date());
+      if (EXACT.has(ev)) {
+        // its own object, its count in the name. Nothing to read, nothing to overwrite.
+        await put(ONE(day, ev, n), '{}', { access: 'public', token: TOKEN, contentType: 'application/json', addRandomSuffix: false, allowOverwrite: true, cacheControlMaxAge: 0 });
+        res.status(200).json({ ok: true, exact: true });
+        return;
+      }
       const doc = (await readDay(day)) || blank(day);
       doc[ev] = (Number(doc[ev]) || 0) + n;
       if (ev === 'view') {
@@ -84,8 +103,24 @@ export default async function handler(req, res) {
     // is not: roll a month into one document and keep the days beside it.
     const { blobs } = await list({ prefix: 'gratus/trax/', token: TOKEN });
     const days = blobs.map((b) => (b.pathname.match(/(\d{4}-\d{2}-\d{2})\.json$/) || [])[1]).filter(Boolean).sort();
+    // the exact events, counted from their names alone: no fetch, no race, no rounding
+    const exact = {};
+    for (const b of blobs) {
+      const m = b.pathname.match(/trax\/(\d{4}-\d{2}-\d{2})\/([a-z]+)\.(\d+)\./);
+      if (!m) continue;
+      const [, d, ev, n] = m;
+      if (!EXACT.has(ev)) continue;
+      exact[d] = exact[d] || {};
+      exact[d][ev] = (exact[d][ev] || 0) + Number(n);
+      if (!days.includes(d)) days.push(d);
+    }
+    days.sort();
     const docs = {};
     await Promise.all(days.map(async (d) => { docs[d] = (await readDay(d)) || blank(d); }));
+    for (const d of days) {
+      const e = exact[d] || {};
+      for (const ev of EXACT) if (e[ev]) docs[d][ev] = e[ev];
+    }
 
     const sum = (list2, k) => list2.reduce((t, d) => t + (Number((docs[d] || {})[k]) || 0), 0);
     const people = (list2) => {
