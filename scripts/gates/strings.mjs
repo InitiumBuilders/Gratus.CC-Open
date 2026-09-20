@@ -19,12 +19,14 @@
 //                    words. Raised deliberately; the next person to raise it says why too.
 //   246  2026-09-20  the account sheet and the profile it writes: a new surface, and the
 //                    sentences somebody reads before they trust it with a password
+//   249  2026-09-20  the account sheet and the profile it writes: a new surface, and the
+//                    sentences somebody reads before they trust it with a password
 //   229  2026-09-19  three more from putting his own lines on the screens that say them
 //   226  2026-09-19  the first walk, which is six screens of plain words for somebody who
 //                    has never been here, and the trax beat. Both are new surfaces.
 //
 // The environment variable overrides it for a one-off check.
-const BASELINE_DEFAULT = '246';
+const BASELINE_DEFAULT = '249';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

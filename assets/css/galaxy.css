@@ -1039,3 +1039,10 @@ body.touring { overflow: hidden; }
    the words that used to be there, so the row wraps rather than running off a small screen */
 .cats { flex-wrap: wrap; }
 .cats button { min-width: 0; flex: 1 1 auto; }
+
+/* a pathway, and the days inside it */
+.glass.step { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; }
+.glass.step .ico { flex: 0 0 auto; font-size: 13px; font-weight: 600; color: var(--violet-text);
+  letter-spacing: .04em; min-width: 54px; padding-top: 2px; }
+.glass.step .line, .glass.opt.path .line { display: block; font-size: 15px; line-height: 22px; color: var(--ink-2); margin-top: 3px; }
+.glass.opt.path { align-items: flex-start; }

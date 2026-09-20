@@ -1,8 +1,8 @@
 // Offline-first shell. Everything lives on the device for now.
-const V = 'gratus-1789872993';
-const SHELL = ['/app.html', '/assets/css/tokens.css?v=36', '/assets/css/galaxy.css?v=36', '/assets/js/galaxy.js?v=1789872993', '/assets/js/ui.js?v=14', '/assets/js/views.js?v=17', '/assets/js/tour.js?v=19', '/assets/js/trax.js?v=18', '/assets/js/account.js?v=20', '/assets/js/keep.js?v=13',
+const V = 'gratus-1789873491';
+const SHELL = ['/app.html', '/assets/css/tokens.css?v=36', '/assets/css/galaxy.css?v=36', '/assets/js/galaxy.js?v=1789873491', '/assets/js/ui.js?v=14', '/assets/js/views.js?v=17', '/assets/js/tour.js?v=19', '/assets/js/trax.js?v=18', '/assets/js/account.js?v=20', '/assets/js/billing.js?v=21', '/assets/js/keep.js?v=13',
   '/engine/gratus.js?v=12', '/engine/emoji.js?v=12', '/engine/rng.js?v=12', '/engine/state.js?v=14', '/engine/glyph.js?v=17',
-  '/config/evolutions.json?v=17', '/config/emoji-names.json?v=17', '/config/prompts.json?v=17', '/config/copy.json?v=17', '/config/growth-book.json?v=17', '/config/recipes.json?v=17', '/config/alchemy.json?v=17', '/config/families.json?v=18', '/config/partners.json?v=18',
+  '/config/evolutions.json?v=21', '/config/emoji-names.json?v=21', '/config/prompts.json?v=21', '/config/copy.json?v=21', '/config/growth-book.json?v=21', '/config/recipes.json?v=21', '/config/alchemy.json?v=21', '/config/families.json?v=21', '/config/partners.json?v=21', '/config/pathways.json?v=21',
   '/assets/art/gfx/logo.webp', '/assets/art/gfx/g11.webp', '/assets/art/gfx/g08.webp', '/assets/art/gfx/g13.webp', '/assets/art/gfx/g15.webp', '/assets/art/gfx/g20.webp', '/assets/art/gfx/g22.webp', '/assets/art/gfx/g27.webp', '/assets/art/gfx/v3-poster.webp',
   '/assets/brand/gratus-logo-original.webp', '/assets/brand/icon-192.png', '/manifest.webmanifest'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(V).then((c) => c.addAll(SHELL).catch(() => null)).then(() => self.skipWaiting())); });

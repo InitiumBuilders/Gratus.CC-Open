@@ -1,0 +1,335 @@
+{
+  "note": "GRATUS PATHWAYS. A model is a pattern; a pathway is a walk. Each one is a real thing somebody is going through, and what to do on which day. Statements are plain and the owner may refine any of them.",
+  "pathways": [
+    {
+      "id": "first-thirteen",
+      "name": "The First Thirteen",
+      "days": 13,
+      "who": "anyone new",
+      "why": "The shortest road from never having used this to holding a gift you could give somebody.",
+      "face": "🌱",
+      "steps": [
+        {
+          "day": 1,
+          "do": "Write one true thing and choose an emoji",
+          "note": "Small is correct. The bus being on time is a real day."
+        },
+        {
+          "day": 2,
+          "do": "Write again with the same emoji",
+          "note": "Two days in, it is Nurtured. That is the whole trick: the same one, again."
+        },
+        {
+          "day": 5,
+          "do": "Deepened",
+          "note": "Five days. Notice that nothing punished you for the gap, if you had one."
+        },
+        {
+          "day": 9,
+          "do": "Bloomed",
+          "note": "Look at what you have written so far, all together. That is the point of a journal."
+        },
+        {
+          "day": 13,
+          "do": "Ready to give",
+          "note": "Open Give. Choose it, say who it is for, write why. Send the link."
+        }
+      ]
+    },
+    {
+      "id": "thirty-day-gift",
+      "name": "The Thirty Day Gift",
+      "days": 30,
+      "who": "somebody with a date coming",
+      "why": "A birthday, an anniversary, a leaving day. Thirty days of having thought about one person, which no shop sells.",
+      "face": "🎁",
+      "steps": [
+        {
+          "day": 1,
+          "do": "Start a plant that is only for them",
+          "note": "Pick an emoji you associate with them and use it for nothing else."
+        },
+        {
+          "day": 2,
+          "do": "One line a day about them",
+          "note": "Not about the gift. About them: something they did, something they say, something you noticed."
+        },
+        {
+          "day": 14,
+          "do": "Halfway, read it back",
+          "note": "You will have forgotten most of it. That is why this works."
+        },
+        {
+          "day": 29,
+          "do": "Write the letter",
+          "note": "Open Give and write why, properly. Take your time; it is the only part they read first."
+        },
+        {
+          "day": 30,
+          "do": "Give it on the day",
+          "note": "The days go with it. They can plant it and it keeps growing in their garden."
+        }
+      ]
+    },
+    {
+      "id": "hard-season",
+      "name": "The Hard Season",
+      "days": 0,
+      "who": "somebody in a hard stretch",
+      "why": "For grief, burnout, illness, or a season that is simply heavy. Built to be impossible to fail.",
+      "face": "🕯️",
+      "steps": [
+        {
+          "day": 0,
+          "do": "There is no schedule",
+          "note": "Nothing here decays. Miss a week, miss a month: the garden is exactly as you left it."
+        },
+        {
+          "day": 0,
+          "do": "One line when you can",
+          "note": "On a bad day, three words is a day. On a very bad day, nothing is also fine."
+        },
+        {
+          "day": 0,
+          "do": "Use one emoji",
+          "note": "One plant for the whole season. Watching one thing grow is steadier than scattering."
+        },
+        {
+          "day": 0,
+          "do": "Read it back at the month",
+          "note": "Not to judge it. To see that the days happened and you were there for them."
+        },
+        {
+          "day": 0,
+          "do": "Give it away when you are ready",
+          "note": "Or never. A plant can stay in your garden for years."
+        }
+      ]
+    },
+    {
+      "id": "morning-ledger",
+      "name": "The Morning Ledger",
+      "days": 21,
+      "who": "somebody building a habit",
+      "why": "One line before anything else, for three weeks. The oldest practice there is, with nothing to break.",
+      "face": "☕",
+      "steps": [
+        {
+          "day": 1,
+          "do": "Write before you open anything else",
+          "note": "Before mail, before the feed. One line."
+        },
+        {
+          "day": 3,
+          "do": "Notice the hour",
+          "note": "Gratus learns the hour you usually come and says so when you arrive in it."
+        },
+        {
+          "day": 7,
+          "do": "A week in, do not check a number",
+          "note": "There is no streak to look at. That is deliberate."
+        },
+        {
+          "day": 14,
+          "do": "Add a second emoji",
+          "note": "One for the morning, one for whatever the day turned out to be."
+        },
+        {
+          "day": 21,
+          "do": "Read the month view",
+          "note": "The calendar shows which days you wrote. It is a shape, not a score."
+        }
+      ]
+    },
+    {
+      "id": "team-quarter",
+      "name": "The Team Quarter",
+      "days": 13,
+      "who": "somebody who leads a team",
+      "why": "Instead of a slide about morale, arrive at the retro with thirteen days of noticing what went right.",
+      "face": "🤝",
+      "steps": [
+        {
+          "day": 1,
+          "do": "One plant for the team",
+          "note": "Not for the project. For the people."
+        },
+        {
+          "day": 2,
+          "do": "One line a day about something that went right",
+          "note": "Specific. A name, a thing they did."
+        },
+        {
+          "day": 9,
+          "do": "Start writing the why",
+          "note": "Open Give and draft it. You will edit it four times; that is correct."
+        },
+        {
+          "day": 13,
+          "do": "Give it in the retro",
+          "note": "Read it out, then send the link. It carries the days, which is the part that lands."
+        },
+        {
+          "day": 14,
+          "do": "Start the next one the same day",
+          "note": "The second quarter is easier because the habit is already there."
+        }
+      ]
+    },
+    {
+      "id": "giving-circle",
+      "name": "The Giving Circle",
+      "days": 13,
+      "who": "somebody who gives to causes",
+      "why": "A donation is a number in a ledger. This is the version where the project hears from a person.",
+      "face": "🌍",
+      "steps": [
+        {
+          "day": 1,
+          "do": "Find a project on Giveth",
+          "note": "The Giveth door inside Gratus reads their live list."
+        },
+        {
+          "day": 2,
+          "do": "Grow something for them",
+          "note": "Thirteen days of attention on why this, and not something else."
+        },
+        {
+          "day": 13,
+          "do": "Give on Giveth, in your own wallet",
+          "note": "Gratus never touches the money and never holds a key."
+        },
+        {
+          "day": 13,
+          "do": "Plant a Gratus Seed",
+          "note": "Your words, paired with the project and the transaction. The steward reads it."
+        },
+        {
+          "day": 14,
+          "do": "Wait for the bloom",
+          "note": "When they write back, the seed in your garden opens and keeps their reply inside it."
+        }
+      ]
+    },
+    {
+      "id": "quiet-line",
+      "name": "The Quiet Line",
+      "days": 30,
+      "who": "somebody a friendship went quiet with",
+      "why": "For a relationship that did not end, it just stopped. This is the slow way back.",
+      "face": "📞",
+      "steps": [
+        {
+          "day": 1,
+          "do": "A plant for them, without telling them",
+          "note": "This part is only yours."
+        },
+        {
+          "day": 7,
+          "do": "One line a week is enough",
+          "note": "What you actually miss. Be specific; vague warmth is not useful later."
+        },
+        {
+          "day": 21,
+          "do": "Send one small message",
+          "note": "Not the gift. Just a message. The plant is the reason you thought to."
+        },
+        {
+          "day": 30,
+          "do": "Give it, or do not",
+          "note": "If the door opened, the gift says what the message could not. If it did not, you still have the month."
+        }
+      ]
+    },
+    {
+      "id": "handover",
+      "name": "The Handover",
+      "days": 13,
+      "who": "somebody leaving a role",
+      "why": "Leave the way you would want somebody to leave you: with what you noticed, written down.",
+      "face": "🔑",
+      "steps": [
+        {
+          "day": 1,
+          "do": "A plant for the place, not the job",
+          "note": "The people, the room, the thing you built."
+        },
+        {
+          "day": 2,
+          "do": "One line a day for your last fortnight",
+          "note": "What you will actually miss, and who did what."
+        },
+        {
+          "day": 12,
+          "do": "Write the why properly",
+          "note": "This is the thing they keep. Longer than you think is right."
+        },
+        {
+          "day": 13,
+          "do": "Give it on your last day",
+          "note": "To the person taking over, or to the team. It carries the fortnight with it."
+        }
+      ]
+    },
+    {
+      "id": "newcomer",
+      "name": "The Newcomer",
+      "days": 21,
+      "who": "somebody who just moved",
+      "why": "A new place is a lot of small unfamiliar things. Writing them down is how they become yours.",
+      "face": "🗺️",
+      "steps": [
+        {
+          "day": 1,
+          "do": "One plant for the place",
+          "note": "The city, the street, the flat."
+        },
+        {
+          "day": 2,
+          "do": "One thing a day that was good here",
+          "note": "A shop, a walk, a person who was kind. Small on purpose."
+        },
+        {
+          "day": 10,
+          "do": "Add a second plant for a person",
+          "note": "By now there is usually one."
+        },
+        {
+          "day": 21,
+          "do": "Read it back",
+          "note": "Three weeks of evidence that it is working, on the day it does not feel like it is."
+        }
+      ]
+    },
+    {
+      "id": "long-thread",
+      "name": "The Long Thread",
+      "days": 365,
+      "who": "somebody in it for years",
+      "why": "One plant, one year. Nothing here decays, so this is the only app where that sentence is literally true.",
+      "face": "❤️",
+      "steps": [
+        {
+          "day": 1,
+          "do": "Choose one emoji and never change it",
+          "note": "This is the whole discipline."
+        },
+        {
+          "day": 30,
+          "do": "A month in",
+          "note": "It is Ready to Give many times over. Do not give it. Keep going."
+        },
+        {
+          "day": 180,
+          "do": "Half a year",
+          "note": "Read the calendar view. The shape of your year is on it."
+        },
+        {
+          "day": 365,
+          "do": "A year to the day",
+          "note": "Gratus will tell you, quietly, on the morning it happens."
+        }
+      ]
+    }
+  ]
+}
