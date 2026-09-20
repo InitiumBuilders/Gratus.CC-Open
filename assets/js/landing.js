@@ -1,7 +1,9 @@
 // THE LANDING · the arrival choreography, and nothing else.
 // It lived inside index.html until the content policy said scripts come from files.
 const GFX = (n) => '/assets/art/gfx/' + n; const h = document.documentElement;
-const ok = !matchMedia('(prefers-reduced-motion: reduce)').matches && !(navigator.connection && navigator.connection.saveData);
+const conn = navigator.connection || {};
+const slow = conn.saveData === true || /^(slow-)?2g$|^3g$/.test(String(conn.effectiveType || ''));
+const ok = !matchMedia('(prefers-reduced-motion: reduce)').matches && !slow;
 if (ok && !document.hidden) h.classList.add('anim');
 // the scene is the screen: the Gate zooming out, forward and back, forever
 const scene = document.getElementById('scene'); const layer = document.createElement('div'); layer.className = 'layer in';
@@ -10,7 +12,7 @@ scene.appendChild(layer);
 // the opening ritual, every time: the doorway, the light, a held white, then the page
 const sp = document.getElementById('splash');
 if (ok && !location.search.includes('nosplash')) {
-  sp.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + GFX('logo.webp') + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
+  sp.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + GFX('logo.webp') + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
   sp.hidden = false; const v = sp.querySelector('video'); let gone = false, flooded = false, moved = false;
   const out = () => { if (gone) return; gone = true; sp.classList.add('out'); setTimeout(() => { sp.hidden = true; sp.innerHTML = ''; }, 1500); };
   const flood = () => { if (flooded || gone) return; flooded = true; const w = sp.querySelector('.white'); if (w) w.classList.add('on'); const r = sp.querySelector('.ritual'); if (r) r.classList.add('lit'); setTimeout(out, 2600); };

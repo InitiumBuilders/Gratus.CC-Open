@@ -217,10 +217,16 @@ written so far exactly where it is.
 Two of the three things this checkpoint was written against turned out not to be true, and
 measuring said so before any of it was built.
 
-**The video was never the problem.** The document counted 59.4 MB of film with 19.94 MB of
-it on the landing. That is what is on disk. What a phone takes off the wire, at 375 with
-the page scrolled all the way down, is **zero**: the posters carry the landing and no film
-is fetched until somebody plays one. `preload` was already right.
+**The video, twice.** The document counted 59.4 MB of film with 19.94 MB of it on the
+landing, which is what is on disk. Measured against a local server a phone fetched none of
+it, and I wrote that down as the answer. Then the same measurement against **the live
+site** said 3.43 MB of film before anybody had touched anything, all of it `explode.mp4`,
+because `preload="auto"` downloads from the first byte and a static test server does not
+serve it the same way. The arrival plays a thirteen second stretch starting at eleven
+seconds in, so it asks for that stretch now and the poster holds the screen until it comes.
+G29 watches the arrival open and hand the page over, because a ceremony that never starts
+is a door that never opens. His film is untouched; what changed is how much of it a phone
+is asked to carry before it is needed.
 
 **The weight was pictures, and mostly one picture.** His mark, 640 by 640, 595 KB, was
 being sent to every single screen and drawn at forty points in the tab bar. It was between
@@ -315,7 +321,8 @@ Newest last. One line per meaningful step, with the command that proved it.
 - `mutate.py` → **19/19 KILLED** with M42 (the flattened slug) and M43 (not-found read as an outage) added, M38 removed as the same defect aimed at a line that no longer exists
 
 ### Checkpoint III
-- `node scripts/gates/weight.mjs` and a Resource Timing read → the film is never fetched; the mark was half of every screen
+- `node scripts/gates/weight.mjs` and a Resource Timing read → the mark was half of every screen
+- the same read against **www.gratus.cc** → 3.43 MB of film on the landing that the local server had never shown; `preload` fixed and re-measured
 - `python3 scripts/renditions.py` → 63 sources, 21.15 MB of his originals, 6.69 MB delivered
 - `node scripts/gates/thehand.mjs` → **33 assertions, every one driven**
 - `mutate.py M51..M59` → nine defects restored, nine caught. A tenth, M50, survived, which is how the rule that fixed nothing was found and removed

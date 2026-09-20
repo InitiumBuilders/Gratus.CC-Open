@@ -158,7 +158,7 @@ function tabIntro(t, then) {
   introOn = true; let gone = false, started = false, flooded = false, moved = false, hard = 0, stall = 0;
   const out = () => { if (gone) return; gone = true; introOn = false; clearTimeout(hard); clearTimeout(stall); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.classList.remove('out'); }, 1300); if (!started) { started = true; then(); } };
   const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'); if (w) w.classList.add('on'); setTimeout(out, 1900); };
-  el.innerHTML = '<video muted playsinline preload="auto" poster="' + GFX(cfg.src + '-poster.webp') + '"><source src="' + GFX(cfg.src + '.mp4') + '" type="video/mp4"></video><div class="white"></div><span class="kicker skiphint">tap to enter</span>';
+  el.innerHTML = '<video muted playsinline preload="none" poster="' + GFX(cfg.src + '-poster.webp') + '"><source src="' + GFX(cfg.src + '.mp4') + '" type="video/mp4"></video><div class="white"></div><span class="kicker skiphint">tap to enter</span>';
   el.hidden = false; const v = el.querySelector('video');
   v.addEventListener('timeupdate', () => { if (v.currentTime > 0.2) moved = true; if (v.currentTime >= cfg.flood) flood(); });
   v.addEventListener('ended', flood);
@@ -1141,7 +1141,7 @@ function playCeremonies(list, done) {
     root.hidden = false; root.onclick = null;
     const show = () => { root.innerHTML = art(scene('ceremony', k++)) + '<div class="flash on"></div>' + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0; const close = () => { clearTimeout(t); root.onclick = null; next(); }; root.onclick = close; t = setTimeout(close, 5600); };
     if (gate) {
-      gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
+      gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
       const v = root.querySelector('video'); let fired = false; const fire = () => { if (fired) return; fired = true; clearTimeout(tm); show(); };
       const tm = setTimeout(fire, 9000); v.addEventListener('ended', fire); v.addEventListener('timeupdate', () => { if (v.currentTime >= 24.6) fire(); }); v.addEventListener('error', fire); root.onclick = fire;
       v.currentTime = 17; v.play().catch(fire);
@@ -1741,7 +1741,7 @@ function splash(then) {
   let gone = false, started = false;
   const out = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; }, 1500); if (!started) { started = true; then(); } };
   if (!motionOk()) { el.innerHTML = '<div class="brandrow"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div>'; el.hidden = false; setTimeout(out, 1200); el.addEventListener('click', out); return; }
-  el.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
+  el.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
   el.hidden = false; const v = el.querySelector('video'); let flooded = false;
   const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'), r = el.querySelector('.ritual'); if (w) w.classList.add('on'); if (r) r.classList.add('lit'); setTimeout(out, 2600); };
   v.addEventListener('ended', flood); v.addEventListener('timeupdate', () => { if (v.currentTime >= 24.4) flood(); }); v.addEventListener('error', out);
