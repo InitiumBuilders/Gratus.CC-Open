@@ -27,6 +27,27 @@ if (!handle) {
       '<div><b>' + N(g.ready) + '</b><span>Ready to give</span></div></div>' +
       ((g.faces || []).length ? '<div class="faces">' + g.faces.map((f) => '<i>' + esc(f) + '</i>').join('') + '</div>' : '') +
       '<p class="kick" style="text-align:center">The shape of a garden. Never a word of what is written in it.</p>' +
-      '<p style="text-align:center;margin-top:30px"><a class="pill" href="/app" style="display:inline-flex">Grow your own</a></p>';
+      '<p style="text-align:center;margin-top:30px"><button class="pill" id="keep" hidden>Keep ' + esc(p.name) + ' close</button>' +
+      '<a class="pill" href="/app" style="display:inline-flex">Grow your own</a></p>' +
+      '<p class="kick" id="keepsay" style="text-align:center"></p>';
+    // the button exists only for somebody who has a list to keep them on
+    let tk = '';
+    try { tk = localStorage.getItem('gratus.account.token') || ''; } catch (e) {}
+    const keep = document.getElementById('keep');
+    const say = document.getElementById('keepsay');
+    if (tk && keep) {
+      keep.hidden = false;
+      keep.addEventListener('click', () => {
+        keep.disabled = true;
+        say.textContent = '';
+        fetch('/api/account', { method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ act: 'friend-add', token: tk, handle: p.handle }) })
+          .then((r) => r.json()).then((d) => {
+            if (d.error) { say.textContent = d.error; keep.disabled = false; return; }
+            keep.textContent = 'Kept \u00b7 they are on your list';
+            say.textContent = 'Open the app to see your people.';
+          }).catch(() => { keep.disabled = false; say.textContent = 'That did not go through. Try once more.'; });
+      });
+    }
   }).catch(() => { page.innerHTML = '<div class="none"><h1>Could not read that page</h1><p><a href="/app">Open the app</a></p></div>'; });
 }

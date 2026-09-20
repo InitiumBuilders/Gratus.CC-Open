@@ -205,9 +205,44 @@ export default async function handler(req, res) {
       res.status(200).json({ profile: publicProfile(rec) });
       return;
     }
-    if (act === 'me') { res.status(200).json({ handle: rec.handle, profile: publicProfile(rec), published: !!(rec.profile && rec.profile.published) }); return; }
+    // the people you keep close
+    if (act === 'friends') {
+      const list = Array.isArray(rec.friends) ? rec.friends.slice(0, 200) : [];
+      const out = [];
+      for (const h of list) {
+        const map = await readJson(HANDLE(h));
+        const them = map && map.id ? await readJson(ACCT(map.id)) : null;
+        if (!them || !them.profile || them.profile.published !== true) { out.push({ handle: h, gone: true }); continue; }
+        out.push(Object.assign(publicProfile(them), {
+          both: Array.isArray(them.friends) && them.friends.includes(rec.handle),
+        }));
+      }
+      res.status(200).json({ friends: out, mine: rec.handle });
+      return;
+    }
+    if (act === 'friend-add' || act === 'friend-drop') {
+      const h = clip(body.handle, 24).toLowerCase();
+      if (!handleOk(h)) { res.status(400).json({ error: 'not a handle' }); return; }
+      if (h === rec.handle) { res.status(400).json({ error: 'you already have yourself' }); return; }
+      rec.friends = Array.isArray(rec.friends) ? rec.friends : [];
+      if (act === 'friend-add') {
+        const map = await readJson(HANDLE(h));
+        const them = map && map.id ? await readJson(ACCT(map.id)) : null;
+        if (!them) { res.status(404).json({ error: 'there is nobody at that handle' }); return; }
+        if (!them.profile || them.profile.published !== true) { res.status(404).json({ error: 'that page is private, so there is nothing to keep' }); return; }
+        if (rec.friends.length >= 200) { res.status(409).json({ error: 'that is as many as one list holds' }); return; }
+        if (!rec.friends.includes(h)) rec.friends.push(h);
+      } else {
+        rec.friends = rec.friends.filter((x) => x !== h);
+      }
+      await writeJson(ACCT(id), rec);
+      res.status(200).json({ ok: true, friends: rec.friends.length });
+      return;
+    }
 
-    res.status(400).json({ error: 'signup, signin, save, load, profile, me or handle-free' });
+    if (act === 'me') { res.status(200).json({ handle: rec.handle, profile: publicProfile(rec), published: !!(rec.profile && rec.profile.published), friends: (rec.friends || []).length }); return; }
+
+    res.status(400).json({ error: 'signup, signin, save, load, profile, friends, friend-add, friend-drop, me or handle-free' });
   } catch (e) {
     res.status(500).json({ error: 'accounts could not be reached', detail: String(e.message || e).slice(0, 120) });
   }

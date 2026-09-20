@@ -21,12 +21,16 @@
 //                    sentences somebody reads before they trust it with a password
 //   249  2026-09-20  the account sheet and the profile it writes: a new surface, and the
 //                    sentences somebody reads before they trust it with a password
+//   260  2026-09-19  your people, and the two sheets that hand somebody a room. Eleven
+//                    lines, all of them explaining what keeping a person does and does
+//                    not do, which is exactly the kind of sentence somebody has to read
+//                    before they will use it. Raised deliberately.
 //   229  2026-09-19  three more from putting his own lines on the screens that say them
 //   226  2026-09-19  the first walk, which is six screens of plain words for somebody who
 //                    has never been here, and the trax beat. Both are new surfaces.
 //
 // The environment variable overrides it for a one-off check.
-const BASELINE_DEFAULT = '249';
+const BASELINE_DEFAULT = '260';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

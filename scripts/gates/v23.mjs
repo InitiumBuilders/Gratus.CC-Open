@@ -20,6 +20,8 @@ const GATES = [
   ['G4 copy-live', 'node scripts/gates/copy-live.mjs', false],
   ['G6 integrity', 'node --import ' + L + ' scripts/gates/integrity.mjs', false],
   ['G30 accounts', 'node --import ' + L + ' scripts/gates/account.mjs', false],
+  ['G32 your people', 'node --import ' + L + ' scripts/gates/people.mjs', false],
+  ['G33 people on screen', 'node scripts/gates/people-ui.mjs', true],
   ['G7 open-source', 'node scripts/gates/open-source.mjs . --decoy', false],
   ['G9 contrast', 'node scripts/gates/contrast.mjs', false],
   ['slop', 'node scripts/gates/slop.mjs --decoy && node scripts/gates/slop.mjs', false],

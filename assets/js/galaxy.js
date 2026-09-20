@@ -344,7 +344,7 @@ function viewVibes() {
     (vibeState === 'offline' && !v ? '<p class="cap">No vibe answered on that code. Check it and try again.</p>' : '') +
     (v ? '<div class="glass card vibehead"><span class="v-ico">' + esc(v.emoji) + '</span><div><b>' + esc(v.name) + '</b>' + (v.about ? '<span class="body">' + esc(v.about) + '</span>' : '') +
         '<span class="cap">' + plural(v.count, 'gratitude') + ' · ' + plural(v.voices, 'voice') + ' · code <b class="mono">' + esc(v.code) + '</b></span></div>' +
-        '<div class="actions"><button class="btn sm" id="vb-share">Share the code</button><button class="btn sm" id="vb-passage">Share what grew</button><button class="btn sm quiet" id="vb-leave">Leave this room</button></div></div>' +
+        '<div class="actions"><button class="btn sm" id="vb-share">Share the code</button><button class="btn sm" id="vb-bring">Bring somebody in</button><button class="btn sm" id="vb-passage">Share what grew</button><button class="btn sm quiet" id="vb-leave">Leave this room</button></div></div>' +
       (roomField(v.posts).length ? '<div class="eyebrow"><h2>What this room grew</h2><span class="more">' + plural(roomField(v.posts).length, 'kind') + '</span></div><div class="roomfield">' + roomField(v.posts).map((x) => '<span class="rf"><span class="orb sm"><span>' + esc(x[0]) + '</span></span><b>' + x[1] + '</b></span>').join('') + '</div>' : '') +
       '<div class="glass card"><span class="kicker mint">Say one true thing</span>' +
       '<textarea class="field" id="vb-text" rows="2" maxlength="280" placeholder="What are you grateful for, right now..." aria-label="your gratitude"></textarea>' +
@@ -1065,11 +1065,11 @@ function viewGarden() {
 
 function menuSheet() {
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">' + esc(T('locked.headline', 'Give And Grow What Matters Most')) + '</span><span class="kicker">' + esc(T('locked.promise', 'Gratus Gives Gifts That Keep On Growing')) + '</span><span class="kicker">' + esc(T('locked.tagline', 'Grow With Gratus! Give And Grow Together!')) + '</span><span class="kicker gold">' + esc(T('locked.tags', '#GrowTheDifference #GrowWithGratus')) + '</span></div>' +
-    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-account">✦ Your Gratus account</button><button class="btn" id="m-tour">✦ Take the guided tour</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
+    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-account">✦ Your Gratus account</button><button class="btn" id="m-people">✿ Your people</button><button class="btn" id="m-tour">✦ Take the guided tour</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
   const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
   on('#m-account', () => setTimeout(accountSheet, 320));
   on('#m-tour', () => setTimeout(tourAgain, 320));
-  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-guides', () => go('gratus', 'guides')); on('#m-vibes', () => go('gratus', 'vibes')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
+  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-guides', () => go('gratus', 'guides')); on('#m-vibes', () => go('gratus', 'vibes')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-people', () => (Acct.signedIn() ? friendsSheet() : accountSheet())); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
 }
 function entryCard(e) {
   return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + (e.star ? '\u2605 ' : '') + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
@@ -1980,6 +1980,94 @@ const gardenShape = () => ({
   faces: S.plants.slice(0, 12).map((p) => face(p)),
 });
 
+// ── the people you keep close ──
+function friendsSheet() {
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>\u273f</span></span><h2>Your people</h2>' +
+    '<span class="kicker mint">The ones you keep close</span></div>' +
+    '<p class="body">Keeping somebody puts their page on your list. It sends them nothing and tells them nothing. If they keep you as well, it reads as together.</p>' +
+    '<div class="two"><input class="field" id="fr-h" maxlength="24" placeholder="their handle" aria-label="their handle"><button class="btn" id="fr-add">Keep</button></div>' +
+    '<p class="cap" id="fr-say"></p><div id="fr-list"><p class="cap">Reading your list...</p></div>');
+  const paint = () => Acct.friends().then((d) => {
+    const slot = $('#fr-list', sh.el);
+    if (!d.friends.length) {
+      slot.innerHTML = '<p class="cap">Nobody yet. Ask somebody for their handle, or hand them yours: gratus.cc/gg/' + esc(d.mine) + '</p>';
+      return;
+    }
+    slot.innerHTML = '<div class="rows">' + d.friends.map((f) => (f.gone
+      ? '<div class="glass opt"><span class="ico">\u00b7</span><span class="grow"><b>@' + esc(f.handle) + '</b><span>their page is private now</span></span>'
+      : '<div class="glass opt"><span class="ico">' + esc((f.garden && f.garden.faces && f.garden.faces[0]) || '\u273f') + '</span>' +
+        '<span class="grow"><b>' + esc(f.name) + (f.both ? ' \u00b7 together' : '') + '</b><span>@' + esc(f.handle) +
+        (f.garden ? ' \u00b7 ' + plural(f.garden.plants || 0, 'growing') + ' \u00b7 ' + plural(f.garden.days || 0, 'day') : '') + '</span></span>' +
+        '<a class="chip" href="/gg/' + esc(f.handle) + '">page</a><button class="chip" data-room="' + esc(f.handle) + '">a room</button>')
+      + '<button class="chip" data-drop="' + esc(f.handle) + '">let go</button></div>').join('') + '</div>';
+    $$('[data-drop]', slot).forEach((b) => b.addEventListener('click', () => { feel('tap'); Acct.friendDrop(b.dataset.drop).then(paint); }));
+    $$('[data-room]', slot).forEach((b) => b.addEventListener('click', () => { feel('tap'); inviteSheet(b.dataset.room); }));
+  }).catch((e) => { $('#fr-list', sh.el).innerHTML = '<p class="cap">' + esc(String(e.message || e)) + '</p>'; });
+  const add = async () => {
+    const h = $('#fr-h', sh.el).value.trim().toLowerCase();
+    if (!h) return;
+    try {
+      await Acct.friendAdd(h);
+      $('#fr-h', sh.el).value = ''; $('#fr-say', sh.el).textContent = ''; feel('yes'); paint();
+    } catch (e) { $('#fr-say', sh.el).textContent = String(e.message || e); }
+  };
+  $('#fr-add', sh.el).addEventListener('click', add);
+  $('#fr-h', sh.el).addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
+  paint();
+}
+
+// A room is its code, so handing somebody a room is handing them the code. This writes
+// the line; the phone's own share sheet sends it, or it lands on the clipboard.
+function roomLine(v) {
+  return { t: 'Come into ' + (v.name || 'a Gratus room'), b: 'A Gratus Vibe. The code is ' + v.code,
+    u: location.origin + '/app/vibes?code=' + encodeURIComponent(v.code) };
+}
+function handRoom(v) {
+  const l = roomLine(v);
+  return shareOrCopy(l.t, l.b, l.u).then((ok) => toast(ok === 'shared' ? 'Sent on its way' : 'The line is copied. Send it however you like.'));
+}
+function inviteSheet(handle) {
+  const rooms = (S.vibes || []).slice().reverse().slice(0, 8);
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>\u2726</span></span><h2>Bring @' + esc(handle) + ' in</h2>' +
+    '<span class="kicker mint">A room is its code</span></div>' +
+    (rooms.length
+      ? '<p class="body">Choose the room. You get the line to send; Gratus messages nobody for you.</p><div class="rows">' +
+        rooms.map((v) => '<button class="glass opt" data-inv="' + esc(v.code) + '"><span class="ico">' + esc(v.emoji || '\u2726') + '</span><span class="grow"><b>' + esc(v.name || v.code) + '</b><span class="mono">' + esc(v.code) + '</span></span><span class="arrow">\u203a</span></button>').join('') + '</div>'
+      : '<p class="body">You are not in a room yet. Start one in Gratus Vibes and it will be waiting here.</p><button class="btn mint wide" id="inv-go">Open Gratus Vibes</button>'));
+  const gov = $('#inv-go', sh.el);
+  if (gov) gov.addEventListener('click', () => { sh.close(); go('gratus', 'vibes'); });
+  $$('[data-inv]', sh.el).forEach((b) => b.addEventListener('click', () => {
+    feel('tap');
+    handRoom(rooms.find((x) => x.code === b.dataset.inv) || {});
+  }));
+}
+
+// from inside a room: your kept people, one tap each
+function bringSheet(v) {
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(v.emoji || '\u2726') + '</span></span><h2>Bring somebody into ' + esc(v.name) + '</h2>' +
+    '<span class="kicker mint">Code ' + esc(v.code) + '</span></div><div id="bg-list"><p class="cap">Reading your list...</p></div>');
+  const wire = () => { const b = $('#bg-share', sh.el); if (b) b.addEventListener('click', () => handRoom(v)); };
+  if (!Acct.signedIn()) {
+    $('#bg-list', sh.el).innerHTML = '<p class="body">You can hand this code to anybody. Keep people on a list in your account and they show up here, one tap each.</p>' +
+      '<button class="btn mint wide" id="bg-share">Write the line for me</button>';
+    wire();
+    return;
+  }
+  Acct.friends().then((d) => {
+    const live = d.friends.filter((f) => !f.gone);
+    $('#bg-list', sh.el).innerHTML = (live.length
+      ? '<p class="body">One tap writes the line for them. The room is the code, so anybody holding it is in.</p><div class="rows">' +
+        live.map((f) => '<button class="glass opt" data-bg="' + esc(f.handle) + '"><span class="ico">' + esc((f.garden && f.garden.faces && f.garden.faces[0]) || '\u273f') + '</span><span class="grow"><b>' + esc(f.name) + '</b><span>@' + esc(f.handle) + '</span></span><span class="arrow">\u203a</span></button>').join('') + '</div>'
+      : '<p class="body">Nobody on your list yet. Keep a few people and they will be one tap from here.</p>') +
+      '<button class="btn mint wide" id="bg-share">Write the line for me</button>';
+    $$('[data-bg]', sh.el).forEach((b) => b.addEventListener('click', () => { feel('tap'); handRoom(v); }));
+    wire();
+  }).catch(() => {
+    $('#bg-list', sh.el).innerHTML = '<button class="btn mint wide" id="bg-share">Write the line for me</button>';
+    wire();
+  });
+}
+
 function accountSheet() {
   const inn = Acct.signedIn();
   const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>\u2726</span></span><h2>' +
@@ -2062,7 +2150,7 @@ function accountInner(sh) {
       '<button class="btn" id="ac-pub">' + (pub ? '\u2713 Your page is public' : 'Make my page public') + '</button>' +
       '<button class="btn mint wide" id="ac-save">Save my garden now</button>' +
       '<p class="cap" id="ac-say2">Your garden is sealed on this device before it is sent. Nobody here can read it.</p>' +
-      '<button class="btn" id="ac-bill">Your subscription</button>' + '<button class="btn sm quiet" id="ac-out">Sign out of this device</button>';
+      '<button class="btn" id="ac-people">Your people · ' + (d.friends || 0) + '</button>' + '<button class="btn" id="ac-bill">Your subscription</button>' + '<button class="btn sm quiet" id="ac-out">Sign out of this device</button>';
     $('#ac-pub', slot).addEventListener('click', async () => {
       const next = !pub;
       await Acct.setProfile({ published: next, name: $('#ac-name', slot).value, line: $('#ac-line', slot).value, garden: gardenShape() });
@@ -2080,6 +2168,7 @@ function accountInner(sh) {
       } catch (e) { toast(String(e.message || e)); }
       b.disabled = false; b.textContent = 'Save my garden now';
     });
+    $('#ac-people', slot).addEventListener('click', () => { sh.close(); setTimeout(friendsSheet, 260); });
     $('#ac-bill', slot).addEventListener('click', async () => {
       const b = $('#ac-bill', slot); b.disabled = true;
       try {
@@ -2409,6 +2498,7 @@ function wire() {
   { const mk = $('#vb-make'); if (mk) mk.addEventListener('click', makeVibeSheet);
     const jn = $('#vb-join'); if (jn) jn.addEventListener('click', () => { const c = ($('#vb-code').value || '').trim().toUpperCase(); if (!c) { toast('A code.'); return; } if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '✦' }); save(); } loadVibe(c); });
     const sv = $('#vb-share'); if (sv && vibeNow) sv.addEventListener('click', () => shareOrCopy('Come into ' + vibeNow.name, 'A Gratus Vibe. The code is ' + vibeNow.code, location.origin + '/app/vibes?code=' + vibeNow.code).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
+    const bg = $('#vb-bring'); if (bg && vibeNow) bg.addEventListener('click', () => bringSheet(vibeNow));
     const lv = $('#vb-leave'); if (lv && vibeNow) lv.addEventListener('click', () => { S.vibes = S.vibes.filter((x) => x.code !== vibeNow.code); save(); vibeNow = null; vibeState = 'idle'; render(); toast('Left the room. The code still works.'); });
     let vEmoji = null;
     $$('[data-vpick]').forEach((b) => b.addEventListener('click', () => { vEmoji = vEmoji === b.dataset.vpick ? null : b.dataset.vpick; $$('[data-vpick]').forEach((x) => x.classList.toggle('on', x.dataset.vpick === vEmoji)); }));

@@ -54,6 +54,9 @@ export const signOut = () => setToken('');
 export const me = () => ask({ act: 'me', token: token() });
 export const handleFree = (handle) => ask({ act: 'handle-free', handle });
 export const setProfile = (p) => ask(Object.assign({ act: 'profile', token: token() }, p));
+export const friends = () => ask({ act: 'friends', token: token() });
+export const friendAdd = (handle) => ask({ act: 'friend-add', token: token(), handle });
+export const friendDrop = (handle) => ask({ act: 'friend-drop', token: token(), handle });
 
 export async function saveVault(password, garden) {
   const vault = await seal(password, garden);
