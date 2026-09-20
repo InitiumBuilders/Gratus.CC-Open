@@ -212,6 +212,11 @@
    "bytes": 262981,
    "rendition": "assets/art/gfx/g38.webp"
   },
+  "assets/art/gfx/giftmark.png": {
+   "sha256": "7b1ef327f687c89e52ac96e620f4bd627c6d9bbe59ccb0215323bea150156c72",
+   "bytes": 2043500,
+   "rendition": "assets/art/gfx/giftmark.webp"
+  },
   "assets/art/gfx/give-intro-poster.jpg": {
    "sha256": "80225b1c4f6d65f99a3311056cbe98e04937762f917504e9055bafee42b6eb73",
    "bytes": 109334,

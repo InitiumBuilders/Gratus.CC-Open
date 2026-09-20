@@ -25,7 +25,10 @@ SKIP = {'_frames.jpg', '_posters.jpg', '_sheet1.jpg', '_sheet2.jpg'}
 # which is 384 device pixels on a three times phone. A rendition smaller than the place
 # it is painted makes his mark soft, and that is not a trade any number of kilobytes wins.
 WIDTH = {'assets/art/mock': 900, 'assets/brand': 640}
-WIDTH_FILE = {'assets/art/gfx/logo.png': 384}
+WIDTH_FILE = {'assets/art/gfx/logo.png': 384,
+              # the gift mark is painted largest as it launches off the top of the
+              # screen, where it swells past the mark it replaced
+              'assets/art/gfx/giftmark.png': 512}
 QUALITY = 80
 CHECK = '--check' in sys.argv
 

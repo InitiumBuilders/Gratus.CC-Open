@@ -16,6 +16,7 @@ import * as Acct from './account.js?v=20';
 import * as Bill from './billing.js?v=21';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
+import { paintMarks, passingNow, launch as markLaunch } from './giftmark.js?v=39';
 
 const KEY = 'gratus.galaxy.v1';
 const GFX = (n) => '/assets/art/gfx/' + n;
@@ -1713,8 +1714,18 @@ function giveSheet(pre) {
 function shareSheet(g) {
   const text = (S.name || 'Someone') + ' grew you a Gratus Gift. ' + plural(g.days, 'day') + ' of gratitude.';
   const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(g.emoji) + '</span></span><h2>Share the gift</h2><span class="kicker mint">The whole journey lives inside the link.</span></div><p class="cap">They can send back that it landed and kept growing. It carries no words.</p><input class="field" id="sh-link" readonly aria-label="the link" value="' + esc(g.link) + '" style="font-size:15px"><div class="actions"><button class="btn gold" id="sh-share">Share</button><button class="btn" id="sh-copy">Copy the link</button><button class="btn quiet" id="sh-preview">Preview the journey</button></div>');
-  $('#sh-copy', sh.el).addEventListener('click', async () => { try { await navigator.clipboard.writeText(g.link); toast('Link copied'); } catch (e) { $('#sh-link', sh.el).select(); toast('Select and copy'); } });
-  $('#sh-share', sh.el).addEventListener('click', async () => { if (navigator.share) { try { await navigator.share({ title: 'A Gratus Gift', text, url: g.link }); } catch (e) {} } else { try { await navigator.clipboard.writeText(text + ' ' + g.link); toast('Copied'); } catch (e) {} } });
+  $('#sh-copy', sh.el).addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(g.link); toast('Link copied'); } catch (e) { $('#sh-link', sh.el).select(); toast('Select and copy'); }
+    sh.close(); sendOff();
+  });
+  // The gift leaves here. The mark it was wrapped in goes with it, up and out of the top
+  // of the screen, and the bar is plain again when it lands somewhere else.
+  $('#sh-share', sh.el).addEventListener('click', async () => {
+    let went = false;
+    if (navigator.share) { try { await navigator.share({ title: 'A Gratus Gift', text, url: g.link }); went = true; } catch (e) {} }
+    else { try { await navigator.clipboard.writeText(text + ' ' + g.link); toast('Copied'); went = true; } catch (e) {} }
+    if (went) { sh.close(); sendOff(); }
+  });
   $('#sh-preview', sh.el).addEventListener('click', () => { sh.close(); const gift = decodeGift(g.link.split('#')[1]); if (gift) openJourney(gift, { preview: true }); });
 }
 
@@ -2552,8 +2563,62 @@ function watchVisibility() {
   });
 }
 
+// ── when the mark is wrapped ──
+//
+// Four reasons, and the first one true wins. Anything that leaves the garden with a
+// person's name on it outranks a coincidence of the clock.
+//
+// After a gift goes, the mark rests for twenty hours even if something else in the garden
+// is ready. That is the whole of "until they give it": a mark that came back the instant
+// the gift left would be a nag, and this app does not nag.
+const REST = 20 * 60 * 60 * 1000;
+let sending = false;
+
+function readyToGive() {
+  const give = C.book && C.book.phases ? C.book.phases[C.book.phases.length - 1].day : 13;
+  if (S.plants.some((p) => daysOf(p) >= give)) return true;
+  return (S.gifts.received || []).some((x) => !x.planted);
+}
+
+function markReason() {
+  if (sending) return 'sending';
+  const onAGift = /^\/(gift|passage|p)(\/|$)/.test(location.pathname);
+  if (onAGift || tab === 'give' || sub === 'giveth' || document.body.classList.contains('room')) return 'giving';
+  const rested = S.gaveAt ? Date.now() - Date.parse(S.gaveAt) : Infinity;
+  if (rested > REST && readyToGive()) return 'ready';
+  if (passingNow(new Date())) return 'visit';
+  return '';
+}
+
+// The passing lasts four minutes and nobody is watching a clock, so the app checks its own
+// once a minute rather than asking on every paint.
+let markTick = 0;
+function watchMark() {
+  paintMarks(!!markReason());
+  if (markTick) return;
+  markTick = setInterval(() => paintMarks(!!markReason()), 30000);
+}
+
+// ── and when it goes ──
+// The gift leaves from wherever the mark is standing: the core of the bar on a phone, the
+// brand in the corner otherwise. It launches from the thing it was, which is the point.
+function sendOff(then) {
+  const from = $('.tabs .star .core img') || $('.top .left img.mark') || $('.brandrow img.mark');
+  sending = true;
+  paintMarks(true);
+  feel('commit');
+  markLaunch(from, { onDone: () => {
+    sending = false;
+    S.gaveAt = new Date().toISOString(); save();
+    paintMarks(!!markReason());
+    if (then) then();
+  } });
+  if (!from) { sending = false; if (then) then(); }
+}
+
 function wire() {
   watchVisibility();
+  watchMark();
   setFeel(() => !!(S && S.feel));
   wireSwipe();
   wireConnectivity();

@@ -1084,3 +1084,62 @@ body.touring { overflow: hidden; }
    itself does not grow: the padding does, so nothing here becomes an oversized control. */
 .chip { min-height: 44px; }
 .tabs2 button { min-height: 44px; }
+
+/* ── THE WRAPPED MARK, AND THE LAUNCH ──
+   The mark does not swap, it turns: a quarter second of light across it and it is
+   carrying something. The launch runs on transform and opacity alone, above everything,
+   and cannot be tapped. Nothing rotates. Every ring is a glow, never a highlight. */
+
+.mark-turn { animation: markTurn .62s cubic-bezier(.22, 1, .36, 1); }
+/* the socket the gift left from: the light stays, the gift does not */
+.lifted { opacity: 0; transition: opacity .18s ease-out .5s; }
+@keyframes markTurn {
+  0%   { transform: scale(1);    filter: brightness(1); }
+  38%  { transform: scale(1.14); filter: brightness(1.5) drop-shadow(0 0 14px rgba(242, 201, 125, .8)); }
+  100% { transform: scale(1);    filter: brightness(1); }
+}
+
+/* while something is wrapped, the core breathes gold rather than mint */
+html.wrapped .tabs .star .core .aura { background: radial-gradient(circle, rgba(242, 201, 125, .5), transparent 68%); }
+html.wrapped .tabs .star .core .ring { border-color: rgba(242, 201, 125, .7); box-shadow: var(--glow-gold); }
+html.wrapped .tabs .star span.lbl { color: #FFD98A; }
+
+.launch { position: fixed; inset: 0; z-index: 9000; pointer-events: none; contain: strict; }
+.launch .flier, .launch .wv {
+  position: absolute; left: var(--x); top: var(--y); will-change: transform, opacity;
+}
+.launch .flier { margin-left: calc(var(--d) / -2); margin-top: calc(var(--d) / -2); width: var(--d); height: var(--d); }
+/* the waves are the gravity, not a hairline around the mark: they begin well outside it */
+.launch .wv { --r: calc(var(--d) * 2.6); margin-left: calc(var(--r) / -2); margin-top: calc(var(--r) / -2); width: var(--r); height: var(--r); }
+.launch .flier { filter: drop-shadow(0 0 16px rgba(242, 201, 125, .85)); }
+.launch .wv {
+  border-radius: 50%; border: 2px solid rgba(242, 201, 125, .65);
+  box-shadow: 0 0 30px rgba(242, 201, 125, .5), inset 0 0 34px rgba(110, 217, 192, .38);
+  opacity: 0; transform: scale(.2);
+}
+
+/* GATHER, then CHARGE, then GO. The waves come in before they go out, because a thing
+   about to leave the ground presses down on it first. */
+.launch.go .wv { animation: gravity 1.05s cubic-bezier(.34, .1, .2, 1) forwards; }
+.launch.go .w2 { animation-delay: .13s; }
+.launch.go .w3 { animation-delay: .26s; }
+@keyframes gravity {
+  0%   { opacity: 0;  transform: scale(2.4); }
+  26%  { opacity: .9; transform: scale(1.5); }
+  58%  { opacity: .7; transform: scale(.72); }
+  100% { opacity: 0;  transform: scale(.34); }
+}
+
+.launch.go .flier { animation: liftOff 1.95s cubic-bezier(.5, 0, .82, .34) forwards; }
+@keyframes liftOff {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  16%  { transform: translate3d(0, 6px, 0) scale(.9); opacity: 1; }
+  34%  { transform: translate3d(0, 2px, 0) scale(1.28); opacity: 1; }
+  44%  { transform: translate3d(0, -6px, 0) scale(1.2); opacity: 1; }
+  100% { transform: translate3d(0, calc((var(--y) + 240px) * -1), 0) scale(.42); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark-turn { animation: none; }
+  .launch { display: none; }
+}
