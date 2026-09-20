@@ -35,7 +35,7 @@ run log below.
 [x] CHECKPOINT 0   fixture captured, 23 gates exist, every one behaves correctly
 [x] CHECKPOINT I   TRUTH        shipped and live, 2026-09-19
 [x] CHECKPOINT II  INTEGRITY    shipped and live, 2026-09-19
-[ ] CHECKPOINT III BODY
+[x] CHECKPOINT III BODY         shipped and live, 2026-09-19
 [ ] CHECKPOINT IV  SACRED
 [ ] CHECKPOINT V   BRIDGE
 [ ] CHECKPOINT VI  GUIDED
@@ -212,6 +212,80 @@ written so far exactly where it is.
 
 ---
 
+## CHECKPOINT III · BODY AND THE HAND · shipped
+
+Two of the three things this checkpoint was written against turned out not to be true, and
+measuring said so before any of it was built.
+
+**The video was never the problem.** The document counted 59.4 MB of film with 19.94 MB of
+it on the landing. That is what is on disk. What a phone takes off the wire, at 375 with
+the page scrolled all the way down, is **zero**: the posters carry the landing and no film
+is fetched until somebody plays one. `preload` was already right.
+
+**The weight was pictures, and mostly one picture.** His mark, 640 by 640, 595 KB, was
+being sent to every single screen and drawn at forty points in the tab bar. It was between
+forty and fifty per cent of every page load in the app.
+
+| what a phone pulls at 375 | before | after |
+|---|---|---|
+| the landing, first screen | 1.00 MB | **0.39 MB** |
+| the landing, scrolled to the end | 3.36 MB | **0.67 MB** |
+| /app | 1.18 MB | **0.56 MB** |
+| /app/grow | 1.37 MB | **0.68 MB** |
+| /app/give | 1.13 MB | **0.53 MB** |
+| /app/giveth | 1.22 MB | **0.59 MB** |
+| /app/vibes | 1.24 MB | **0.61 MB** |
+| /app/guides | 1.32 MB | **0.70 MB** |
+
+**Not one of his files was edited to do it.** `scripts/renditions.py` reads his pictures
+and writes a WebP beside each one; `config/originals.json` records the sha256 of all
+sixty-three sources; G28 re-hashes every one of them on every run. His originals being
+untouched is now a thing the build checks rather than a thing I promise. His mark is capped
+at 384 across because that is three times the 128 css px the landing hero paints it at,
+measured in a browser rather than guessed.
+
+### The hand
+
+| the gesture | what it does |
+|---|---|
+| swipe across | steps between Give, Gratus and Grow, with the far door lighting before the finger lets go and the ends pushing back |
+| swipe down on a sheet | the grabber was painted on from the first day and did nothing; a sheet follows the thumb now and lets go past 112 |
+| hold on a growing thing | look closer, write today with it, give this one |
+| the phone answering the hand | at the five moments that already have a sound, on its own switch, `S.feel`, which is why the state ladder is at v3 |
+
+The gestures give way rather than take: a finger going down the page is reading, a drag
+that starts within 28 of the glass edge belongs to the phone, and a drag along a row that
+scrolls sideways belongs to the row.
+
+### What driving it found that reading it never would
+
+- **A press-and-hold that had never once fired.** `ui.js` read `opts.onLong`; the only
+  caller in the app passed `opts.on`. It now takes either, and swallows the click the
+  browser sends after a hold so one press is not also a tap.
+- **A fix of mine that fixed nothing, and the mutant that said so.** The top bar buttons
+  measured as covered, I found an art layer stacked over them, and I gave every art layer
+  `pointer-events: none`. The gate went green. Then the mutant that takes the rule back
+  out went green too, which means the rule was never what turned it. What had been sitting
+  on the buttons was a ceremony, open because a garden with days in it arrives to one, and
+  a ceremony is a modal that is supposed to cover the screen. The rule is gone. The gate
+  walks through the ceremony now and says out loud when it could not.
+- **The writing row was under the bar.** Four pixels under it, for anybody with a garden.
+  An empty garden cleared it by sixteen, which is exactly why it went unseen: the first
+  run was fine and every run after it was not.
+- **My own swipe guard asked whether the laws dialog existed** rather than whether it was
+  open. It is in the page the whole time with a hidden attribute, so the answer was yes
+  forever and the swipe could never fire. Presence is not state.
+- **Widening a target steals the neighbour's edge.** The reach drawn under a chip is 46
+  tall and his chips are 36, so two wrapped lines eight apart had their targets
+  overlapping. Twelve between the lines gives each chip its own, and the screen room to
+  breathe.
+
+Reach is measured by asking what is under the thumb 21 pixels out, not by reading a
+width, because a 40 pixel button with a 46 pixel target under it is a 46 pixel target.
+Every control on six screens now answers.
+
+---
+
 ## Run log
 
 Newest last. One line per meaningful step, with the command that proved it.
@@ -239,3 +313,9 @@ Newest last. One line per meaningful step, with the command that proved it.
 - live probe after the first ship → the policy, the refusals and the worker all correct, and a mistyped slug answering **502**
 - asked Giveth directly → `{"errors":[{"message":"Project not found."}],"data":null}`, and `CARE-PERU` resolves while `care-peru` does not
 - `mutate.py` → **19/19 KILLED** with M42 (the flattened slug) and M43 (not-found read as an outage) added, M38 removed as the same defect aimed at a line that no longer exists
+
+### Checkpoint III
+- `node scripts/gates/weight.mjs` and a Resource Timing read → the film is never fetched; the mark was half of every screen
+- `python3 scripts/renditions.py` → 63 sources, 21.15 MB of his originals, 6.69 MB delivered
+- `node scripts/gates/thehand.mjs` → **33 assertions, every one driven**
+- `mutate.py M51..M59` → nine defects restored, nine caught. A tenth, M50, survived, which is how the rule that fixed nothing was found and removed

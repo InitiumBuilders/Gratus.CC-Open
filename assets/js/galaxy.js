@@ -7,13 +7,13 @@
 import * as Gr from '../../engine/gratus.js?v=12';
 import * as E from '../../engine/emoji.js?v=12';
 import { newId } from '../../engine/rng.js?v=12';
-import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=12';
-import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy } from './ui.js?v=13';
+import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=14';
+import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
 const KEY = 'gratus.galaxy.v1';
 const GFX = (n) => '/assets/art/gfx/' + n;
-const LOGO = GFX('logo.png');
+const LOGO = GFX('logo.webp');
 let C = {}, S = null, tab = 'gratus', sub = null, room = null, installEvt = null;
 
 // ── his scenes, by screen. A name starting with v is a video (poster beside it). ──
@@ -27,14 +27,14 @@ const SCENES = {
 function scene(key, i) { const list = SCENES[key]; if (typeof list === 'string') return list; return list[(((S && S.opens) || 0) + (i || 0)) % list.length]; }
 const motionOk = () => !matchMedia('(prefers-reduced-motion: reduce)').matches && !(navigator.connection && navigator.connection.saveData);
 function art(name, cls) {
-  if (name[0] === 'v' || (name[0] === 'd' && name !== 'dlong-x')) { const poster = GFX(name + '-poster.jpg'); return motionOk() ? '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + poster + ')"><video autoplay muted loop playsinline poster="' + poster + '" aria-hidden="true"><source src="' + GFX(name + '.mp4') + '" type="video/mp4"></video></div>' : '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + poster + ')"></div>'; }
-  return '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + GFX(name + '.jpg') + ')"></div>';
+  if (name[0] === 'v' || (name[0] === 'd' && name !== 'dlong-x')) { const poster = GFX(name + '-poster.webp'); return motionOk() ? '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + poster + ')"><video autoplay muted loop playsinline poster="' + poster + '" aria-hidden="true"><source src="' + GFX(name + '.mp4') + '" type="video/mp4"></video></div>' : '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + poster + ')"></div>'; }
+  return '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + GFX(name + '.webp') + ')"></div>';
 }
 let sceneNow = null;
 function setScene(name) {
   const root = $('#scene'); if (!root || sceneNow === name) return; sceneNow = name;
   const old = Array.from(root.children); const layer = document.createElement('div'); layer.className = 'layer';
-  const video = name[0] === 'v' || name[0] === 'd'; const poster = video ? GFX(name + '-poster.jpg') : GFX(name + '.jpg');
+  const video = name[0] === 'v' || name[0] === 'd'; const poster = video ? GFX(name + '-poster.webp') : GFX(name + '.webp');
   layer.innerHTML = '<div class="back" style="background-image:url(' + poster + ')"></div>' +
     (video && motionOk() ? '<video class="fore" autoplay muted loop playsinline poster="' + poster + '" aria-hidden="true"><source src="' + GFX(name + '.mp4') + '" type="video/mp4"></video>' : '<img class="fore" src="' + poster + '" alt="" aria-hidden="true">');
   root.appendChild(layer); setTimeout(() => layer.classList.add('in'), 40);
@@ -142,7 +142,7 @@ function stars() { const el = $('.stars'); if (!el || el.children.length) return
 // ── shell ──
 function topBar(o) {
   const back = o && o.back;
-  return '<header class="top">' + (back ? '<button class="back" id="top-back" aria-label="back">‹</button>' : '<span class="left"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname">Gratus.CC</span></span>') + '<span class="right"><button class="sound' + (S.sound ? ' on' : '') + '" id="top-sound" aria-label="' + (S.sound ? 'mute the song' : 'play the song') + '">' + (S.sound ? I.sound : I.mute) + '</button><button class="you" id="top-you" aria-label="you">' + I.user + '</button></span></header>';
+  return '<header class="top">' + (back ? '<button class="back" id="top-back" aria-label="back">‹</button>' : '<span class="left"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname">Gratus.CC</span></span>') + '<span class="right"><button class="sound' + (S.sound ? ' on' : '') + '" id="top-sound" aria-pressed="' + (S.sound ? 'true' : 'false') + '" aria-label="' + (S.sound ? 'mute the song' : 'play the song') + '">' + (S.sound ? I.sound : I.mute) + '</button><button class="you" id="top-you" aria-label="you">' + I.user + '</button></span></header>';
 }
 // a screen's hero: the scene, the title high, the words low
 function hero(sceneName, o) {
@@ -158,7 +158,7 @@ function tabIntro(t, then) {
   introOn = true; let gone = false, started = false, flooded = false, moved = false, hard = 0, stall = 0;
   const out = () => { if (gone) return; gone = true; introOn = false; clearTimeout(hard); clearTimeout(stall); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.classList.remove('out'); }, 1300); if (!started) { started = true; then(); } };
   const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'); if (w) w.classList.add('on'); setTimeout(out, 1900); };
-  el.innerHTML = '<video muted playsinline preload="auto" poster="' + GFX(cfg.src + '-poster.jpg') + '"><source src="' + GFX(cfg.src + '.mp4') + '" type="video/mp4"></video><div class="white"></div><span class="kicker skiphint">tap to enter</span>';
+  el.innerHTML = '<video muted playsinline preload="auto" poster="' + GFX(cfg.src + '-poster.webp') + '"><source src="' + GFX(cfg.src + '.mp4') + '" type="video/mp4"></video><div class="white"></div><span class="kicker skiphint">tap to enter</span>';
   el.hidden = false; const v = el.querySelector('video');
   v.addEventListener('timeupdate', () => { if (v.currentTime > 0.2) moved = true; if (v.currentTime >= cfg.flood) flood(); });
   v.addEventListener('ended', flood);
@@ -189,7 +189,12 @@ function render() {
   else s = viewGratus();
   root.innerHTML = s; choreograph(); frameArt(root); depthWatch(root);
   if (tab === 'gratus' && !sub) { const t = $('.top'); if (t) t.querySelector('.left').style.visibility = 'hidden'; }
-  $$('.tabs button[data-tab]').forEach((b) => { b.classList.toggle('on', b.dataset.tab === tab && !sub); });
+  $$('.tabs button[data-tab]').forEach((b) => {
+    const here = b.dataset.tab === tab && !sub;
+    b.classList.toggle('on', here);
+    // a ring drawn around a word is not something a screen reader can see
+    if (here) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
   const back = $('#top-back'); if (back) back.addEventListener('click', () => go(sub === 'vault' || sub === 'earth' ? 'give' : tab, sub === 'vault' || sub === 'earth' ? 'world' : null));
   $('#top-you').addEventListener('click', youSheet);
   { const ts = $('#top-sound'); if (ts) ts.addEventListener('click', toggleSound); }
@@ -942,10 +947,10 @@ function viewGratus() {
   setScene(scene('home'));
   return '<section class="home14">' +
     '<header class="hh"><button class="hbtn" id="home-menu" aria-label="menu">' + I.menu + '</button><div class="hbrand"><img class="hlogo" src="' + LOGO + '" alt=""><span class="hname">Gratus<em>.CC</em></span></div><button class="hbtn" id="top-you" aria-label="you">' + I.user + '</button><p class="htag">Gratus Helps You Grow Gratitude Daily<br>And Empowers You To Give Gratus Gifts.</p></header>' +
-    '<div class="hcard hero14"><div class="hero14-top"><h2>Today\'s Gratitude</h2><p>What are you grateful for today?</p></div><img class="hero14-art" src="/assets/art/home/hero-band.jpg" alt=""><button class="gpill" id="write-today">' + I.feather + '<span>Write Today</span><span class="arr">→</span></button></div>' +
+    '<div class="hcard hero14"><div class="hero14-top"><h2>Today\'s Gratitude</h2><p>What are you grateful for today?</p></div><img class="hero14-art" src="/assets/art/home/hero-band.webp" alt=""><button class="gpill" id="write-today">' + I.feather + '<span>Write Today</span><span class="arr">→</span></button></div>' +
     door('journal', 'Gratitude Journal', 'Write and journal every day.', 'open-journal') +
     door('sprout', 'Grow Your Gratus Garden!', 'Grow gratitude every day.', 'open-garden') +
-    '<div class="hcard door gifts" id="open-gifts"><img class="door-art" src="/assets/art/home/giftbox.jpg" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family.</span><button class="gpill sm" id="send-gift">' + I.giftline + '<span>Send a Gift</span><span class="arr">→</span></button></span><span class="door-go">›</span></div>' +
+    '<div class="hcard door gifts" id="open-gifts"><img class="door-art" src="/assets/art/home/giftbox.webp" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family.</span><button class="gpill sm" id="send-gift">' + I.giftline + '<span>Send a Gift</span><span class="arr">→</span></button></span><span class="door-go">›</span></div>' +
     '<div class="together"><h2><i>✦</i>Gratus Gives Together<i>✦</i></h2><p>Set Your Gratus Goals</p></div>' +
     goalsBlock() +
     door('journal', 'Gratus Vibes', 'The small rooms. A few people, one feed.', 'open-vibes') +
@@ -1136,7 +1141,7 @@ function playCeremonies(list, done) {
     root.hidden = false; root.onclick = null;
     const show = () => { root.innerHTML = art(scene('ceremony', k++)) + '<div class="flash on"></div>' + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0; const close = () => { clearTimeout(t); root.onclick = null; next(); }; root.onclick = close; t = setTimeout(close, 5600); };
     if (gate) {
-      gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.jpg') + '"><source src="' + GFX('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
+      gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
       const v = root.querySelector('video'); let fired = false; const fire = () => { if (fired) return; fired = true; clearTimeout(tm); show(); };
       const tm = setTimeout(fire, 9000); v.addEventListener('ended', fire); v.addEventListener('timeupdate', () => { if (v.currentTime >= 24.6) fire(); }); v.addEventListener('error', fire); root.onclick = fire;
       v.currentTime = 17; v.play().catch(fire);
@@ -1177,7 +1182,7 @@ function viewProjects() {
   return hero(scene('projects'), { cls: 'room-hero', h1: 'All Projects', k1: 'Give to people, places or causes that matter.' }) +
     '<div class="page">' + partnerCard() +
     '<div class="chips row">' + cats.map((c) => '<button class="chip' + (projFilter === c ? ' on' : '') + '" data-cat="' + c + '">' + c + '</button>').join('') + '</div>' +
-    '<div class="projects">' + (list.length ? list.map((p) => '<a class="glass project" href="https://giveth.io/projects" target="_blank" rel="noopener"><span class="pic" style="background-image:url(' + GFX(p.art + '.jpg') + ')"></span><span class="grow"><span class="tag">' + esc(p.tag) + '</span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.line) + '</span><span class="n">' + esc(p.n) + ' ♡</span></span></a>').join('') : '<p class="cap">Nothing under that yet.</p>') + '</div>' +
+    '<div class="projects">' + (list.length ? list.map((p) => '<a class="glass project" href="https://giveth.io/projects" target="_blank" rel="noopener"><span class="pic" style="background-image:url(' + GFX(p.art + '.webp') + ')"></span><span class="grow"><span class="tag">' + esc(p.tag) + '</span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.line) + '</span><span class="n">' + esc(p.n) + ' ♡</span></span></a>').join('') : '<p class="cap">Nothing under that yet.</p>') + '</div>' +
     '<p class="cap" style="text-align:center">Projects shown as imagined. Live giving connects when the backend arrives.</p></div>';
 }
 function viewWorld() {
@@ -1672,15 +1677,17 @@ function tone(hz, at, dur, peak) {
 }
 // the chord as far as this phase: the sound of everything the plant has already been
 function soundPhase(i) {
+  feel('phase');
   for (let k = 0; k <= i && k < TONES.length; k++) tone(TONES[k], k * .17, 3.2 - k * .24, .085 - k * .007);
 }
 function soundNote(i) { if (TONES[i]) tone(TONES[i], 0, 2.4, .085); }
 // a word kept: the root alone, quietly
-function soundKept() { tone(TONES[0], 0, 1.3, .06); }
+function soundKept() { feel('tap'); tone(TONES[0], 0, 1.3, .06); }
 // a bloom: the root, the octave and the third above it, which is the chord opening
-function soundBloom() { [0, 2, 3].forEach((k, i) => tone(TONES[k], i * .13, 3, .075)); }
+function soundBloom() { feel('phase'); [0, 2, 3].forEach((k, i) => tone(TONES[k], i * .13, 3, .075)); }
 // given: the chord falls away from the top and the root is what is left
 function soundGiven() {
+  feel('given');
   for (let k = TONES.length - 1; k >= 0; k--) tone(TONES[k], (TONES.length - 1 - k) * .15, 1.5, .06);
   tone(TONES[0], 1.0, 4.2, .095);
 }
@@ -1694,7 +1701,7 @@ function songInit() {
   document.addEventListener('pointerdown', once); document.addEventListener('keydown', once);
   document.addEventListener('visibilitychange', () => { if (document.hidden) a.pause(); else start(); });
 }
-function toggleSound() { const a = $('#song'); S.sound = !S.sound; save(); if (S.sound) a.play().catch(() => null); else a.pause(); const b = $('#top-sound'); if (b) { b.classList.toggle('on', S.sound); b.innerHTML = S.sound ? I.sound : I.mute; b.setAttribute('aria-label', S.sound ? 'mute the song' : 'play the song'); } toast(S.sound ? 'A Sacred Place, playing' : 'Muted'); }
+function toggleSound() { const a = $('#song'); S.sound = !S.sound; save(); if (S.sound) a.play().catch(() => null); else a.pause(); const b = $('#top-sound'); if (b) { b.classList.toggle('on', S.sound); b.innerHTML = S.sound ? I.sound : I.mute; b.setAttribute('aria-pressed', S.sound ? 'true' : 'false'); b.setAttribute('aria-label', S.sound ? 'mute the song' : 'play the song'); } toast(S.sound ? 'A Sacred Place, playing' : 'Muted'); }
 // the splash: his transition scene, the mark, the name. Once per session, two seconds, tap to pass.
 // a kicker that ends a sentence, or asks for a tap, reads as a sentence: bigger, no small caps
 const SAY = /[.!?]$|^tap to|· tap to/i;
@@ -1734,7 +1741,7 @@ function splash(then) {
   let gone = false, started = false;
   const out = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; }, 1500); if (!started) { started = true; then(); } };
   if (!motionOk()) { el.innerHTML = '<div class="brandrow"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div>'; el.hidden = false; setTimeout(out, 1200); el.addEventListener('click', out); return; }
-  el.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.jpg') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
+  el.innerHTML = '<video class="explode" muted playsinline preload="auto" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
   el.hidden = false; const v = el.querySelector('video'); let flooded = false;
   const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'), r = el.querySelector('.ritual'); if (w) w.classList.add('on'); if (r) r.classList.add('lit'); setTimeout(out, 2600); };
   v.addEventListener('ended', flood); v.addEventListener('timeupdate', () => { if (v.currentTime >= 24.4) flood(); }); v.addEventListener('error', out);
@@ -1744,8 +1751,81 @@ function splash(then) {
 }
 
 // ── wiring per render ──
+// ── across, between the three doors ──
+// Give, Gratus and Grow sit in that order, so a drag to the left is a step to the right.
+// The intro films belong to the deliberate tap: a gesture that waits three seconds for a
+// video is not a gesture, so a swipe goes straight through to the screen.
+const DOORS = ['give', 'gratus', 'grow'];
+function wireSwipe() {
+  const view = $('#view'); if (!view || view.dataset.swipe) return;
+  view.dataset.swipe = '1';
+  let width = 375;
+  const settle = () => { view.style.transition = ''; view.style.transform = ''; view.style.opacity = ''; };
+  const hint = (name) => $$('.tabs button[data-tab]').forEach((b) => b.classList.toggle('near', !!name && b.dataset.tab === name));
+  swipe(view, {
+    can: () => !sub && !room && !$('#sheets .sheet') && !$('.laws:not([hidden])') && !document.body.classList.contains('room'),
+    onDrag: (dx) => {
+      width = view.offsetWidth || 375;
+      const i = DOORS.indexOf(tab);
+      const none = i < 0 || (dx < 0 && i >= DOORS.length - 1) || (dx > 0 && i <= 0);
+      const d = none ? dx / 3.4 : dx;          // nothing that way, so the edge pushes back
+      view.style.transition = 'none';
+      view.style.transform = 'translate3d(' + d.toFixed(1) + 'px,0,0)';
+      view.style.opacity = String(Math.max(.6, 1 - Math.abs(d) / (width * 1.7)));
+      hint(none ? null : DOORS[i + (dx < 0 ? 1 : -1)]);
+    },
+    onEnd: (dir) => {
+      hint(null);
+      const i = DOORS.indexOf(tab);
+      const next = dir && i >= 0 ? DOORS[i + dir] : null;
+      if (!next) {
+        view.style.transition = 'transform .3s cubic-bezier(.22,1,.36,1), opacity .3s';
+        view.style.transform = 'translate3d(0,0,0)'; view.style.opacity = '1';
+        setTimeout(settle, 320);
+        return;
+      }
+      feel('commit');
+      if (!motionOk()) { settle(); goNow(next); return; }
+      view.style.transition = 'transform .16s ease-out, opacity .16s ease-out';
+      view.style.transform = 'translate3d(' + (dir > 0 ? -width * .32 : width * .32) + 'px,0,0)';
+      view.style.opacity = '0';
+      setTimeout(() => {
+        goNow(next);
+        view.style.transition = 'none';
+        view.style.transform = 'translate3d(' + (dir > 0 ? width * .28 : -width * .28) + 'px,0,0)';
+        requestAnimationFrame(() => {
+          view.style.transition = 'transform .27s cubic-bezier(.22,1,.36,1), opacity .27s';
+          view.style.transform = 'translate3d(0,0,0)'; view.style.opacity = '1';
+          setTimeout(settle, 300);
+        });
+      }, 160);
+    },
+  });
+}
+
+// ── what a hold on a growing thing opens ──
+// The three things anyone wants from a plant they are already looking at, without
+// walking anywhere to reach them.
+function plantQuick(p) {
+  const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d);
+  const sh = sheet('<div class="hero-sm"><span class="orb xl lit"><span>' + esc(face(p)) + '</span></span><h2>' + esc(nameOf(face(p))) + '</h2>' +
+    '<span class="kicker mint">' + esc(ph.name) + ' \u00b7 ' + plural(d, 'day') + (nx ? ' \u00b7 ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' \u00b7 ready to give') + '</span></div>' +
+    '<div class="actions"><button class="btn" id="pq-look">Look closer</button>' +
+    '<button class="btn" id="pq-write">Write today with it</button>' +
+    '<button class="btn gold" id="pq-give">Give this one</button></div>');
+  $('#pq-look', sh.el).addEventListener('click', () => { sh.close(); arcSheet(face(p)); });
+  $('#pq-write', sh.el).addEventListener('click', () => { sh.close(); draft.emoji = face(p); goNow('grow'); setTimeout(() => { const f = $('#write'); if (f) f.focus(); }, 320); });
+  $('#pq-give', sh.el).addEventListener('click', () => { sh.close(); giveSheet(p); });
+}
+
 function wire() {
-  $$('[data-p]').forEach((b) => b.addEventListener('click', () => { const p = S.plants.find((x) => x.id === b.dataset.p); if (p) arcSheet(face(p)); }));
+  setFeel(() => !!(S && S.feel));
+  wireSwipe();
+  $$('[data-p]').forEach((b) => {
+    const of = () => S.plants.find((x) => x.id === b.dataset.p);
+    b.addEventListener('click', () => { const p = of(); if (p) arcSheet(face(p)); });
+    longPress(b, { onLong: () => { const p = of(); if (p) plantQuick(p); } });
+  });
   $$('[data-e]').forEach((b) => b.addEventListener('click', () => entrySheet(S.entries.find((x) => x.id === b.dataset.e))));
   const qk = $('#quick'); if (qk) qk.addEventListener('submit', (ev) => { ev.preventDefault(); draft.text = $('#quick-in').value.trim(); go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center' }); } }, 350); });
   const fp = $('#first-plant'); if (fp) fp.addEventListener('click', () => go('grow'));

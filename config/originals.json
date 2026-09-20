@@ -1,0 +1,321 @@
+{
+ "note": "His pictures, as he made them. A rendition is delivered; these are never edited.",
+ "quality": 80,
+ "files": {
+  "assets/art/gfx/d2-poster.jpg": {
+   "sha256": "b4351dd3841fd5bc89b0e520c9c1bc870410e9529a6ad3d1a74bb0de823b259c",
+   "bytes": 191206,
+   "rendition": "assets/art/gfx/d2-poster.webp"
+  },
+  "assets/art/gfx/dhold-poster.jpg": {
+   "sha256": "706e8594e54033cbfc50a0c2e485bbab61edff611ac7d86313e0bfd6e320e994",
+   "bytes": 172146,
+   "rendition": "assets/art/gfx/dhold-poster.webp"
+  },
+  "assets/art/gfx/dlong-poster.jpg": {
+   "sha256": "3dc20d39ae97172619dd61ec7cb9af11ff9680184417344969e5a282978470ad",
+   "bytes": 173162,
+   "rendition": "assets/art/gfx/dlong-poster.webp"
+  },
+  "assets/art/gfx/explode-poster.jpg": {
+   "sha256": "19712ffd29ff0c7be59092ebd7b72bcdc6bcd42ad9a241bf40680a7d286c6138",
+   "bytes": 82674,
+   "rendition": "assets/art/gfx/explode-poster.webp"
+  },
+  "assets/art/gfx/g01.jpg": {
+   "sha256": "6c51b0857d38436aabf81768afea0fa2f71758f57a7e9f70c303b3709d5a93a6",
+   "bytes": 170349,
+   "rendition": "assets/art/gfx/g01.webp"
+  },
+  "assets/art/gfx/g02.jpg": {
+   "sha256": "71d074d064a90ec472ef57be7ec3d56e6afba5502d619c1ca3dda14331f98fb5",
+   "bytes": 207047,
+   "rendition": "assets/art/gfx/g02.webp"
+  },
+  "assets/art/gfx/g03.jpg": {
+   "sha256": "fcf3f7c50ac308bf38f048be0e634e071c1b661b18f1cf70139e7d6f7e794288",
+   "bytes": 185830,
+   "rendition": "assets/art/gfx/g03.webp"
+  },
+  "assets/art/gfx/g04.jpg": {
+   "sha256": "c577938ad8b75b6217294d2e815bef5b464f0983f6415ad2c2a62513113e492b",
+   "bytes": 208219,
+   "rendition": "assets/art/gfx/g04.webp"
+  },
+  "assets/art/gfx/g05.jpg": {
+   "sha256": "b811b8441c964cab6f945af63ea08787f2a1a20c0612d958abbf383e83da791f",
+   "bytes": 226155,
+   "rendition": "assets/art/gfx/g05.webp"
+  },
+  "assets/art/gfx/g06.jpg": {
+   "sha256": "70da21ee5bf9697dfa286cdeb47a167213aaf7670b0a0846feea715aea449ef8",
+   "bytes": 218308,
+   "rendition": "assets/art/gfx/g06.webp"
+  },
+  "assets/art/gfx/g07.jpg": {
+   "sha256": "7f1c33bf3c191592c1e757a2ab92b1cdc9d612b4fc2162d2f92cb723983330df",
+   "bytes": 179932,
+   "rendition": "assets/art/gfx/g07.webp"
+  },
+  "assets/art/gfx/g08.jpg": {
+   "sha256": "986e6165e49644b1f5c7d19cccb4ae56bb2ba72bd89790e4e552b66d41a66af9",
+   "bytes": 184192,
+   "rendition": "assets/art/gfx/g08.webp"
+  },
+  "assets/art/gfx/g09.jpg": {
+   "sha256": "db2de1596dce20579d0c4ae07f990eeb4e7c3b07122c113293ce05f3b4a35b36",
+   "bytes": 192303,
+   "rendition": "assets/art/gfx/g09.webp"
+  },
+  "assets/art/gfx/g10.jpg": {
+   "sha256": "5ba5d8b58c26e6af45c35e99d025d77d0e1e31776105fd0755d52c184a728274",
+   "bytes": 195568,
+   "rendition": "assets/art/gfx/g10.webp"
+  },
+  "assets/art/gfx/g11.jpg": {
+   "sha256": "ef67559fb04cd84f4c01b178c141239618ad95626a82eca2a9793ca3a9b4330f",
+   "bytes": 299937,
+   "rendition": "assets/art/gfx/g11.webp"
+  },
+  "assets/art/gfx/g12.jpg": {
+   "sha256": "7959b08bd213c2f99d49a0927d13d8ce2450d46711cd99d050eb93978f9ed65c",
+   "bytes": 340184,
+   "rendition": "assets/art/gfx/g12.webp"
+  },
+  "assets/art/gfx/g13.jpg": {
+   "sha256": "40b8cd67a373d610529782cd92ebc429c774e15ad5e80445390ebf1ea635e5f0",
+   "bytes": 291924,
+   "rendition": "assets/art/gfx/g13.webp"
+  },
+  "assets/art/gfx/g14.jpg": {
+   "sha256": "8f3477cdef171025a208a5d6dbdfaae9a9c57ac4de610d21b160d71aa8a8e2db",
+   "bytes": 349337,
+   "rendition": "assets/art/gfx/g14.webp"
+  },
+  "assets/art/gfx/g15.jpg": {
+   "sha256": "686ef87540ef115d6775ed52511e6578a8584b1e4941da2b74b6336bf882b3eb",
+   "bytes": 291240,
+   "rendition": "assets/art/gfx/g15.webp"
+  },
+  "assets/art/gfx/g16.jpg": {
+   "sha256": "02fbbb7e64c8d01a1ea3fa20c2a55e3ebe7b2d193d160ddc4c4c987a5db75e13",
+   "bytes": 194515,
+   "rendition": "assets/art/gfx/g16.webp"
+  },
+  "assets/art/gfx/g17.jpg": {
+   "sha256": "0d2abc83c1727d103505b791b049856a0dc7aad2b98bd87c54a2cd7577d60f0f",
+   "bytes": 149313,
+   "rendition": "assets/art/gfx/g17.webp"
+  },
+  "assets/art/gfx/g18.jpg": {
+   "sha256": "2ae3d21d40110e0b9c8609b5e1d6db53822ce89e6a96090b1cbf7c0491367da9",
+   "bytes": 204385,
+   "rendition": "assets/art/gfx/g18.webp"
+  },
+  "assets/art/gfx/g19.jpg": {
+   "sha256": "1f284eaebab1e4e8153f5a3d9837587af5ed6e2713d3a8ec13454c27e9e21ad4",
+   "bytes": 242197,
+   "rendition": "assets/art/gfx/g19.webp"
+  },
+  "assets/art/gfx/g20.jpg": {
+   "sha256": "07f4ad1c40b9741fff764ce09576b832baa14c5d62a9644bc6b39a3817918eb8",
+   "bytes": 162249,
+   "rendition": "assets/art/gfx/g20.webp"
+  },
+  "assets/art/gfx/g21.jpg": {
+   "sha256": "d781f8d45b45793bdbdaa78c9a8e9c570bbe44e6d040f0caf41eafc6c2b01006",
+   "bytes": 166345,
+   "rendition": "assets/art/gfx/g21.webp"
+  },
+  "assets/art/gfx/g22.jpg": {
+   "sha256": "27a70a83feabae03204e50d4755ee7f425c6994bdbe7e8e29c3d1d75811e2c31",
+   "bytes": 233527,
+   "rendition": "assets/art/gfx/g22.webp"
+  },
+  "assets/art/gfx/g23.jpg": {
+   "sha256": "49edbddc27263cd75aab558e3fa9c3a3e9d2db775a2e1e3cfd82c81104e696a8",
+   "bytes": 269892,
+   "rendition": "assets/art/gfx/g23.webp"
+  },
+  "assets/art/gfx/g24.jpg": {
+   "sha256": "e15dfe86152e40301c8bdeadad17125b0751f43089907c716f53c5a65cae93ba",
+   "bytes": 310392,
+   "rendition": "assets/art/gfx/g24.webp"
+  },
+  "assets/art/gfx/g25.jpg": {
+   "sha256": "aff21914da205b858e0b8740ba81c3aafc92d076b57a00118fb460d218d7ba76",
+   "bytes": 339634,
+   "rendition": "assets/art/gfx/g25.webp"
+  },
+  "assets/art/gfx/g26.jpg": {
+   "sha256": "bf2a251dd273a877e586e111761a62a09a32cf15853f58f507c061afbc7e8b10",
+   "bytes": 271472,
+   "rendition": "assets/art/gfx/g26.webp"
+  },
+  "assets/art/gfx/g27.jpg": {
+   "sha256": "0ba3a777f686575a15b6e66617280b9c64199f8374937d333a929840b1276452",
+   "bytes": 323176,
+   "rendition": "assets/art/gfx/g27.webp"
+  },
+  "assets/art/gfx/g28.jpg": {
+   "sha256": "2e9ddba4f9bcb53b86e966578c471f50790b088f01a21364c1f6a30b59185f7b",
+   "bytes": 64864,
+   "rendition": "assets/art/gfx/g28.webp"
+  },
+  "assets/art/gfx/g29.jpg": {
+   "sha256": "84776412dce740ae773ce278c69f8b455d240bae140f73087c192acffa3e9b18",
+   "bytes": 347324,
+   "rendition": "assets/art/gfx/g29.webp"
+  },
+  "assets/art/gfx/g30.jpg": {
+   "sha256": "0dd497631399574f578304d3095ae44895cb61ab9d5d8c1f07fdc0588ceffea9",
+   "bytes": 379922,
+   "rendition": "assets/art/gfx/g30.webp"
+  },
+  "assets/art/gfx/g31.jpg": {
+   "sha256": "44c68bbcda270c6029ee74075a522fd2f85fbcdda15743fd5156aae47637a84e",
+   "bytes": 176295,
+   "rendition": "assets/art/gfx/g31.webp"
+  },
+  "assets/art/gfx/g32.jpg": {
+   "sha256": "60e6ffdf4a2d4162afe4b517b3fa6f0a67db02f9dcdb0a86949ca96aaf5895fe",
+   "bytes": 152916,
+   "rendition": "assets/art/gfx/g32.webp"
+  },
+  "assets/art/gfx/g33.jpg": {
+   "sha256": "0d3fa6c499dfaee5b2914e97ea3c95a1d3874838b9396a2093ae122f14397fc0",
+   "bytes": 156322,
+   "rendition": "assets/art/gfx/g33.webp"
+  },
+  "assets/art/gfx/g34.jpg": {
+   "sha256": "e82781a4238baf5e1f139d5861ba641b14a8df0f2a276c223f60c3c99e679108",
+   "bytes": 231212,
+   "rendition": "assets/art/gfx/g34.webp"
+  },
+  "assets/art/gfx/g35.jpg": {
+   "sha256": "158855b6d737aa239a89aa95ecd23938858ee7ded9048faa66cf36df93563bb9",
+   "bytes": 180270,
+   "rendition": "assets/art/gfx/g35.webp"
+  },
+  "assets/art/gfx/g36.jpg": {
+   "sha256": "1a27c2fd33ad69f62002668d08589a2fc9dfb6f6ebc7888df80a7e4bc86e4e1a",
+   "bytes": 263760,
+   "rendition": "assets/art/gfx/g36.webp"
+  },
+  "assets/art/gfx/g37.jpg": {
+   "sha256": "eb1005a9e2be5c5bcbad3e70ef36289c9bc119576ac9d568a04ec1a622694739",
+   "bytes": 136506,
+   "rendition": "assets/art/gfx/g37.webp"
+  },
+  "assets/art/gfx/g38.jpg": {
+   "sha256": "d0e4654e8898b693c7eef675636081fe788134c14d08b8a44fb96b5b9f3fbf83",
+   "bytes": 262981,
+   "rendition": "assets/art/gfx/g38.webp"
+  },
+  "assets/art/gfx/give-intro-poster.jpg": {
+   "sha256": "80225b1c4f6d65f99a3311056cbe98e04937762f917504e9055bafee42b6eb73",
+   "bytes": 109334,
+   "rendition": "assets/art/gfx/give-intro-poster.webp"
+  },
+  "assets/art/gfx/grow-intro-poster.jpg": {
+   "sha256": "6496ee036a128ac2078ec1974ce72dcc59bcb77a50eaf9b5f6ff08abf37371c6",
+   "bytes": 79368,
+   "rendition": "assets/art/gfx/grow-intro-poster.webp"
+  },
+  "assets/art/gfx/logo-192.png": {
+   "sha256": "a152f6f7d58f862aed1b69a1b077ff0a31c7fa207859cda50f83a526951c132d",
+   "bytes": 72455,
+   "rendition": "assets/art/gfx/logo-192.webp"
+  },
+  "assets/art/gfx/logo.png": {
+   "sha256": "b961c4b76e4ec45994998e38b55d1706ff297fa9cf1a9885a828ce6687fe22c3",
+   "bytes": 595127,
+   "rendition": "assets/art/gfx/logo.webp"
+  },
+  "assets/art/gfx/v1-poster.jpg": {
+   "sha256": "2afc6358f83a25e4808127c330eab9c860a5b5fed5d017d9322eb881e6939392",
+   "bytes": 83021,
+   "rendition": "assets/art/gfx/v1-poster.webp"
+  },
+  "assets/art/gfx/v2-poster.jpg": {
+   "sha256": "d54bb2cac9872f1cf8006b051351ed0724aedf5974951d0fb3ebd849029010f2",
+   "bytes": 83298,
+   "rendition": "assets/art/gfx/v2-poster.webp"
+  },
+  "assets/art/gfx/v3-poster.jpg": {
+   "sha256": "f903c1db8c842e15019ad84fe15264b3033a17944183145ae85d82506ec60665",
+   "bytes": 107489,
+   "rendition": "assets/art/gfx/v3-poster.webp"
+  },
+  "assets/art/home/giftbox.jpg": {
+   "sha256": "b7301f2d268b1d7ed65dce2901ac48672f5c8918b7f50b3138044684097c55cc",
+   "bytes": 18997,
+   "rendition": "assets/art/home/giftbox.webp"
+  },
+  "assets/art/home/hero-band.jpg": {
+   "sha256": "9dfc0d57c05f998990c535f6716b914a7bf1d2e7f7606d8525156072098b8121",
+   "bytes": 32063,
+   "rendition": "assets/art/home/hero-band.webp"
+  },
+  "assets/art/home/icon-gift.png": {
+   "sha256": "8d674124b537b23bbbf661fd44e13b7eee33d015f3c7deb8101c7a419cdfe5f2",
+   "bytes": 38377,
+   "rendition": "assets/art/home/icon-gift.webp"
+  },
+  "assets/art/home/icon-leaf.png": {
+   "sha256": "214206f3ebca50696bc6fcf1666c126dac471236a2e12f798c453380c2f63796",
+   "bytes": 47858,
+   "rendition": "assets/art/home/icon-leaf.webp"
+  },
+  "assets/art/home/icon-star.png": {
+   "sha256": "6aa2a51439d22e8eb5a738dbb8a0bd2d5f3095eb35431ac129bd34cc879f3058",
+   "bytes": 28758,
+   "rendition": "assets/art/home/icon-star.webp"
+  },
+  "assets/art/home/journal.jpg": {
+   "sha256": "7e846665be80ca72eb3c4f34336ef720ba0ef350756896a35e90f368ff433c1f",
+   "bytes": 13342,
+   "rendition": "assets/art/home/journal.webp"
+  },
+  "assets/art/home/sprout.jpg": {
+   "sha256": "5a5efa6ac4d7a4e582f3610ff85b684b6a42141c341fe0d2e06b9b8f508e13e6",
+   "bytes": 15996,
+   "rendition": "assets/art/home/sprout.webp"
+  },
+  "assets/art/mock/earth-vault.jpg": {
+   "sha256": "835fa103c6b21306a8e55996d66c1598a53ab502670f3e97fb76804903fc1284",
+   "bytes": 1119872,
+   "rendition": "assets/art/mock/earth-vault.webp"
+  },
+  "assets/art/mock/gift-journey.png": {
+   "sha256": "5c4ad25f58c32726777a7b6e5b93f54ec0eeef5b3c3e0a91b0fffd019aeefe55",
+   "bytes": 2226243,
+   "rendition": "assets/art/mock/gift-journey.webp"
+  },
+  "assets/art/mock/grow-gratus-give.png": {
+   "sha256": "e08c0dd92617b59a8d51ba6b93ee7ba60f645b41cf7fa437d88106f6585ae275",
+   "bytes": 2217295,
+   "rendition": "assets/art/mock/grow-gratus-give.webp"
+  },
+  "assets/art/mock/lotus-galaxy-map.png": {
+   "sha256": "643e1c1fb191bc1c4322e737e13390833c746422ed06bb3b4fe9a62b9035b7bd",
+   "bytes": 2312588,
+   "rendition": "assets/art/mock/lotus-galaxy-map.webp"
+  },
+  "assets/art/mock/three-tabs-galaxy.png": {
+   "sha256": "55ace25b2e50de869443019a47dc7a5f03b13240ba2ed281547d0e24e15c9601",
+   "bytes": 2248600,
+   "rendition": "assets/art/mock/three-tabs-galaxy.webp"
+  },
+  "assets/brand/gratus-logo.png": {
+   "sha256": "96db46f8674b877fd704892f08340f18f5bc5fc31099014586f969ed43ed6487",
+   "bytes": 1160229,
+   "rendition": "assets/brand/gratus-logo.webp"
+  },
+  "assets/brand/og.jpg": {
+   "sha256": "6caf2a405ed2839c2ba34ec00b81bbefb10c46b56b1ed3946a6235ccff87efca",
+   "bytes": 184755,
+   "rendition": "assets/brand/og.webp"
+  }
+ }
+}

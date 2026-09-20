@@ -34,6 +34,7 @@ const GATES = [
   ['G25 diagrams', 'node scripts/gates/diagrams.mjs', false],
   ['G26 frontdoor', 'node scripts/gates/frontdoor.mjs', false],
   ['G27 steward', 'node scripts/gates/steward.mjs', true],
+  ['G28 the hand', 'node scripts/gates/thehand.mjs', true],
   ['G8 weight', 'node scripts/gates/weight.mjs', true],
   ['G10/G11/G13 a11y', 'node scripts/gates/a11y.mjs', true],
   ['G12 states', 'node scripts/gates/states.mjs', true],

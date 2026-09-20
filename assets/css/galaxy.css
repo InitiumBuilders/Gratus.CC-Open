@@ -871,9 +871,68 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
    heights; this rule reaches only the two tabs where something is done. */
 .hero { min-height: 52svh; }
 
+/* Measured again on a phone with a garden in it, which is the state anyone is in after
+   their second day: the standing card above the writing box pushes the Text, Photo and
+   Voice row down to 696, the bar begins at 728, and the star that floats above the bar
+   reaches higher still. The row you came to use was sitting under it. An empty garden
+   cleared it by sixteen pixels, which is why it was never seen: the first run is fine
+   and every run after it is not. Forty-six lifts it clear in both. */
+.hero { min-height: 46svh; }
+
 /* the standing carries one line, so it stands one line tall */
 .standing { grid-template-columns: 58px 1fr; gap: 12px; padding: 14px 16px; }
 .standing .stand-ring { width: 58px; height: 58px; }
 .standing .stand-ring::before { inset: 4px; }
 .standing .stand-face { font-size: 26px; }
 .standing .stand-words b { font-size: 20px; line-height: 25px; }
+
+/* ═══ THE HAND ══════════════════════════════════════════════════════════════════════
+   Everything below is about a thumb on a phone.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* A control may look whatever size the design asks it to. What a thumb has to find is
+   never smaller than 44, so the target grows underneath the mark instead of the mark
+   growing. His small round buttons stay small and round; the reach around them opens. */
+.top .you, .top .back, .top .sound, .chip, .btn.sm { position: relative; }
+.top .you::after, .top .back::after, .top .sound::after, .chip::after, .btn.sm::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: max(100%, 46px); height: max(100%, 46px);
+  transform: translate(-50%, -50%); border-radius: 999px;
+}
+/* Chips that wrap onto a second line need air between the lines. The reach drawn under
+   a chip is forty-six tall and his chips are thirty-six, so two lines eight apart had
+   their targets overlapping and each chip was stealing the top edge of the one below it.
+   Twelve between the lines gives every chip its own reach, and the screen room to breathe,
+   which it wanted anyway. */
+.chips { row-gap: 12px; }
+
+/* A row of chips scrolls sideways and clips whatever leaves it, which was cutting the
+   reach off the top and bottom of every chip in it. The chips stay the height they are
+   drawn; the row opens up around them. */
+.chips.row { padding-top: 7px; padding-bottom: 7px; }
+
+/* a link sitting inside a sentence is a line of text, and a line of text is 28 tall */
+.body a, .cap a, .lead a { display: inline-block; padding: 8px 0; }
+
+/* The writing field took the browser's focus ring away and put nothing back, so a
+   keyboard had no way to say where it was. The pill answers now instead of the input,
+   which is the shape the eye is looking for anyway. Glow, never a highlight. */
+.pillform:focus-within { border-color: var(--hair-hue); box-shadow: var(--glow); }
+
+/* a sheet keeps its scrolling to itself, and follows a thumb down */
+.sheet { overscroll-behavior: contain; }
+.sheet .grabber { width: 44px; height: 5px; margin: 2px auto 8px; }
+
+/* The view takes across; the browser keeps down. Without this the phone claims the
+   horizontal drag for its own scrolling and the gesture never arrives. */
+#view { touch-action: pan-y; }
+
+/* the door being swiped toward lights before the finger lets go, so the gesture says
+   where it is going while there is still time to change your mind */
+.tabs button.near { color: var(--ink); }
+.tabs button.near svg { filter: drop-shadow(0 0 10px rgba(110, 217, 192, .55)); }
+.tabs button.near .lbl { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  #view { transition: none !important; }
+}

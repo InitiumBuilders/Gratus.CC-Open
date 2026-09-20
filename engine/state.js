@@ -23,11 +23,12 @@
 // without a browser. scripts/gates/migration.mjs does exactly that, against a
 // captured fixture, and the mutant that restores the old line turns it red.
 
-export const STATE_V = 2;
+export const STATE_V = 3;
 
 export function fresh() {
   return {
     v: STATE_V,
+    feel: true,
     name: '', entries: [], plants: [],
     gifts: { given: [], received: [] },
     my: { emojis: [], recipes: [] },
@@ -49,12 +50,21 @@ export const LADDER = {
     s.v = 2;
     return s;
   },
+  2: (s) => {
+    // The touch answer is on unless somebody turns it off, and it is its own switch
+    // rather than the song's. Muting the song is the commonest thing anyone does here,
+    // and it should not also take away the quietest feedback in the app.
+    if (typeof s.feel !== 'boolean') s.feel = true;
+    s.v = 3;
+    return s;
+  },
 };
 
 // Backfill. Runs after the ladder on every load, including on a garden from a
 // version this build has never heard of, which is the case the ladder cannot
 // cover and the old line used to answer by deleting it.
 export function patch(s) {
+  if (typeof s.feel !== 'boolean') s.feel = true;
   const arr = ['entries', 'plants', 'wishes', 'goals', 'folders', 'seeds', 'vibes'];
   for (const k of arr) if (!Array.isArray(s[k])) s[k] = [];
   const obj = ['made', 'milestones', 'alch', 'hidden', 'cer'];
