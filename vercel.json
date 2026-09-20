@@ -51,6 +51,14 @@
     {
       "source": "/trax",
       "destination": "/trax.html"
+    },
+    {
+      "source": "/gg/:handle",
+      "destination": "/gg.html"
+    },
+    {
+      "source": "/gg",
+      "destination": "/gg.html"
     }
   ],
   "headers": [

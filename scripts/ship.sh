@@ -13,8 +13,9 @@ node scripts/gates/banned.mjs | tail -1; B=${PIPESTATUS[0]}
 node scripts/gates/slop.mjs | tail -1; S=${PIPESTATUS[0]}
 node --import ./scripts/gates/lib/loader.mjs scripts/gates/integrity.mjs | tail -1; I=${PIPESTATUS[0]}
 node scripts/gates/thehand.mjs | tail -1; H=${PIPESTATUS[0]}
+node --import ./scripts/gates/lib/loader.mjs scripts/gates/account.mjs | tail -1; A=${PIPESTATUS[0]}
 grep -E '^# (pass|fail)' /tmp/gratus-tests.log
-if [ "$T" != "0" ] || [ "$C" != "0" ] || [ "$B" != "0" ] || [ "$S" != "0" ] || [ "$I" != "0" ] || [ "$H" != "0" ]; then echo "GATES RED, not shipping"; exit 1; fi
+if [ "$T" != "0" ] || [ "$C" != "0" ] || [ "$B" != "0" ] || [ "$S" != "0" ] || [ "$I" != "0" ] || [ "$H" != "0" ] || [ "$A" != "0" ]; then echo "GATES RED, not shipping"; exit 1; fi
 echo "== decoys first: a gate that has stopped biting is worse than no gate"
 node scripts/gates/slop.mjs --decoy || { echo "SLOP GATE CANNOT BE TRUSTED, not shipping"; exit 1; }
 node scripts/gates/open-source.mjs . --decoy || { echo "GATE CANNOT BE TRUSTED, not shipping"; exit 1; }

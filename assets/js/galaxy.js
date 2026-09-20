@@ -12,6 +12,7 @@ import { glyphSvg } from '../../engine/glyph.js?v=17';
 import { VIEWS, titleOf } from './views.js?v=17';
 import { TOUR, OPEN } from './tour.js?v=19';
 import { beat, watchTime } from './trax.js?v=18';
+import * as Acct from './account.js?v=20';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
@@ -1063,8 +1064,9 @@ function viewGarden() {
 
 function menuSheet() {
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">' + esc(T('locked.headline', 'Give And Grow What Matters Most')) + '</span><span class="kicker">' + esc(T('locked.promise', 'Gratus Gives Gifts That Keep On Growing')) + '</span><span class="kicker">' + esc(T('locked.tagline', 'Grow With Gratus! Give And Grow Together!')) + '</span><span class="kicker gold">' + esc(T('locked.tags', '#GrowTheDifference #GrowWithGratus')) + '</span></div>' +
-    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-tour">✦ Take the guided tour</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
+    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-account">✦ Your Gratus account</button><button class="btn" id="m-tour">✦ Take the guided tour</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
   const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
+  on('#m-account', () => setTimeout(accountSheet, 320));
   on('#m-tour', () => setTimeout(tourAgain, 320));
   on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-guides', () => go('gratus', 'guides')); on('#m-vibes', () => go('gratus', 'vibes')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
 }
@@ -1133,7 +1135,7 @@ const SEED_GOALS = [{ id: 'seed1', text: 'Write one line of thanks every morning
 function goalRow(g, mine) { const d = new Date(g.at); const when = isNaN(d) ? '' : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); return '<div class="glass goal' + (mine ? ' mine' : '') + '"><span class="orb"><span>' + esc(g.emoji || '🌱') + '</span></span><span class="grow"><b>' + esc(g.text) + '</b><span>' + esc(g.name || 'Someone') + (when ? ' · ' + esc(when) : '') + (mine && !g.synced ? ' · on this device' : '') + '</span></span>' + (mine ? '<button class="x" data-goal-x="' + esc(g.id) + '" aria-label="remove">×</button>' : '') + '</div>'; }
 function goalsBlock() {
   const mine = S.goals.slice().reverse(); const others = (feed || (feedState === 'offline' ? SEED_GOALS : [])).filter((g) => !S.goals.some((m) => m.id === g.id || (m.text === g.text && m.name === g.name)));
-  return '<div class="glass stream">' + art(scene('goals')) + '<div class="eyebrow" style="padding-top:0"><h2>Gratus Goals</h2><span class="more">' + (feedState === 'live' ? 'the stream' : feedState === 'offline' ? 'as imagined' : '') + '</span></div>' +
+  return '<div class="glass stream">' + art(scene('goals')) + '<div class="eyebrow" style="padding-top:0"><h2>Gratus Goals</h2><span class="more">' + (feedState === 'live' ? 'the stream' : feedState === 'offline' ? 'not connected' : '') + '</span></div>' +
     '<p class="cap">What are you growing toward? Post as many as you like. Everyone here can see them.</p>' +
     '<div class="pillform" style="max-width:none"><input id="goal-in" maxlength="160" placeholder="A goal I am growing toward..." aria-label="a Gratus goal" autocomplete="off"><button class="go" id="goal-post" aria-label="post the goal">→</button></div>' +
     (mine.length ? '<div class="rows">' + mine.map((g) => goalRow(g, true)).join('') + '</div>' : '') +
@@ -1898,6 +1900,123 @@ function plantQuick(p) {
   $('#pq-give', sh.el).addEventListener('click', () => { sh.close(); giveSheet(p); });
 }
 
+
+// ── the account ──
+// An account that cannot read your journal. The password derives a key on this device and
+// the garden is sealed here; what reaches the server is a box it has no key to. That is
+// the only way an account and the sentence printed on every page of this site can both be
+// true. It also means a lost password is a lost vault, and the sheet says so before
+// anybody types one.
+const gardenShape = () => ({
+  plants: S.plants.length,
+  days: S.plants.reduce((t, p) => t + daysOf(p), 0),
+  ready: S.plants.filter((p) => daysOf(p) >= 13).length,
+  faces: S.plants.slice(0, 12).map((p) => face(p)),
+});
+
+function accountSheet() {
+  const inn = Acct.signedIn();
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>\u2726</span></span><h2>' +
+    (inn ? 'Your Gratus account' : 'Keep your garden') + '</h2><span class="kicker mint">' +
+    (inn ? 'Signed in on this device' : 'A copy you keep, and a page you can share') + '</span></div>' +
+    (inn ? '<div id="ac-in"></div>' :
+      '<p class="body">An account does two things: it keeps an encrypted copy of your garden, and it gives you a page at gratus.cc/gg/your-handle.</p>' +
+      '<p class="cap"><b>Your password is the key.</b> Your garden is locked on this device before it is sent, so nobody here can read it, including us. That also means there is no password reset, and a lost password is a lost copy. Write it down somewhere real.</p>' +
+      '<div class="chips"><button class="chip on" id="ac-tab-up">Create one</button><button class="chip" id="ac-tab-in">I have one</button></div>' +
+      '<div id="ac-form"></div>'));
+  if (inn) { accountInner(sh); return sh; }
+
+  let mode = 'up';
+  const form = $('#ac-form', sh.el);
+  const paint = () => {
+    form.innerHTML =
+      '<input class="field" id="ac-email" type="email" autocomplete="email" placeholder="your email" aria-label="your email">' +
+      '<input class="field" id="ac-pw" type="password" autocomplete="' + (mode === 'up' ? 'new-password' : 'current-password') + '" placeholder="a password, at least ten characters" aria-label="your password">' +
+      (mode === 'up' ? '<input class="field" id="ac-handle" maxlength="24" placeholder="your handle, for gratus.cc/gg/..." aria-label="your handle">' +
+        '<p class="cap" id="ac-hfree"></p>' : '') +
+      '<button class="btn mint wide" id="ac-go">' + (mode === 'up' ? 'Create my account' : 'Sign in') + '</button>' +
+      '<p class="cap" id="ac-say"></p>';
+    const hf = $('#ac-handle', form);
+    if (hf) {
+      let t = 0;
+      hf.addEventListener('input', () => {
+        clearTimeout(t);
+        const h = hf.value.trim().toLowerCase();
+        t = setTimeout(() => Acct.handleFree(h).then((d) => {
+          $('#ac-hfree', form).textContent = !h ? '' : d.free ? 'gratus.cc/gg/' + h + ' is free.' : (d.why || 'That handle is taken.');
+        }).catch(() => {}), 320);
+      });
+    }
+    $('#ac-go', form).addEventListener('click', async () => {
+      const b = $('#ac-go', form); const say = $('#ac-say', form);
+      const email = $('#ac-email', form).value.trim();
+      const pw = $('#ac-pw', form).value;
+      b.disabled = true; b.textContent = 'One moment...';
+      try {
+        if (mode === 'up') {
+          const h = $('#ac-handle', form).value.trim().toLowerCase();
+          await Acct.signUp(email, pw, h, S.name || h);
+          await Acct.saveVault(pw, S);
+          await Acct.setProfile({ garden: gardenShape() });
+        } else {
+          await Acct.signIn(email, pw);
+          try {
+            const garden = await Acct.loadVault(pw);
+            if (garden && typeof garden === 'object') {
+              const mine = S.plants.length + S.entries.length;
+              const theirs = (garden.plants || []).length + (garden.entries || []).length;
+              if (theirs > mine) { S = upgrade(garden); save(); }
+            }
+          } catch (e) { say.textContent = 'Signed in. The saved copy could not be opened with that password.'; }
+        }
+        feel('commit');
+        sh.close(); render();
+        toast(mode === 'up' ? 'Your garden is kept. gratus.cc/gg/' + ($('#ac-handle', form) ? $('#ac-handle', form).value.trim().toLowerCase() : '') : 'Signed in.');
+      } catch (e) {
+        b.disabled = false; b.textContent = mode === 'up' ? 'Create my account' : 'Sign in';
+        say.textContent = String(e.message || e);
+      }
+    });
+  };
+  paint();
+  $('#ac-tab-up', sh.el).addEventListener('click', () => { mode = 'up'; $('#ac-tab-up', sh.el).classList.add('on'); $('#ac-tab-in', sh.el).classList.remove('on'); paint(); });
+  $('#ac-tab-in', sh.el).addEventListener('click', () => { mode = 'in'; $('#ac-tab-in', sh.el).classList.add('on'); $('#ac-tab-up', sh.el).classList.remove('on'); paint(); });
+  return sh;
+}
+
+function accountInner(sh) {
+  const slot = $('#ac-in', sh.el);
+  slot.innerHTML = '<p class="cap">Reading your account...</p>';
+  Acct.me().then((d) => {
+    const pub = d.published;
+    slot.innerHTML =
+      '<p class="body">Signed in as <b>' + esc(d.handle) + '</b>. Your page is <a href="/gg/' + esc(d.handle) + '">gratus.cc/gg/' + esc(d.handle) + '</a>.</p>' +
+      '<input class="field" id="ac-name" maxlength="40" placeholder="the name on your page" value="' + esc((d.profile && d.profile.name) || '') + '" aria-label="the name on your page">' +
+      '<input class="field" id="ac-line" maxlength="140" placeholder="one line, if you want one" value="' + esc((d.profile && d.profile.line) || '') + '" aria-label="one line about you">' +
+      '<button class="btn" id="ac-pub">' + (pub ? '\u2713 Your page is public' : 'Make my page public') + '</button>' +
+      '<button class="btn mint wide" id="ac-save">Save my garden now</button>' +
+      '<p class="cap" id="ac-say2">Your garden is sealed on this device before it is sent. Nobody here can read it.</p>' +
+      '<button class="btn sm quiet" id="ac-out">Sign out of this device</button>';
+    $('#ac-pub', slot).addEventListener('click', async () => {
+      const next = !pub;
+      await Acct.setProfile({ published: next, name: $('#ac-name', slot).value, line: $('#ac-line', slot).value, garden: gardenShape() });
+      toast(next ? 'Your page is public.' : 'Your page is private again.');
+      accountInner(sh);
+    });
+    $('#ac-save', slot).addEventListener('click', async () => {
+      const pw = prompt('Your password, to lock the copy:');
+      if (!pw) return;
+      const b = $('#ac-save', slot); b.disabled = true; b.textContent = 'Sealing...';
+      try {
+        await Acct.saveVault(pw, S);
+        await Acct.setProfile({ name: $('#ac-name', slot).value, line: $('#ac-line', slot).value, garden: gardenShape() });
+        feel('commit'); toast('Kept.');
+      } catch (e) { toast(String(e.message || e)); }
+      b.disabled = false; b.textContent = 'Save my garden now';
+    });
+    $('#ac-out', slot).addEventListener('click', () => { Acct.signOut(); sh.close(); toast('Signed out. Your garden is still on this device.'); render(); });
+  }).catch((e) => { slot.innerHTML = '<p class="cap">' + esc(String(e.message || e)) + '</p><button class="btn sm quiet" id="ac-out">Sign out</button>'; const o = $('#ac-out', slot); if (o) o.addEventListener('click', () => { Acct.signOut(); sh.close(); render(); }); });
+}
 
 // ── the guided tour ──
 // It lights one real control at a time on the real screen, says what it is, and waits.

@@ -19,6 +19,7 @@ const GATES = [
   ['G1/G2/G5 banned', 'node scripts/gates/banned.mjs --decoy && node scripts/gates/banned.mjs', false],
   ['G4 copy-live', 'node scripts/gates/copy-live.mjs', false],
   ['G6 integrity', 'node --import ' + L + ' scripts/gates/integrity.mjs', false],
+  ['G30 accounts', 'node --import ' + L + ' scripts/gates/account.mjs', false],
   ['G7 open-source', 'node scripts/gates/open-source.mjs . --decoy', false],
   ['G9 contrast', 'node scripts/gates/contrast.mjs', false],
   ['slop', 'node scripts/gates/slop.mjs --decoy && node scripts/gates/slop.mjs', false],
