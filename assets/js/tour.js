@@ -1,21 +1,47 @@
-// THE FIRST WALK.
+// THE GUIDED TOUR.
 //
-// Somebody opening this for the first time used to land in a working app and be expected
-// to infer it. This is six screens, one idea each, in the plainest words there are, and it
-// ends with the box you write in and nothing between you and it.
+// Not a slideshow. It walks somebody through the actual app: it finds the real control on
+// the real screen, cuts a hole in the dark around it so there is exactly one lit thing,
+// says what it is in one sentence, and waits. Doing the thing moves it on; so does Next.
 //
-// It can be left at any point and it never appears twice unless somebody asks for it.
-export const STEPS = [
-  { k: 'Gratus means honor.', h: 'This is a gratitude journal that grows a garden.',
-    p: 'Write one true thing. Give it an emoji. That emoji becomes a plant, and it grows on the days you write with it.' },
-  { k: 'A day counts', h: 'when you write and choose an emoji.',
-    p: 'One entry, one day, for that plant. Writing twice in a day does not count twice. This is not a machine to feed.' },
-  { k: 'Five phases', h: 'Planted, Nurtured, Deepened, Bloomed, Ready to give.',
-    p: 'At day 0, 2, 5, 9 and 13. Crossing into one is the only time this app makes a sound: five phases are five notes of one chord.' },
-  { k: 'Nothing decays', h: 'There are no streaks here, and no scores.',
-    p: 'A day you gave is a day you keep. Miss a week, miss a year: the garden is exactly as you left it, and the next day you write is the next day it grows.' },
-  { k: 'A gift made of days', h: 'At thirteen days it is ready to give.',
-    p: 'The whole gift lives inside a link you send. When they plant it, the days come with it and keep counting. Nobody can buy days or fake them.' },
-  { k: 'It stays with you', h: 'Your journal never leaves this device.',
-    p: 'No account, no sign-in, no copy on a server. Only a gift, a seed, a goal or a word in a room travels, and only when you choose it.' },
+// Every step names a selector and the screen it lives on. If a step's control is not there
+// on a given build, the step is skipped rather than pointing at nothing, because a tour
+// that highlights an empty rectangle is worse than no tour.
+//
+// It runs once, for somebody who has never been here, and afterwards only when asked.
+
+export const TOUR = [
+  { at: 'grow', find: '#write, textarea.field',
+    k: 'Write one true thing',
+    p: 'It does not have to be large. "The bus was on time" is a real day. This is the only box you ever have to use.',
+    act: 'input' },
+  { at: 'grow', find: '.pick, .chips',
+    k: 'Give it an emoji',
+    p: 'The emoji is the plant. Everything you write with it from now on feeds the same one.' },
+  { at: 'grow', find: '#plant, .btn.gold, .btn.mint',
+    k: 'Plant it',
+    p: 'That is day one. Come again tomorrow and it reaches Nurtured. Miss a week and nothing is taken away.',
+    act: 'click' },
+  { at: 'grow', find: '.tools',
+    k: 'Or say it out loud',
+    p: 'Voice is transcribed on the way in. The recording itself stays on this device and is never sent anywhere.' },
+  { at: null, find: '.tabs .bar',
+    k: 'Three doors',
+    p: 'Give, Gratus, Grow. Tap them, or swipe across the screen to move between them.' },
+  { at: 'garden', find: '.garden, .field, .rows',
+    k: 'Your garden',
+    p: 'Every plant you have grown. Tap one to look closer. Hold one for what you usually want: look, write, or give.' },
+  { at: 'garden', find: '.glyphcard, .glyphfig',
+    k: 'Your Glyph',
+    p: 'Drawn from your garden and nothing else. The same figure every time, and nobody else’s garden draws it.' },
+  { at: 'give', find: '#give-gift, .btn.gold',
+    k: 'Give it away',
+    p: 'At thirteen days it is ready. The whole gift lives inside a link, and when they plant it the days come with it.' },
 ];
+
+// The one-screen opening, before the walk: what this is, in four lines.
+export const OPEN = {
+  k: 'Gratus means honor.',
+  h: 'A gratitude journal that grows a garden.',
+  p: 'Write one true thing. Give it an emoji. It grows on the days you write with it, and at thirteen days you can give it away with every one of those days inside it.',
+};

@@ -45,6 +45,10 @@
       "destination": "/docs.html"
     },
     {
+      "source": "/docs/:slug",
+      "destination": "/guides/:slug.html"
+    },
+    {
       "source": "/trax",
       "destination": "/trax.html"
     }

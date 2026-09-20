@@ -54,3 +54,45 @@ body.doc { background: var(--ground); color: var(--ink); font-family: Inter, sys
 .docfoot nav { font-size: 15px; line-height: 30px; }
 .docfoot a { color: var(--violet-text); min-height: 44px; display: inline-block; padding: 8px 4px; }
 .docfoot .mit { font-size: 14px; color: var(--ink-2); }
+
+/* ═══ A GUIDE ═════════════════════════════════════════════════════
+   One of his scenes across the top, then the words, set the way words are set when
+   somebody means them to be read: a measure that fits a thumb's width of screen, a line
+   height that lets the eye return, and nothing in the margin competing for attention. */
+.gband { min-height: 46svh; display: grid; align-items: end; background-size: cover;
+  background-position: center; padding: 0 0 26px; border-bottom: 1px solid var(--hair-2); }
+.gband h1 { margin: 6px 0 0; font-size: clamp(36px, 10vw, 62px); }
+.gband .kick { margin: 0; }
+
+.guidebody { padding-top: 34px; }
+.guide .guidebody p { font-size: 18px; line-height: 30px; }
+.guide .guidebody > p:first-of-type { font-size: 21px; line-height: 33px; color: #fff; }
+.guide h2 { font-size: clamp(25px, 6.4vw, 34px); margin: 44px 0 10px; }
+.guide h3 { font-size: 19px; margin: 28px 0 6px; color: var(--violet-text); }
+.guide code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px;
+  background: rgba(255,255,255,.06); padding: 2px 7px; border-radius: 7px; }
+.guide table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; }
+.guide th, .guide td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--hair-2); }
+.guide th { color: var(--violet-text); font-weight: 600; font-size: 14px;
+  letter-spacing: .08em; text-transform: uppercase; }
+.guide td { font-variant-numeric: lining-nums tabular-nums; }
+.guide ul, .guide ol { font-size: 18px; line-height: 30px; }
+
+.gnext { margin-top: 46px; display: grid; gap: 12px; }
+.gnextcard { display: block; border: 1px solid var(--hair-2); border-radius: 22px; padding: 18px 20px;
+  background: rgba(255,255,255,.02); text-decoration: none; color: var(--ink); }
+.gnextcard .kick { margin: 0 0 4px; }
+.gnextcard b { display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 27px; line-height: 1.15; }
+.gnextcard span:last-child { font-size: 14px; color: var(--violet-text); }
+.gback { display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
+  border: 1px solid var(--hair-2); border-radius: 999px; text-decoration: none; color: var(--ink); font-weight: 600; }
+
+/* the index */
+.guides li a { padding: 0; overflow: hidden; }
+.guides .gi { width: 88px; align-self: stretch; background-size: cover; background-position: center;
+  border-right: 1px solid var(--hair-2); flex: 0 0 88px; }
+.guides .gt { display: grid; gap: 2px; padding: 15px 4px 15px 16px; }
+.guides .gt b { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; line-height: 1.16; }
+.guides .gt > span { font-size: 15px; line-height: 21px; color: var(--ink-2); }
+.guides .gt .gm { font-size: 13px; color: var(--violet-text); }
+.guides .ga { padding-right: 18px; color: var(--violet-text); font-size: 22px; }

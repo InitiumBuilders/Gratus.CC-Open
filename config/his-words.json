@@ -22,8 +22,6 @@
     "Plant Today",
     "A Brighter Tomorrow",
     "A small moment. A brighter tomorrow.",
-    "Turn Gratitude",
-    "Into Impact",
     "Give the Gift That Keeps On Giving.",
     "Plant My Gratus",
     "Start Your Gratus Garden",
@@ -59,7 +57,9 @@
     "Gratus Gives Gifts That Keep On Growing",
     "#GrowTheDifference",
     "#GrowWithGratus",
-    "Gratus.CC presented by Outlier.Systems"
+    "Gratus.CC presented by Outlier.Systems",
+    "Grow With Gratus!",
+    "Give And Grow Together!"
   ],
   "retiredNote": "These are August’s lines from config/copy.json → locked. Nothing rendered them, so they were published copy that the product never said. They were moved here on 2026-09-19 rather than deleted, because they are his and the words are not lost. The writing gate reads this list and looks away from every line in it. Retiring a line is not a ruling on it: whether $GRATUS is retired or deferred is his to answer.",
   "retired": {
@@ -93,7 +93,12 @@
       "Gratus Give",
       "Gratus Store",
       "$GRATUS"
-    ]
+    ],
+    "turn-gratitude-into-impact": {
+      "was": "Turn Gratitude Into Impact",
+      "retiredOn": "2026-09-20",
+      "why": "Retired by August, in his words, and never to be said again. Kept here because his words are kept, not deleted."
+    }
   },
   "blocks": {
     "messaging-2026-09-19": {
@@ -101,6 +106,12 @@
       "given": "2026-09-19",
       "note": "Given by August, verbatim. Spelling, capitals, punctuation and the blank lines between are his. Never edited, never shortened, never re-cased.",
       "block": "Gratus.CC:\n\nGive And Grow What Matters Most\n\nGive Your First Gratus Gift Today!\n\nGratus Gives Gifts That Keep On Growing\n\n#GrowTheDifference\n#GrowWithGratus\n"
+    },
+    "core-tagline-2026-09-20": {
+      "owner": true,
+      "given": "2026-09-20",
+      "note": "The core tagline. His, verbatim, exclamation marks included.",
+      "block": "Grow With Gratus! Give And Grow Together!"
     }
   }
 }

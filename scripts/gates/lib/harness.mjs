@@ -136,7 +136,7 @@ export async function open(b, base, route, opts = {}) {
   });
   const page = await ctx.newPage();
   const join = route.includes('?') ? '&' : '?';
-  await page.goto(base + route + join + 'nosplash=1&dev=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.goto(base + route + join + 'nosplash=1&notour=1&dev=1', { waitUntil: 'domcontentloaded', timeout: 20000 });
   await page.waitForTimeout(opts.settle || 1400);
   return { page, ctx, close: () => ctx.close() };
 }

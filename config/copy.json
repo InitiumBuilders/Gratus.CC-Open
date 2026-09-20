@@ -13,7 +13,8 @@
     "call": "Give Your First Gratus Gift Today!",
     "promise": "Gratus Gives Gifts That Keep On Growing",
     "tags": "#GrowTheDifference #GrowWithGratus",
-    "presented": "Gratus.CC presented by Outlier.Systems"
+    "presented": "Gratus.CC presented by Outlier.Systems",
+    "tagline": "Grow With Gratus! Give And Grow Together!"
   },
   "tabs": {
     "garden": "Garden",
@@ -152,6 +153,7 @@
     "headline",
     "call",
     "promise",
-    "tags"
+    "tags",
+    "tagline"
   ]
 }

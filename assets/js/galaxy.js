@@ -10,7 +10,7 @@ import { newId } from '../../engine/rng.js?v=12';
 import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=14';
 import { glyphSvg } from '../../engine/glyph.js?v=17';
 import { VIEWS, titleOf } from './views.js?v=17';
-import { STEPS } from './tour.js?v=18';
+import { TOUR, OPEN } from './tour.js?v=19';
 import { beat, watchTime } from './trax.js?v=18';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
@@ -337,12 +337,7 @@ function viewVibes() {
     (!v ? '<div class="glass card"><span class="kicker mint">What a Vibe is</span><p class="body">A small room with a name and a code. Anyone holding the code is in it. People post short gratitudes there with an emoji from their own garden, and that is all that travels: your journal stays on your device.</p>' +
       '<div class="two"><input class="field" id="vb-code" maxlength="12" placeholder="e.g. K7M2QP" aria-label="a vibe code"><button class="btn" id="vb-join">Go in</button></div>' +
       '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' +
-      '<div class="eyebrow"><h2>What a room looks like</h2><span class="more">an example</span></div>' +
-      '<div class="rows sample">' + [['🌻', 'Maya', 'Two hours of quiet this morning, and nobody needed anything from me.'],
-        ['☕', 'Tomas', 'My sister rang for no reason at all.'],
-        ['🌊', 'June', 'Cold water, and the sound it makes.']].map((x) =>
-        '<div class="glass vpost"><span class="orb sm"><span>' + x[0] + '</span></span><span class="grow"><span class="kicker">' + x[1] + '</span><b>' + x[2] + '</b></span></div>').join('') + '</div>' +
-      '<p class="cap">That is the whole of it. A few people, a few lines, and an emoji each one grew.</p>' : '') +
+      '<p class="cap">A room is a handful of people, a few lines each, and an emoji every one of them grew. Nothing is shown here until somebody says something, because the three people who used to stand in this spot were invented and so were their words.</p>' : '') +
     (vibeState === 'loading' ? '<p class="cap">Opening the room...</p>' : '') +
     (vibeState === 'offline' && !v ? '<p class="cap">No vibe answered on that code. Check it and try again.</p>' : '') +
     (v ? '<div class="glass card vibehead"><span class="v-ico">' + esc(v.emoji) + '</span><div><b>' + esc(v.name) + '</b>' + (v.about ? '<span class="body">' + esc(v.about) + '</span>' : '') +
@@ -1067,9 +1062,10 @@ function viewGarden() {
 }
 
 function menuSheet() {
-  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">' + esc(T('locked.headline', 'Give And Grow What Matters Most')) + '</span><span class="kicker">' + esc(T('locked.promise', 'Gratus Gives Gifts That Keep On Growing')) + '</span><span class="kicker gold">' + esc(T('locked.tags', '#GrowTheDifference #GrowWithGratus')) + '</span></div>' +
-    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
+  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">' + esc(T('locked.headline', 'Give And Grow What Matters Most')) + '</span><span class="kicker">' + esc(T('locked.promise', 'Gratus Gives Gifts That Keep On Growing')) + '</span><span class="kicker">' + esc(T('locked.tagline', 'Grow With Gratus! Give And Grow Together!')) + '</span><span class="kicker gold">' + esc(T('locked.tags', '#GrowTheDifference #GrowWithGratus')) + '</span></div>' +
+    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-tour">✦ Take the guided tour</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
   const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
+  on('#m-tour', () => setTimeout(tourAgain, 320));
   on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-guides', () => go('gratus', 'guides')); on('#m-vibes', () => go('gratus', 'vibes')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
 }
 function entryCard(e) {
@@ -1208,9 +1204,9 @@ function playCeremonies(list, done) {
   }; next();
 }
 
-// ── GIVE · turn gratitude into impact ──
+// ── GIVE ──
 function viewGive() {
-  return hero(scene('give'), { h1: 'Give', k1: 'Turn Gratitude', k2: 'Into Impact', low: '<p class="statement in" style="--i:2">Give the Gift That Keeps On Giving.</p>' }) +
+  return hero(scene('give'), { h1: 'Give', k1: 'Grow With Gratus!', k2: 'Give And Grow Together!', low: '<p class="statement in" style="--i:2">Give the Gift That Keeps On Giving.</p>' }) +
     '<div class="page">' + '<p class="kicker mint" id="his-call" style="text-align:center;font-weight:600"></p>' +
     '<div class="glass card"><span class="kicker mint">Choose how to give:</span>' +
     '<button class="glass opt" id="give-gift"><span class="ico gold">' + I.gift + '</span><span class="grow"><b>Give a Gratus Gift</b><span>Turn your gratitude into a gift for someone else.</span></span><span class="arrow">›</span></button>' +
@@ -1234,24 +1230,31 @@ function partnerCard(only) {
     '<span class="quote">' + esc(p.what) + '</span></span>' +
     '<span class="arrow" style="color:var(--violet-text)">›</span></a>').join('');
 }
-const PROJECTS = [
-  { name: 'Reforest Together', line: 'Trees for a thriving tomorrow.', tag: 'Climate', n: '1.2K', art: 'g23' },
-  { name: 'Clean Oceans Collective', line: 'Healthier oceans. Brighter futures.', tag: 'Oceans', n: '892', art: 'g21' },
-  { name: 'Brighter Minds', line: 'Learning for a kinder world.', tag: 'Education', n: '746', art: 'g19' },
-  { name: 'Reforest Communities', line: 'Environment', tag: 'Environment', n: '324 donors', art: 'g10' },
-  { name: 'Clean Water Access', line: 'Health', tag: 'Health', n: '211 donors', art: 'g16' },
-  { name: 'Open Education', line: 'Education', tag: 'Education', n: '189 donors', art: 'g22' },
-  { name: 'Local Food Systems', line: 'Community', tag: 'Community', n: '142 donors', art: 'g03' }
-];
+// The seven projects that used to sit here were invented, with invented donor counts, and
+// every one of them linked to the Giveth homepage because there was nothing to link to.
+// A person cannot give to a project that does not exist, so these screens read the real
+// list now, the same live one the Giveth door reads.
+function liveProjects(filter) {
+  const list = (gvList || []).slice();
+  if (!filter || filter === 'All') return list;
+  const want = String(filter).toLowerCase();
+  return list.filter((p) => (p.categories || []).some((c) => String(c).toLowerCase().includes(want)));
+}
+function projectsBlock(filter, empty) {
+  if (gvState === 'loading') return '<p class="cap">Reading Giveth...</p>';
+  if (!gvList) { setTimeout(() => { if (!gvList && gvState !== 'loading') loadGiveth(); }, 60); return '<p class="cap">Reading Giveth...</p>'; }
+  const list = liveProjects(filter);
+  if (!list.length) return '<p class="cap">' + esc(empty || 'Nothing under that heading on Giveth right now.') + '</p>';
+  return '<div class="projects">' + list.slice(0, 12).map(projectRow).join('') + '</div>';
+}
 let projFilter = 'All';
 function viewProjects() {
-  const cats = ['All', 'Climate', 'People', 'Education', 'Health', 'Communities', 'Arts'];
-  const list = PROJECTS.filter((p) => projFilter === 'All' || p.tag === projFilter || (projFilter === 'People' && p.tag === 'Community'));
+  const cats = ['All', 'Environment', 'Community', 'Education', 'Health', 'Economics', 'Art'];
   return hero(scene('projects'), { cls: 'room-hero', h1: 'All Projects', k1: 'Give to people, places or causes that matter.' }) +
     '<div class="page">' + partnerCard('Giveth.IO') +
     '<div class="chips row">' + cats.map((c) => '<button class="chip' + (projFilter === c ? ' on' : '') + '" data-cat="' + c + '">' + c + '</button>').join('') + '</div>' +
-    '<div class="projects">' + (list.length ? list.map((p) => '<a class="glass project" href="https://giveth.io/projects" target="_blank" rel="noopener"><span class="pic" style="background-image:url(' + GFX(p.art + '.webp') + ')"></span><span class="grow"><span class="tag">' + esc(p.tag) + '</span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.line) + '</span><span class="n">' + esc(p.n) + ' ♡</span></span></a>').join('') : '<p class="cap">Nothing under that yet.</p>') + '</div>' +
-    '<p class="cap" style="text-align:center">Projects shown as imagined. Live giving connects when the backend arrives.</p></div>';
+    projectsBlock(projFilter) +
+    '<p class="cap" style="text-align:center">Live from Giveth. Giving happens in your own wallet, on their site.</p></div>';
 }
 function viewWorld() {
   return hero(scene('world'), { cls: 'room-hero', h1: 'Give to the World', k1: 'People · Places · Planet · Possibilities' }) +
@@ -1267,14 +1270,15 @@ function viewVault() {
     '<div class="page"><div class="glass card"><textarea class="field" id="wish" rows="3" placeholder="Write your wish..." aria-label="your wish"></textarea>' +
     '<div class="chips">' + ['For Me', 'For Us', 'For Earth', 'For Future Generations'].map((s) => '<button class="chip' + (wishScope === s ? ' on' : '') + '" data-scope="' + s + '">' + s + '</button>').join('') + '</div>' +
     '<button class="btn gold wide" id="wish-send">Send to Tomorrow</button></div>' +
-    '<div class="eyebrow"><h2>Today\'s Wishes</h2></div><div class="rows">' + wishes.map((w) => '<div class="glass wish"><p>“' + esc(w.text) + '”</p><span class="cap">' + esc(w.scope) + ' · ' + esc(fmtDay(w.at)) + '</span></div>').join('') + '<div class="glass wish"><p>“A kinder, braver, more connected humanity.”</p><span class="cap">A wish from Chicago</span></div></div></div>';
+    '<div class="eyebrow"><h2>Today\'s Wishes</h2></div><div class="rows">' + wishes.map((w) => '<div class="glass wish"><p>“' + esc(w.text) + '”</p><span class="cap">' + esc(w.scope) + ' · ' + esc(fmtDay(w.at)) + '</span></div>').join('') + (wishes.length ? '' : '<p class="cap">No wishes yet. Write the first one.</p>') + '</div></div>';
 }
+let earthCat = 'Environment';
 function viewEarth() {
   return hero(scene('earth'), { cls: 'room-hero', h1: 'Heal Places', k1: 'A global atlas of restoration', low: '<p class="lead in" style="--i:2;text-shadow:0 2px 20px #000">Explore real-world projects restoring nature, communities and hope.</p>' }) +
     '<div class="page"><input class="field" placeholder="Search a place, project or region..." aria-label="search">' +
-    '<div class="cats">' + [['🌲', 'Forests'], ['🌊', 'Oceans'], ['🏙️', 'Cities'], ['🦋', 'Wildlife']].map(([i, n]) => '<button><span class="ico">' + i + '</span>' + n + '</button>').join('') + '</div>' +
-    '<a class="glass project" href="https://giveth.io/projects" target="_blank" rel="noopener"><span class="pic" style="background-image:url(' + GFX('g11.jpg') + ')"></span><span class="grow"><span class="tag">Featured Project</span><b>Amazon Rewilding</b><span class="n">2,340 supporters</span><span class="btn sm mint" style="justify-self:start">Support</span></span></a>' +
-    '<p class="cap" style="text-align:center">The atlas is drawn as imagined. Real projects connect when the backend arrives.</p></div>';
+    '<div class="cats">' + [['🌲', 'Environment'], ['🌊', 'Nature'], ['🏙️', 'Community'], ['🦋', 'Health']].map(([ic, n]) => '<button class="' + (earthCat === n ? 'on' : '') + '" data-earth="' + n + '"><span class="ico">' + ic + '</span>' + n + '</button>').join('') + '</div>' +
+    projectsBlock(earthCat, 'Nothing under that heading on Giveth right now. Try another.') +
+    '<p class="cap" style="text-align:center">Live from Giveth. Giving happens in your own wallet, on their site.</p></div>';
 }
 function viewGalaxy() {
   return hero(scene('galaxy'), { cls: 'room-hero', h1: 'The Gratus Galaxy', k1: 'People · Projects · A Brighter Planet', low: '<p class="lead in" style="--i:2;text-shadow:0 2px 20px #000">A living constellation of gratitude, restoration and real-world impact.</p>' }) +
@@ -1895,39 +1899,101 @@ function plantQuick(p) {
 }
 
 
-// ── the first walk ──
-// Shown once, to somebody who has never been here, and never again unless they ask. It is
-// six screens with one idea on each and a way out on every one of them.
-let tourAt = 0;
-function tourShow() {
-  const root = $('#tour'); if (!root) return;
-  const s = STEPS[tourAt]; if (!s) { tourEnd(true); return; }
-  root.innerHTML = '<div class="tourcard">' +
-    '<span class="kicker mint">' + esc(s.k) + '</span>' +
-    '<h2>' + esc(s.h) + '</h2>' +
-    '<p class="body">' + esc(s.p) + '</p>' +
-    '<div class="tourdots" aria-hidden="true">' + STEPS.map((x, i) => '<i' + (i === tourAt ? ' class="on"' : '') + '></i>').join('') + '</div>' +
-    '<button class="btn mint wide" id="tour-next">' + (tourAt === STEPS.length - 1 ? 'Write my first one' : 'Next') + '</button>' +
-    '<button class="btn sm quiet" id="tour-skip">Skip the walk</button></div>';
-  root.hidden = false;
-  document.body.classList.add('touring');
-  $('#tour-next', root).addEventListener('click', () => { tourAt++; feel('tap'); tourShow(); });
-  $('#tour-skip', root).addEventListener('click', () => tourEnd(false));
-  root.querySelector('.tourcard').focus && root.querySelector('.tourcard').focus();
+// ── the guided tour ──
+// It lights one real control at a time on the real screen, says what it is, and waits.
+// Doing the thing moves it on, and so does Next. A step whose control is not on this build
+// is skipped rather than pointed at, because a hole cut around nothing teaches nothing.
+let tourAt = -1, tourOff = null;
+
+function tourStop() {
+  if (tourOff) { tourOff(); tourOff = null; }
+  const r = $('#tour'); if (r) { r.hidden = true; r.innerHTML = ''; }
+  document.body.classList.remove('touring');
 }
 function tourEnd(finished) {
-  const root = $('#tour'); if (root) { root.hidden = true; root.innerHTML = ''; }
-  document.body.classList.remove('touring');
+  tourStop();
   S.tour = 'seen'; save();
   if (finished) { goNow('grow'); setTimeout(() => { const f = $('#write') || $('textarea.field'); if (f) f.focus(); }, 420); }
 }
+
+// the opening card, before anything is lit
+function tourOpen() {
+  const root = $('#tour'); if (!root) return;
+  root.hidden = false;
+  document.body.classList.add('touring');
+  root.innerHTML = '<div class="tourcard mid">' +
+    '<span class="kicker mint">' + esc(OPEN.k) + '</span><h2>' + esc(OPEN.h) + '</h2>' +
+    '<p class="body">' + esc(OPEN.p) + '</p>' +
+    '<button class="btn mint wide" id="tour-go">Walk me through it</button>' +
+    '<button class="btn sm quiet" id="tour-skip">I will find my way</button></div>';
+  $('#tour-go', root).addEventListener('click', () => { feel('tap'); tourAt = -1; tourNext(); });
+  $('#tour-skip', root).addEventListener('click', () => tourEnd(false));
+}
+
+function tourNext() {
+  tourAt++;
+  if (tourAt >= TOUR.length) { tourNote(); return; }
+  const step = TOUR[tourAt];
+  if (step.at && tab !== step.at && !sub) goNow(step.at);
+  else if (step.at && sub !== step.at && ['garden'].includes(step.at)) goNow('gratus', step.at);
+  setTimeout(() => tourPaint(step), step.at ? 420 : 60);
+}
+
+function tourPaint(step) {
+  const root = $('#tour'); if (!root) return;
+  const el = $(step.find);
+  if (!el) { tourNext(); return; }                      // nothing to light: move on quietly
+  el.scrollIntoView({ block: 'center', behavior: motionOk() ? 'smooth' : 'auto' });
+  setTimeout(() => {
+    const b = el.getBoundingClientRect();
+    if (!b.width || !b.height) { tourNext(); return; }
+    const pad = 10;
+    const below = b.bottom + 200 < innerHeight;
+    root.hidden = false;
+    document.body.classList.add('touring');
+    root.innerHTML =
+      '<div class="spot" style="left:' + Math.max(4, b.left - pad) + 'px;top:' + Math.max(4, b.top - pad) + 'px;' +
+        'width:' + Math.min(innerWidth - 8, b.width + pad * 2) + 'px;height:' + (b.height + pad * 2) + 'px"></div>' +
+      '<div class="tourcard near" style="' + (below ? 'top:' + Math.round(b.bottom + 18) + 'px' : 'bottom:' + Math.round(innerHeight - b.top + 18) + 'px') + '">' +
+        '<span class="kicker mint">' + esc(step.k) + '</span>' +
+        '<p class="body">' + esc(step.p) + '</p>' +
+        '<div class="tourdots" aria-hidden="true">' + TOUR.map((x, n) => '<i' + (n === tourAt ? ' class="on"' : '') + '></i>').join('') + '</div>' +
+        '<div class="two"><button class="btn sm quiet" id="tour-skip">Skip</button>' +
+        '<button class="btn mint" id="tour-next">' + (tourAt === TOUR.length - 1 ? 'Done' : 'Next') + '</button></div>' +
+      '</div>';
+    $('#tour-next', root).addEventListener('click', () => { feel('tap'); tourNext(); });
+    $('#tour-skip', root).addEventListener('click', () => tourEnd(false));
+    // doing the thing counts as Next
+    if (step.act) {
+      const on = () => { el.removeEventListener(step.act, on); feel('commit'); tourNext(); };
+      el.addEventListener(step.act, on, { once: true });
+      tourOff = () => el.removeEventListener(step.act, on);
+    }
+  }, motionOk() ? 340 : 20);
+}
+
+function tourNote() {
+  tourStop();
+  const root = $('#tour'); if (!root) return;
+  root.hidden = false;
+  document.body.classList.add('touring');
+  root.innerHTML = '<div class="tourcard mid">' +
+    '<span class="kicker mint">That is the whole of it</span><h2>Nothing here decays.</h2>' +
+    '<p class="body">No streaks, no scores, nobody to be compared to. Your journal stays on this device. The tour is in the menu whenever you want it again.</p>' +
+    '<button class="btn mint wide" id="tour-go">Write my first one</button>' +
+    '<button class="btn sm quiet" id="tour-read">Read the guides</button></div>';
+  $('#tour-go', root).addEventListener('click', () => tourEnd(true));
+  $('#tour-read', root).addEventListener('click', () => { tourEnd(false); location.href = '/docs'; });
+}
+
 function tourMaybe() {
   if (S.tour === 'seen') return;
-  if (S.plants.length || S.entries.length) { S.tour = 'seen'; save(); return; }   // not their first time
-  if (location.search.includes('nosplash')) return;
-  tourAt = 0;
-  setTimeout(tourShow, 700);
+  if (S.plants.length || S.entries.length) { S.tour = 'seen'; save(); return; }
+  if (location.search.includes('notour')) return;
+  setTimeout(tourOpen, 700);
 }
+function tourAgain() { S.tour = ''; save(); tourAt = -1; tourOpen(); }
+
 // ── the network going away ──
 // Almost everything here works with no connection at all: writing, the garden, the
 // journal, the glyph. A few things do not, and somebody who taps one of those deserves to

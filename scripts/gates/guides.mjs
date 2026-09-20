@@ -31,12 +31,15 @@ for (const f of files) {
 }
 if (files.length < WANT) { fails++; console.log('  FAIL  ' + files.length + ' guides, wants ' + WANT); }
 
-const index = path.join(root, 'guided.html');
+const index = path.join(root, 'docs.html');
 if (!fs.existsSync(index)) { fails++; console.log('  FAIL  no /guided surface (guided.html)'); }
 else {
   const html = fs.readFileSync(index, 'utf8');
-  const unlisted = files.filter((f) => !html.includes(f.replace(/\.md$/, '')));
-  if (unlisted.length) { fails++; console.log('  FAIL  not listed at /guided: ' + unlisted.join(', ')); }
+  const unlisted = files.filter((f) => !html.includes('/docs/' + f.replace(/\.md$/, '')));
+  if (unlisted.length) { fails++; console.log('  FAIL  not listed at /docs: ' + unlisted.join(', ')); }
+  // and every one of them is a page on this site rather than a link to somebody else's
+  const missing = files.filter((f) => !fs.existsSync(path.join(root, 'guides', f.replace(/\.md$/, '.html'))));
+  if (missing.length) { fails++; console.log('  FAIL  no page on our own site for: ' + missing.join(', ')); }
 }
 console.log('G24 guides: ' + (fails ? 'FAIL - ' + fails : 'PASS - ' + files.length + ' guides'));
 process.exit(fails ? 1 : 0);
