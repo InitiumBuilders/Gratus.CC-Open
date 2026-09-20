@@ -110,7 +110,7 @@ export default async function handler(req, res) {
   try {
     // a public profile, by handle. The only thing here anybody can read without a session.
     if (req.method === 'GET') {
-      const h = clip(req.query.handle, 24).toLowerCase();
+      const h = clip(req.query.handle, 24).toLowerCase();   // however it was typed
       if (!handleOk(h)) { res.status(400).json({ error: 'not a handle' }); return; }
       const map = await readJson(HANDLE(h));
       if (!map || !map.id) { res.status(404).json({ error: 'no such profile' }); return; }

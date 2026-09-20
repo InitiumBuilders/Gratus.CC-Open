@@ -210,9 +210,13 @@ const csp = ((all && all.headers) || []).find((h) => h.key === 'Content-Security
 say(!!csp, 'there is a content policy');
 say(!!csp && /script-src 'self'(;|$)/.test(csp.value), "and scripts come from this origin only");
 say(!!csp && /object-src 'none'/.test(csp.value) && /base-uri 'self'/.test(csp.value), 'and the old escapes are closed');
-const inline = ['index.html', 'app.html', 'privacy.html', 'terms.html']
-  .filter((f) => fs.existsSync(path.join(root, f)) && /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?\S/.test(rd(f)));
-say(!inline.length, 'no page carries an inline script' + (inline.length ? ' (' + inline.join(', ') + ')' : ''));
+// Every page in the tree, not a list written once. Two pages added later carried their
+// scripts inside them and the browser refused to run either, live, because this list did
+// not know about them.
+const pages = fs.readdirSync(root).filter((f) => f.endsWith('.html'))
+  .concat(fs.existsSync(path.join(root, 'guides')) ? fs.readdirSync(path.join(root, 'guides')).map((f) => 'guides/' + f).filter((f) => f.endsWith('.html')) : []);
+const inline = pages.filter((f) => /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?\S/.test(rd(f)));
+say(!inline.length, pages.length + ' pages, none carrying an inline script' + (inline.length ? ' (' + inline.join(', ') + ')' : ''));
 
 // ── 8 · a project that does not exist, and a slug in the wrong case ──
 // Giveth's real words for both, copied from the live API on 2026-09-19:
