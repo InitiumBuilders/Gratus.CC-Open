@@ -217,16 +217,34 @@ written so far exactly where it is.
 Two of the three things this checkpoint was written against turned out not to be true, and
 measuring said so before any of it was built.
 
-**The video, twice.** The document counted 59.4 MB of film with 19.94 MB of it on the
-landing, which is what is on disk. Measured against a local server a phone fetched none of
-it, and I wrote that down as the answer. Then the same measurement against **the live
-site** said 3.43 MB of film before anybody had touched anything, all of it `explode.mp4`,
-because `preload="auto"` downloads from the first byte and a static test server does not
-serve it the same way. The arrival plays a thirteen second stretch starting at eleven
-seconds in, so it asks for that stretch now and the poster holds the screen until it comes.
-G29 watches the arrival open and hand the page over, because a ceremony that never starts
-is a door that never opens. His film is untouched; what changed is how much of it a phone
-is asked to carry before it is needed.
+**The video, three times, and the third answer is the true one.**
+
+The document counted 59.4 MB of film with 19.94 MB of it on the landing, which is what is
+on disk. Measured against a local server a phone fetched none of it, and I wrote that down
+as the answer. The same measurement against **the live site** said 3.43 MB of film before
+anybody had touched anything, all of it `explode.mp4`. I read that as `preload="auto"`
+downloading from the first byte, changed every ceremony to `preload="none"`, shipped it,
+and measured again: **still 3.43 MB.** `preload` only governs what a video does before it
+is played, and this one is played the moment it exists.
+
+So the number is real and it is not a defect. **The arrival ritual costs 3.43 MB on every
+open**, on the landing and on the app:
+
+| opening | what a phone pays |
+|---|---|
+| the app, with the doorway | **3.66 MB**, of which 3.43 MB is the film |
+| the app, doorway skipped | **0.29 MB** |
+| the landing, with the doorway | **3.75 MB** |
+
+That is larger than everything else on this checkpoint put together. It is also his
+decision, written down as his decision: *the doorway ritual, every open*. It is not mine to
+trade away for a number, so it stands, and the number is on the record. Three ways to keep
+the ritual and stop paying for it twice are in the Votus list below.
+
+`preload="none"` stays, because it is right for the ceremonies that are built and never
+run, and because the landing now asks the connection what it can carry before it starts a
+looping film at all. G29 watches the arrival open and hand the page over, since a ceremony
+that never starts is a door that never opens.
 
 **The weight was pictures, and mostly one picture.** His mark, 640 by 640, 595 KB, was
 being sent to every single screen and drawn at forty points in the tab bar. It was between
@@ -292,6 +310,21 @@ Every control on six screens now answers.
 
 ---
 
+## For his Votus · the doorway
+
+The ritual is 3.43 MB every open and it is his call. Three ways to keep it exactly as it is
+and stop paying for it more than once:
+
+1. **The worker keeps the film.** Paid once per device, then it comes off the disk. The
+   ritual is unchanged and every open after the first is free. Video arrives as range
+   requests, so this is real work rather than a line in the shell list.
+2. **The film is smaller.** A rendition, the way his pictures now have renditions, with the
+   original kept untouched. The ritual is unchanged and every open is cheaper.
+3. **It stands.** 3.43 MB is what the door costs and the door is worth it.
+
+I have not taken any of the three. He said every open, so it is every open until he says
+otherwise.
+
 ## Run log
 
 Newest last. One line per meaningful step, with the command that proved it.
@@ -322,7 +355,8 @@ Newest last. One line per meaningful step, with the command that proved it.
 
 ### Checkpoint III
 - `node scripts/gates/weight.mjs` and a Resource Timing read → the mark was half of every screen
-- the same read against **www.gratus.cc** → 3.43 MB of film on the landing that the local server had never shown; `preload` fixed and re-measured
+- the same read against **www.gratus.cc** → 3.43 MB of film the local server had never shown
+- `preload="none"` shipped, measured again → **unchanged**, because a film that is played does not care what preload said. The ritual costs what the ritual costs, and that is now written down rather than guessed at
 - `python3 scripts/renditions.py` → 63 sources, 21.15 MB of his originals, 6.69 MB delivered
 - `node scripts/gates/thehand.mjs` → **33 assertions, every one driven**
 - `mutate.py M51..M59` → nine defects restored, nine caught. A tenth, M50, survived, which is how the rule that fixed nothing was found and removed
