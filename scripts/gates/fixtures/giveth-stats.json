@@ -1,0 +1,535 @@
+{
+ "recorded": "2026-09-20T04:45:14.919Z",
+ "note": "A recording of Giveth’s public API, replayed by scripts/gates/giveth-pitch.mjs so the gate never reaches the internet. The live page reads the live API; nothing here is shown to anybody.",
+ "answers": {
+  "months": {
+   "data": {
+    "donationsTotalUsdPerDate": {
+     "total": 7177891.5,
+     "totalPerMonthAndYear": [
+      {
+       "total": 77.006386,
+       "date": "2021/2"
+      },
+      {
+       "total": 1280.8567,
+       "date": "2021/3"
+      },
+      {
+       "total": 1382.9667,
+       "date": "2021/4"
+      },
+      {
+       "total": 448.5554,
+       "date": "2021/5"
+      },
+      {
+       "total": 34416.934,
+       "date": "2021/6"
+      },
+      {
+       "total": 5122.3306,
+       "date": "2021/7"
+      },
+      {
+       "total": 5980.629,
+       "date": "2021/8"
+      },
+      {
+       "total": 692.34216,
+       "date": "2021/9"
+      },
+      {
+       "total": 9859.849,
+       "date": "2021/10"
+      },
+      {
+       "total": 129723.195,
+       "date": "2021/11"
+      },
+      {
+       "total": 176697.83,
+       "date": "2021/12"
+      },
+      {
+       "total": 67479.73,
+       "date": "2022/1"
+      },
+      {
+       "total": 51763.992,
+       "date": "2022/2"
+      },
+      {
+       "total": 118288.65,
+       "date": "2022/3"
+      },
+      {
+       "total": 94519.94,
+       "date": "2022/4"
+      },
+      {
+       "total": 86628.98,
+       "date": "2022/5"
+      },
+      {
+       "total": 20586.275,
+       "date": "2022/6"
+      },
+      {
+       "total": 245548.48,
+       "date": "2022/7"
+      },
+      {
+       "total": 322650.1,
+       "date": "2022/8"
+      },
+      {
+       "total": 94051.67,
+       "date": "2022/9"
+      },
+      {
+       "total": 29754.988,
+       "date": "2022/10"
+      },
+      {
+       "total": 36509.24,
+       "date": "2022/11"
+      },
+      {
+       "total": 30486.754,
+       "date": "2022/12"
+      },
+      {
+       "total": 25169.264,
+       "date": "2023/1"
+      },
+      {
+       "total": 42027.152,
+       "date": "2023/2"
+      },
+      {
+       "total": 128186.92,
+       "date": "2023/3"
+      },
+      {
+       "total": 18311.533,
+       "date": "2023/4"
+      },
+      {
+       "total": 40144.527,
+       "date": "2023/5"
+      },
+      {
+       "total": 13624.131,
+       "date": "2023/6"
+      },
+      {
+       "total": 263963.5,
+       "date": "2023/7"
+      },
+      {
+       "total": 24251.854,
+       "date": "2023/8"
+      },
+      {
+       "total": 20408.168,
+       "date": "2023/9"
+      },
+      {
+       "total": 44997.742,
+       "date": "2023/10"
+      },
+      {
+       "total": 30567.604,
+       "date": "2023/11"
+      },
+      {
+       "total": 30937.99,
+       "date": "2023/12"
+      },
+      {
+       "total": 233354.31,
+       "date": "2024/1"
+      },
+      {
+       "total": 39611.312,
+       "date": "2024/2"
+      },
+      {
+       "total": 241202.05,
+       "date": "2024/3"
+      },
+      {
+       "total": 55922.348,
+       "date": "2024/4"
+      },
+      {
+       "total": 361721.5,
+       "date": "2024/5"
+      },
+      {
+       "total": 99824.28,
+       "date": "2024/6"
+      },
+      {
+       "total": 68513.82,
+       "date": "2024/7"
+      },
+      {
+       "total": 64045.797,
+       "date": "2024/8"
+      },
+      {
+       "total": 33739.965,
+       "date": "2024/9"
+      },
+      {
+       "total": 515725.9,
+       "date": "2024/10"
+      },
+      {
+       "total": 13726.627,
+       "date": "2024/11"
+      },
+      {
+       "total": 19106.488,
+       "date": "2024/12"
+      },
+      {
+       "total": 213869.64,
+       "date": "2025/1"
+      },
+      {
+       "total": 143375.83,
+       "date": "2025/2"
+      },
+      {
+       "total": 157731.14,
+       "date": "2025/3"
+      },
+      {
+       "total": 93185.734,
+       "date": "2025/4"
+      },
+      {
+       "total": 16083.824,
+       "date": "2025/5"
+      },
+      {
+       "total": 36841.35,
+       "date": "2025/6"
+      },
+      {
+       "total": 151198.42,
+       "date": "2025/7"
+      },
+      {
+       "total": 27972.377,
+       "date": "2025/8"
+      },
+      {
+       "total": 56469.598,
+       "date": "2025/9"
+      },
+      {
+       "total": 139294.45,
+       "date": "2025/10"
+      },
+      {
+       "total": 336545.88,
+       "date": "2025/11"
+      },
+      {
+       "total": 24189.045,
+       "date": "2025/12"
+      },
+      {
+       "total": 3969.1047,
+       "date": "2026/1"
+      },
+      {
+       "total": 1728.3717,
+       "date": "2026/2"
+      },
+      {
+       "total": 37562.176,
+       "date": "2026/3"
+      },
+      {
+       "total": 65927.09,
+       "date": "2026/4"
+      },
+      {
+       "total": 564920,
+       "date": "2026/5"
+      },
+      {
+       "total": 1104526.1,
+       "date": "2026/6"
+      },
+      {
+       "total": 1079.3284,
+       "date": "2026/7"
+      },
+      {
+       "total": 5549.0977,
+       "date": "2026/8"
+      },
+      {
+       "total": 4185.3184,
+       "date": "2026/9"
+      }
+     ]
+    }
+   }
+  },
+  "donors": {
+   "data": {
+    "totalDonorsCountPerDate": {
+     "total": 29335
+    }
+   }
+  },
+  "created": {
+   "data": {
+    "projectsPerDate": {
+     "total": 8626
+    }
+   }
+  },
+  "listed": {
+   "data": {
+    "allProjects": {
+     "totalCount": 7736
+    }
+   }
+  },
+  "verified": {
+   "data": {
+    "allProjects": {
+     "totalCount": 4464
+    }
+   }
+  },
+  "cats": {
+   "data": {
+    "totalDonationsPerCategory": [
+     {
+      "title": "Environment & Energy",
+      "totalUsd": 660510.7
+     },
+     {
+      "title": "Economics & Infrastructure",
+      "totalUsd": 1371740
+     },
+     {
+      "title": "Health & Wellness",
+      "totalUsd": 1519457.9
+     },
+     {
+      "title": "Technology",
+      "totalUsd": 2704889.5
+     },
+     {
+      "title": "Art & Culture",
+      "totalUsd": 642281.75
+     },
+     {
+      "title": "NGO",
+      "totalUsd": 2266563.8
+     },
+     {
+      "title": "Nature",
+      "totalUsd": 511808.75
+     },
+     {
+      "title": "Community",
+      "totalUsd": 5818563
+     },
+     {
+      "title": "Finance",
+      "totalUsd": 3115665
+     },
+     {
+      "title": "Education",
+      "totalUsd": 1164650.5
+     },
+     {
+      "title": "Equality",
+      "totalUsd": 815161.06
+     },
+     {
+      "title": "Other",
+      "totalUsd": 23770.402
+     },
+     {
+      "title": "Building on Polygon",
+      "totalUsd": 1588939.1
+     },
+     {
+      "title": "DeSci",
+      "totalUsd": 257153.89
+     }
+    ]
+   }
+  },
+  "qf": {
+   "data": {
+    "qfRounds": [
+     {
+      "id": "20",
+      "name": "GG24: Developer Tooling & Infrastructure",
+      "allocatedFund": 200000,
+      "isActive": false,
+      "beginDate": "2025-10-14T14:00:00.000Z",
+      "endDate": "2025-10-29T06:59:00.000Z"
+     },
+     {
+      "id": "16",
+      "name": "Ethereum Security",
+      "allocatedFund": 540,
+      "isActive": false,
+      "beginDate": "2026-04-23T14:00:00.000Z",
+      "endDate": "2026-05-15T09:59:00.000Z"
+     },
+     {
+      "id": "22",
+      "name": "Stellar Test Round",
+      "allocatedFund": 10000,
+      "isActive": false,
+      "beginDate": "2023-09-30T20:00:00.000Z",
+      "endDate": "2026-07-30T20:00:00.000Z"
+     },
+     {
+      "id": "21",
+      "name": "GG24: Interop Standards, Infra & Analytics",
+      "allocatedFund": 100000,
+      "isActive": false,
+      "beginDate": "2025-10-14T14:00:00.000Z",
+      "endDate": "2025-10-29T06:59:00.000Z"
+     },
+     {
+      "id": "15",
+      "name": "Stellar Community Launch",
+      "allocatedFund": 50000,
+      "isActive": false,
+      "beginDate": "2025-08-19T15:00:00.000Z",
+      "endDate": "2025-09-03T08:59:00.000Z"
+     },
+     {
+      "id": "2",
+      "name": "Alpha Round",
+      "allocatedFund": 10000,
+      "isActive": false,
+      "beginDate": "2023-07-18T10:00:00.000Z",
+      "endDate": "2023-08-01T15:00:00.000Z"
+     },
+     {
+      "id": "4",
+      "name": "Optimism Round",
+      "allocatedFund": 25000,
+      "isActive": false,
+      "beginDate": "2023-10-09T16:00:00.000Z",
+      "endDate": "2023-10-23T16:00:00.000Z"
+     },
+     {
+      "id": "5",
+      "name": "Giving Season",
+      "allocatedFund": 25000,
+      "isActive": false,
+      "beginDate": "2023-12-19T16:00:00.000Z",
+      "endDate": "2024-01-03T05:00:00.000Z"
+     },
+     {
+      "id": "6",
+      "name": "Buidl on Polygon#1",
+      "allocatedFund": 250000,
+      "isActive": false,
+      "beginDate": "2024-01-15T16:00:00.000Z",
+      "endDate": "2024-01-25T07:59:00.000Z"
+     },
+     {
+      "id": "7",
+      "name": "Meta Pool APAC",
+      "allocatedFund": 10000,
+      "isActive": false,
+      "beginDate": "2024-02-19T03:00:00.000Z",
+      "endDate": "2024-03-01T09:59:00.000Z"
+     },
+     {
+      "id": "8",
+      "name": "ENS Builders' Round",
+      "allocatedFund": 20000,
+      "isActive": false,
+      "beginDate": "2024-03-25T15:00:00.000Z",
+      "endDate": "2024-04-09T03:59:00.000Z"
+     },
+     {
+      "id": "9",
+      "name": "Galactic Giving",
+      "allocatedFund": 50000,
+      "isActive": false,
+      "beginDate": "2024-05-02T15:00:00.000Z",
+      "endDate": "2024-05-17T09:59:00.000Z"
+     },
+     {
+      "id": "10",
+      "name": "GIV-Earth",
+      "allocatedFund": 40000,
+      "isActive": false,
+      "beginDate": "2024-06-25T15:00:00.000Z",
+      "endDate": "2024-07-13T09:59:00.000Z"
+     },
+     {
+      "id": "11",
+      "name": "GIV-ARB",
+      "allocatedFund": 150000,
+      "isActive": false,
+      "beginDate": "2024-07-30T15:00:00.000Z",
+      "endDate": "2024-08-14T09:59:00.000Z"
+     },
+     {
+      "id": "12",
+      "name": "GIV-a-Palooza",
+      "allocatedFund": 25000,
+      "isActive": false,
+      "beginDate": "2024-09-10T15:00:00.000Z",
+      "endDate": "2024-09-25T09:59:00.000Z"
+     },
+     {
+      "id": "13",
+      "name": "Loving on Public Goods",
+      "allocatedFund": 100000,
+      "isActive": false,
+      "beginDate": "2025-01-28T16:00:00.000Z",
+      "endDate": "2025-02-15T09:59:00.000Z"
+     },
+     {
+      "id": "14",
+      "name": "ENS x Octant Public Goods",
+      "allocatedFund": 80000,
+      "isActive": false,
+      "beginDate": "2025-03-18T16:00:00.000Z",
+      "endDate": "2025-04-02T08:59:00.000Z"
+     },
+     {
+      "id": "17",
+      "name": "Causes QF Round",
+      "allocatedFund": 40000,
+      "isActive": false,
+      "beginDate": "2025-09-10T15:00:00.000Z",
+      "endDate": "2025-10-02T08:59:00.000Z"
+     },
+     {
+      "id": "23",
+      "name": "Stellar Community Growth",
+      "allocatedFund": 50000,
+      "isActive": true,
+      "beginDate": "2026-09-21T15:30:00.000Z",
+      "endDate": "2026-10-05T03:59:00.000Z"
+     }
+    ]
+   }
+  }
+ }
+}

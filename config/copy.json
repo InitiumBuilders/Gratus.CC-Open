@@ -155,5 +155,23 @@
     "promise",
     "tags",
     "tagline"
-  ]
+  ],
+  "giveth": {
+    "reading": "Reading Giveth...",
+    "quiet": "Giveth is not answering right now.",
+    "noTotal": "Giveth did not send the total this time.",
+    "under": "given through Giveth. Nothing taken on the way.",
+    "noFigures": "Giveth is not answering, so there are no figures on this page. Every one of them is read from Giveth as the page opens and none is kept here, which is why an empty page is the honest one.",
+    "again": "Ask again",
+    "months": "Each bar is one month of giving.",
+    "kinds": "A project can sit in more than one, so these do not add to the total.",
+    "matched": "In a round, the number of people who give counts for more than the size of any one gift, so a hundred small gifts pull down more than one large one.",
+    "running": "Running now: ",
+    "sourced": "Read from Giveth’s own API",
+    "nothingKept": "Nothing on this page is stored here, and nothing is rounded except the bars.",
+    "h1": "Every month since ",
+    "h2": "Where it went",
+    "h3": "And then matched",
+    "numbers": "The numbers"
+  }
 }

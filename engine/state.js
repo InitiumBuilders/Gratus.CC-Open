@@ -23,7 +23,7 @@
 // without a browser. scripts/gates/migration.mjs does exactly that, against a
 // captured fixture, and the mutant that restores the old line turns it red.
 
-export const STATE_V = 4;
+export const STATE_V = 5;
 
 export function fresh() {
   return {
@@ -36,18 +36,21 @@ export function fresh() {
     wishes: [], goals: [], sound: true, made: {}, opens: 0, migrated: false,
     folders: [], milestones: {}, seeds: [], alch: {}, sun: null, vibes: [],
     // added in v2
-    glyphSeed: '', hidden: {}, cer: {}, gardenHour: null,
+    glyphSeed: '', hidden: {}, cer: {},
   };
 }
 
-// Every step takes a garden at version N and returns it at version N+1. A step
-// only ever adds; nothing here may drop a field a person's garden already holds.
+// Every step takes a garden at version N and returns it at version N+1. A step only ever
+// adds, with one exception, written down here so it cannot become a habit: a step MAY drop
+// a field when the app has stopped collecting what is in it. Rung 4 does that. Leaving the
+// hour somebody usually opened the app on their device after we stopped reading it would
+// mean keeping a record of their habits for no reason at all, which is the opposite of
+// what every page of this product promises.
 export const LADDER = {
   1: (s) => {
     if (typeof s.glyphSeed !== 'string') s.glyphSeed = '';
     if (!s.hidden || typeof s.hidden !== 'object') s.hidden = {};
     if (!s.cer || typeof s.cer !== 'object') s.cer = {};
-    if (s.gardenHour === undefined) s.gardenHour = null;
     s.v = 2;
     return s;
   },
@@ -66,6 +69,14 @@ export const LADDER = {
       s.tour = ((s.plants && s.plants.length) || (s.entries && s.entries.length)) ? 'seen' : '';
     }
     s.v = 4;
+    return s;
+  },
+  4: (s) => {
+    // the watched hour, erased. It was learned without anybody asking for it.
+    delete s.gardenHour;
+    if (s.cer && typeof s.cer === 'object') delete s.cer.gardenHour;
+    if (s.hidden && typeof s.hidden === 'object') { delete s.hidden.gardenHour; delete s.hidden.coinHold; }
+    s.v = 5;
     return s;
   },
 };
@@ -89,7 +100,6 @@ export function patch(s) {
   if (typeof s.glyphSeed !== 'string') s.glyphSeed = '';
   if (s.sound == null) s.sound = true;
   if (s.sun === undefined) s.sun = null;
-  if (s.gardenHour === undefined) s.gardenHour = null;
   if (typeof s.opens !== 'number') s.opens = 0;
   return s;
 }

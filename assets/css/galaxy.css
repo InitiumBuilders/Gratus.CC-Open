@@ -1046,3 +1046,25 @@ body.touring { overflow: hidden; }
   letter-spacing: .04em; min-width: 54px; padding-top: 2px; }
 .glass.step .line, .glass.opt.path .line { display: block; font-size: 15px; line-height: 22px; color: var(--ink-2); margin-top: 3px; }
 .glass.opt.path { align-items: flex-start; }
+
+/* ── the Giveth pitch: one number reigning, then the shape of five years ── */
+/* The hero comes down so the figure and the three facts under it both land above the tab
+   bar on a phone. Measured, not guessed: the bar owns the last 112px of an 812px screen. */
+.hero.pitch-hero { min-height: 54svh; }
+.gvbig { text-align: center; display: grid; justify-items: center; gap: 2px; }
+.gvnum { display: block; font-family: var(--display); font-weight: 500; font-size: clamp(40px, 12.4vw, 64px); line-height: 1.02;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, .8);
+  color: var(--ink); letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; margin: 6px 0 8px; }
+.gvnum.small { font-size: clamp(30px, 8vw, 40px); color: var(--ink-3); }
+.gvsub { display: block; font-size: 16px; line-height: 23px; color: var(--ink-3); text-shadow: 0 1px 12px rgba(0, 0, 0, .9); max-width: 18em; }
+.gvfacts b { font-size: 26px; line-height: 30px; }
+.gvline { padding: 18px 16px 14px; }
+.gvbarline { display: flex; align-items: flex-end; gap: 2px; height: 96px; margin-bottom: 12px; }
+.gvbarline i { flex: 1 1 0; min-width: 2px; border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, var(--hue-76), var(--hue-16)); }
+.gvbars { display: grid; gap: 12px; padding: 18px 16px 14px; }
+.gvbar { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "n v" "b b"; gap: 4px 10px; align-items: baseline; }
+.gvbn { grid-area: n; font-size: 15px; color: var(--ink-3); }
+.gvbv { grid-area: v; font-size: 15px; color: var(--gold); font-variant-numeric: lining-nums tabular-nums; }
+.gvbar i { grid-area: b; height: 6px; border-radius: var(--pill); background: linear-gradient(90deg, var(--hue-76), var(--hue-16)); }
+@media (min-width: 620px) { .gvbarline { height: 128px; } }

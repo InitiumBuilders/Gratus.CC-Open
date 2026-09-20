@@ -331,11 +331,6 @@
     "world": "Elsewhere: findahelpline.com",
     "dismiss": "Thank you"
   },
-  "hidden": {
-    "gardenHour": "You came at the garden hour. The soil noticed.",
-    "anniversary": "One year ago today, you planted this.",
-    "coinHold": "Thirteen seconds. Time is the only thing you can't buy."
-  },
   "practiceNames": {
     "notice": {
       "name": "Notice",
@@ -426,5 +421,9 @@
       "patterns": "Patterns appear after a few days. Nothing is scored.",
       "letters": "Letters to your future self, and the ones you may never send, keep here."
     }
+  },
+  "anniversary": {
+    "one": "One year ago today, you planted this.",
+    "many": "{n} years ago today, you planted this."
   }
 }

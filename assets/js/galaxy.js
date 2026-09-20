@@ -248,7 +248,7 @@ function viewGuides() {
     '<div class="glass card"><p class="body">The five phases are five notes of one chord. Planted is the root. Nurtured is the fifth above it, Deepened the octave, Bloomed the third above that, and Ready to Give the fifth above that. When a plant crosses into a phase you hear its note and every note underneath it, so the chord is built by the growing. Giving plays the whole chord and lets it fall back to the root, which is what you are left holding.</p>' +
     '<div class="notes">' + ph.map((p, k) => '<button class="chip note" data-note="' + k + '">' + p.icon + ' ' + esc(p.name) + '<i>' + esc(TONE_NAMES[k] || '') + '</i></button>').join('') + '</div>' +
     '<button class="btn mint wide" data-note="given">Hear what giving sounds like</button>' +
-    (S.sound ? '<p class="cap">Tap one to hear the chord as far as that phase. Nothing here sounds on an ordinary tap; only a crossing, a bloom, a keeping and a giving.</p>'
+    (S.sound ? '<p class="cap">Tap a phase to hear the chord as far as it goes.</p>'
              : '<p class="cap">The sound is off right now. The switch is at the top of the screen.</p>') +
     '</div>' +
     '<div class="eyebrow"><h2>What we promise</h2></div>' +
@@ -339,7 +339,7 @@ function viewVibes() {
     (!v ? '<div class="glass card"><span class="kicker mint">What a Vibe is</span><p class="body">A small room with a name and a code. Anyone holding the code is in it. People post short gratitudes there with an emoji from their own garden, and that is all that travels: your journal stays on your device.</p>' +
       '<div class="two"><input class="field" id="vb-code" maxlength="12" placeholder="e.g. K7M2QP" aria-label="a vibe code"><button class="btn" id="vb-join">Go in</button></div>' +
       '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' +
-      '<p class="cap">A room is a handful of people, a few lines each, and an emoji every one of them grew. Nothing is shown here until somebody says something, because the three people who used to stand in this spot were invented and so were their words.</p>' : '') +
+      '' : '') +
     (vibeState === 'loading' ? '<p class="cap">Opening the room...</p>' : '') +
     (vibeState === 'offline' && !v ? '<p class="cap">No vibe answered on that code. Check it and try again.</p>' : '') +
     (v ? '<div class="glass card vibehead"><span class="v-ico">' + esc(v.emoji) + '</span><div><b>' + esc(v.name) + '</b>' + (v.about ? '<span class="body">' + esc(v.about) + '</span>' : '') +
@@ -350,11 +350,11 @@ function viewVibes() {
       '<textarea class="field" id="vb-text" rows="2" maxlength="280" placeholder="What are you grateful for, right now..." aria-label="your gratitude"></textarea>' +
       '<div class="pick">' + palette().slice(0, 8).map((e) => '<button class="orb" data-vpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
       '<button class="btn mint wide" id="vb-post">Say it ✦</button>' +
-      '<p class="cap">Everyone with the code can read this. Write what you would say out loud in the room.</p></div>' +
+      '<p class="cap">Everyone with the code can read this.</p></div>' +
       (vibeFresh ? '<p class="vibeline"><i class="vibemark"></i>' + (vibeFresh === 1 ? 'One new word in the room.' : vibeFresh + ' new words in the room.') + '</p>' : '') +
       (v.posts.length ? '<div class="eyebrow"><h2>The room</h2><span class="more">' + v.posts.length + ' shown' + '</span></div><div class="rows">' +
         v.posts.map((p) => '<div class="glass vpost"><span class="orb sm"><span>' + esc(p.emoji) + '</span></span><span class="grow"><span class="kicker">' + esc(p.name) + ' · ' + esc(fmtDay(String(p.at).slice(0, 10))) + '</span><b>' + esc(p.text) + '</b></span></div>').join('') + '</div>'
-        : '<p class="cap">Nobody has said anything here yet. Be the first; it makes the room exist.</p>') : '') +
+        : '<p class="cap">Nobody has said anything here yet.</p>') : '') +
     '<p class="cap">A Vibe holds what people choose to say in it. It is not your journal, and your journal never comes here.</p>' +
     '</div>';
 }
@@ -365,7 +365,7 @@ function makeVibeSheet() {
     '<span class="kicker mint">A mark for the room</span>' +
     '<div class="pick">' + palette().slice(0, 10).map((e) => '<button class="orb" data-mvpick="' + esc(e) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
     '<button class="btn mint wide" id="mv-go">Open the room</button>' +
-    '<p class="cap">You get a code. Anyone you give it to can come in and read what is said there, so share it with the people you mean.</p>', { autofocus: true });
+    '<p class="cap">Anyone holding the code can come in and read what is said there.</p>', { autofocus: true });
   let emoji = '✦';
   $$('[data-mvpick]', sh.el).forEach((b) => b.addEventListener('click', () => { emoji = b.dataset.mvpick; $$('[data-mvpick]', sh.el).forEach((x) => x.classList.toggle('on', x === b)); }));
   $('#mv-go', sh.el).addEventListener('click', async () => {
@@ -518,7 +518,7 @@ function alchemyBlock() {
   const st = alchemyState(); const models = C.alchemy.models;
   const made = models.filter((m) => S.alch[m.id]).length;
   return '<div class="eyebrow"><h2>Harmonic alchemy</h2><span class="more">' + made + ' of ' + models.length + '</span></div>' +
-    '<p class="cap">A mark here needs both halves of you: something given, and something tended. Neither one alone will make it.</p>' +
+    '<p class="cap">One given and one tended. Both, or neither.</p>' +
     '<div class="rows">' + models.map((m) => { const on = !!S.alch[m.id];
       return '<div class="glass recipe' + (on ? ' made' : '') + '"><span class="f">' + esc(m.result) + '</span><span class="cat">' + (on ? esc(fmtDay(S.alch[m.id])) : 'not yet') + '</span><span class="name">' + esc(m.name) + '</span><span class="line">' + esc(on ? m.line : alchemyProgress(m, st)) + '</span></div>'; }).join('') + '</div>';
 }
@@ -605,12 +605,98 @@ function projectRow(p) {
       (p.categories[0] ? '<i class="gvt">' + esc(p.categories[0]) + '</i>' : '') + '</span>' +
     '<span class="cap">' + esc(p.summary.slice(0, 120)) + '</span></span><span class="arrow">›</span></button>';
 }
+let gvStats = null, gvStatsState = 'idle';
+async function loadGivethStats() {
+  if (gvStatsState === 'loading') return;
+  gvStatsState = 'loading';
+  try {
+    const r = await fetch('/api/giveth-stats', { cache: 'no-store' });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'no');
+    gvStats = d; gvStatsState = 'live';
+  } catch (e) { gvStatsState = 'offline'; }
+  if (sub === 'giveth') render();
+}
+
+// $7.2M reads; $7,177,961 counts. The big one is written out in full because the whole
+// claim is that it is a real number, and a rounded number is a number somebody chose.
+const usd = (n) => '$' + Math.round(Number(n) || 0).toLocaleString();
+// A figure Giveth did not send reads as a dash. It never reads as none.
+const count = (n) => (n == null || !Number.isFinite(Number(n)) ? '\u00b7' : Number(n).toLocaleString());
+const usdShort = (n) => {
+  const v = Number(n) || 0;
+  if (v >= 1e6) return '$' + (v / 1e6).toFixed(v >= 1e7 ? 0 : 1) + 'M';
+  if (v >= 1e3) return '$' + Math.round(v / 1e3) + 'k';
+  return '$' + Math.round(v);
+};
+const monthName = (d) => {
+  const [y, m] = String(d).split('/');
+  const nm = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][Number(m) - 1];
+  return nm ? nm + ' ' + y : String(d);
+};
+
+// the one figure that carries the claim, sitting in the hero where it can reign
+function givethNumber() {
+  if (gvStatsState === 'idle') loadGivethStats();
+  const d = gvStats;
+  if (gvStatsState === 'offline') return '<span class="kicker">' + esc(T('giveth.quiet', '')) + '</span>';
+  if (!d) return '<span class="kicker">' + esc(T('giveth.reading', '')) + '</span>';
+  if (d.usd == null || !(d.usd > 0)) return '<span class="kicker">' + esc(T('giveth.noTotal', '')) + '</span>';
+  return '<b class="gvnum">' + esc(usd(d.usd)) + '</b><span class="gvsub">' + esc(T('giveth.under', '')) + '</span>';
+}
+
+function givethPitch() {
+  if (gvStatsState === 'idle') loadGivethStats();
+  if (gvStatsState === 'offline') {
+    return '<div class="glass card"><span class="kicker mint">' + esc(T('giveth.numbers', '')) + '</span>' +
+      '<p class="body">' + esc(T('giveth.noFigures', '')) + '</p>' +
+      '<button class="btn" id="gv-again">' + esc(T('giveth.again', 'Ask again')) + '</button></div>';
+  }
+  const d = gvStats;
+  if (!d) return '<div class="glass card"><span class="kicker mint">' + esc(T('giveth.numbers', '')) + '</span><p class="cap">' + esc(T('giveth.reading', '')) + '</p></div>';
+  // An absent figure is not a zero. Rather than print $0 over somebody else's work, the
+  // block says the total did not arrive and shows whatever else did.
+  const noTotal = d.usd == null || !(d.usd > 0);
+
+  const ms = d.months || [];
+  const top = Math.max(1, ...ms.map((m) => m.usd));
+  const line = ms.map((m) => '<i style="height:' + Math.max(2, Math.round(m.usd / top * 100)) + '%" title="' + esc(monthName(m.d)) + ': ' + esc(usdShort(m.usd)) + '"></i>').join('');
+  const cats = (d.categories || []).slice(0, 8);
+  const cTop = Math.max(1, ...cats.map((c) => c.usd));
+
+  // `return` alone on a line ends the statement. Everything meant to follow it became
+  // unreachable with no word from the parser: the page rendered, empty, and measured as
+  // if the whole pitch had never been written.
+  return '<div class="glass stats in gvfacts">' +
+    '<div><b>' + esc(count(d.donors)) + '</b><span>people gave</span></div>' +
+    '<div><b>' + esc(count(d.listed)) + '</b><span>projects</span></div>' +
+    '<div><b>' + esc(count(d.verified)) + '</b><span>verified</span></div></div>' +
+
+    (ms.length ? '<div class="eyebrow"><h2>' + esc(T('giveth.h1', '')) + esc(monthName(d.since)) + '</h2><span class="more">' + ms.length + ' months</span></div>' +
+      '<div class="glass card gvline"><div class="gvbarline">' + line + '</div>' +
+      '<span class="cap">' + esc(monthName(ms[0].d)) + ' to ' + esc(monthName(ms[ms.length - 1].d)) + '. ' + esc(T('giveth.months', '')) + '</span></div>' : '') +
+
+    (cats.length ? '<div class="eyebrow"><h2>' + esc(T('giveth.h2', '')) + '</h2><span class="more">' + (d.categories || []).length + ' kinds</span></div>' +
+      '<div class="glass card gvbars">' + cats.map((c) => '<div class="gvbar"><span class="gvbn">' + esc(c.title) + '</span>' +
+        '<i style="width:' + Math.max(4, Math.round(c.usd / cTop * 100)) + '%"></i>' +
+        '<span class="gvbv">' + esc(usdShort(c.usd)) + '</span></div>').join('') +
+      '<span class="cap">' + esc(T('giveth.kinds', '')) + '</span></div>' : '') +
+
+    (d.qf && d.qf.rounds && d.qf.matching > 0 ? '<div class="glass card"><span class="kicker gold">' + esc(T('giveth.h3', '')) + '</span>' +
+      '<p class="body"><b>' + esc(usd(d.qf.matching)) + '</b> pooled across <b>' + d.qf.rounds + '</b> funding rounds. ' + esc(T('giveth.matched', '')) + '</p>' +
+      (d.qf.live.length ? '<p class="cap">' + esc(T('giveth.running', '')) + esc(d.qf.live.join(' \u00b7 ')) + '</p>' : '') + '</div>' : '') +
+
+    '<p class="cap">' + esc(T('giveth.sourced', '')) + ' ' + (d.age < 90 ? 'a moment ago' : d.age < 5400 ? Math.round(d.age / 60) + ' minutes ago' : 'today') +
+    '. ' + esc(T('giveth.nothingKept', '')) + '</p>';
+}
+
 function viewGiveth() {
   if (gvState === 'idle') loadGiveth();
   const lanes = [['verified', 'GIVbacks'], ['boosted', 'Boosted'], ['unseen', 'Nobody yet'], ['all', 'All']];
   const mine = S.seeds.slice().reverse();
-  return hero(scene('giveth'), { cls: 'room-hero', h1: 'Giveth', k1: 'Capital, on chain, zero fees.', k2: 'Gratitude, in your own words.' }) +
+  return hero(scene('giveth'), { cls: 'room-hero pitch-hero', h1: 'Giveth', k1: 'Capital, on chain, zero fees.', k2: 'Gratitude, in your own words.', low: '<div class="gvbig">' + givethNumber() + '</div>' }) +
     '<div class="page">' +
+    givethPitch() +
     '<div class="glass card"><span class="kicker mint">Why the two of us</span>' +
     '<p class="body">Giveth moves the money: every donation goes to the project with no fee taken, on Ethereum, Gnosis, Polygon, Optimism, Base, Celo, Arbitrum, Solana and Stellar. Verified projects are reviewed by their team, and people who give to them earn GIVbacks.</p>' +
     '<p class="body">What the rail cannot carry is why you gave. That is what Gratus adds: a Gratus Seed, in your words, planted with the gift, answered by the people you gave to, and kept growing in your garden.</p>' +
@@ -706,7 +792,7 @@ function growForSheet(p) {
     (mine.length ? '<span class="kicker gold">Already growing for them</span><div class="rows">' + mine.map((x) => { const d = daysOf(x); const ph = phaseOf(d); return '<div class="glass opt"><span class="ico">' + esc(face(x)) + '</span><span class="grow"><b>' + esc(nameOf(face(x))) + '</b><span>' + esc(ph.name) + ' · ' + plural(d, 'day') + '</span></span></div>'; }).join('') + '</div>' : '') +
     '<span class="kicker mint">Dedicate an emoji</span><div class="pick" id="gf-pick">' + pal.map((e) => '<button class="orb" data-gfpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
     (ready.length ? '<span class="kicker gold">Ready to give now</span><div class="rows">' + ready.map((x) => '<button class="glass opt" data-gfnow="' + esc(x.id) + '"><span class="ico gold">' + esc(face(x)) + '</span><span class="grow"><b>' + esc(nameOf(face(x))) + '</b><span>' + plural(daysOf(x), 'day') + ' · give it to ' + esc(p.title) + '</span></span><span class="arrow">›</span></button>').join('') + '</div>' : '') +
-    '<p class="cap">A dedicated plant still lives in your garden. Dedicating one changes nothing about how it grows; it only remembers who it is for.</p>');
+    '<p class="cap">It grows the same way. It only remembers who it is for.</p>');
   $$('[data-gfpick]', sh.el).forEach((b) => b.addEventListener('click', () => {
     const e = b.dataset.gfpick; let pl = plantFor(e);
     if (!pl) { pl = { id: newId('p'), emoji: e, planted: today(), kept: [], carried: 0, origin: 'planted', from: null }; S.plants.push(pl); }
@@ -771,7 +857,7 @@ function mySeedSheet(id) {
   const b = s.status === 'bloomed';
   const sh = sheet('<div class="hero-sm"><span class="orb xl' + (b ? ' lit' : '') + '"><span>' + esc(b ? s.bloom : '🌱') + '</span></span><h2>' + esc(s.title) + '</h2><span class="kicker mint">' + esc(b ? 'Bloomed' : 'Planted') + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + '</span></div>' +
     '<span class="kicker mint">What you wrote</span><p class="lead" style="white-space:pre-wrap">' + esc(s.message) + '</p>' +
-    (b && s.water ? '<span class="kicker gold">What they wrote back</span><p class="lead" style="white-space:pre-wrap">' + esc(s.water.reply) + '</p><span class="cap">' + esc(s.water.from) + ' · ' + esc(fmtDay(s.water.at.slice(0, 10))) + '</span>' : '<p class="cap">Not watered yet. A project answers when it can; some answer in a day, some in a season. The seed keeps either way.</p>') +
+    (b && s.water ? '<span class="kicker gold">What they wrote back</span><p class="lead" style="white-space:pre-wrap">' + esc(s.water.reply) + '</p><span class="cap">' + esc(s.water.from) + ' · ' + esc(fmtDay(s.water.at.slice(0, 10))) + '</span>' : '<p class="cap">Not watered yet. The seed keeps either way.</p>') +
     (s.confirmed ? '<span class="kicker mint">Giveth confirms ' + esc(s.confirmed.amount + ' ' + (s.confirmed.currency || '')) + '</span>' : s.tx ? '<span class="cap">tx ' + esc(s.tx.slice(0, 18)) + '… (unconfirmed)</span>' : '') +
     (s.first ? '<p class="cap">🫶 Yours was the first seed this project ever received.</p>' : '') +
     (b && s.water && s.water.passTo ? '<div class="glass card"><span class="kicker gold">They passed it on</span><p class="body">' + esc(s.water.from) + ' is grateful for <b>' + esc(s.water.passTo) + '</b>' + (s.water.passWhy ? ': ' + esc(s.water.passWhy) : '') + '</p><button class="btn mint" data-flow="' + esc(s.water.passTo) + '">Continue the flow ' + esc(s.water.passTo) + ' →</button></div>' : '') +
@@ -860,13 +946,13 @@ function viewConsole() {
     '<p class="cap">The last part of your project\u2019s Giveth link, copied exactly. Capitals matter.</p>' +
     '<input class="field" id="con-key" placeholder="your project key" aria-label="project key" value="' + esc(conKey) + '">' +
     '<div class="actions"><button class="btn mint" id="con-open">Open the feed</button><button class="btn" id="con-claim">Claim this project</button></div>' +
-    '<p class="cap">The key waters seeds for one project. Claiming shows it once, and only a hash of it is kept. This is a light claim, not verification: real verification lives on Giveth.</p></div>' +
-    (conSignal ? '<div class="glass card"><span class="kicker mint">How you answer</span><div class="glass stats"><div><b>' + conSignal.seeds + '</b><span>' + (conSignal.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div><b>' + conSignal.share + '%</b><span>watered</span></div><div><b>' + (conSignal.medianDays == null ? 'not yet' : conSignal.medianDays) + '</b><span>days to answer</span></div></div><p class="cap">This is not a comparison with anyone. It is here so you can see what the people who gave to you are waiting for.</p></div>' : '') +
+    '<p class="cap">The key waters seeds for one project. It is shown once, and only a hash of it is kept. Real verification lives on Giveth.</p></div>' +
+    (conSignal ? '<div class="glass card"><span class="kicker mint">How you answer</span><div class="glass stats"><div><b>' + conSignal.seeds + '</b><span>' + (conSignal.seeds === 1 ? 'seed' : 'seeds') + '</span></div><div><b>' + conSignal.share + '%</b><span>watered</span></div><div><b>' + (conSignal.medianDays == null ? 'not yet' : conSignal.medianDays) + '</b><span>days to answer</span></div></div></div>' : '') +
     (conState === 'loading' ? '<p class="cap">Reading the trace...</p>' : '') +
     (conState === 'live' && !seeds.length ? '<p class="cap">No seeds yet for that project. When someone gives with a Gratus Seed, it arrives here.</p>' : '') +
     (seeds.length ? '<div class="eyebrow"><h2>Seeds</h2><span class="more">' + plural(seeds.length, 'seed') + '</span></div><div class="rows">' + seeds.map((s) => '<div class="glass entry conseed"><span class="thumb">' + esc(s.status === 'bloomed' ? s.bloom : '🌱') + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + esc(s.name) + ' · ' + esc(fmtDay(s.at.slice(0, 10))) + (s.tx ? ' · on chain' : '') + '</span><span class="text">' + esc(s.message) + '</span>' + (s.water ? '<span class="cap">You watered it: ' + esc(s.water.reply) + '</span>' : '<button class="btn sm mint" data-water="' + esc(s.id) + '">Water this seed</button>') + '</span></div>').join('') + '</div>' : '') +
-    '<p class="cap">Every seed here was written by a person who gave to you. Watering one takes twenty seconds and it lands in their garden as a bloom.</p>' +
-    (conSlug ? '<a class="btn" href="/p/' + esc(conSlug) + '">Your public Gratus page →</a><p class="cap">Post that link. It shows how you answer, and the words of anyone who chose to publish theirs.</p>' : '') +
+    '<p class="cap">Every seed here was written by somebody who gave to you. Watering one lands in their garden as a bloom.</p>' +
+    (conSlug ? '<a class="btn" href="/p/' + esc(conSlug) + '">Your public Gratus page →</a><p class="cap">Post the link. It shows how you answer.</p>' : '') +
     '</div>';
 }
 async function conLoad() {
@@ -900,7 +986,7 @@ function proveSheet(code, title) {
     '<div class="actions"><button class="btn" id="pv-copy">Copy the line</button>' +
     '<a class="btn" href="https://giveth.io/project/' + esc(conSlug) + '" target="_blank" rel="noopener">Open it on Giveth \u2197</a></div>' +
     '<button class="btn mint wide" id="pv-done">I have saved it \u00b7 finish the claim</button>' +
-    '<p class="cap">The code is public. The proof is that you could put it there.</p>');
+    '');
   const cp = $('#pv-copy', sh.el); if (cp) cp.addEventListener('click', () => { navigator.clipboard.writeText(code).then(() => toast('Copied'), () => toast('Copy it by hand')); });
   $('#pv-done', sh.el).addEventListener('click', async () => {
     const b = $('#pv-done', sh.el); b.disabled = true; b.textContent = 'Reading the page...';
@@ -943,7 +1029,7 @@ function waterSheet(seedId) {
     '<textarea class="field" id="wt-msg" rows="3" maxlength="280" placeholder="This means the world to us. We just..." aria-label="your reply"></textarea>' +
     '<input class="field" id="wt-from" maxlength="40" placeholder="your name or the project\'s" aria-label="from" value="' + esc(s.title || conSlug) + '">' +
     '<span class="kicker gold">Pass it on, if you like</span>' +
-    '<p class="cap">Name a Giveth project you are grateful for. The person who gave to you sees it, and can carry the flow onward.</p>' +
+    '<p class="cap">Name a Giveth project you are grateful for. They see it, and can carry it onward.</p>' +
     '<input class="field" id="wt-pass" maxlength="120" placeholder="their Giveth address, copied exactly" aria-label="a project you are grateful for">' +
     '<input class="field" id="wt-why" maxlength="140" placeholder="why them, in a line" aria-label="why">' +
     '<button class="btn mint wide" id="wt-send">Send it · their seed blooms</button>', { autofocus: true });
@@ -977,7 +1063,7 @@ function traceBlock() {
       const bl = s.status === 'bloomed'; const r = i ? 34 + Math.min(30, 150 / Math.sqrt(Math.max(1, S.seeds.length))) * Math.sqrt(i) : 0; const a = i * Gr.GOLDEN * Math.PI / 180;
       return '<button class="orb ' + (bl ? 'p4 lit' : 'p1') + '" data-seed="' + esc(s.id) + '" style="left:calc(50% + ' + (r * Math.cos(a)).toFixed(1) + 'px);top:calc(50% + ' + (r * Math.sin(a)).toFixed(1) + 'px);--h:' + (bl ? '#F2C97D' : '#6ED9C0') + '" aria-label="' + esc(s.title) + '"><span>' + esc(bl ? s.bloom : '🌱') + '</span></button>';
     }).join('') + '</div>' +
-    '<p class="cap">Every seed is a gift you gave with your words. A bloom is the moment someone wrote back.</p>';
+    '<p class="cap">A bloom is the moment somebody wrote back.</p>';
 }
 // ── GRATUS · the home: his new look, text for text ──
 function door(art, title, line, id) {
@@ -1032,7 +1118,7 @@ function glyphBlock() {
   if (!S.plants.length) return '';
   return '<div class="glass glyphcard"><div class="eyebrow"><h2>Your Glyph</h2><span class="more">' + plural(days, 'day') + '</span></div>' +
     '<div class="glyphfig" aria-hidden="false">' + glyphSvg(S, { size: 240 }) + '</div>' +
-    '<p class="cap">Drawn from your garden alone. One arm for each thing growing, as long as the days you gave it. It is the same figure every time, and it is only yours.</p>' +
+    '<p class="cap">One arm for each thing growing, as long as the days you gave it.</p>' +
     '<button class="btn" id="glyph-share">Share your Glyph</button></div>';
 }
 
@@ -1054,7 +1140,7 @@ function viewGarden() {
     gardenField() +
     glyphBlock() +
     (n ? '<div class="phaseline">' + phases.map((p, i) => '<span class="ph' + (S.plants.some((x) => phaseIndex(daysOf(x)) === i) ? ' on' : '') + '"><i>' + p.icon + '</i>' + esc(p.name) + '</span>').join('') + '</div>' +
-      '<p class="cap">Every orb is one emoji and the days you kept it. The ring around it fills as it grows toward its next phase. Tap one to open it.</p>' : '') +
+      '<p class="cap">Tap one to open it.</p>' : '') +
     traceBlock() +
     '<button class="glass opt" id="open-book"><span class="ico">📖</span><span class="grow"><b>The Gratus Growth Book</b><span>Your gratitude journal, by day. The phases, the emojis, the recipes.</span></span><span class="arrow">›</span></button>' +
     (S.gifts.received.length ? '<div class="eyebrow"><h2>Gifts received</h2></div><div class="rows">' + S.gifts.received.slice().reverse().slice(0, 3).map((g) => '<div class="glass opt"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>From ' + esc(g.from || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + '</span></span></div>').join('') + '</div>' : '') +
@@ -1137,7 +1223,7 @@ function goalRow(g, mine) { const d = new Date(g.at); const when = isNaN(d) ? ''
 function goalsBlock() {
   const mine = S.goals.slice().reverse(); const others = (feed || (feedState === 'offline' ? SEED_GOALS : [])).filter((g) => !S.goals.some((m) => m.id === g.id || (m.text === g.text && m.name === g.name)));
   return '<div class="glass stream">' + art(scene('goals')) + '<div class="eyebrow" style="padding-top:0"><h2>Gratus Goals</h2><span class="more">' + (feedState === 'live' ? 'the stream' : feedState === 'offline' ? 'not connected' : '') + '</span></div>' +
-    '<p class="cap">What are you growing toward? Post as many as you like. Everyone here can see them.</p>' +
+    '<p class="cap">What are you growing toward? Everyone here can see these.</p>' +
     '<div class="pillform" style="max-width:none"><input id="goal-in" maxlength="160" placeholder="A goal I am growing toward..." aria-label="a Gratus goal" autocomplete="off"><button class="go" id="goal-post" aria-label="post the goal">→</button></div>' +
     (mine.length ? '<div class="rows">' + mine.map((g) => goalRow(g, true)).join('') + '</div>' : '') +
     (others.length ? '<span class="kicker mint" style="padding-top:6px">The stream</span><div class="rows">' + others.slice(0, 12).map((g) => goalRow(g, false)).join('') + '</div>' : (feedState === 'loading' ? '<p class="cap">Listening for the stream…</p>' : '')) + '</div>';
@@ -1165,7 +1251,6 @@ function plantNow() {
   const phPre = p ? phaseIndex(daysOf(p)) : -1;
   if (emoji && !p) { p = { id: newId('p'), emoji, planted: t, kept: [], carried: 0, origin: 'planted', from: null }; S.plants.push(p); isNew = true; }
   if (p && !p.kept.includes(t)) p.kept.push(t);
-  S.gardenHour = new Date().getHours();   // the garden hour, learned rather than asked for
   const made = [];
   for (const r of allRecipes()) { if (S.made[r.id]) continue; const st = recipeState(r); if (st.made) { S.made[r.id] = t; made.push(r); if (!plantFor(r.result)) S.plants.push({ id: newId('p'), emoji: r.result, planted: t, kept: [t], carried: 0, origin: 'recipe', from: r.name }); } }
   save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
@@ -1330,7 +1415,7 @@ function daySheet(day) {
   const grew = S.plants.filter((p) => (p.kept || []).includes(day));
   sheet('<div class="hero-sm"><span class="orb lg' + (es.length ? ' lit' : '') + '"><span>' + esc(es.length ? (es[0].emoji || '✦') : '·') + '</span></span><h2>' + esc(day === today() ? 'Today' : fmtDay(day)) + '</h2><span class="kicker mint">' + (es.length ? plural(es.length, 'entry').replace('entrys', 'entries') : 'Nothing written') + (grew.length ? ' · ' + plural(grew.length, 'plant') + ' grew' : '') + '</span></div>' +
     (grew.length ? '<div class="chips">' + grew.map((p) => '<span class="chip">' + esc(face(p)) + ' ' + esc(nameOf(face(p))) + '</span>').join('') + '</div>' : '') +
-    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">This day has no entry. A day without one is not a failure; it is simply a day.</p>') +
+    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">No entry on this day.</p>') +
     (day === today() ? '<button class="btn mint wide" id="dy-write">Write today\u2019s entry 🌱</button>' : ''));
   $$('[data-e]').forEach((b) => b.addEventListener('click', () => entrySheet(S.entries.find((x) => x.id === b.dataset.e))));
   const w = $('#dy-write'); if (w) w.addEventListener('click', quickWrite);
@@ -1397,7 +1482,7 @@ function viewJournal() {
 function viewBook() {
   const ph = C.book.phases; let body = '';
   if (bookTab === 'journal') body = viewJournal();
-  else if (bookTab === 'phases') body = '<div class="rows">' + ph.map((p, i) => '<div class="glass phase"><span class="ico' + (i === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.meaning) + '</span></span><span class="day">day ' + p.day + (ph[i + 1] ? '<br>' + (ph[i + 1].day - p.day) + ' to next' : '') + '</span></div>').join('') + '</div><p class="cap">A day counts once, on the day you write about that emoji. The evolution arcs below run on their own clock: 0, 3, 8, 21 and 55 days.</p>';
+  else if (bookTab === 'phases') body = '<div class="rows">' + ph.map((p, i) => '<div class="glass phase"><span class="ico' + (i === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.meaning) + '</span></span><span class="day">day ' + p.day + (ph[i + 1] ? '<br>' + (ph[i + 1].day - p.day) + ' to next' : '') + '</span></div>').join('') + '</div><p class="cap">A day counts once. The arcs below run on 0, 3, 8, 21 and 55 days.</p>';
   else if (bookTab === 'paths') {
     // A model is a pattern; a pathway is a walk. The app has never told anybody what to do
     // with it beyond "write something", and for most people that is not enough to start.
@@ -1558,7 +1643,7 @@ function giveSheet(pre) {
 }
 function shareSheet(g) {
   const text = (S.name || 'Someone') + ' grew you a Gratus Gift. ' + plural(g.days, 'day') + ' of gratitude.';
-  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(g.emoji) + '</span></span><h2>Share the gift</h2><span class="kicker mint">The whole journey lives inside the link.</span></div><p class="cap">If they choose to, they can send back that it landed and that it kept growing. It is their choice each time, and it carries no words.</p><input class="field" id="sh-link" readonly aria-label="the link" value="' + esc(g.link) + '" style="font-size:15px"><div class="actions"><button class="btn gold" id="sh-share">Share</button><button class="btn" id="sh-copy">Copy the link</button><button class="btn quiet" id="sh-preview">Preview the journey</button></div>');
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(g.emoji) + '</span></span><h2>Share the gift</h2><span class="kicker mint">The whole journey lives inside the link.</span></div><p class="cap">They can send back that it landed and kept growing. It carries no words.</p><input class="field" id="sh-link" readonly aria-label="the link" value="' + esc(g.link) + '" style="font-size:15px"><div class="actions"><button class="btn gold" id="sh-share">Share</button><button class="btn" id="sh-copy">Copy the link</button><button class="btn quiet" id="sh-preview">Preview the journey</button></div>');
   $('#sh-copy', sh.el).addEventListener('click', async () => { try { await navigator.clipboard.writeText(g.link); toast('Link copied'); } catch (e) { $('#sh-link', sh.el).select(); toast('Select and copy'); } });
   $('#sh-share', sh.el).addEventListener('click', async () => { if (navigator.share) { try { await navigator.share({ title: 'A Gratus Gift', text, url: g.link }); } catch (e) {} } else { try { await navigator.clipboard.writeText(text + ' ' + g.link); toast('Copied'); } catch (e) {} } });
   $('#sh-preview', sh.el).addEventListener('click', () => { sh.close(); const gift = decodeGift(g.link.split('#')[1]); if (gift) openJourney(gift, { preview: true }); });
@@ -1625,7 +1710,7 @@ function newFolder(then) {
 function folderSheet(f) {
   const es = S.entries.filter((e) => e.folder === f.id).slice().reverse();
   const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>📁</span></span><h2>' + esc(f.name) + '</h2><span class="kicker mint">' + plural(es.length, 'entry').replace('entrys', 'entries') + ' · since ' + esc(fmtDay(f.made)) + '</span></div>' +
-    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">Nothing filed here yet. Open any entry and choose this folder.</p>') +
+    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">Nothing filed here yet.</p>') +
     '<div class="two"><input class="field" id="fo-name" value="' + esc(f.name) + '" maxlength="40" aria-label="folder name"><button class="btn" id="fo-save">Rename</button></div><div class="links"><button id="fo-del">Delete the folder</button></div><p class="cap">Deleting a folder keeps every entry; they simply leave the folder.</p>');
   $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); }));
   $('#fo-save', sh.el).addEventListener('click', () => { const n = $('#fo-name', sh.el).value.trim(); if (!n) return; f.name = n; save(); sh.close(); render(); toast('Renamed'); });
@@ -1636,7 +1721,7 @@ function threadSheet(emoji) {
   const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const ph = phaseOf(d); const nx = nextPhase(d); const es = threadEntries(emoji).slice().reverse();
   const sh = sheet('<div class="hero-sm"><span class="orb xl' + (p ? ' lit' : '') + '"><span>' + esc(p ? face(p) : emoji) + '</span></span><h2>' + esc(nameOf(emoji)) + '</h2><span class="kicker mint">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + '</span></div>' +
     '<button class="btn mint wide" id="th-go">Continue this thread ' + esc(emoji) + '</button>' +
-    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">No words yet on this thread. Write about it today and the day counts.</p>'));
+    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">No words yet on this thread.</p>'));
   $('#th-go', sh.el).addEventListener('click', () => { sh.close(); continueThread(emoji); });
   $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); }));
 }
@@ -1687,17 +1772,17 @@ function viewMilestones() {
   const row = daysInRow(); const lit = MILESTONES.filter(([id]) => S.milestones[id]).length;
   return '<div class="glass stats"><div><b>' + row + '</b><span>' + (row === 1 ? 'day in a row' : 'days in a row') + '</span></div><div><b>' + S.entries.length + '</b><span>' + (S.entries.length === 1 ? 'entry' : 'entries') + '</span></div><div><b>' + careDays() + '</b><span>days of care</span></div></div>' +
     '<div class="glass stats"><div><b>' + wordCount() + '</b><span>words</span></div><div><b>' + S.plants.length + '</b><span>' + (S.plants.length === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + lit + '</b><span>of ' + MILESTONES.length + ' marks</span></div></div>' +
-    '<p class="cap">Milestones mark your own road. Nothing here compares you with anyone.</p>' +
+    '<p class="cap">Milestones mark your own road.</p>' +
     '<div class="miles">' + MILESTONES.map(([id, name, ico]) => { const when = S.milestones[id]; return '<div class="glass mile' + (when ? ' lit' : '') + '"><span class="orb"><span>' + ico + '</span></span><span>' + esc(name) + '</span>' + (when ? '<span class="when">' + esc(fmtDay(when)) + '</span>' : '') + '</div>'; }).join('') + '</div>';
 }
 function viewThreads() {
   const th = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)).map((p) => { const em = face(p); const es = threadEntries(p.emoji); const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d); const last = es[es.length - 1]; const forp = p.forProject ? ' · for ' + p.forProject.title : '';
     return '<button class="glass thread" data-thread="' + esc(p.emoji) + '"><span class="orb' + (d >= 9 ? ' lit' : '') + '"><span>' + esc(em) + '</span></span><span class="grow"><b>' + esc(nameOf(em)) + '</b><span class="cap">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + esc(forp) + '</span>' + (last && last.text ? '<span class="line">' + esc(last.text) + '</span>' : '') + '</span><span class="arrow">›</span></button>'; }).join('');
-  return '<p class="cap">A thread is one emoji, followed through your days. Continue a thread and it grows.</p>' + (th ? '<div class="rows">' + th + '</div>' : '<p class="cap">Plant an emoji and its thread begins here.</p>');
+  return '<p class="cap">One emoji, followed through your days.</p>' + (th ? '<div class="rows">' + th + '</div>' : '<p class="cap">Plant an emoji and its thread begins here.</p>');
 }
 function viewFolders() {
   const fl = S.folders.map((f) => { const n = S.entries.filter((e) => e.folder === f.id).length; return '<button class="glass opt" data-folder="' + esc(f.id) + '"><span class="ico">📁</span><span class="grow"><b>' + esc(f.name) + '</b><span>' + plural(n, 'entry').replace('entrys', 'entries') + '</span></span><span class="arrow">›</span></button>'; }).join('');
-  return '<button class="btn wide" id="new-folder">+ New folder</button>' + (fl ? '<div class="rows">' + fl + '</div>' : '<p class="cap">Folders hold entries you want to find again: a person, a season, a place. Make one, then file entries into it from any entry.</p>');
+  return '<button class="btn wide" id="new-folder">+ New folder</button>' + (fl ? '<div class="rows">' + fl + '</div>' : '<p class="cap">A person, a season, a place. File entries into it from any entry.</p>');
 }
 
 function youSheet() {
@@ -1915,6 +2000,7 @@ function plantQuick(p) {
   const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d);
   const sh = sheet('<div class="hero-sm"><span class="orb xl lit"><span>' + esc(face(p)) + '</span></span><h2>' + esc(nameOf(face(p))) + '</h2>' +
     '<span class="kicker mint">' + esc(ph.name) + ' \u00b7 ' + plural(d, 'day') + (nx ? ' \u00b7 ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' \u00b7 ready to give') + '</span></div>' +
+    (() => { const a = anniversaryOf(p); return a ? '<p class="cap gold">' + esc(a) + '</p>' : ''; })() +
     (() => { const f = familyOf(face(p)); return f ? '<p class="cap"><b>' + esc(f.species) + '</b> \u00b7 ' + esc(f.name) + ' family. ' + esc(f.statement) + '</p>' : ''; })() +
     '<div class="actions"><button class="btn" id="pq-look">Look closer</button>' +
     '<button class="btn" id="pq-write">Write today with it</button>' +
@@ -2352,50 +2438,19 @@ function familyOf(emoji) {
 // Each of his three lines is named here in full, on a line of its own. A gate can then
 // prove that every one of them is read by something that ships, which is the whole point:
 // they sat in the file finished and unreachable for the life of the product.
-function hiddenText() {
-  if (!C.prompts || !C.prompts.hidden) return {};
-  return {
-    gardenHour: C.prompts.hidden.gardenHour,
-    anniversary: C.prompts.hidden.anniversary,
-    coinHold: C.prompts.hidden.coinHold,
-  };
-}
-
-function hiddenLines() {
-  const H = hiddenText();
-  const t = today();
-  if (!S.cer || typeof S.cer !== 'object') S.cer = {};
-  // the hour you usually come. Arrive in it and the soil says it noticed.
-  if (H.gardenHour && S.gardenHour != null && new Date().getHours() === Number(S.gardenHour)
-      && S.cer.gardenHour !== t && S.plants.length) {
-    S.cer.gardenHour = t; save();
-    setTimeout(() => toast(H.gardenHour, 5200), 1600);
-    return;
-  }
-  // a year to the day since something was planted
-  if (H.anniversary) {
-    const now = new Date(t + 'T12:00:00');
-    const old = S.plants.find((p) => {
-      if (!p.planted) return false;
-      const d = new Date(p.planted + 'T12:00:00');
-      return d.getMonth() === now.getMonth() && d.getDate() === now.getDate() && d.getFullYear() < now.getFullYear();
-    });
-    if (old && S.cer.anniversary !== t) {
-      S.cer.anniversary = t; save();
-      setTimeout(() => toast(esc(face(old)) + '  ' + H.anniversary, 6000), 1800);
-    }
-  }
-}
-
-// thirteen seconds on the core. Nobody is told it is there.
-function wireCoinHold() {
-  const core = $('.tabs button[data-tab="gratus"]');
-  if (!core || core.dataset.coinHold) return;
-  core.dataset.coinHold = '1';
-  longPress(core, { ms: 13000, onLong: () => {
-    const line = hiddenText().coinHold;
-    if (line) { feel('phase'); toast(line, 7000); }
-  } });
+// ── a year to the day ──
+// The only one of the three hidden lines worth keeping, and it is not hidden any more: a
+// plant that has come round to its own date says so on itself, where somebody would look
+// for it, instead of arriving as a whisper from an app that has been watching the clock.
+function anniversaryOf(p) {
+  if (!p || !p.planted) return '';
+  const now = new Date(today() + 'T12:00:00');
+  const d = new Date(p.planted + 'T12:00:00');
+  if (d.getMonth() !== now.getMonth() || d.getDate() !== now.getDate()) return '';
+  const years = now.getFullYear() - d.getFullYear();
+  if (years < 1) return '';
+  const A = (C.prompts && C.prompts.anniversary) || {};
+  return years === 1 ? (A.one || '') : String(A.many || '').replace('{n}', years);
 }
 
 function wire() {
@@ -2406,8 +2461,6 @@ function wire() {
   billCheck();
   beat('view');
   watchTime();
-  wireCoinHold();
-  hiddenLines();
   { const gs = $('#glyph-share'); if (gs) gs.addEventListener('click', () => {
       const days = S.plants.reduce((t, p) => t + daysOf(p), 0);
       shareOrCopy('My Gratus Glyph', plural(S.plants.length, 'thing') + ' growing, ' + plural(days, 'day') + ' of care.', location.origin + '/app/garden')
@@ -2496,6 +2549,7 @@ function wire() {
   $$('[data-note]').forEach((b) => b.addEventListener('click', () => { const v = b.dataset.note; if (v === 'given') soundGiven(); else soundPhase(Number(v)); }));
   { const vp = $('#vb-passage'); if (vp && vibeNow) vp.addEventListener('click', () => vibePassageSheet(vibeNow)); }
   { const mk = $('#vb-make'); if (mk) mk.addEventListener('click', makeVibeSheet);
+    const ga = $('#gv-again'); if (ga) ga.addEventListener('click', () => { gvStatsState = 'idle'; loadGivethStats(); render(); });
     const jn = $('#vb-join'); if (jn) jn.addEventListener('click', () => { const c = ($('#vb-code').value || '').trim().toUpperCase(); if (!c) { toast('A code.'); return; } if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '✦' }); save(); } loadVibe(c); });
     const sv = $('#vb-share'); if (sv && vibeNow) sv.addEventListener('click', () => shareOrCopy('Come into ' + vibeNow.name, 'A Gratus Vibe. The code is ' + vibeNow.code, location.origin + '/app/vibes?code=' + vibeNow.code).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
     const bg = $('#vb-bring'); if (bg && vibeNow) bg.addEventListener('click', () => bringSheet(vibeNow));

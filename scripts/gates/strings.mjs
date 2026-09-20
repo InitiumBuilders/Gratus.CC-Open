@@ -21,6 +21,11 @@
 //                    sentences somebody reads before they trust it with a password
 //   249  2026-09-20  the account sheet and the profile it writes: a new surface, and the
 //                    sentences somebody reads before they trust it with a password
+//   264  2026-09-19  the Giveth pitch. Every sentence on it went into config/copy.json
+//                    under `giveth` before this number moved, which is what this ceiling is
+//                    for; four literals in the app remain, and the surface is new. Raised
+//                    deliberately, and the twenty-seven captions cut on the same day are
+//                    why it did not have to rise further.
 //   260  2026-09-19  your people, and the two sheets that hand somebody a room. Eleven
 //                    lines, all of them explaining what keeping a person does and does
 //                    not do, which is exactly the kind of sentence somebody has to read
@@ -30,7 +35,7 @@
 //                    has never been here, and the trax beat. Both are new surfaces.
 //
 // The environment variable overrides it for a one-off check.
-const BASELINE_DEFAULT = '260';
+const BASELINE_DEFAULT = '264';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
