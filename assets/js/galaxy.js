@@ -195,6 +195,17 @@ function render() {
   }
 }
 
+// Every chosen chip, every selected tab, in one sweep after the paint. A class says which
+// one is chosen to anybody looking at it; this says it to anybody who is not.
+function nameToggles(root) {
+  $$('button, [role="button"], [role="tab"]', root).forEach((b) => {
+    if (b.hasAttribute('aria-pressed') || b.hasAttribute('aria-selected')
+      || b.hasAttribute('aria-current') || b.hasAttribute('aria-expanded')) return;
+    const chosen = b.classList.contains('on') || b.classList.contains('sel');
+    if (chosen || b.classList.contains('chip')) b.setAttribute('aria-pressed', chosen ? 'true' : 'false');
+  });
+}
+
 function renderNow() {
   document.title = titleOf(tab, sub);   // the registry decides, so every screen says which one it is
   void VIEWS;
@@ -214,7 +225,7 @@ function renderNow() {
   else if (tab === 'grow') s = topBar() + viewGrow();
   else if (tab === 'give') s = topBar() + viewGive();
   else s = viewGratus();
-  root.innerHTML = s; choreograph(); frameArt(root); depthWatch(root);
+  root.innerHTML = s; choreograph(); frameArt(root); depthWatch(root); nameToggles(root);
   if (tab === 'gratus' && !sub) { const t = $('.top'); if (t) t.querySelector('.left').style.visibility = 'hidden'; }
   $$('.tabs button[data-tab]').forEach((b) => {
     const here = b.dataset.tab === tab && !sub;
@@ -1149,13 +1160,71 @@ function viewGarden() {
     '</div>';
 }
 
+// ── EVERYWHERE, IN FOUR GROUPS ──
+//
+// This was fourteen buttons in a column, which is not a menu, it is an inventory. A person
+// looking for the journal had to read the word "Giveth" on the way. Four groups, named
+// after what somebody is trying to do, and the row you are standing on is marked so the
+// menu answers "where am I" as well as "where else".
+//
+// No row explains itself. A menu that describes every destination is a menu nobody reads.
+const MENU = [
+  ['write', [
+    ['m-book', '\ud83d\udcd6', 'book', 'gratus', 'book'],
+    ['m-garden', '\ud83c\udf31', 'garden', 'gratus', 'garden'],
+    ['m-guides', '\u2727', 'guides', 'gratus', 'guides'],
+  ]],
+  ['give', [
+    ['m-give', '\ud83c\udf81', 'gifts', 'give', null],
+    ['m-giveth', '\ud83e\udd1d', 'giveth', 'give', 'giveth'],
+    ['m-passage', '\u2726', 'passage', null, null],
+  ]],
+  ['together', [
+    ['m-vibes', '\u2726', 'vibes', 'gratus', 'vibes'],
+    ['m-people', '\u273f', 'people', null, null],
+    ['m-galaxy', '\u2726', 'galaxy', 'gratus', 'galaxy'],
+  ]],
+  ['you', [
+    ['m-account', '\u2726', 'account', null, null],
+    ['m-tour', '\u2726', 'tour', null, null],
+    ['m-laws', '\u2727', 'laws', null, null],
+    ['m-you', '\u2727', 'keep', null, null],
+  ]],
+];
+const M = (k) => T('menu.' + k, '');
+
 function menuSheet() {
-  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:72px;height:72px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>Gratus.CC</h2><span class="kicker mint">' + esc(T('locked.headline', 'Give And Grow What Matters Most')) + '</span><span class="kicker">' + esc(T('locked.promise', 'Gratus Gives Gifts That Keep On Growing')) + '</span><span class="kicker">' + esc(T('locked.tagline', 'Grow With Gratus! Give And Grow Together!')) + '</span><span class="kicker gold">' + esc(T('locked.tags', '#GrowTheDifference #GrowWithGratus')) + '</span></div>' +
-    '<div class="actions"><button class="btn" id="m-book">📖 Gratitude Journal</button><button class="btn" id="m-garden">🌱 Your Gratus Garden</button><button class="btn" id="m-give">🎁 Give Gratus Gifts</button><button class="btn" id="m-guides">✧ Gratus Guides</button><button class="btn" id="m-vibes">✦ Gratus Vibes</button><button class="btn" id="m-passage">✦ Share my Passage</button><button class="btn" id="m-giveth">🤝 Give with Giveth</button><button class="btn" id="m-galaxy">✦ The Gratus Galaxy</button><button class="btn" id="m-account">✦ Your Gratus account</button><button class="btn" id="m-people">✿ Your people</button><button class="btn" id="m-tour">✦ Take the guided tour</button><button class="btn" id="m-laws">The twelve laws</button><button class="btn" id="m-sound">' + (S.sound ? 'Mute the song' : 'Play the song') + '</button><button class="btn" id="m-you">You · export · restore</button></div>');
-  const on = (id, fn) => { const b = $(id, sh.el); if (b) b.addEventListener('click', () => { sh.close(); fn(); }); };
-  on('#m-account', () => setTimeout(accountSheet, 320));
-  on('#m-tour', () => setTimeout(tourAgain, 320));
-  on('#m-book', () => go('gratus', 'book')); on('#m-garden', () => go('gratus', 'garden')); on('#m-give', () => go('give')); on('#m-guides', () => go('gratus', 'guides')); on('#m-vibes', () => go('gratus', 'vibes')); on('#m-passage', passageSheet); on('#m-giveth', () => go('give', 'giveth')); on('#m-galaxy', () => go('gratus', 'galaxy')); on('#m-people', () => (Acct.signedIn() ? friendsSheet() : accountSheet())); on('#m-laws', openLaws); on('#m-sound', toggleSound); on('#m-you', youSheet);
+  const here = (t, s) => t !== null && t === tab && (s || null) === (sub || null);
+  const body = MENU.map(([name, rows]) =>
+    '<span class="kicker mint mgroup">' + esc(M(name)) + '</span><div class="rows">' +
+    rows.map(([id, ico, key, t, s]) => '<button class="glass opt mrow' + (here(t, s) ? ' on' : '') + '" id="' + id + '">' +
+      '<span class="ico">' + ico + '</span><span class="grow"><b>' + esc(M(key)) + '</b></span>' +
+      (here(t, s) ? '<span class="mhere">\u2022</span>' : '<span class="arrow">\u203a</span>') + '</button>').join('') +
+    '</div>').join('');
+  // his lines close the sheet, which is where the old menu carried them
+  const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:64px;height:64px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>' + esc(M('title')) + '</h2>' +
+    '<span class="kicker mint">' + esc(T('locked.headline', '')) + '</span>' +
+    '<span class="kicker">' + esc(T('locked.tagline', '')) + '</span></div>' +
+    '<div class="menu">' + body + '</div>' +
+    '<button class="btn sm quiet wide" id="m-sound">' + (S.sound ? esc(M('mute')) : esc(M('play'))) + '</button>' +
+    '<p class="kicker mint" style="text-align:center;margin-top:16px">' + esc(T('locked.promise', '')) + '</p>' +
+    '<p class="kicker" style="text-align:center">' + esc(T('locked.tags', '')) + '</p>');
+  const on = (id, fn) => { const b = $('#' + id, sh.el); if (b) b.addEventListener('click', () => { feel('tap'); sh.close(); fn(); }); };
+  on('m-book', () => go('gratus', 'book'));
+  on('m-garden', () => go('gratus', 'garden'));
+  on('m-guides', () => go('gratus', 'guides'));
+  on('m-give', () => go('give'));
+  on('m-giveth', () => go('give', 'giveth'));
+  on('m-passage', () => setTimeout(passageSheet, 300));
+  on('m-vibes', () => go('gratus', 'vibes'));
+  on('m-people', () => setTimeout(() => (Acct.signedIn() ? friendsSheet() : accountSheet()), 300));
+  on('m-galaxy', () => go('gratus', 'galaxy'));
+  on('m-account', () => setTimeout(accountSheet, 300));
+  on('m-tour', () => setTimeout(tourAgain, 300));
+  on('m-laws', openLaws);
+  on('m-you', () => setTimeout(youSheet, 300));
+  const snd = $('#m-sound', sh.el);
+  if (snd) snd.addEventListener('click', () => { toggleSound(); snd.textContent = S.sound ? M('mute') : M('play'); });
 }
 function entryCard(e) {
   return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + (e.star ? '\u2605 ' : '') + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
@@ -1940,19 +2009,27 @@ function wireSwipe() {
   const settle = () => { view.style.transition = ''; view.style.transform = ''; view.style.opacity = ''; };
   const hint = (name) => $$('.tabs button[data-tab]').forEach((b) => b.classList.toggle('near', !!name && b.dataset.tab === name));
   swipe(view, {
-    can: () => !sub && !room && !$('#sheets .sheet') && !$('.laws:not([hidden])') && !document.body.classList.contains('room'),
+    // A sub-view used to swallow the gesture entirely, so the only way out of the journal
+    // was to find the small arrow in the corner. Inside one, a rightward swipe goes back,
+    // which is the gesture every phone already teaches.
+    can: () => !room && !$('#sheets .sheet') && !$('.laws:not([hidden])') && !document.body.classList.contains('room'),
     onDrag: (dx) => {
       width = view.offsetWidth || 375;
       const i = DOORS.indexOf(tab);
-      const none = i < 0 || (dx < 0 && i >= DOORS.length - 1) || (dx > 0 && i <= 0);
+      const none = sub ? dx < 0 : (i < 0 || (dx < 0 && i >= DOORS.length - 1) || (dx > 0 && i <= 0));
       const d = none ? dx / 3.4 : dx;          // nothing that way, so the edge pushes back
       view.style.transition = 'none';
       view.style.transform = 'translate3d(' + d.toFixed(1) + 'px,0,0)';
       view.style.opacity = String(Math.max(.6, 1 - Math.abs(d) / (width * 1.7)));
-      hint(none ? null : DOORS[i + (dx < 0 ? 1 : -1)]);
+      hint(none || sub ? null : DOORS[i + (dx < 0 ? 1 : -1)]);
     },
     onEnd: (dir) => {
       hint(null);
+      if (sub) {
+        settle();
+        if (dir === -1) { feel('commit'); go(tab); }     // a swipe to the right is a step back
+        return;
+      }
       const i = DOORS.indexOf(tab);
       const next = dir && i >= 0 ? DOORS[i + dir] : null;
       if (!next) {
@@ -2453,7 +2530,30 @@ function anniversaryOf(p) {
   return years === 1 ? (A.one || '') : String(A.many || '').replace('{n}', years);
 }
 
+// ── NOTHING DECODES BEHIND YOUR BACK ──
+//
+// A scene video kept running while the app was in the background. A phone does not stop
+// decoding video because you switched apps; it keeps the work and it keeps the heat, and
+// the person who put the phone in their pocket is paying for a picture nobody is looking
+// at. The gate that should have caught this had been measuring a page with no video on it
+// at all, so "nothing is still decoding" was a true sentence about an empty room.
+//
+// Wired once, on the document, for the life of the tab.
+let watchingVis = false;
+function watchVisibility() {
+  if (watchingVis) return;
+  watchingVis = true;
+  document.addEventListener('visibilitychange', () => {
+    const away = document.visibilityState === 'hidden' || document.hidden === true;
+    $$('video').forEach((v) => {
+      if (away) { if (!v.paused) { v.dataset.wasOn = '1'; v.pause(); } }
+      else if (v.dataset.wasOn === '1') { delete v.dataset.wasOn; v.play().catch(() => null); }
+    });
+  });
+}
+
 function wire() {
+  watchVisibility();
   setFeel(() => !!(S && S.feel));
   wireSwipe();
   wireConnectivity();

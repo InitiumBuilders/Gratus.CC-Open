@@ -117,8 +117,11 @@ const app = fs.readFileSync(path.join(ROOT, 'assets/js/galaxy.js'), 'utf8');
 const opt = (app.match(/longPress\([^)]*?\{\s*(\w+)\s*:/) || [])[1];
 const read = (ui.match(/o\.(\w*[Ll]ong\w*)/) || [])[1];
 say(!!opt && !!read && opt === read, 'longPress option matches what ui.js reads  (passes "' + opt + '", reads "' + read + '")');
-say(/onLong[\s\S]{0,400}(key|Enter)/i.test(ui) || /keydown[\s\S]{0,200}daySheet/.test(app),
-  'the hold gesture has a keyboard path');
+// Read the function, not the neighbourhood: does longPress itself listen for a key, and
+// does that listener reach the same act the finger reaches?
+const lp = (ui.match(/export function longPress\([\s\S]*?\n}/) || [''])[0];
+say(/keydown/.test(lp) && /\bact\s*\(/.test(lp) && /(Enter|' '|Spacebar|ContextMenu)/.test(lp),
+  'the hold gesture has a keyboard path, in longPress, reaching the same act');
 say(/\.pillform[^}]*:focus|:focus-within/.test(fs.readFileSync(path.join(ROOT, 'assets/css/galaxy.css'), 'utf8')),
   'the goals input has a focus style');
 
@@ -141,16 +144,47 @@ say(red.playing === 0, 'reduced motion: ' + red.playing + ' of ' + red.vids + ' 
 say(red.infinite === 0, 'reduced motion: ' + red.infinite + ' endless animations running');
 
 // nothing decodes while nobody is looking
-const hv = await open(b, server.base, '/app/grow', { settle: 2400 });
-const before = await hv.page.evaluate(() => {
+// WHY THIS HAD TO BE SEEDED.
+//
+// The scene behind a view is chosen by how many times the app has been opened:
+// SCENES[key][(S.opens + i) % list.length]. Every gate run starts on a device that has
+// never been opened, so `opens` is 0, so the scene is always the FIRST in the list, and
+// the first scene behind Grow is a still. There was no video on the page, there never had
+// been, and "a scene video is playing to begin with" was a coin toss that always landed
+// the same way. Opening eight times changed nothing, because nothing about it was random.
+//
+// So: open once, tell the device it has been here three times, and come back. Index 2 of
+// the Grow list is a video, and now the assertion below has something to be about.
+const count = (p) => p.evaluate(() => {
   const v = [...document.querySelectorAll('video')];
   return { n: v.length, playing: v.filter((x) => !x.paused && !x.ended).length };
 });
+const hv = await open(b, server.base, '/app/grow', { settle: 1200 });
+let before = { n: 0, playing: 0 }, turned = -1;
+// The app counts the open itself on the way in, so writing a number and reloading lands on
+// the one after it. Rather than work out which, walk the list until a video comes up.
+for (let o = 0; o < 10 && before.playing === 0; o++) {
+  await hv.page.evaluate((n) => {
+    const k = 'gratus.galaxy.v1';
+    const s = JSON.parse(localStorage.getItem(k) || '{}');
+    s.opens = n;
+    localStorage.setItem(k, JSON.stringify(s));
+  }, o);
+  await hv.page.reload({ waitUntil: 'domcontentloaded' });
+  await hv.page.waitForTimeout(2200);
+  before = await count(hv.page);
+  if (before.playing > 0) turned = o;
+}
 // this assertion is the one that keeps the next one honest: if nothing was
 // playing to begin with, "nothing is playing now" is a sentence about an empty
 // page and it would pass forever.
-say(before.playing > 0, 'a scene video is playing to begin with  (' + before.playing + ' of ' + before.n + ')');
-await hv.page.evaluate(() => Object.defineProperty(document, 'visibilityState', { get: () => 'hidden', configurable: true }));
+say(before.playing > 0, 'a scene video is playing to begin with  (' + before.playing + ' of ' + before.n + ', at opens=' + turned + ')');
+// A backgrounded tab, as the browser reports one. `document.hidden` is not configurable in
+// Chromium, so only visibilityState can be moved here, which is the one the spec defines
+// the other from and the one anything reading this should read.
+await hv.page.evaluate(() => {
+  Object.defineProperty(document, 'visibilityState', { get: () => 'hidden', configurable: true });
+});
 await hv.page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
 await hv.page.waitForTimeout(900);
 const hidden = await hv.page.evaluate(() => [...document.querySelectorAll('video')].filter((v) => !v.paused && !v.ended).length);

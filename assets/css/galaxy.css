@@ -93,7 +93,7 @@ html.landed .art { opacity: 1; animation: none; }
 
 /* ── the growth book ── */
 .seg { display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px; gap: 4px; }
-.seg button { min-height: 40px; border-radius: var(--pill); font-size: 14px; font-weight: 500; color: var(--ink-3); }
+.seg button { min-height: 44px; border-radius: var(--pill); font-size: 14px; font-weight: 500; color: var(--ink-3); }
 .seg button.on { background: var(--hue-16); color: var(--ink); border: 1px solid var(--hair-hue); }
 .phase { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; }
 .phase .ico { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-family: var(--emoji); font-size: 24px; border: 1px solid var(--hair-hue); background: var(--wash); box-shadow: var(--glow); }
@@ -731,7 +731,7 @@ a.gpill { color: #1E2A10; }
   mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
 }
 .chips.row::-webkit-scrollbar, .phaseline::-webkit-scrollbar { display: none; }
-.chips.row .chip { font-size: 14px; padding: 0 12px; min-height: 34px; }
+.chips.row .chip { font-size: 14px; padding: 0 15px; min-height: 44px; min-width: 52px; }
 
 /* the phase legend was five chips wrapping 2 + 2 + 1, an orphan on its own line.
    One row, scrolled, on every width. */
@@ -1068,3 +1068,19 @@ body.touring { overflow: hidden; }
 .gvbv { grid-area: v; font-size: 15px; color: var(--gold); font-variant-numeric: lining-nums tabular-nums; }
 .gvbar i { grid-area: b; height: 6px; border-radius: var(--pill); background: linear-gradient(90deg, var(--hue-76), var(--hue-16)); }
 @media (min-width: 620px) { .gvbarline { height: 128px; } }
+
+/* ── the menu, in groups ── */
+.menu { display: grid; gap: 6px; margin: 4px 0 14px; }
+.menu .mgroup { margin: 12px 0 2px; }
+.menu .rows { gap: 8px; }
+.mrow b { font-size: 17px; line-height: 24px; }
+.mrow.on { border-color: var(--hair-hue); box-shadow: var(--lit-rest), inset 0 -7px 11px rgba(110, 217, 192, .14); }
+.mrow .mhere { color: var(--hue); font-size: 22px; line-height: 22px; }
+
+/* ── a thumb needs forty-four pixels ──
+   Measured by the a11y gate at 375: the journal's four tabs were 40 tall, the project and
+   vault chips 34 or 36. Under a thumb they are all the same size as each other and all
+   slightly too small to hit, which is the kind of wrong that never looks wrong. The pill
+   itself does not grow: the padding does, so nothing here becomes an oversized control. */
+.chip { min-height: 44px; }
+.tabs2 button { min-height: 44px; }

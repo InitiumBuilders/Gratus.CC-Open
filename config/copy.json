@@ -173,5 +173,27 @@
     "h2": "Where it went",
     "h3": "And then matched",
     "numbers": "The numbers"
+  },
+  "menu": {
+    "title": "Everywhere",
+    "write": "Write",
+    "give": "Give",
+    "together": "Together",
+    "you": "You",
+    "book": "Gratitude Journal",
+    "garden": "Your Gratus Garden",
+    "guides": "Gratus Guides",
+    "gifts": "Give Gratus Gifts",
+    "giveth": "Give with Giveth",
+    "passage": "Share my Passage",
+    "vibes": "Gratus Vibes",
+    "people": "Your people",
+    "galaxy": "The Gratus Galaxy",
+    "account": "Your Gratus account",
+    "tour": "Take the guided tour",
+    "laws": "The twelve laws",
+    "keep": "Export · restore · start over",
+    "mute": "Mute the song",
+    "play": "Play the song"
   }
 }
