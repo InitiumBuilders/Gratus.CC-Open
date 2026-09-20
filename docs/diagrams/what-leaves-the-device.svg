@@ -1,0 +1,18 @@
+<svg viewBox="0 0 375 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Journal entries stay on the device; gifts, seeds, goals and room posts travel by choice">
+  <style>
+    .box { fill: none; stroke: #6ED9C0; stroke-width: 1.5; }
+    .out { fill: none; stroke: #F2C97D; stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .t { font-family: Inter, system-ui, sans-serif; font-size: 14px; fill: #EFEDFD; }
+    .s { font-family: Inter, system-ui, sans-serif; font-size: 13px; fill: #B9FFE4; }
+  </style>
+  <rect x="14" y="14" width="347" height="118" rx="16" class="box"/>
+  <text x="28" y="40" class="t">Your device</text>
+  <text x="28" y="64" class="s">journal entries, photos, recordings</text>
+  <text x="28" y="86" class="s">your garden, your phases, your glyph</text>
+  <text x="28" y="108" class="s">none of this is ever sent anywhere</text>
+  <rect x="14" y="160" width="347" height="86" rx="16" class="out"/>
+  <text x="28" y="186" class="t">Only when you choose it</text>
+  <text x="28" y="210" class="s">a gift link, a seed to a project,</text>
+  <text x="28" y="232" class="s">a goal on the stream, a word in a room</text>
+  <path d="M188 132 L188 160" class="out"/>
+</svg>

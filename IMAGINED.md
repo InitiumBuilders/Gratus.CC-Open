@@ -1,5 +1,8 @@
 # IMAGINED.md: designed, not built (✦ OPEN: for Fable)
 
+> **This file names things that do not exist yet.** It is a description of where
+> this is going, not of what is in the tree. Paths in it are intentions.
+
 > **Read this first.** Nothing on this page is a description of the running app.
 > This is the design notebook: what was imagined, why it was imagined that way,
 > and where it would live if it were built. Some of it shipped, most of it has

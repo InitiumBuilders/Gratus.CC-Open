@@ -10,15 +10,19 @@
     },
     {
       "source": "/gift",
-      "destination": "/app.html"
+      "destination": "/gift.html"
     },
     {
       "source": "/p/:slug",
-      "destination": "/app.html"
+      "destination": "/p.html"
     },
     {
       "source": "/passage",
-      "destination": "/app.html"
+      "destination": "/passage.html"
+    },
+    {
+      "source": "/guided",
+      "destination": "/guided.html"
     },
     {
       "source": "/privacy",

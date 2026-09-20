@@ -1,0 +1,21 @@
+<svg viewBox="0 0 375 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Planted, Nurtured, Deepened, Bloomed, Ready to give, at days 0 2 5 9 and 13">
+  <style>
+    .l { stroke: #6ED9C0; stroke-width: 1.5; fill: none; }
+    .d { fill: #6ED9C0; }
+    .g { fill: #F2C97D; }
+    .t { font-family: Inter, system-ui, sans-serif; font-size: 14px; fill: #EFEDFD; }
+    .s { font-family: Inter, system-ui, sans-serif; font-size: 13px; fill: #B9FFE4; }
+  </style>
+  <path d="M30 48 L345 48" class="l"/>
+  <circle cx="30" cy="48" r="6" class="d"/><circle cx="103" cy="48" r="6" class="d"/>
+  <circle cx="176" cy="48" r="6" class="d"/><circle cx="256" cy="48" r="6" class="d"/>
+  <circle cx="345" cy="48" r="8" class="g"/>
+  <text x="18" y="30" class="s">day 0</text><text x="91" y="30" class="s">2</text>
+  <text x="164" y="30" class="s">5</text><text x="244" y="30" class="s">9</text>
+  <text x="318" y="30" class="s">13</text>
+  <text x="18" y="86" class="t">Planted</text>
+  <text x="18" y="112" class="t">Nurtured</text>
+  <text x="18" y="138" class="t">Deepened</text>
+  <text x="18" y="164" class="t">Bloomed</text>
+  <text x="18" y="190" class="t">Ready to give</text>
+</svg>

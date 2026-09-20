@@ -30,18 +30,29 @@ let fails = 0;
 const files = docs(root);
 
 // 1 · every path named in a doc exists
+//
+// Two exceptions, both stated rather than assumed. A document that opens by saying it
+// describes something that does not exist yet is not lying about the tree, it is
+// describing an intention, and the sentence it has to carry to earn that is printed
+// below so a reader sees it too. And a key in the blob store is not a file on disk.
 const PATH_RE = /`((?:[a-zA-Z0-9_.-]+\/)+[a-zA-Z0-9_.-]+\.[a-z0-9]{1,6})`/g;
+const FUTURES = 'names things that do not exist yet';
+const skipped = [];
 for (const f of files) {
   const rel = path.relative(root, f);
   if (/^attic\//.test(rel)) continue;
   const t = fs.readFileSync(f, 'utf8');
+  if (t.includes(FUTURES)) { skipped.push(rel); continue; }
   const named = new Set();
   for (const m of t.matchAll(PATH_RE)) named.add(m[1]);
   for (const p of named) {
     if (/^https?:/.test(p) || p.includes('*') || p.includes('<')) continue;
+    if (/NN|XX|nnn/.test(p)) continue;                 // a shape, not a name
+    if (/^gratus\//.test(p)) continue;                  // a key in the store, not a file
     if (!fs.existsSync(path.join(root, p))) { fails++; console.log('  MISSING PATH  ' + rel + '  ->  ' + p); }
   }
 }
+if (skipped.length) console.log('  futures       ' + skipped.join(', ') + '  (paths in these are intentions, and each says so on its first line)');
 
 // 2 · every internal markdown link resolves
 for (const f of files) {

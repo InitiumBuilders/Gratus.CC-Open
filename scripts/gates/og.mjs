@@ -20,7 +20,8 @@ const ROUTES = ['/', '/app', '/gift', '/p/:slug', '/passage', '/guided'];
 function shellFor(route) {
   if (route === '/') return 'index.html';
   const fn = route.replace(/^\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/-+$/, '');
-  for (const c of ['api/og/' + fn + '.js', 'api/render' + route.replace(/[^a-z0-9]/gi, '') + '.js']) {
+  // a route may answer from a function or from a shell of its own; both are shells
+  for (const c of ['api/og/' + fn + '.js', fn.replace(/-.*$/, '') + '.html', fn + '.html']) {
     if (fs.existsSync(path.join(root, c))) return c;
   }
   return 'app.html';

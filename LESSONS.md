@@ -31,7 +31,7 @@
 - **Lesson:** the first build honored the spec's structure and shipped a thin *surface* for the thing the owner cares most about. Read the owner's emphasis, not just the document's section count: "the journal is the core" should have been the first day's work, not the fourth's.
 
 ## The cache trap (2026-09-04, cost two deploys)
-- v1 shipped code and config with `max-age=3600, stale-while-revalidate=86400`. v2's `app.js?v=5` imported `./state.js` **unversioned**; a returning browser served the stale `state.js` (and its stale `?v=1` config) from the SWR cache for up to a day, and the new app died on `prompts.ground`. Even the fix deploy failed because `app.js?v=5` itself was the same URL as the deploy before it.
+- v1 shipped code and config with `max-age=3600, stale-while-revalidate=86400`. v2's `app.js?v=5` imported `engine/state.js` **unversioned**; a returning browser served the stale `state.js` (and its stale `?v=1` config) from the SWR cache for up to a day, and the new app died on `prompts.ground`. Even the fix deploy failed because `app.js?v=5` itself was the same URL as the deploy before it.
 - Now: every module import carries a version; code and config are `max-age=0, must-revalidate`; only images cache long; `scripts/ship.sh` stamps the entry scripts and the service-worker cache name with a fresh timestamp on every ship. **Never SWR on code. Never reuse an entry-script URL across deploys.**
 
 ## Lessons (for the next build)

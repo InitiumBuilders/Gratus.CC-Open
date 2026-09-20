@@ -1,0 +1,21 @@
+<svg viewBox="0 0 375 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Begin, Become, Bridge, Bloom, and then a conversation">
+  <style>
+    .n { fill: none; stroke: #6ED9C0; stroke-width: 1.5; }
+    .t { font-family: Inter, system-ui, sans-serif; font-size: 14px; fill: #EFEDFD; }
+    .s { font-family: Inter, system-ui, sans-serif; font-size: 13px; fill: #B9FFE4; }
+    .a { fill: none; stroke: #F2C97D; stroke-width: 1.5; }
+  </style>
+  <rect x="14" y="14" width="150" height="54" rx="14" class="n"/>
+  <text x="28" y="38" class="t">Begin</text><text x="28" y="56" class="s">a donor plants a seed</text>
+  <rect x="211" y="14" width="150" height="54" rx="14" class="n"/>
+  <text x="225" y="38" class="t">Become</text><text x="225" y="56" class="s">the project sees it</text>
+  <rect x="211" y="122" width="150" height="54" rx="14" class="n"/>
+  <text x="225" y="146" class="t">Bridge</text><text x="225" y="164" class="s">the project writes back</text>
+  <rect x="14" y="122" width="150" height="54" rx="14" class="n"/>
+  <text x="28" y="146" class="t">Bloom</text><text x="28" y="164" class="s">it opens in the garden</text>
+  <rect x="80" y="230" width="215" height="54" rx="14" class="a"/>
+  <text x="94" y="254" class="t">Answer</text><text x="94" y="272" class="s">either side keeps speaking</text>
+  <path d="M164 41 L211 41" class="a"/><path d="M286 68 L286 122" class="a"/>
+  <path d="M211 149 L164 149" class="a"/><path d="M89 176 L89 230" class="a"/>
+  <path d="M295 257 L330 257 L330 190" class="a"/>
+</svg>

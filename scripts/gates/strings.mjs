@@ -11,12 +11,21 @@
 // config/ and never raised.
 //
 // Mutant: move a config string back into a template literal. This must go red.
+// The count on the day it was recorded. It is a ceiling, not a target: it may fall and it
+// may never rise without somebody deciding it should, in writing, here.
+//
+//   201  2026-09-19  recorded
+//   206  2026-09-19  the bridge sheet and the glyph card, both new surfaces with their own
+//                    words. Raised deliberately; the next person to raise it says why too.
+//
+// The environment variable overrides it for a one-off check.
+const BASELINE_DEFAULT = '206';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const BASELINE = Number(process.env.GRATUS_STRINGS_BASELINE || 0) || null;
+const BASELINE = Number((process.env.GRATUS_STRINGS_BASELINE || BASELINE_DEFAULT) || 0) || null;
 
 function walk(d, out = []) {
   for (const e of fs.readdirSync(d, { withFileTypes: true })) {

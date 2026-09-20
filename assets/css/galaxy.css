@@ -936,3 +936,8 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 @media (prefers-reduced-motion: reduce) {
   #view { transition: none !important; }
 }
+
+/* the glyph: his figure, drawn from days, given room and nothing else */
+.glyphcard { display: grid; gap: 12px; justify-items: center; text-align: center; }
+.glyphfig { width: min(240px, 68vw); color: var(--violet-text); filter: drop-shadow(0 0 18px rgba(110, 217, 192, .35)); }
+.glyphfig svg { width: 100%; height: auto; display: block; }

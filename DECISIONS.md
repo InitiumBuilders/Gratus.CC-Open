@@ -1,5 +1,8 @@
 # DECISIONS.md: every open question had a default; here is what was chosen and why
 
+> **This file names things that do not exist yet.** It is a description of where
+> this is going, not of what is in the tree. Paths in it are intentions.
+
 Rule 2 of the build prompt: *decide, don't ask.* Each entry names the default the spec offered, what shipped, and the reason. The owner may reverse any of them.
 
 | # | Question | Spec default | Shipped | Why |

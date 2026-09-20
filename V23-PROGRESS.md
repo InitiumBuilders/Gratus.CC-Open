@@ -97,7 +97,7 @@ open a browser.
 | red, correctly | G1/G2/G5 banned · G4 copy-live · G6 trace-auth · G8 weight · G10/G11/G13 a11y · G12 states · G15 hidden · G17 bridge · G18 og · G19 docs · G21 strings · G22 families · G23 ceremonies · G24 guides · G25 diagrams · G26 frontdoor · overflow |
 
 **Kill count so far: 1/1.** M9 restores the wipe-on-mismatch line and G14 goes red.
-The harness is `scratchpad/mutate.py`; it restores the file byte for byte and
+The harness is the mutation harness; it restores the file byte for byte and
 refuses to run against a gate that is not green first.
 
 **What the gates found that the prompt could not have known.** Three of its
@@ -181,7 +181,7 @@ somebody is, only shown that they can edit what the project says about itself.
 rotated and never used is a decision that was made and then quietly dropped, and the thing
 it was meant to protect went out under a constant written in a public file instead.
 
-**What I retired.** `scripts/gates/trace-auth.mjs` asserted five things about a handler
+**What I retired.** `attic/trace-auth.mjs` asserted five things about a handler
 that no longer exists, including that a claim answers 403, which is now the wrong answer.
 G-II asserts all five and thirty-six more against what is there now. The old file is in
 `attic/`.
@@ -334,7 +334,7 @@ Newest last. One line per meaningful step, with the command that proved it.
 - `node scripts/gates/v23.mjs --fast` → 4 green, 14 red, 5 skipped
 - `node scripts/gates/weight.mjs` → landing video 19.94 MB against a 4.50 MB ceiling; app paint 1.15 MB against 1.00 MB; `logo.png` 581 KB is the largest paint item on both surfaces
 - `node scripts/gates/a11y.mjs` → the top-bar buttons are 40×40 on every screen; `longPress` passes `on` and `ui.js` reads `onLong`, so the documented hold gesture has never once fired
-- `node --import ./scripts/gates/lib/loader.mjs scripts/gates/trace-auth.mjs` → an unproven claim answers 200, and a forged million-dollar confirm answers 200 and is written to the document
+- `node --import ./scripts/gates/lib/loader.mjs attic/trace-auth.mjs` → an unproven claim answers 200, and a forged million-dollar confirm answers 200 and is written to the document
 - `node scripts/gates/banned.mjs` → reads docs for the first time: 50 files, 85 hits
 - `bash scripts/ship.sh` → attempt 1: prod live, **mirror BLOCKED** on a personal path in my harness
 - fixed, `node scripts/gates/open-source.mjs .` → 2 hits, both files the export excludes

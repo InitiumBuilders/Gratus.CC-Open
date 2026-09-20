@@ -8,6 +8,7 @@ import * as Gr from '../../engine/gratus.js?v=12';
 import * as E from '../../engine/emoji.js?v=12';
 import { newId } from '../../engine/rng.js?v=12';
 import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=14';
+import { glyphSvg } from '../../engine/glyph.js?v=17';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 
@@ -755,6 +756,7 @@ function mySeedSheet(id) {
     (b && s.water && s.water.passTo ? '<div class="glass card"><span class="kicker gold">They passed it on</span><p class="body">' + esc(s.water.from) + ' is grateful for <b>' + esc(s.water.passTo) + '</b>' + (s.water.passWhy ? ': ' + esc(s.water.passWhy) : '') + '</p><button class="btn mint" data-flow="' + esc(s.water.passTo) + '">Continue the flow ' + esc(s.water.passTo) + ' →</button></div>' : '') +
     ((s.thread || []).length ? '<span class="kicker mint">Since then</span><div class="rows">' + s.thread.map((m) => '<div class="glass gv-update"><span class="kicker">' + (m.who === 'donor' ? 'you' : esc((s.water && s.water.from) || s.title)) + ' · ' + esc(fmtDay(String(m.at).slice(0, 10))) + '</span><b>' + esc(m.text) + '</b></div>').join('') + '</div>' : '') +
     (b && s.mine ? '<div class="two"><input class="field" id="sd-say" maxlength="280" placeholder="Say something back..." aria-label="say something back"><button class="btn" id="sd-send">Send</button></div>' : '') +
+    (s.mine ? '<div id="sd-bridge" hidden></div>' : '') +
     (s.mine ? '<button class="btn sm quiet" id="sd-pub">' + (s.public ? '✓ Your words are shown on their Gratus page' : 'Let them show your words publicly') + '</button>' : '') +
     (b ? '<button class="btn" data-similar="' + esc(s.slug || s.project) + '">Others like this one</button>' : '') +
     '<a class="btn quiet" href="/p/' + esc(s.slug || s.project) + '">Their Gratus page →</a>' +
@@ -777,6 +779,23 @@ function mySeedSheet(id) {
       s.public = d.seed.public; save(); sh.close(); toast(s.public ? 'Shown on their page' : 'Kept between you'); mySeedSheet(id);
     } catch (e) { toast(String(e.message || e)); }
   });
+  if (s.mine) {
+    (async () => {
+      const slug = s.slug || s.project;
+      let channels = [];
+      try {
+        const r = await fetch('/api/giveth?q=project&slug=' + encodeURIComponent(slug), { cache: 'no-store' });
+        const d = await r.json().catch(() => ({}));
+        channels = channelsOf(d.project);
+      } catch (e) { channels = []; }
+      const slot = $('#sd-bridge', sh.el);
+      if (!slot || !channels.length) return;
+      slot.hidden = false;
+      slot.innerHTML = '<button class="btn sm quiet" id="sd-tell">Tell them it is there</button>';
+      $('#sd-tell', slot).addEventListener('click', () => { sh.close(); tellThemSheet(slug, s.title); });
+    })();
+  }
+
 }
 // ── the seed and the capital, linked: ask Giveth whether that transaction really arrived ──
 // This used to read the amount here and then post it to the trace as fact, so the number
@@ -982,6 +1001,20 @@ function gardenField() {
   }
   return '<div class="glass garden field">' + art(scene('garden')) + '<i class="horizon" aria-hidden="true"></i>' + orbs + '</div>';
 }
+// ── the glyph ──
+// The one thing here that is yours and could not exist without the days you put in. It is
+// drawn from the garden and nothing else, so it is the same figure every time you open it
+// and nobody else's garden draws it. engine/glyph.js holds the drawing and refuses to read
+// a clock; scripts/tests/glyph.test.mjs holds the promise.
+function glyphBlock() {
+  const days = S.plants.reduce((t, p) => t + daysOf(p), 0);
+  if (!S.plants.length) return '';
+  return '<div class="glass glyphcard"><div class="eyebrow"><h2>Your Glyph</h2><span class="more">' + plural(days, 'day') + '</span></div>' +
+    '<div class="glyphfig" aria-hidden="false">' + glyphSvg(S, { size: 240 }) + '</div>' +
+    '<p class="cap">Drawn from your garden alone. One arm for each thing growing, as long as the days you gave it. It is the same figure every time, and it is only yours.</p>' +
+    '<button class="btn" id="glyph-share">Share your Glyph</button></div>';
+}
+
 function viewGarden() {
   const n = S.plants.filter((p) => !p.private).length;
   const care = S.plants.reduce((t, p) => t + daysOf(p), 0);
@@ -998,6 +1031,7 @@ function viewGarden() {
     (n ? '<div class="chips row end"><button class="chip' + (gardenView === 'field' ? ' on' : '') + '" data-gview="field">✦ Field</button><button class="chip' + (gardenView === 'list' ? ' on' : '') + '" data-gview="list">☰ List</button><button class="chip' + (gardenSort === 'days' ? ' on' : '') + '" data-gsort="days">Most days</button><button class="chip' + (gardenSort === 'recent' ? ' on' : '') + '" data-gsort="recent">Newest</button><button class="chip' + (gardenSort === 'name' ? ' on' : '') + '" data-gsort="name">By name</button></div>' : '') +
     (n ? '<div class="glass card tended"><span class="kicker mint">Today</span><p class="body"><b>' + tendedToday + '</b> of ' + plural(n, 'plant') + ' tended. ' + (tendedToday >= n ? 'The whole garden has had a word today.' : 'Each one grows on the days you write about it.') + '</p>' + (tendedToday < n ? '<button class="btn mint" id="tend-now">Tend one now 🌱</button>' : '') + '</div>' : '') +
     gardenField() +
+    glyphBlock() +
     (n ? '<div class="phaseline">' + phases.map((p, i) => '<span class="ph' + (S.plants.some((x) => phaseIndex(daysOf(x)) === i) ? ' on' : '') + '"><i>' + p.icon + '</i>' + esc(p.name) + '</span>').join('') + '</div>' +
       '<p class="cap">Every orb is one emoji and the days you kept it. The ring around it fills as it grows toward its next phase. Tap one to open it.</p>' : '') +
     traceBlock() +
@@ -1108,6 +1142,7 @@ function plantNow() {
   const phPre = p ? phaseIndex(daysOf(p)) : -1;
   if (emoji && !p) { p = { id: newId('p'), emoji, planted: t, kept: [], carried: 0, origin: 'planted', from: null }; S.plants.push(p); isNew = true; }
   if (p && !p.kept.includes(t)) p.kept.push(t);
+  S.gardenHour = new Date().getHours();   // the garden hour, learned rather than asked for
   const made = [];
   for (const r of allRecipes()) { if (S.made[r.id]) continue; const st = recipeState(r); if (st.made) { S.made[r.id] = t; made.push(r); if (!plantFor(r.result)) S.plants.push({ id: newId('p'), emoji: r.result, planted: t, kept: [t], carried: 0, origin: 'recipe', from: r.name }); } }
   save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
@@ -1810,6 +1845,7 @@ function plantQuick(p) {
   const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d);
   const sh = sheet('<div class="hero-sm"><span class="orb xl lit"><span>' + esc(face(p)) + '</span></span><h2>' + esc(nameOf(face(p))) + '</h2>' +
     '<span class="kicker mint">' + esc(ph.name) + ' \u00b7 ' + plural(d, 'day') + (nx ? ' \u00b7 ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' \u00b7 ready to give') + '</span></div>' +
+    (() => { const f = familyOf(face(p)); return f ? '<p class="cap"><b>' + esc(f.species) + '</b> \u00b7 ' + esc(f.name) + ' family. ' + esc(f.statement) + '</p>' : ''; })() +
     '<div class="actions"><button class="btn" id="pq-look">Look closer</button>' +
     '<button class="btn" id="pq-write">Write today with it</button>' +
     '<button class="btn gold" id="pq-give">Give this one</button></div>');
@@ -1818,9 +1854,119 @@ function plantQuick(p) {
   $('#pq-give', sh.el).addEventListener('click', () => { sh.close(); giveSheet(p); });
 }
 
+
+// ── the bridge ──
+// Every loop in the trace ends at one human: a steward who writes back. Until somebody
+// tells them, nothing ever has. This does not message anyone and never could: it hands the
+// person who gave a line to send and the project's own published channel to send it
+// through, and they send it themselves or they do not. An app that wrote to a stranger on
+// somebody's behalf would be doing the opposite of what this whole rail is for.
+function channelsOf(p) {
+  return (((p && p.links) || []).filter((l) => l && l.link)).slice(0, 5);
+}
+
+async function tellThemSheet(slug, title) {
+  let p = null;
+  try {
+    const r = await fetch('/api/giveth?q=project&slug=' + encodeURIComponent(slug), { cache: 'no-store' });
+    const d = await r.json().catch(() => ({}));
+    p = d.project || null;
+  } catch (e) { p = null; }
+  const channels = channelsOf(p);
+  if (!channels.length) { toast('This project has not published a way to reach it.'); return; }
+  const name = (p && p.title) || title || slug;
+  const line = 'Somebody planted a Gratus Seed for ' + name + '. There are words waiting at '
+    + location.origin + '/p/' + slug + ' \u00b7 claiming the project lets you read them and write back.';
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>\u2709\ufe0f</span></span><h2>Tell them it is there</h2><span class="kicker mint">' + esc(name) + '</span></div>' +
+    '<p class="body">Gratus does not write to anybody for you. Here is the line and here are the ways they said they can be reached. Sending it is yours.</p>' +
+    '<p class="lead" style="white-space:pre-wrap;background:rgba(5,9,18,.6);padding:14px;border-radius:14px;font-size:16px">' + esc(line) + '</p>' +
+    '<button class="btn mint wide" id="tt-copy">Copy the line</button>' +
+    '<span class="kicker gold">Their own channels</span><div class="rows">' +
+    channels.map((c) => '<a class="glass opt" href="' + esc(c.link) + '" target="_blank" rel="noopener"><span class="ico">\u2197</span><span class="grow"><b>' + esc(c.type || 'link') + '</b><span>' + esc(String(c.link).replace(/^https?:\/\//, '').slice(0, 42)) + '</span></span></a>').join('') + '</div>' +
+    '<p class="cap">Only what the project published about itself. Gratus holds no address for anyone.</p>');
+  const cp = $('#tt-copy', sh.el);
+  if (cp) cp.addEventListener('click', () => copyText(line).then((ok) => toast(ok ? 'Copied' : 'Copy it by hand')));
+}
+
+// ── the eight families ──
+// config/families.json carries eight species names, eight hues and eight sentences, every
+// one of them his. It has shipped to every person who ever opened Gratus and until today
+// it had never once been fetched. A plant belongs to a family by its own face where the
+// file names that face, and otherwise by a fixed place in his order, so the same emoji is
+// always the same family and never a different one on a different day.
+function familyOf(emoji) {
+  const F = (C.families && C.families.families) || {};
+  const order = (C.families && C.families.order) || Object.keys(F);
+  if (!order.length) return null;
+  for (const k of order) if (F[k] && F[k].emoji === emoji) return F[k];
+  let n = 0;
+  for (const ch of String(emoji || '')) n = (n + ch.codePointAt(0)) % 9973;
+  return F[order[n % order.length]] || null;
+}
+
+// ── the three quiet lines ──
+// config/prompts.json holds three finished sentences that no line of code had ever read.
+// They are the quietest thing in the product and they had never reached a person. Each has
+// a way to arrive now, and none of them interrupts anything.
+// Each of his three lines is named here in full, on a line of its own. A gate can then
+// prove that every one of them is read by something that ships, which is the whole point:
+// they sat in the file finished and unreachable for the life of the product.
+function hiddenText() {
+  if (!C.prompts || !C.prompts.hidden) return {};
+  return {
+    gardenHour: C.prompts.hidden.gardenHour,
+    anniversary: C.prompts.hidden.anniversary,
+    coinHold: C.prompts.hidden.coinHold,
+  };
+}
+
+function hiddenLines() {
+  const H = hiddenText();
+  const t = today();
+  if (!S.cer || typeof S.cer !== 'object') S.cer = {};
+  // the hour you usually come. Arrive in it and the soil says it noticed.
+  if (H.gardenHour && S.gardenHour != null && new Date().getHours() === Number(S.gardenHour)
+      && S.cer.gardenHour !== t && S.plants.length) {
+    S.cer.gardenHour = t; save();
+    setTimeout(() => toast(H.gardenHour, 5200), 1600);
+    return;
+  }
+  // a year to the day since something was planted
+  if (H.anniversary) {
+    const now = new Date(t + 'T12:00:00');
+    const old = S.plants.find((p) => {
+      if (!p.planted) return false;
+      const d = new Date(p.planted + 'T12:00:00');
+      return d.getMonth() === now.getMonth() && d.getDate() === now.getDate() && d.getFullYear() < now.getFullYear();
+    });
+    if (old && S.cer.anniversary !== t) {
+      S.cer.anniversary = t; save();
+      setTimeout(() => toast(esc(face(old)) + '  ' + H.anniversary, 6000), 1800);
+    }
+  }
+}
+
+// thirteen seconds on the core. Nobody is told it is there.
+function wireCoinHold() {
+  const core = $('.tabs button[data-tab="gratus"]');
+  if (!core || core.dataset.coinHold) return;
+  core.dataset.coinHold = '1';
+  longPress(core, { ms: 13000, onLong: () => {
+    const line = hiddenText().coinHold;
+    if (line) { feel('phase'); toast(line, 7000); }
+  } });
+}
+
 function wire() {
   setFeel(() => !!(S && S.feel));
   wireSwipe();
+  wireCoinHold();
+  hiddenLines();
+  { const gs = $('#glyph-share'); if (gs) gs.addEventListener('click', () => {
+      const days = S.plants.reduce((t, p) => t + daysOf(p), 0);
+      shareOrCopy('My Gratus Glyph', plural(S.plants.length, 'thing') + ' growing, ' + plural(days, 'day') + ' of care.', location.origin + '/app/garden')
+        .then((r) => toast(r === 'copied' ? 'Link copied' : r === 'shared' ? 'Shared' : 'Copy it by hand'));
+    }); }
   $$('[data-p]').forEach((b) => {
     const of = () => S.plants.find((x) => x.id === b.dataset.p);
     b.addEventListener('click', () => { const p = of(); if (p) arcSheet(face(p)); });
@@ -1932,8 +2078,8 @@ function wire() {
 
 // ── boot ──
 async function boot() {
-  const [evo, names, prompts, copy, book, recipes, alchemy] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy'].map((n) => fetch('/config/' + n + '.json?v=16').then((r) => r.json())));
-  C = { evo, names, prompts, copy, book, recipes, alchemy }; load(); stars(); songInit();
+  const [evo, names, prompts, copy, book, recipes, alchemy, families] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy', 'families'].map((n) => fetch('/config/' + n + '.json?v=17').then((r) => r.json())));
+  C = { evo, names, prompts, copy, book, recipes, alchemy, families }; load(); stars(); songInit();
   if ('serviceWorker' in navigator && !location.search.includes('dev=1')) navigator.serviceWorker.register('/sw.js').catch(() => null);
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));

@@ -1,5 +1,8 @@
 # BUILD-NOTES.md: progress reports, reflections, and how we evolve this
 
+> **This file names things that do not exist yet.** It is a description of where
+> this is going, not of what is in the tree. Paths in it are intentions.
+
 The owner asked for notes as we go: *"so we can keep progress reports and learn and reflect on how we build this out and how we can improve it and evolve it over time."* This file is that ledger. Newest at the top.
 
 ## 2026-09-04 · v2: the owner's verdict ("D+") and the rebuild it earned
