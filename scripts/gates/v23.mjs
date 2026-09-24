@@ -27,6 +27,8 @@ const GATES = [
   ['G36 wrapped mark', 'node scripts/gates/giftmark.mjs', true],
   ['G37 everything fits', 'node scripts/gates/fits.mjs', true],
   ['G38 motus', 'node --import ' + L + ' scripts/gates/motus.mjs', true],
+  ['G39 the rail', 'node scripts/gates/rail.mjs', true],
+  ['G40 the floor', 'node scripts/gates/floor.mjs', true],
   ['G7 open-source', 'node scripts/gates/open-source.mjs . --decoy', false],
   ['G9 contrast', 'node scripts/gates/contrast.mjs', false],
   ['slop', 'node scripts/gates/slop.mjs --decoy && node scripts/gates/slop.mjs', false],

@@ -66,8 +66,15 @@ const say = (ok, m) => { if (!ok) bad++; console.log('  ' + (ok ? 'pass  ' : 'FA
 }
 
 // ── the paywall, when the week is over ──
+// Both scenarios below switch the rail ON. Before 2026-09-23 the app walled a week-old
+// device whether or not anything could take the money, which is the lockout G39 exists to
+// prevent, and this gate had quietly encoded it. With the rail off there is no wall
+// anywhere, so "a gift link is never walled" would pass here for the wrong reason. The
+// rail-off behaviour is G39's to prove; this proves what the wall says and where it is not.
+const railOn = (ctx) => ctx.route('**/api/billing**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"connected":true}' }));
 {
   const ctx = await b.newContext(PHONE);
+  await railOn(ctx);
   await ctx.addInitScript(() => {
     try { localStorage.setItem('gratus.firstOpen', String(Date.now() - 9 * 86400000)); } catch (e) {}
   });
@@ -81,9 +88,10 @@ const say = (ok, m) => { if (!ok) bad++; console.log('  ' + (ok ? 'pass  ' : 'FA
   await ctx.close();
 }
 
-// ── and a gift link is never walled ──
+// ── and a gift link is never walled, even with the rail on and the week long gone ──
 {
   const ctx = await b.newContext(PHONE);
+  await railOn(ctx);
   await ctx.addInitScript(() => { try { localStorage.setItem('gratus.firstOpen', String(Date.now() - 40 * 86400000)); } catch (e) {} });
   const page = await ctx.newPage();
   await page.goto(base + '/gift', { waitUntil: 'load' });

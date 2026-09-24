@@ -125,6 +125,8 @@ const flight = await v.page.evaluate(async () => {
   read();
   await new Promise((ok) => setTimeout(ok, 500)); read();
   await new Promise((ok) => setTimeout(ok, 700)); read();
+  // the handover waits half a second, for the gather, then fades; by now it is done
+  const socketOpacity = Number(getComputedStyle(from).opacity);
   await new Promise((ok) => setTimeout(ok, 700)); read();
   // Wait on the animation rather than on a clock. Reading 450ms later caught the stage
   // already removed, and a detached node reports a rectangle of zeros, which reads exactly
@@ -133,11 +135,12 @@ const flight = await v.page.evaluate(async () => {
   if (anim) { try { await anim.finished; } catch (e) {} }
   const gone = { top: Math.round(flier.getBoundingClientRect().bottom), waves: stage.querySelectorAll('.wv').length, src: flier.getAttribute('src') };
   await new Promise((ok) => setTimeout(ok, 500));
-  return { made: true, seen, gone, cleared: !document.querySelector('.launch') };
+  return { made: true, seen, gone, cleared: !document.querySelector('.launch'), socketEmpty: socketOpacity < 0.1, socketOpacity: socketOpacity.toFixed(2) };
 });
 say(flight.made, 'sharing a gift builds the launch');
 say(flight.gone && flight.gone.waves === 3, 'with three waves of gravity  (' + (flight.gone || {}).waves + ')');
 say(flight.gone && flight.gone.src && flight.gone.src.includes('giftmark'), 'and it is his graphic that flies');
+say(flight.socketEmpty === true, 'and the bar it left from is empty while it flies, so there is one gift, not two  (' + flight.socketOpacity + ')');
 const ys = (flight.seen || []).map((x) => x.y);
 say(ys.length === 4 && ys[3] < ys[0] - 200, 'it travels upward and keeps going  (' + ys.join(' → ') + ')');
 say(flight.gone && flight.gone.top < 0, 'and leaves through the top of the screen  (bottom edge at ' + (flight.gone || {}).top + ')');

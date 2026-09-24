@@ -16,7 +16,7 @@ import * as Acct from './account.js?v=20';
 import * as Bill from './billing.js?v=21';
 import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
-import { paintMarks, passingNow, launch as markLaunch } from './giftmark.js?v=39';
+import { paintMarks, passingNow, launch as markLaunch, WRAPPED } from './giftmark.js?v=42';
 import { countUp, onSeen, drawMonths, growBars, armMonths, armBars, armTrace } from './motus.js?v=41';
 
 const KEY = 'gratus.galaxy.v1';
@@ -1368,15 +1368,7 @@ function plantNow() {
   const phNow = p ? phaseIndex(d) : -1;
   const crossed = p && phNow > phPre;
   const seq = [];
-  if (crossed) seq.push({
-    html: '<div class="cer cross"><span class="big">' + esc(after) + '</span>' +
-      '<span class="kicker gold">' + esc(nameOf(after)) + (phNow === 0 ? ' begins' : ' has crossed') + '</span>' +
-      '<h2>' + esc(ph.name) + '.</h2>' +
-      '<p class="lead">' + esc(ph.meaning) + '</p>' +
-      '<span class="kicker mint">' + esc(plural(d, 'day') + ' of care \u00b7 ' + TONE_NAMES[Math.min(phNow, TONE_NAMES.length - 1)]) + '</span>' +
-      '<span class="kicker">tap to continue</span></div>',
-    on: () => soundPhase(phNow),
-  });
+  if (crossed) seq.push(CEREMONIES.bloomed(after, ph, phNow, d));
   // a crossing already said the phase; saying it twice makes the moment ordinary
   if (p && before && after !== before) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><span class="kicker mint">' + esc(before + ' → ' + after) + '</span><h2>' + esc(nameOf(after)) + '</h2><p class="lead">' + esc((E.stage(p.emoji, d, C.evo) || {}).line || '') + '</p><span class="kicker">tap to continue</span></div>');
   else if (p && !crossed) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><h2>' + esc(ph.name + '.') + '</h2><p class="lead">' + esc(nameOf(after)) + ' · ' + esc(plural(d, 'day')) + '. ' + esc(ph.meaning) + '</p>' + (nextPhase(d) ? '<span class="kicker mint">' + esc(nextPhase(d).name + ' in ' + plural(nextPhase(d).day - d, 'day')) + '</span>' : '<span class="kicker gold">Ready to give</span>') + '<span class="kicker">tap to continue</span></div>');
@@ -1384,15 +1376,78 @@ function plantNow() {
   for (const r of made) seq.push('<div class="cer"><span class="big">' + esc(r.result) + '</span><span class="kicker mint">' + esc(r.formula.join(' + ') + ' → ' + r.result) + '</span><h2>' + esc(r.name) + '</h2><p class="lead">' + esc(r.statement) + '</p><span class="kicker">a recipe came together · tap to continue</span></div>');
   playCeremonies(seq, () => { go('gratus'); if (crossed && p) offerReturn(p, 'grew', ph.name); });
 }
+const CEREMONIES = {
+  bloomed(after, ph, phNow, d) {
+    return {
+      html: '<div class="cer cross"><span class="big">' + esc(after) + '</span>' +
+        '<span class="kicker gold">' + esc(nameOf(after)) + (phNow === 0 ? ' begins' : ' has crossed') + '</span>' +
+        '<h2>' + esc(ph.name) + '.</h2>' +
+        '<p class="lead">' + esc(ph.meaning) + '</p>' +
+        '<span class="kicker mint">' + esc(plural(d, 'day') + ' of care \u00b7 ' + TONE_NAMES[Math.min(phNow, TONE_NAMES.length - 1)]) + '</span>' +
+        '<span class="kicker">' + esc(T('ceremony.tap', '')) + '</span></div>',
+      on: () => soundPhase(phNow),
+    };
+  },
+  firstGiven(given) {
+    return {
+      html: '<div class="cer first-given"><img class="cer-mark" src="' + WRAPPED + '" alt="">' +
+        '<span class="kicker gold">' + esc(T('ceremony.firstGift', '')) + '</span>' +
+        '<h2>' + esc(plural(given.days || 0, 'day')) + ' ' + esc(T('ceremony.ofGratitude', '')) + '</h2>' +
+        (given.to ? '<p class="lead">' + esc(T('ceremony.onItsWay', '')) + ' ' + esc(given.to) + '.</p>' : '') +
+        '<span class="kicker mint">' + esc(T('locked.promise', '')) + '</span>' +
+        '<span class="kicker">' + esc(T('ceremony.tapToSend', '')) + '</span></div>',
+      on: soundGiven,
+      // It does not close. It leaves, from where it stood, and the moment ends when it is gone.
+      leave(then) {
+        const m = $('#ceremony .cer-mark');
+        if (!m) { then(); return; }
+        markLaunch(m, { onDone: then });
+        // under reduced motion the launch declines and calls back at once; nothing hangs
+      },
+    };
+  },
+  firstReceived(gift) {
+    return {
+      html: '<div class="cer first-received"><span class="opening"><img class="wrapped" src="' + WRAPPED + '" alt="">' +
+        '<span class="inside">' + esc(gift.emoji) + '</span></span>' +
+        '<span class="kicker gold">' + esc(T('ceremony.firstGift', '')) + '</span>' +
+        '<h2>' + esc(nameOf(gift.emoji)) + '</h2>' +
+        '<p class="lead">' + esc(gift.from || T('ceremony.someone', '')) + ' ' + esc(T('ceremony.grewThis', '')) + ' ' + esc(plural(gift.days || 0, 'day')) + '.</p>' +
+        '<span class="kicker mint">' + esc(T('locked.tagline', '')) + '</span>' +
+        '<span class="kicker">' + esc(T('ceremony.tap', '')) + '</span></div>',
+      on: soundKept,
+    };
+  },
+};
+
 function playCeremonies(list, done) {
   const root = $('#ceremony'); let k = 0; let gate = motionOk();
+  // A held moment you cannot leave is charged to a person every time after the first. So
+  // whatever a tap would do right now, Escape, Enter and the space bar do too: the pre-roll
+  // film, a card, a card that leaves by launching. One listener, for as long as the list runs.
+  root.dataset.escapable = '1';
+  root.tabIndex = -1;
+  const onKey = (e) => {
+    if (root.hidden) return;
+    if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      if (typeof root.onclick === 'function') root.onclick();
+    }
+  };
+  // ONE listener. There were two, on the root and on the document, and the root has focus:
+  // a single Escape skipped the film on the root, revealed the card, then bubbled to the
+  // document and closed the card it had just revealed. A key does one thing.
+  document.addEventListener('keydown', onKey);
   const next = () => {
-    const item = list.shift(); if (!item) { root.hidden = true; root.innerHTML = ''; if (done) done(); return; }
+    const item = list.shift();
+    if (!item) { root.hidden = true; root.innerHTML = ''; document.removeEventListener('keydown', onKey); if (done) done(); return; }
     // a card may carry its own note: a string is a card with nothing to say aloud
     const html = typeof item === 'string' ? item : item.html;
     const on = typeof item === 'string' ? null : item.on;
+    const leave = typeof item === 'string' ? null : item.leave;
     root.hidden = false; root.onclick = null;
-    const show = () => { root.innerHTML = art(scene('ceremony', k++)) + '<div class="flash on"></div>' + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0; const close = () => { clearTimeout(t); root.onclick = null; next(); }; root.onclick = close; t = setTimeout(close, 5600); };
+    try { root.focus({ preventScroll: true }); } catch (e) {}
+    const show = () => { root.innerHTML = art(scene('ceremony', k++)) + '<div class="flash on"></div>' + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0, gone = false; const close = () => { if (gone) return; gone = true; clearTimeout(t); root.onclick = null; if (leave) leave(next); else next(); }; root.onclick = close; t = setTimeout(close, leave ? 7200 : 5600); };
     if (gate) {
       gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
       const v = root.querySelector('video'); let fired = false; const fire = () => { if (fired) return; fired = true; clearTimeout(tm); show(); };
@@ -1756,7 +1811,7 @@ function shareSheet(g) {
   const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>' + esc(g.emoji) + '</span></span><h2>Share the gift</h2><span class="kicker mint">The whole journey lives inside the link.</span></div><p class="cap">They can send back that it landed and kept growing. It carries no words.</p><input class="field" id="sh-link" readonly aria-label="the link" value="' + esc(g.link) + '" style="font-size:15px"><div class="actions"><button class="btn gold" id="sh-share">Share</button><button class="btn" id="sh-copy">Copy the link</button><button class="btn quiet" id="sh-preview">Preview the journey</button></div>');
   $('#sh-copy', sh.el).addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(g.link); toast('Link copied'); } catch (e) { $('#sh-link', sh.el).select(); toast('Select and copy'); }
-    sh.close(); sendOff();
+    sh.close(); sendOff(g);
   });
   // The gift leaves here. The mark it was wrapped in goes with it, up and out of the top
   // of the screen, and the bar is plain again when it lands somewhere else.
@@ -1764,7 +1819,7 @@ function shareSheet(g) {
     let went = false;
     if (navigator.share) { try { await navigator.share({ title: 'A Gratus Gift', text, url: g.link }); went = true; } catch (e) {} }
     else { try { await navigator.clipboard.writeText(text + ' ' + g.link); toast('Copied'); went = true; } catch (e) {} }
-    if (went) { sh.close(); sendOff(); }
+    if (went) { sh.close(); sendOff(g); }
   });
   $('#sh-preview', sh.el).addEventListener('click', () => { sh.close(); const gift = decodeGift(g.link.split('#')[1]); if (gift) openJourney(gift, { preview: true }); });
 }
@@ -1800,8 +1855,17 @@ function saveGift() {
   if (S.gifts.received.some((x) => x.id === g.id)) return;
   S.gifts.received.push({ id: g.id, echo: g.e || null, emoji: g.emoji, from: g.from, at: today(), days: g.days, message: g.message, choice });
   if (!plantFor(g.seed)) S.plants.push({ id: newId('p'), emoji: g.seed, planted: today(), kept: [today()], carried: g.days, origin: 'gift', from: g.from, echo: g.e || null, told: [], private: choice === 'private' });
-  save(); toast(choice === 'private' ? 'Kept, privately.' : 'In your garden.');
-  offerReturn(plantFor(g.seed), 'landed', '');
+  save();
+  const told = () => offerReturn(plantFor(g.seed), 'landed', '');
+  // The first gift anybody ever keeps opens in front of them. After that, a gift arriving
+  // is a good day rather than a first, and a toast says so.
+  if (S.gifts.received.length === 1 && S.cer && !S.cer.firstReceived) {
+    S.cer.firstReceived = today(); save();
+    playCeremonies([CEREMONIES.firstReceived(g)], told);
+    return;
+  }
+  toast(choice === 'private' ? 'Kept, privately.' : 'In your garden.');
+  told();
 }
 
 // ── sheets: entries, you, the laws ──
@@ -1905,6 +1969,16 @@ function viewFolders() {
   return '<button class="btn wide" id="new-folder">+ New folder</button>' + (fl ? '<div class="rows">' + fl + '</div>' : '<p class="cap">A person, a season, a place. File entries into it from any entry.</p>');
 }
 
+// The whole garden, as a file on this device. The same one the You sheet offers and the
+// same one the wall offers, because a promise made in two places is kept by one function.
+function exportGarden() {
+  const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'gratus-' + today() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('Exported');
+}
+
 function youSheet() {
   const col = C.copy.locked.colophon; const d = S.plants.reduce((n, p) => n + daysOf(p), 0);
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:88px;height:88px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>' + esc(S.name || 'You') + '</h2><span class="kicker mint">' + esc(S.entries.length + (S.entries.length === 1 ? ' entry' : ' entries') + ' · ' + plural(S.plants.length, 'plant') + ' · ' + plural(d, 'day') + ' of care') + '</span></div>' +
@@ -1916,7 +1990,7 @@ function youSheet() {
   $('#you-laws', sh.el).addEventListener('click', () => { sh.close(); openLaws(); });
   const sn = $('#you-sun', sh.el); if (sn) sn.addEventListener('click', () => { sh.close(); sunSheet(); });
   const pg = $('#you-passage', sh.el); if (pg) pg.addEventListener('click', () => { sh.close(); passageSheet(); });
-  $('#you-export', sh.el).addEventListener('click', () => { const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gratus-' + today() + '.json'; document.body.appendChild(a); a.click(); a.remove(); toast('Exported'); });
+  $('#you-export', sh.el).addEventListener('click', exportGarden);
   $('#you-file', sh.el).addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { let o = null; try { o = JSON.parse(rd.result); } catch (e) { o = null; }
     if (!o || o.v !== 1 || !Array.isArray(o.entries) || !Array.isArray(o.plants)) { toast('That file is not a Gratus export.'); return; }
     if (!confirm('Restore ' + o.entries.length + (o.entries.length === 1 ? ' entry' : ' entries') + ' and ' + plural(o.plants.length, 'plant') + '? This replaces what is on this device.')) return;
@@ -2149,6 +2223,9 @@ const receiving = () => location.pathname.startsWith('/gift') || document.body.c
 async function billCheck() {
   if (receiving()) return;
   try { billState = await Bill.status(); } catch (e) { return; }
+  // Until the rail can take money, nobody's week ends and nobody is warned that it will.
+  // A wall with nothing behind it is not a price, it is a locked door.
+  if (billState.connected !== true) return;
   if (billState.state === 'ended') setTimeout(payWall, 900);
   else if (billState.state === 'trial' && billState.days <= 2 && S.cer && S.cer.warned !== today()) {
     S.cer.warned = today(); save();
@@ -2166,8 +2243,12 @@ function payWall() {
     '<p class="cap">Your garden is on this device and it stays there either way. Nothing is deleted and nothing is held hostage.</p>' +
     '<div class="actions">' + (inn ? '<button class="btn gold wide" id="pw-go">Continue for $24 a month</button>'
       : '<button class="btn mint wide" id="pw-acct">Make an account first</button>') +
+    '<button class="btn quiet" id="pw-keep">Take my garden with me</button>' +
     '<a class="btn quiet" href="/the-story">Why it costs anything</a></div>' +
     '<p class="cap" id="pw-say"></p>', { sticky: true });
+  // "Nothing is held hostage" is only true if the way out is on the wall itself. A sticky
+  // sheet stands in front of the You sheet, so the export has to be here as well.
+  $('#pw-keep', sh.el).addEventListener('click', exportGarden);
   const acct = $('#pw-acct', sh.el);
   if (acct) acct.addEventListener('click', () => { sh.close(); accountSheet(); });
   const go = $('#pw-go', sh.el);
@@ -2642,7 +2723,22 @@ function watchMark() {
 // ── and when it goes ──
 // The gift leaves from wherever the mark is standing: the core of the bar on a phone, the
 // brand in the corner otherwise. It launches from the thing it was, which is the point.
-function sendOff(then) {
+function sendOff(given, then) {
+  if (typeof given === 'function') { then = given; given = null; }
+  // The first gift anybody ever sends is not sent from the bar. It is held in the middle of
+  // the screen for a moment, and it leaves from there.
+  if (given && S.cer && !S.cer.firstGiven) {
+    S.cer.firstGiven = today(); save();
+    sending = true;
+    paintMarks(true);
+    playCeremonies([CEREMONIES.firstGiven(given)], () => {
+      sending = false;
+      S.gaveAt = new Date().toISOString(); save();
+      paintMarks(!!markReason());
+      if (then) then();
+    });
+    return;
+  }
   const from = $('.tabs .star .core img') || $('.top .left img.mark') || $('.brandrow img.mark');
   sending = true;
   paintMarks(true);

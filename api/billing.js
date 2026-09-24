@@ -78,6 +78,9 @@ export function stateOf(rec) {
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
+  // Whether card payments are on at all. No account, no token, nothing about anybody: a
+  // device that has never signed in still needs to know whether its week can end.
+  if (req.method === 'GET') { res.status(200).json({ connected: !!(SK && PRICE) }); return; }
   if (!TOKEN) { res.status(503).json({ error: 'billing is not connected yet' }); return; }
   try {
     if (req.method !== 'POST') { res.status(405).json({ error: 'POST' }); return; }

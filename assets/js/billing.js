@@ -30,12 +30,23 @@ async function ask(body) {
   if (!r.ok) throw Object.assign(new Error(d.error || 'billing did not answer'), { data: d });
   return d;
 }
+// Can the rail take money right now? Anything short of a plain yes is a no: an unreachable
+// server, a missing key, a malformed answer. Failing open for the person and closed for
+// the charge is the only direction this can safely fail.
+export async function rail() {
+  try {
+    const r = await fetch('/api/billing', { cache: 'no-store' });
+    const d = await r.json();
+    return d && d.connected === true;
+  } catch (e) { return false; }
+}
+
 // The account is the truth when there is one, because a device clock is somebody else's
-// to set. Without an account the local count stands.
+// to set. Without an account the local count stands, and the rail is asked separately.
 export async function status() {
-  if (!token()) return Object.assign(localState(), { connected: null, account: false });
+  if (!token()) return Object.assign(localState(), { connected: await rail(), account: false });
   try { return Object.assign(await ask({ act: 'status', token: token() }), { account: true }); }
-  catch (e) { return Object.assign(localState(), { account: false, why: e.message }); }
+  catch (e) { return Object.assign(localState(), { connected: false, account: false, why: e.message }); }
 }
 export const checkout = () => ask({ act: 'checkout', token: token(), origin: location.origin });
 export const portal = () => ask({ act: 'portal', token: token(), origin: location.origin });

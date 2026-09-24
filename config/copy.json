@@ -197,5 +197,14 @@
     "keep": "Export · restore · start over",
     "mute": "Mute the song",
     "play": "Play the song"
+  },
+  "ceremony": {
+    "firstGift": "Your first Gratus Gift",
+    "ofGratitude": "of gratitude.",
+    "onItsWay": "On its way to",
+    "someone": "Somebody",
+    "grewThis": "grew this for",
+    "tap": "tap to continue",
+    "tapToSend": "tap to send it"
   }
 }
