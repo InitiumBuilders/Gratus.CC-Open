@@ -31,6 +31,7 @@ const GATES = [
   ['G40 the floor', 'node scripts/gates/floor.mjs', true],
   ['G41 one doorway', 'node scripts/gates/doorway.mjs', true],
   ['G42 no glow cut', 'node scripts/gates/glow.mjs', true],
+  ['G43 films let go', 'node scripts/gates/films.mjs', true],
   ['G7 open-source', 'node scripts/gates/open-source.mjs . --decoy', false],
   ['G9 contrast', 'node scripts/gates/contrast.mjs', false],
   ['slop', 'node scripts/gates/slop.mjs --decoy && node scripts/gates/slop.mjs', false],

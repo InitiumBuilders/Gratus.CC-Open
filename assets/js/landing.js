@@ -102,6 +102,8 @@ if (total) {
 // The window comes out of the date itself, so this page agrees with the app and with every
 // other device without anybody's server being asked and without anybody being watched.
 import { paintMarks, passingNow } from './giftmark.js?v=39';
+import { letGo } from './films.js?v=43';
+letGo();
 const passing = () => paintMarks(!!passingNow(new Date()));
 passing();
 setInterval(passing, 30000);

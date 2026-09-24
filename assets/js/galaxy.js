@@ -18,6 +18,8 @@ import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, 
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 import { paintMarks, passingNow, launch as markLaunch, WRAPPED } from './giftmark.js?v=42';
 import { countUp, onSeen, drawMonths, growBars, armMonths, armBars, armTrace } from './motus.js?v=41';
+import { letGo } from './films.js?v=43';
+letGo();
 
 const KEY = 'gratus.galaxy.v1';
 const GFX = (n) => '/assets/art/gfx/' + n;
