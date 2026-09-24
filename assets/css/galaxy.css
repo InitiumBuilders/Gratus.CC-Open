@@ -1259,3 +1259,19 @@ html.wrapped .tabs .star span.lbl { color: #FFD98A; }
   .cer .opening .wrapped { animation: none; opacity: 0; }
   .cer .opening .inside { animation: none; opacity: 1; transform: none; }
 }
+
+/* ── no glow cut square (G42) ──
+   A container that hides its overflow cuts everything at its own straight edges, glows
+   included, and a glow cut straight is a box.
+
+   The palette hides overflow so it can fold to two rows. The chosen emoji's glow reached
+   64px and the first emoji sits on the palette's corner, so choosing it lit a square behind
+   it. The palette now keeps room inside its edge, a little more between rows so the fold
+   still lands between them, and a chosen emoji glows close enough to stay inside. */
+.pick { padding: 12px; margin: -8px -10px; row-gap: 12px; max-height: 148px; }
+.pick .orb.on { box-shadow: 0 0 14px rgba(110, 217, 192, .45); }
+/* The embers rise out of the core, which is what embers do. They were clipped to it along
+   with the stars, which needed it to keep off the edge of the glass, so each one was sliced
+   flat at the top of the core while it was still alight. They rise straight up the middle
+   of the bar and cannot reach any edge. */
+.tabs .star .core .embers { overflow: visible; }

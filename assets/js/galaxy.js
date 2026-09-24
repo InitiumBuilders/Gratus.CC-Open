@@ -159,12 +159,16 @@ function hero(sceneName, o) {
     '<div class="top-words">' + (o.brand ? '<div class="brandrow in" style="--i:0"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname">Gratus.CC</span><span class="kicker">' + esc(o.brand) + '</span></div>' : '') + (o.h1 ? '<h1 class="in" style="--i:0">' + esc(o.h1) + '</h1>' : '') + (o.k1 ? '<span class="kicker mint in" style="--i:1">' + esc(o.k1) + '</span>' : '') + (o.k2 ? '<span class="kicker in" style="--i:1">' + esc(o.k2) + '</span>' : '') + '</div>' +
     '<div class="low">' + (o.low || '') + '</div></section>';
 }
+// A doorway a keyboard cannot pass is a locked door for anybody without a pointer, so while
+// one is up, Escape, Enter and the space bar do what a tap does. The held moments already did.
+const passKey = (e) => e.key === 'Escape' || e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar';
 const INTROS = { give: { src: 'give-intro', flood: 12.6, hard: 14500 }, grow: { src: 'grow-intro', flood: 9.6, hard: 11500 } };
 let booted = false, introOn = false;
 function tabIntro(t, then) {
   const el = $('#intro'); const cfg = INTROS[t]; if (!el || !cfg || !motionOk() || introOn) { then(); return; }
   introOn = true; let gone = false, started = false, flooded = false, moved = false, hard = 0, stall = 0;
-  const out = () => { if (gone) return; gone = true; introOn = false; clearTimeout(hard); clearTimeout(stall); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.classList.remove('out'); }, 1300); if (!started) { started = true; then(); } };
+  const onKey = (e) => { if (!gone && passKey(e)) { e.preventDefault(); out(); } };
+  const out = () => { if (gone) return; gone = true; introOn = false; clearTimeout(hard); clearTimeout(stall); document.removeEventListener('keydown', onKey); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.classList.remove('out'); }, 1300); if (!started) { started = true; then(); } };
   const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'); if (w) w.classList.add('on'); setTimeout(out, 1900); };
   el.innerHTML = '<video muted playsinline preload="none" poster="' + GFX(cfg.src + '-poster.webp') + '"><source src="' + GFX(cfg.src + '.mp4') + '" type="video/mp4"></video><div class="white"></div><span class="kicker skiphint">tap to enter</span>';
   el.hidden = false; const v = el.querySelector('video');
@@ -173,7 +177,7 @@ function tabIntro(t, then) {
   v.addEventListener('error', () => { if (!moved) out(); });
   hard = setTimeout(flood, cfg.hard);
   stall = setTimeout(() => { if (!moved) out(); }, 3200);
-  el.onclick = () => out();
+  el.onclick = () => out(); document.addEventListener('keydown', onKey);
   v.muted = true; v.play().catch(() => v.play().catch(() => null));
 }
 function go(t, s) { if (booted && !s && INTROS[t] && t !== tab) { tabIntro(t, () => goNow(t, s)); return; } goNow(t, s); }
@@ -2107,17 +2111,29 @@ async function transcribe(blob) {
     const w = $('#write'); const cur = (w ? w.value : draft.text).trim(); draft.text = (cur + (cur ? ' ' : '') + text).trim(); if (w) w.value = draft.text; toast('Heard you');
   } catch (e) { toast('Kept the recording. The words can come later.'); }
 }
+// ── one doorway per arrival ──
+// Remembered for the visit only, so every fresh open of the app still gets its doorway.
+// Anything that goes wrong with storage falls back to playing it, which is the old way.
+const CROSSED = 'gratus.crossed';
+const crossedNow = () => { try { sessionStorage.setItem(CROSSED, String(Date.now())); } catch (e) {} };
+const crossedAlready = () => {
+  try { const t = Number(sessionStorage.getItem(CROSSED) || 0); return t > 0 && Date.now() - t < 30 * 60 * 1000; }
+  catch (e) { return false; }
+};
+
 function splash(then) {
   const el = $('#splash'); if (!el) { then(); return; }
-  let gone = false, started = false;
-  const out = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; }, 1500); if (!started) { started = true; then(); } };
-  if (!motionOk()) { el.innerHTML = '<div class="brandrow"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div>'; el.hidden = false; setTimeout(out, 1200); el.addEventListener('click', out); return; }
+  let gone = false, started = false, pass = () => {};
+  const onKey = (e) => { if (!gone && passKey(e)) { e.preventDefault(); pass(); } };
+  const out = () => { if (gone) return; gone = true; crossedNow(); document.removeEventListener('keydown', onKey); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; }, 1500); if (!started) { started = true; then(); } };
+  if (!motionOk()) { el.innerHTML = '<div class="brandrow"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div>'; el.hidden = false; setTimeout(out, 1200); el.addEventListener('click', out); pass = out; document.addEventListener('keydown', onKey); return; }
   el.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + LOGO + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
   el.hidden = false; const v = el.querySelector('video'); let flooded = false;
   const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'), r = el.querySelector('.ritual'); if (w) w.classList.add('on'); if (r) r.classList.add('lit'); setTimeout(out, 2600); };
   v.addEventListener('ended', flood); v.addEventListener('timeupdate', () => { if (v.currentTime >= 24.4) flood(); }); v.addEventListener('error', out);
   const hard = setTimeout(flood, 16000);
-  el.addEventListener('click', () => { clearTimeout(hard); out(); });
+  pass = () => { clearTimeout(hard); out(); };
+  el.addEventListener('click', pass); document.addEventListener('keydown', onKey);
   v.currentTime = 11; v.play().catch(() => setTimeout(out, 1200));
 }
 
@@ -2481,6 +2497,13 @@ function accountInner(sh) {
 // Doing the thing moves it on, and so does Next. A step whose control is not on this build
 // is skipped rather than pointed at, because a hole cut around nothing teaches nothing.
 let tourAt = -1, tourOff = null;
+// Escape skips it from any card, the same as Skip. Enter is left alone, so it still presses
+// whichever tour button has focus.
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const r = $('#tour'); if (!r || r.hidden || !r.innerHTML.trim()) return;
+  e.preventDefault(); tourEnd(false);
+});
 
 function tourStop() {
   if (tourOff) { tourOff(); tourOff = null; }
@@ -2902,6 +2925,6 @@ async function boot() {
     const vc = new URLSearchParams(location.search).get('code');
     if (vc && sub === 'vibes') { const c = vc.trim().toUpperCase(); if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '\u2726' }); save(); } loadVibe(c); }
     else if (S.vibes.length && sub === 'vibes') loadVibe(S.vibes[0].code, true); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };
-  if (new URLSearchParams(location.search).has('nosplash')) start(); else splash(start);
+  if (new URLSearchParams(location.search).has('nosplash') || crossedAlready()) start(); else splash(start);
 }
 boot().catch((e) => { console.error(e); const el = document.createElement('div'); el.className = 'noscript'; el.innerHTML = '<h2>Gratus could not open.</h2><p class="lead">' + esc(e && e.message || e) + '</p>'; document.body.appendChild(el); });

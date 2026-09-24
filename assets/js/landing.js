@@ -30,21 +30,35 @@ function placeScene() {
   layer.appendChild(v);
   v.play().catch(() => null);
 }
+// ── one doorway per arrival ──
+// Remembered for the visit only, so every fresh open of the app still gets its doorway.
+// Anything that goes wrong with storage falls back to playing it, which is the old way.
+const CROSSED = 'gratus.crossed';
+const crossedNow = () => { try { sessionStorage.setItem(CROSSED, String(Date.now())); } catch (e) {} };
+const crossedAlready = () => {
+  try { const t = Number(sessionStorage.getItem(CROSSED) || 0); return t > 0 && Date.now() - t < 30 * 60 * 1000; }
+  catch (e) { return false; }
+};
+
 // the opening ritual, every time: the doorway, the light, a held white, then the page
 const sp = document.getElementById('splash');
-if (ok && !location.search.includes('nosplash')) {
+if (ok && !location.search.includes('nosplash') && !crossedAlready()) {
   sp.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + GFX('logo.webp') + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
   sp.hidden = false; const v = sp.querySelector('video'); let gone = false, flooded = false, moved = false;
-  const out = () => { if (gone) return; gone = true; sp.classList.add('out'); placeScene(); setTimeout(() => { sp.hidden = true; sp.innerHTML = ''; }, 1500); };
+  const out = () => { if (gone) return; gone = true; crossedNow(); document.removeEventListener('keydown', onKey); sp.classList.add('out'); placeScene(); setTimeout(() => { sp.hidden = true; sp.innerHTML = ''; }, 1500); };
   const flood = () => { if (flooded || gone) return; flooded = true; const w = sp.querySelector('.white'); if (w) w.classList.add('on'); const r = sp.querySelector('.ritual'); if (r) r.classList.add('lit'); setTimeout(out, 2600); };
   v.addEventListener('timeupdate', () => { if (v.currentTime > 11.2) moved = true; if (v.currentTime >= 24.4) flood(); });
   v.addEventListener('ended', flood); v.addEventListener('error', () => { if (!moved) out(); });
   const hard = setTimeout(flood, 16000); setTimeout(() => { if (!moved) out(); }, 4000);
-  sp.onclick = () => { clearTimeout(hard); out(); }; v.currentTime = 11; v.play().catch(() => v.play().catch(() => null));
+  sp.onclick = () => { clearTimeout(hard); out(); };
+  // Escape, Enter and the space bar pass the doorway too: a door only a pointer can open is locked
+  function onKey(e) { if (!gone && (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) { e.preventDefault(); sp.onclick(); } }
+  document.addEventListener('keydown', onKey);
+  v.currentTime = 11; v.play().catch(() => v.play().catch(() => null));
 }
 // No doorway on this open, so nothing is in front of the scene: bring it now. And however
 // the doorway ends, the scene is never left as a still for longer than a few seconds.
-if (!ok || location.search.includes('nosplash')) placeScene();
+if (!ok || location.search.includes('nosplash') || crossedAlready()) placeScene();
 setTimeout(placeScene, 6000);
 
 const acts = Array.from(document.querySelectorAll('.act, .foot'));
