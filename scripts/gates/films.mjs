@@ -111,5 +111,32 @@ const onPage = (page) => page.evaluate(() => [...document.querySelectorAll('vide
 }
 
 await b.close(); await srv.close();
+
+// ── films come down a connection of their own ──
+// Measured live: with the films on the page's own host the tap on Plant My Gratus took 4 to 47
+// seconds to reach the next page, because what the edge had already written into the shared
+// connection arrived first. From the other production host it took 0.1 seconds. A local
+// server cannot pretend to be a production host, so these read the four places that decide it.
+{
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const { ROOT } = await import('./lib/harness.mjs');
+  const rd = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+  const loose = [];
+  for (const f of fs.readdirSync(path.join(ROOT, 'assets/js')).filter((x) => x.endsWith('.js') && x !== 'films.js')) {
+    const t = rd('assets/js/' + f);
+    for (const m of t.matchAll(/[^\n]*\.mp4[^\n]*/g)) if (/GFX\([^()]*\.mp4|['"]\/assets\/art\/gfx\/[^'"]*\.mp4/.test(m[0])) loose.push(f);
+  }
+  say(loose.length === 0, 'every film address is built by film(), none by hand  (' + (loose.join(', ') || 'none by hand') + ')');
+  const src = rd('assets/js/films.js');
+  const hostFor = (h) => { const g = { location: { hostname: h } }; return new Function('globalThis', src.replace(/export /g, '').replace(/[\s\S]*?(const OTHER[\s\S]*?export const FILMS_FROM[^\n]*|const OTHER[\s\S]*?const FILMS_FROM[^\n]*)/, '$1') + '\nreturn FILMS_FROM;')(g); };
+  const www = hostFor('www.gratus.cc'), app = hostFor('gratus-in-motus.vercel.app'), local = hostFor('127.0.0.1');
+  say(www === 'https://gratus-in-motus.vercel.app' && app === 'https://www.gratus.cc', 'each production host takes its films from the other  (' + www + ' · ' + app + ')');
+  say(local === '', 'anywhere else they come from the page itself  (' + JSON.stringify(local) + ')');
+  const csp = JSON.parse(rd('vercel.json')).headers.flatMap((h) => h.headers).find((x) => /content-security-policy/i.test(x.key)).value;
+  const media = (csp.match(/media-src ([^;]*)/) || [])[1] || '';
+  say(media.split(/\s+/).sort().join(' ') === ["'self'", 'blob:', 'https://gratus-in-motus.vercel.app', 'https://www.gratus.cc'].sort().join(' '), 'the policy lets films in from exactly those two hosts and nowhere else  (' + media + ')');
+  say(/url\.origin !== location\.origin\) return;/.test(rd('sw.js')), 'and the service worker steps aside for them, where its own policy would refuse the fetch');
+}
 console.log('G43 the films let go: ' + (fails ? 'FAIL · ' + fails : 'PASS'));
 process.exit(fails ? 1 : 0);

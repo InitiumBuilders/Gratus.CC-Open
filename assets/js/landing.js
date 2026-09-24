@@ -26,7 +26,7 @@ function placeScene() {
   v.className = 'fore'; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
   v.setAttribute('poster', GFX('dlong-poster.webp'));
   v.setAttribute('aria-hidden', 'true');
-  v.innerHTML = '<source src="' + GFX('dlong.mp4') + '" type="video/mp4">';
+  v.innerHTML = '<source src="' + FILM('dlong.mp4') + '" type="video/mp4">';
   layer.appendChild(v);
   v.play().catch(() => null);
 }
@@ -43,7 +43,7 @@ const crossedAlready = () => {
 // the opening ritual, every time: the doorway, the light, a held white, then the page
 const sp = document.getElementById('splash');
 if (ok && !location.search.includes('nosplash') && !crossedAlready()) {
-  sp.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + GFX('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + GFX('logo.webp') + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
+  sp.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + FILM('explode.mp4') + '#t=11" type="video/mp4"></video><div class="white"></div><div class="brandrow ritual"><img class="mark" src="' + GFX('logo.webp') + '" alt=""><span class="brandname" style="font-size:44px;line-height:48px">Gratus.CC</span><span class="kicker mint">Grow Gratus Give</span></div><span class="kicker skiphint">tap to enter</span>';
   sp.hidden = false; const v = sp.querySelector('video'); let gone = false, flooded = false, moved = false;
   const out = () => { if (gone) return; gone = true; crossedNow(); document.removeEventListener('keydown', onKey); sp.classList.add('out'); placeScene(); setTimeout(() => { sp.hidden = true; sp.innerHTML = ''; }, 1500); };
   const flood = () => { if (flooded || gone) return; flooded = true; const w = sp.querySelector('.white'); if (w) w.classList.add('on'); const r = sp.querySelector('.ritual'); if (r) r.classList.add('lit'); setTimeout(out, 2600); };
@@ -102,7 +102,7 @@ if (total) {
 // The window comes out of the date itself, so this page agrees with the app and with every
 // other device without anybody's server being asked and without anybody being watched.
 import { paintMarks, passingNow } from './giftmark.js?v=39';
-import { letGo } from './films.js?v=43';
+import { letGo, film as FILM } from './films.js?v=44';
 letGo();
 const passing = () => paintMarks(!!passingNow(new Date()));
 passing();
