@@ -2009,7 +2009,7 @@ function openLaws() {
   const root = $('#laws'); const laws = Gr.laws(C.prompts.statements); const ord = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
   root.innerHTML = '<button class="btn quiet skip" id="laws-x">Close</button>' + laws.map((l, i) => '<section class="law"><span class="kicker mint">' + ord[i] + '</span><h1>' + esc(l) + '</h1></section>').join('') + '<section class="law"><img src="' + LOGO + '" alt="" width="88" height="88"><p class="statement quiet">' + esc(C.copy.locked.colophon.close) + '</p><button class="btn mint" id="laws-done">Keep today</button></section>';
   root.hidden = false; document.body.classList.add('room'); root.scrollTop = 0;
-  const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); };
+  const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/app/laws') history.replaceState(null, '', '/app'); };
   $('#laws-x', root).addEventListener('click', close); $('#laws-done', root).addEventListener('click', () => { close(); go('grow'); });
 }
 // ═══ THE GRATUS SOUND ═══
@@ -2592,6 +2592,9 @@ function tourMaybe() {
   if (S.tour === 'seen') return;
   if (S.plants.length || S.entries.length) { S.tour = 'seen'; save(); return; }
   if (location.search.includes('notour')) return;
+  // They came through the footer for the laws; the tour waits for their next visit.
+  if (location.pathname === '/app/laws') return;
+  if (receiving()) return;
   setTimeout(tourOpen, 700);
 }
 function tourAgain() { S.tour = ''; save(); tourAt = -1; tourOpen(); }
@@ -2924,6 +2927,7 @@ async function boot() {
   const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000); setTimeout(checkReturns, 2600);
     if (isPassage) { const c = location.hash.replace(/^#/, ''); const g = c ? decodeGift(c) : null; if (g) { openPassage(g, false); return; } toast('That Passage link is incomplete.'); }
     if (projPage) { openProjectPage(projPage[1]); return; }
+    if (want === 'laws') openLaws();
     const vc = new URLSearchParams(location.search).get('code');
     if (vc && sub === 'vibes') { const c = vc.trim().toUpperCase(); if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '\u2726' }); save(); } loadVibe(c); }
     else if (S.vibes.length && sub === 'vibes') loadVibe(S.vibes[0].code, true); if (isGift) { const code = location.hash.replace(/^#(gift=)?/, ''); const g = code ? decodeGift(code) : null; openJourney(g || DEMO_GIFT, { routed: true, preview: !g }); } };

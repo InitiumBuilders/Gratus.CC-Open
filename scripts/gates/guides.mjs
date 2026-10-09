@@ -37,6 +37,12 @@ else {
   const html = fs.readFileSync(index, 'utf8');
   const unlisted = files.filter((f) => !html.includes('/docs/' + f.replace(/\.md$/, '')));
   if (unlisted.length) { fails++; console.log('  FAIL  not listed at /docs: ' + unlisted.join(', ')); }
+  // the lead sentence states the count by hand, and it drifted once (24 above a list of 25).
+  // Mutant: change the number in "25 guides, each". This must go red.
+  const said = html.match(/(\d+) guides, each/);
+  const listed = new Set(html.match(/href="\/docs\/[a-z0-9-]+"/g) || []).size;
+  if (!said) { fails++; console.log('  FAIL  /docs no longer states its count ("N guides, each")'); }
+  else if (+said[1] !== listed || +said[1] !== files.length) { fails++; console.log('  FAIL  /docs says ' + said[1] + ' guides, lists ' + listed + ', and there are ' + files.length + ' files'); }
   // and every one of them is a page on this site rather than a link to somebody else's
   const missing = files.filter((f) => !fs.existsSync(path.join(root, 'guides', f.replace(/\.md$/, '.html'))));
   if (missing.length) { fails++; console.log('  FAIL  no page on our own site for: ' + missing.join(', ')); }
