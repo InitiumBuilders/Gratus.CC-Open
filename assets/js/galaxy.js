@@ -2594,8 +2594,7 @@ function tourMaybe() {
   if (location.search.includes('notour')) return;
   // They came through the footer for the laws; the tour waits for their next visit.
   if (location.pathname === '/app/laws') return;
-  if (receiving()) return;
-  setTimeout(tourOpen, 700);
+  setTimeout(() => receiving() || tourOpen(), 700);
 }
 function tourAgain() { S.tour = ''; save(); tourAt = -1; tourOpen(); }
 
