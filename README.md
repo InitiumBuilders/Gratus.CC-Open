@@ -66,6 +66,14 @@ api/goals.js        the shared goals stream
 api/giveth.js       a read-only window onto Giveth's public API
 api/trace.js        the Emotional TRACE: seeds, claims, water
 api/voice.js        speech to text through ElevenLabs; the key lives only in the environment
+api/vibes.js        Vibes: small rooms you join by holding a code, no account
+api/echo.js         the return: a receiver may send back "landed" or "grew" to the giver, never words
+api/trax.js         the honest counts behind /trax: views, seconds, gifts, plantings, seeds, days of care
+api/giveth-stats.js Giveth's own aggregate numbers, read from their API and cached, never typed in
+api/_giveth.js      the shared Giveth read that giveth.js and trace.js both use; not a route
+api/account.js      the optional sealed account: a login check here, the garden encrypted on the device
+api/billing.js      the free week, then Stripe Checkout; receiving a gift is always free
+api/stripe-hook.js  Stripe's webhook, signature-checked before anything is written
 assets/js/keep.js   recordings, kept on the device in IndexedDB
 scripts/            ship, gates, tests, the open-source publisher
 docs/               pitch, architecture, features, guides, evolutions, image prompts
