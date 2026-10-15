@@ -6,7 +6,7 @@
 
 Gratus.CC is a gratitude journal that grows a garden. You write what you are grateful for, plant an emoji for it, and the emoji grows a phase for every day you return to it. Two emojis that share enough days make a recipe. A grown emoji can be given: a Gratus Gift carries its whole journey inside the link, and whoever opens it can keep it growing in their own garden.
 
-There are no accounts and nothing to buy. Your journal stays on your device. The only thing that leaves it is what you choose to give, the Gratus Goals you choose to post, and the Gratus Seeds you plant with a donation.
+Opening a gift somebody sends you is free, for ever, with no account. Growing your own garden is free for a week, then $24 a month through Stripe's hosted checkout; until that payment rail is connected, nobody's week ends and no wall appears. An account is optional: it keeps a copy of your garden sealed on your device with a key derived from your password, so nobody here can read it, and there is no password reset. Your journal stays on your device. The only thing that leaves it is what you choose to give, the Gratus Goals you choose to post, the Gratus Seeds you plant with a donation, and that sealed copy if you make an account.
 
 Gratus also carries **the Emotional TRACE**, built on [Giveth](https://giveth.io): give to a real project, plant a seed in your own words, and when the people who run it write back, the seed blooms in your garden. See [docs/GIVETH.md](docs/GIVETH.md).
 
