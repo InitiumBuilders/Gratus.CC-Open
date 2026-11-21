@@ -32,6 +32,8 @@ const APP = fs.readFileSync(path.join(ROOT, 'assets/js/galaxy.js'), 'utf8');
 const FAULTS = {
   flat: ["      history.pushState({ g: 1, d: cur.d + 1, from: here, fy: y }, '', pathOf(t, to));\n",
     "      history.replaceState({ g: 1, d: cur.d, from: cur.from }, '', pathOf(t, to));\n"],
+  pages: ["    if (push) history.pushState({ g: 1, d: cur.d + 1, from: cur.from, fy: cur.fy, room: 1, page: n, jb: cur.jb }, '');\n",
+    "    if (push) history.replaceState(Object.assign({}, cur, { page: n }), '');\n"],
   stray: ["    $$('#sheets .scrim').forEach((s) => s.click());\n", ''],
   trap: ['    if (introOn && introCancel) introCancel();\n',
     "    if (introOn && introCancel) introCancel();\n    if (ours && $('#sheets .sheet:not(.out)')) history.pushState(st, '');\n"],
@@ -86,7 +88,8 @@ async function phone(first, fault) {
   const sheets = () => ask(() => document.querySelectorAll('#sheets .sheet:not(.out)').length);
   // what a step can change: the address, a sheet, a held moment, the laws
   const look = () => ask(() => [location.pathname, document.querySelectorAll('#sheets .sheet:not(.out)').length,
-    (document.getElementById('ceremony') || {}).hidden, (document.getElementById('laws') || {}).hidden].join('|'));
+    (document.getElementById('ceremony') || {}).hidden, (document.getElementById('laws') || {}).hidden,
+    ((document.querySelector('#room h1') || {}).textContent || '')].join('|'));
   // A tap or a step is waited for by what it changes, with a ceiling, and then given a moment
   // to finish. A busy machine makes it slow, and slow is not wrong.
   const until = async (was, ceiling = 6000) => { for (let t = 0; t < ceiling; t += 150) { if ((await look()) !== was) break; await page.waitForTimeout(150); } await page.waitForTimeout(500); await page.waitForLoadState('domcontentloaded').catch(() => null); };
@@ -277,6 +280,58 @@ async function stray(fault) {
   say(s.up === 1 && s.at === '/app' && s.left === 0, 'a sheet a touch did not open holds no step: back leaves the room, and the sheet goes with it  (' + s.at + ', ' + s.left + ' open)');
 }
 
+// ══ THE GIFT JOURNEY ══
+// A gift link is how most people first meet Gratus. Its pages turn with a tap and the phone's
+// back turns them back; from the first page, back leaves, the way a link does.
+const pageOf = (v) => v.ask(() => ((document.querySelector('#room h1') || {}).innerText || '').replace(/\s+/g, ' ').trim());
+async function unwrapped(v) { await v.tap('rj-next'); for (let i = 0; i < 40 && !/Your Gratus Gift/.test(await pageOf(v)); i++) await v.page.waitForTimeout(150); }
+async function journey(fault) {
+  const v = await phone('/gift', fault);
+  const o = { p0: await pageOf(v) };
+  await unwrapped(v); o.p2 = await pageOf(v);
+  await v.tap('rj-next'); o.p3 = await pageOf(v);
+  await v.tap('rj-next'); o.p4 = await pageOf(v);
+  await v.back(); o.b3 = await pageOf(v);
+  await v.back(); o.b2 = await pageOf(v);
+  await v.back(); o.b0 = await pageOf(v);
+  await v.back(); o.gone = await v.where();
+  await v.close();
+  return o;
+}
+{
+  const j = await journey(null);
+  say(/A Gratus Gift/.test(j.p0) && /Your Gratus Gift/.test(j.p2) && j.p3 && j.p4 && j.p3 !== j.p4, 'a gift link opens on its first page, and taps turn the pages  (' + [j.p0, j.p2, j.p3, j.p4].join(' / ') + ')');
+  say(j.b3 === j.p3 && j.b2 === j.p2, 'the phone\u2019s back turns them back one at a time  (' + j.b3 + ', ' + j.b2 + ')');
+  say(j.b0 === j.p0, 'past the unwrapping, which turned by itself, to the first page  (' + j.b0 + ')');
+  say(j.gone === '/privacy.html', 'and from the first page, back leaves, the way a link does  (' + j.gone + ')');
+
+  // the arrow on the page takes the same step the phone would, and Done leaves no step behind
+  const v = await phone('/gift');
+  await unwrapped(v);
+  await v.tap('rj-next'); const three = await pageOf(v);
+  await v.tap('rj-back'); const arrow = await pageOf(v);
+  await v.back(); const first = await pageOf(v);
+  await unwrapped(v);
+  for (let i = 0; i < 12 && !(await v.has('rj-save')); i++) { if (await v.has('rj-next')) await v.tap('rj-next'); else await v.page.waitForTimeout(400); }
+  await v.tap('rj-save'); const thanks = await pageOf(v);
+  await v.tap('rj-done'); const landed = await v.where(); const open = await v.ask(() => !document.getElementById('room').hidden);
+  await v.back(); const out = await v.where();
+  say(/Your Gratus Gift/.test(arrow) && /A Gratus Gift/.test(first), 'the arrow on the page and the phone\u2019s back take the same steps  (' + three + ' to ' + arrow + ' to ' + first + ')');
+  say(/Thank You/.test(thanks) && landed === '/app' && !open, 'Done closes the gift into the app  (' + landed + ')');
+  say(out === '/privacy.html', 'and leaves none of the gift\u2019s pages behind it: one back leaves  (' + out + ')');
+  await v.close();
+
+  // a phone that reloads a gift mid-way opens it on the page it was on
+  const r = await phone('/gift');
+  await unwrapped(r);
+  await r.tap('rj-next'); const was = await pageOf(r);
+  await r.page.reload({ waitUntil: 'domcontentloaded' }); await r.page.waitForTimeout(1800);
+  const again = await pageOf(r);
+  await r.back(); const before = await pageOf(r);
+  say(again === was && /Your Gratus Gift/.test(before), 'after a reload mid-way the gift is on the same page, and back still turns it  (' + again + ', then ' + before + ')');
+  await r.close();
+}
+
 // ══ A HELD MOMENT, AND THE LAWS ══
 {
   const v = await phone('/app');
@@ -352,6 +407,10 @@ say(added === 0, 'across every walk above, nothing added a step while the phone 
 if (faulty.flat) {
   const c = await trail('flat');
   say(c.vibes === '/app/vibes' && c.n2 === c.n0 && c.back1 !== '/app/goals', 'the control: with a room changing the step instead of adding one, back from Vibes leaves the app, and that is seen  (' + c.back1 + ')');
+}
+if (faulty.pages) {
+  const c = await journey('pages');
+  say(c.b3 !== c.p3, 'the control: with the gift\u2019s pages taking no steps, back from a page leaves the gift, and that is seen  (' + (c.b3 || c.gone || 'left') + ')');
 }
 if (faulty.stray) {
   const c = await stray('stray');

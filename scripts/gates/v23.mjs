@@ -36,6 +36,7 @@ const GATES = [
   ['G45 the policy', 'node scripts/gates/policy.mjs', false],
   ['G46 the room', 'node scripts/gates/together.mjs', true],
   ['G47 the way back', 'node scripts/gates/back.mjs', true],
+  ['G48 honest hours', 'node scripts/gates/hours.mjs', true],
   ['G7 open-source', 'node scripts/gates/open-source.mjs . --decoy', false],
   ['G9 contrast', 'node scripts/gates/contrast.mjs', false],
   ['slop', 'node scripts/gates/slop.mjs --decoy && node scripts/gates/slop.mjs', false],

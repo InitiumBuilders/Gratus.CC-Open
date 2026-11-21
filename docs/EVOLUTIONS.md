@@ -2,6 +2,15 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v47 · The gift turns back (2026-11-21)
+
+- **A gift's pages turn back with the phone's back.** A gift link is how most people first meet Gratus, and its eight pages turned with buttons only, so back on page five left the gift. A page a tap turns is a step now. The unwrapping turns by itself and takes no step, so back from the gift goes to its first page. From the first page, back leaves, the way a link does. Done and close take the journey's steps with them.
+- **A gift reloaded mid-way opens on the same page.** Phones reload a tab that sat in the background; the page it was on is kept in the step.
+- **The shared pages ship with the app they carry.** `/gift`, `/p/:slug`, `/passage` and `/guided` are struck from `app.html`, but only `app.html` was stamped at each ship, so the gift page loaded the app under a stamp from September and a returning visitor could be handed an older build from the offline cache. The ship script strikes them again after stamping and refuses one that kept an old stamp. G18 checks the four load what `app.html` loads, with a control.
+- **Time in the app is counted only while the app is on the screen.** The counter's two-minute report started its clock again whether or not the page could be seen, so a tab or an installed app left in the background counted all day: the public `/trax` page said 494 hours this month from ten opens by three people. The clock now runs only while the page is visible, and a page leaving the screen sends what it counted. The hours already stored stay as they were counted. G48 runs the app on a faked clock, hidden for half an hour, with a control.
+- **Links to the public repository point at the branch it publishes to.** They went to `master` and reached `main` through GitHub's redirect.
+- **The gates.** G47 walks the gift page by page, the arrow on the page and the phone's back agreeing, Done leaving no steps, and a reload mid-way, with a control.
+
 ## v46 · The journal is the home (2026-11-20)
 
 - **One card answers a day.** A seed for every day the journal holds, set on a spiral, with what was planted at its centre and the count under it. It used to be three cards behind a film for every entry. The film opens now on the day a plant crosses into a phase, and a crossing is told once.

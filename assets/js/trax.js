@@ -11,13 +11,19 @@ const send = (ev, n) => {
 };
 export function beat(ev, n) { send(ev, n); }
 
+// The clock runs only while the page is on the screen. It used to start again after every
+// two-minute report whether or not anybody could see the page, so a tab or an installed app
+// left in the background counted two minutes of reading every two minutes, all day.
 let open = 0, at = 0;
-function start() { if (!at) at = Date.now(); }
+const seen = () => document.visibilityState === 'visible';
+function start() { if (!at && seen()) at = Date.now(); }
 function stop() { if (!at) return; open += Math.round((Date.now() - at) / 1000); at = 0; }
 export function watchTime() {
   start();
-  addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+  // A page leaving the screen sends what it counted: a phone often ends a page it has hidden
+  // without telling it, and what was not sent by then is never sent.
   const flush = () => { stop(); if (open >= 3) { send('secs', Math.min(43200, open)); open = 0; } };
+  addEventListener('visibilitychange', () => (seen() ? start() : flush()));
   addEventListener('pagehide', flush);
   addEventListener('beforeunload', flush);
   // and every two minutes, so a long session is not lost if the page is killed

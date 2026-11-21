@@ -32,6 +32,8 @@ Anything a touch opens over the page takes a step of its own when it opens (`ste
 
 The app never adds a step while the phone is stepping back. Browsers read that as a page holding a person in and begin skipping the page’s steps, so a second press would leave the app. Writes to the history wait in `settle()` behind any step back the app asked for itself, which keeps a sheet closing and a room opening in the order they happened.
 
+The gift journey's pages are steps too. A page a tap turns pushes one (`journeyPage()`); the unwrapping, which turns by itself, replaces the step it is on. Each page's step carries the page and where the journey began (`jb`), so `turnTo()` can turn to the page a step names and a reload opens the gift where it was. `closeRoom()` takes all the journey's steps in one traversal, and a journey opened from a link hands its first step back to the app as `/app`.
+
 `stepBack()` is the arrow in the corner and the rightward swipe. With a step of ours underneath it paints the place the room was entered from at once and lets the history follow. With none, which is a room opened from a link, it goes up to the room it belongs to (`UP`). `wayBack()` hears the phone step: it closes whatever stood above the step it landed on, reads the place from the address (`readPlace()`, the reading boot uses) and paints it only if the place changed.
 
 G47 walks all of it with the phone’s own back and forward, and counts any step added while one is being answered. It has two controls: the app as it was, where a room changed the step, and an app that adds a step while it answers one. Its back is the browser’s `history.back()`, which cannot be skipped the way a phone’s gesture can, so the count is the only place that shape is seen before a person meets it. Every scripted read in a Playwright gate counts as a touch to the page, so a check about something no touch opened has the page act on its own timer, after the last touch has run out. It has not been walked on an iPhone.
@@ -135,6 +137,10 @@ At 1024px and wider the scene layer has two children: `.back`, the poster of the
 
 Tokens live in `tokens.css`. Every ink is white and solid; mint (`#B9FFE4`) is for growing and labels, gold (`#FFD98A`) for giving. Body type is 18 on 28 and nothing is set under 14px. A kicker whose text ends a sentence is tagged `.say` at render (a MutationObserver watches the body) and reads in sentence case at 17px; kickers that are labels keep small caps. Fields, segments and buttons stand on dark glass so they read on any scene.
 
+## Time in the app
+
+`assets/js/trax.js` counts seconds only while `document.visibilityState` is `visible`. A page leaving the screen sends what it counted, a page that stays sends every two minutes, and the clock never starts again on a hidden page. The server caps a device at twelve hours a day. G48 holds it to that on a faked clock.
+
 ## Service worker
 
 `sw.js` caches the shell (HTML, CSS, JS, configs, posters, logo) under a version string `gratus-<stamp>` and serves the shell cache-first, everything else network-first. The ship script writes the same stamp into `app.html` and `sw.js`, so a returning browser can never keep an old module against a new shell.
@@ -152,7 +158,7 @@ Tokens live in `tokens.css`. Every ink is white and solid; mint (`#B9FFE4`) is f
 `scripts/ship.sh "message"`:
 
 1. tests, contrast gate, banned gate, and the open-source gate's decoy test; any red stops the ship
-2. stamps `galaxy.js?v=<epoch>` into `app.html` and `sw.js`, and the same epoch into the worker's version
+2. stamps `galaxy.js?v=<epoch>` into `app.html` and `sw.js`, strikes the four shared pages (`gift.html`, `p.html`, `passage.html`, `guided.html`) from `app.html` again with `scripts/shells.py` and refuses one that kept an old stamp, and puts the same epoch into the worker's version
 3. commits
 4. `vercel deploy --prod --yes`
 5. probes the routes, then refutes: fetches the live `app.html` up to eight times until its stamp equals the one just written; a mismatch is a failed ship

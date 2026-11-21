@@ -45,7 +45,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - **Giveth confirms it**: plant a seed with a transaction hash and Gratus checks it against that project's recent gifts on Giveth, then records what arrived.
 - **Grow a Gratus Gift for a project** — dedicate an emoji to a Giveth project. Every day you write about it, it grows. At Ready to Give it can be given to them, carrying every day you held it.
 - Give a Gratus Gift: choose a plant, write a message, get a link. The whole journey rides in the link. The Share sheet copies it.
-- The receiver's journey: eight pages, unwrap, how it grew, the message, keep it or plant it.
+- The receiver's journey: eight pages, unwrap, how it grew, the message, keep it or plant it. The phone's back turns its pages back, and a reload opens it on the page it was on.
 - Support a Project: Giveth's projects by category, read live.
 - Give to the World: Gratus Earth (heal places, Giveth's projects by kind) and Gratus Vault (a wish for tomorrow, kept on your device).
 - Gifts you gave and received, with links.

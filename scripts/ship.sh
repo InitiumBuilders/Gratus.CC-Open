@@ -25,7 +25,11 @@ echo "== stamp entry scripts (a returning browser must never keep an old app.js)
 STAMP="$(date +%s)"
 sed -i -E "s#galaxy\.js\?v=[0-9a-z]+#galaxy.js?v=${STAMP}#g" app.html sw.js
 sed -i -E "s#const V = 'gratus-[0-9a-z]+'#const V = 'gratus-${STAMP}'#" sw.js
-echo "stamp ${STAMP}"
+# the four shared pages are struck from app.html, so they are struck again and carry the same stamp
+python3 scripts/shells.py >/dev/null || { echo "THE SHARED PAGES WERE NOT WRITTEN, not shipping"; exit 1; }
+STALE="$(grep -L -F "galaxy.js?v=${STAMP}" app.html gift.html p.html passage.html guided.html)"
+[ -n "$STALE" ] && { echo "AN ENTRY PAGE KEPT AN OLD STAMP: $STALE, not shipping"; exit 1; }
+echo "stamp ${STAMP}, on app.html and the four shared pages"
 echo "== commit"
 git add -A >/dev/null 2>&1
 git commit -q -m "${1:-ship}" 2>/dev/null && git log --oneline -1 || echo "(nothing new to commit)"
@@ -41,6 +45,8 @@ for TRY in 1 2 3 4 5 6 7 8; do
   [ "$LIVE" = "galaxy.js?v=${STAMP}" ] && break; sleep 5
 done
 if [ "$LIVE" = "galaxy.js?v=${STAMP}" ]; then echo "LIVE STAMP MATCHES: ${LIVE} (try ${TRY})"; else echo "DEPLOY DID NOT LAND: live=${LIVE:-none} local=galaxy.js?v=${STAMP}"; exit 1; fi
+GIFT="$(curl -s "https://gratus-in-motus.vercel.app/gift?probe=${STAMP}" | grep -o 'galaxy\.js?v=[0-9]*' | head -1)"
+if [ "$GIFT" = "galaxy.js?v=${STAMP}" ]; then echo "the gift page carries it too"; else echo "THE GIFT PAGE DID NOT LAND: ${GIFT:-none} (the deploy stands; check gift.html)"; exit 1; fi
 echo "== refute: does the live site answer for a private file?"
 for P in /.env /.env.local /.vercel/project.json /.private-names; do
   CODE="$(curl -s -o /dev/null -w '%{http_code}' "https://gratus-in-motus.vercel.app$P")"

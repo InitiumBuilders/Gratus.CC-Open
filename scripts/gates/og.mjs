@@ -47,5 +47,20 @@ for (const r of ROUTES) {
   }
   if (!fails) console.log('  pass  ' + r + '  ' + t.slice(0, 44));
 }
+// The shared pages are app.html with their own face. A page that loads a different app than
+// app.html does (an old stamp, an old stylesheet) hands a returning visitor an older build out
+// of the offline cache, and the gift page is the one a new person opens first.
+const assets = (html) => [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+\?v=[^"]+)"/g)].map((m) => m[1]).sort().join(' ');
+const drift = (app, shells) => shells.filter(([, html]) => assets(html) !== assets(app)).map(([f]) => f);
+const SHELLS = ['gift.html', 'p.html', 'passage.html', 'guided.html'].filter((f) => fs.existsSync(path.join(root, f)));
+const appHtml = fs.readFileSync(path.join(root, 'app.html'), 'utf8');
+const pages = SHELLS.map((f) => [f, fs.readFileSync(path.join(root, f), 'utf8')]);
+const off = drift(appHtml, pages);
+if (off.length) { fails++; console.log('  FAIL  these pages load a different app than app.html: ' + off.join(', ') + '  (run python3 scripts/shells.py)'); }
+else console.log('  pass  the ' + SHELLS.length + ' shared pages load exactly what app.html loads');
+// the control: one shared page left on an older stamp has to be seen
+const aged = pages.map(([f, h], k) => [f, k === 0 ? h.replace(/galaxy\.js\?v=[0-9a-z]+/, 'galaxy.js?v=1') : h]);
+if (drift(appHtml, aged).length !== 1) { fails++; console.log('  FAIL  the control: a shared page on an older stamp went unseen'); }
+else console.log('  pass  the control: a shared page on an older stamp is seen');
 console.log('G18 og: ' + (fails ? 'FAIL - ' + fails : 'PASS - ' + ROUTES.length + ' routes, ' + ROUTES.length + ' faces'));
 process.exit(fails ? 1 : 0);

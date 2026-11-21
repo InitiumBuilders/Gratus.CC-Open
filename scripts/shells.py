@@ -27,7 +27,7 @@ for key, (title, desc) in FACES.items():
             title = re.search(r'^title:\s*(.+)$', body, re.M).group(1).strip()
             aud = re.search(r'^audience:\s*(.+)$', body, re.M).group(1).strip()
             mins = re.search(r'^time:\s*(.+)$', body, re.M).group(1).strip()
-            rows.append('      <li><a href="https://github.com/InitiumBuilders/Gratus.CC-Open/blob/master/docs/guides/' + slug + '.md"><b>' + title + '</b><span>' + aud + ' \u00b7 ' + mins + '</span></a></li>')
+            rows.append('      <li><a href="https://github.com/InitiumBuilders/Gratus.CC-Open/blob/main/docs/guides/' + slug + '.md"><b>' + title + '</b><span>' + aud + ' \u00b7 ' + mins + '</span></a></li>')
         block = '\n<main id="guided-index">\n  <h1>Gratus Guides</h1>\n  <p>Why any of this exists, and how to walk it. ' + str(len(rows)) + ' guides, each one checked against the\n     build it names.</p>\n  <ul>\n' + '\n'.join(rows) + '\n  </ul>\n</main>\n'
         h = h.replace('<main id="view"></main>', '<main id="view"></main>' + block, 1)
     t = R + key + '.html.tmp'

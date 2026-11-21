@@ -148,7 +148,7 @@ PAGE = """<!doctype html>
   <p class="tags">#GrowTheDifference &nbsp; #GrowWithGratus</p>
   <p class="presented">Gratus.CC presented by Outlier.Systems</p>
   <nav><a href="/the-story">The story</a> · <a href="/give-and-grow">Give and grow</a> · <a href="/docs">Docs</a> · <a href="/app">The app</a></nav>
-  <p class="mit">Checked against %(verified)s · <a href="https://github.com/InitiumBuilders/Gratus.CC-Open/blob/master/docs/guides/%(slug)s.md">the source of this page</a></p>
+  <p class="mit">Checked against %(verified)s · <a href="https://github.com/InitiumBuilders/Gratus.CC-Open/blob/main/docs/guides/%(slug)s.md">the source of this page</a></p>
 </footer>
 </body>
 </html>

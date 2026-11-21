@@ -10,7 +10,7 @@ import { newId } from '../../engine/rng.js?v=12';
 import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=14';
 import { VIEWS, titleOf } from './views.js?v=18';
 import { TOUR, OPEN } from './tour.js?v=20';
-import { beat, watchTime } from './trax.js?v=18';
+import { beat, watchTime } from './trax.js?v=19';
 import * as Acct from './account.js?v=20';
 import * as Bill from './billing.js?v=21';
 import { esc, $, $$, sheet as rawSheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
@@ -233,8 +233,8 @@ let overN = 0, lawsStep = null;
 function settle(fn) { if (owed > 0) waiting.push(fn); else fn(); }
 function flush() { while (!owed && waiting.length) { const fn = waiting.shift(); try { fn(); } catch (e) { if (window.console) console.error(e); } } }
 // step off the step the phone stands on. If the phone never answers, the app stops waiting.
-function stepOut() {
-  owed++; history.back();
+function stepOut(n) {
+  owed++; if (n > 1) history.go(-n); else history.back();
   clearTimeout(owedTimer); owedTimer = setTimeout(() => { if (owed) { owed = 0; flush(); } }, 4000);
 }
 // a step whose sheet is gone: nothing stands on one
@@ -253,7 +253,7 @@ function stepIn(shut) {
   settle(() => {
     if (o.gone) return;
     const cur = stepNow();
-    history.pushState({ g: 1, d: cur.d + 1, from: cur.from, fy: cur.fy, ov: o.id, room: room ? 1 : 0 }, '');
+    history.pushState({ g: 1, d: cur.d + 1, from: cur.from, fy: cur.fy, ov: o.id, room: room ? 1 : 0, page: cur.page, jb: cur.jb }, '');
     o.d = cur.d + 1; o.held = true;
   });
   return o;
@@ -312,13 +312,18 @@ function readPlace() {
   else { tab = ['grow', 'gratus', 'give'].includes(want) ? want : 'gratus'; sub = null; }
   return want;
 }
+// the gift journey turns to the page the step it stands on names
+function turnTo() {
+  const s = history.state;
+  if (room && s && s.room && typeof s.page === 'number' && s.page !== room.i) { room.i = s.page; renderJourney(); }
+}
 // the phone stepped, back or forward
 function wayBack() {
   if (owed > 0) {
     // a step this app asked for has landed
     owed--;
     if (deadStep()) { stepOut(); return; }
-    if (!owed) { clearTimeout(owedTimer); flush(); if (!owed) syncAddress(); }
+    if (!owed) { clearTimeout(owedTimer); flush(); if (!owed) { syncAddress(); turnTo(); } }
     return;
   }
   const st = history.state; const ours = !!(st && st.g);   // a link to a # writes a step that is not ours
@@ -337,6 +342,7 @@ function wayBack() {
     // a sheet a touch did not open holds no step, so nothing above closed it: it goes with the page under it
     $$('#sheets .scrim').forEach((s) => s.click());
     if (room && !(st && st.room)) closeRoom(true);
+    else turnTo();
     if (!$('#laws').hidden && !lawsStep) { $('#laws').hidden = true; document.body.classList.remove('room'); }
     const was = [tab, sub];
     if (ours && inApp()) readPlace();
@@ -1976,12 +1982,45 @@ function shareSheet(g) {
 
 // ── THE GIFT JOURNEY (the receiver's eight pages) ──
 const DEMO_GIFT = { v: 1, id: 'demo', emoji: '❤️', seed: '🤍', days: 12, from: 'Augie', to: 'you', message: 'Thank you for always being there. You make life brighter, kinder, and more meaningful. This is my way of saying I see you, I appreciate you, and I\'m grateful for you.', at: '2026-09-17', journey: [{ phase: 'Planted', icon: '❤️', day: '2026-09-05', line: 'I\'m grateful for you.' }, { phase: 'Nurtured', icon: '🌱', day: '2026-09-07', line: 'You always make time.' }, { phase: 'Deepened', icon: '💧', day: '2026-09-10', line: 'You inspire me.' }, { phase: 'Bloomed', icon: '☀️', day: '2026-09-14', line: 'Life is better with you in it.' }, { phase: 'Ready to Give', icon: '💗', day: '2026-09-17', line: 'Gratitude grows love.' }], reflections: 4, acts: 3, tags: ['Love', 'Support', 'Friendship', 'Gratitude'] };
-function openJourney(g, o) { o = o || {}; room = { g, i: 0, choice: 'garden', o }; document.body.classList.add('room'); if (!o.routed && !popping) { const from = [tab, sub]; const fy = Math.round(window.scrollY); settle(() => { const cur = stepNow(); history.pushState({ g: 1, d: cur.d + 1, from, fy, room: 1 }, '', '/gift'); }); } renderJourney(); }
+// A gift's pages are steps a tap takes, so the phone's back turns them back. A journey opened
+// inside the app takes a step to open on; one opened from a link stands on the link's own
+// step, which becomes its first page. Each page's step remembers where the journey began
+// (jb), so a phone that reloads the gift opens it on the page it was on.
+function openJourney(g, o) {
+  o = o || {};
+  const st = history.state; const resume = !!(o.routed && st && st.g && st.room && typeof st.page === 'number');
+  room = { g, i: resume ? st.page : 0, choice: 'garden', o, base: resume && typeof st.jb === 'number' ? st.jb : null };
+  document.body.classList.add('room');
+  if (!o.routed && !popping) {
+    const from = [tab, sub]; const fy = Math.round(window.scrollY);
+    settle(() => { const cur = stepNow(); history.pushState({ g: 1, d: cur.d + 1, from, fy, room: 1, page: 0, jb: cur.d + 1 }, '', '/gift'); if (room) room.base = cur.d + 1; });
+  } else if (o.routed && !resume) {
+    settle(() => { const cur = stepNow(); history.replaceState(Object.assign({}, cur, { room: 1, page: 0, jb: cur.d }), ''); if (room) room.base = cur.d; });
+  }
+  renderJourney();
+}
+// A page a tap turns adds a step; a page that turns by itself changes the step it is on.
+function journeyPage(n, o) {
+  const push = !(o && o.replace) && !popping && (!navigator.userActivation || navigator.userActivation.isActive);
+  settle(() => {
+    const cur = stepNow();
+    if (!cur.room) return;
+    if (push) history.pushState({ g: 1, d: cur.d + 1, from: cur.from, fy: cur.fy, room: 1, page: n, jb: cur.jb }, '');
+    else history.replaceState(Object.assign({}, cur, { page: n }), '');
+  });
+  room.i = n; renderJourney();
+}
 function closeRoom(byRoute) {
+  const was = room;
   const r = $('#room'); r.hidden = true; r.innerHTML = ''; document.body.classList.remove('room'); room = null;
-  if (byRoute) return;
-  // a journey opened inside the app took a step, and leaves it; one opened from a link stands on the link's own step
-  settle(() => { const cur = stepNow(); if (cur.room && cur.d > 0) stepOut(); else if (location.pathname === '/gift') history.replaceState(Object.assign({}, cur, { room: 0 }), '', pathOf(tab, sub)); });
+  if (byRoute || !was) return;
+  // the journey's steps go with it: its pages, and the step it opened on when it opened inside the app
+  settle(() => {
+    const cur = stepNow(); const own = !was.o.routed;
+    const n = !cur.room ? 0 : was.base != null ? cur.d - was.base + (own ? 1 : 0) : (own && cur.d > 0 ? 1 : 0);
+    if (n > 0) stepOut(n);
+    if (!own) settle(() => { if (location.pathname === '/gift') history.replaceState(Object.assign({}, stepNow(), { room: 0, page: null, jb: null }), '', pathOf(tab, sub)); });
+  });
 }
 function renderJourney() {
   const r = $('#room'); const { g, i } = room; const name = nameOf(g.emoji);
@@ -1997,12 +2036,14 @@ function renderJourney() {
   else if (i === 6) html = page('<h1>Your Choices</h1><span class="kicker mint">Privacy &amp; sharing</span><p class="body">How would you like to keep this gift?</p><div class="rows" style="text-align:left">' + [['private', '🔒', 'Private', 'Keep this gift just for you.'], ['garden', '🌱', 'In My Garden', 'Save it to your garden (default).'], ['pass', '♾️', 'Pass It Forward', 'Re-gift to someone else.']].map(([k, ic, n, l]) => '<button class="glass choice' + (room.choice === k ? ' on' : '') + '" data-choice="' + k + '"><span class="ico">' + ic + '</span><span class="grow"><b>' + n + '</b><span>' + l + '</span></span><span class="radio"></span></button>').join('') + '</div>', '<button class="btn mint wide" id="rj-save">🌱 Save My Gift</button><span class="kicker">Your gratitude. Your choice.</span>');
   else html = page('<h1>Thank You</h1><span class="kicker mint">Gratitude keeps growing</span><p class="lead">' + (room.o.preview ? 'A preview, so nothing was saved.' : T('journey.landed', 'It is in your garden now.')) + '</p><span class="kicker">🌱</span>', '<button class="btn mint wide" id="rj-done">' + T('journey.done', 'Done') + '</button>');
   r.innerHTML = html; r.hidden = false; r.scrollTop = 0; choreograph();
-  const nx = $('#rj-next', r); if (nx) nx.addEventListener('click', () => { room.i++; renderJourney(); });
-  const bk = $('#rj-back', r); if (bk) bk.addEventListener('click', () => { room.i = Math.max(0, room.i - 1); renderJourney(); });
+  const nx = $('#rj-next', r); if (nx) nx.addEventListener('click', () => journeyPage(room.i + 1));
+  // the arrow takes the same step the phone's back would, when there is one of the journey's to take
+  const bk = $('#rj-back', r); if (bk) bk.addEventListener('click', () => { const cur = stepNow(); if (cur.room && room.base != null && cur.d > room.base) stepOut(); else { room.i = Math.max(0, room.i - 1); renderJourney(); } });
   $('#rj-x', r).addEventListener('click', () => { closeRoom(); render(); });
-  if (i === 1) setTimeout(() => { if (room && room.i === 1) { room.i = 2; renderJourney(); } }, 2900);
+  if (i === 1) setTimeout(() => { if (room && room.i === 1) journeyPage(2, { replace: true }); }, 2900);
   $$('[data-choice]', r).forEach((b) => b.addEventListener('click', () => { room.choice = b.dataset.choice; $$('[data-choice]', r).forEach((x) => x.classList.toggle('on', x === b)); }));
-  const sv = $('#rj-save', r); if (sv) sv.addEventListener('click', () => { saveGift(); room.i = 7; renderJourney(); });
+  // the thank-you page takes its step first, so a moment the keeping opens stands above it
+  const sv = $('#rj-save', r); if (sv) sv.addEventListener('click', () => { journeyPage(7); saveGift(); });
   const dn = $('#rj-done', r); if (dn) dn.addEventListener('click', () => { const pass = room.choice === 'pass'; closeRoom(); go('gratus'); if (pass) setTimeout(() => giveSheet(plantFor(g.seed) || null), 400); });
 }
 function saveGift() {
