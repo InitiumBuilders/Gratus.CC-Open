@@ -2,6 +2,26 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v46 · The journal is the home (2026-11-20)
+
+- **One card answers a day.** A seed for every day the journal holds, set on a spiral, with what was planted at its centre and the count under it. It used to be three cards behind a film for every entry. The film opens now on the day a plant crosses into a phase, and a crossing is told once.
+- **Each entry keeps its time.** The hour it was written and how long it took, counted while the page is being written and left out while it is not. The Time Log shows a month at a time: the calendar, and under it every entry with its hour and its length. All of it stays on the device.
+- **The journal opens on the words.** Search and one Filter button stand above the entries. The question card, the calendar and three rows of chips used to stand there.
+- **Every room has an address.** `/app/book`, `/app/log`, `/app/marks` and `/app/growth`.
+- **The phone's back gesture walks rooms.** Every move inside the app used to change one step of the phone's history, so back left Gratus from any room. A room is a step now, and back returns to the room before it, with the page where it was left. The three doors and the journal's tabs add no step. The arrow in the corner takes the same step.
+- **Back closes what is open.** A sheet, a held moment, the laws or a Passage takes a step when a touch opens it, so back closes it and the room under it stays, on the home page as well. Closed by hand, it takes its step with it. G47 walks all of it, with two controls, and counts any step added while the phone is stepping back, which browsers punish.
+- **Taken out.** The pathways, which were written here and presented as walks people had made. The lines written over each emoji's arc and each recipe. The card at the top of Grow that said what a word would do. The second composer. The glyph card, the phase legend and the entry list in the garden. The explanations in Gratus Guides. The tour is three lit steps, and it was eight.
+- **The writing page is 136 KB lighter.** It no longer carries the goals stream or its picture. The stream is in the room behind Gratus Gives Together.
+- **The home page is two screens.** His header and hero, the three doors, and the door to Gratus Gives Together. Gratus Goals, Gratus Vibes, your people and the Gratus Galaxy are in the room behind that door, at `/app/goals`.
+- **The menu is eight rows,** one for each room. Your account is behind the person in the corner.
+- **The front page is six acts.** His lines, the app as it looks, the gift, the Galaxy, the phone and the price. The Giveth figure and the Emotional TRACE acts came out, and the page asks the network nothing.
+- **Taken out in the second pass.** The second picture inside the Gratus Goals card, and the first sentence on the Give with Giveth door.
+- **Put back the same day.** The second cut also took out tags, Support a Project, Give to the World, and the Galaxy's door and its act on the front page. They are his, and they returned as they were. The Galaxy's door stands with Gratus Vibes and your people.
+- **The privacy and terms pages say what the app does.** They still described the app from before accounts, rooms and the counters.
+- **The gates.** G44 writes days in a browser and proves the card, the time and the log against planted faults. G10 judges whole pages; it used to judge the first screen of each. G46 walks the room behind the door: the stream arriving while a goal is half typed, the goal posted, the doors inside and the way back. G44 also makes a folder and watches its mark light, and walks Give, Give to the World and the Vault to a wish somebody wrote. `.env.example` is in the repository.
+- **The list of private names is kept outside the tree,** because everything in the tree is deployed. Publishing stops without the list. The ship script refuses a private file before a deploy and asks the live site for four of them after one.
+- **The ship script no longer pulls production secrets into a temp file.** A step meant to copy two of them to the preview environment ran on every ship, wrote the whole production environment to a file in /tmp, and never landed the copy. Previews answer without it.
+
 ## v34 · The act is on the screen (2026-09-19)
 
 - **The writing box was below the fold on the tab whose only job is writing.** A first visit from the landing page goes straight to Grow, and on arrival you saw a painting and a question while the box sat 124 pixels under the edge of the screen, with the card explaining what to do four fifths hidden behind it. Give had the same shape: its first door was under the fold too.

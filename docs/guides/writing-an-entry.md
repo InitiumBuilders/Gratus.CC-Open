@@ -2,23 +2,28 @@
 title: Writing an entry
 audience: anyone
 time: 2 min
-updated: 2026-09-19
-verified-against: v25, 2026-09-19
+updated: 2026-11-20
+verified-against: v46, 2026-11-20
 ---
 
-The box is on the Grow screen, above the fold, on purpose.
+The box is on the Grow screen. Write Today on the home screen opens it with the cursor
+already in it.
 
 **Text.** Type it. There is no length to hit.
 
 **The emoji.** Tap one from the row, or Show every emoji for the full set. The emoji is
 what the day feeds.
 
-**Tags.** Optional. They are for finding things later: Love, Family, Work, or any you add.
+**Tags.** Optional. Tap + Tags to open them.
 
-**Plant My Gratus** saves it. The entry goes into your journal, the day goes onto the plant,
-and if that crossed a phase you will hear it.
+**Photo and Voice.** A photo stays on your device. A recording is sent once to be turned
+into words, and the recording itself stays on your device.
 
-**Editing and deleting.** Open an entry from the journal. Deleting an entry never takes a
-day away from a plant: the day was real and it stays.
+**Plant My Gratus** saves it. One card answers: a seed for every day you have kept, and the
+count. On the day a plant crosses into a new phase, the card names the phase.
 
-**Keeping one close.** Star an entry and it is easy to find again. Nothing else changes.
+**The time.** Each entry keeps the hour it was written and how long it took.
+
+**Deleting.** Open an entry from the journal and choose Delete. Its day stays on the plant.
+
+**Keeping one close.** Open an entry and choose Keep Close, and it is easy to find again.

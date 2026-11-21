@@ -20,9 +20,21 @@ Every open, `splash(start)` plays `explode.mp4` from its eleventh second. When t
 
 ## The home and the tab intros
 
-The Gratus tab is built from his mockup in `viewGratus()`: a brand row, the hero card, three door cards, the Gratus Gives Together block and the goals stream, all on `.hcard` glass with a gold-mint hairline drawn by a masked pseudo-element. The card art lives in `assets/art/home/` and is cropped from the mockup itself. The garden, counts and older doors moved to `viewGarden()` under `/app/garden`.
+The Gratus tab is built from his mockup in `viewGratus()`: a brand row, the hero card, three door cards and the Gratus Gives Together door, all on `.hcard` glass with a gold-mint hairline drawn by a masked pseudo-element. That door opens `viewTogether()` at `/app/goals`: the goals stream, and the doors to Gratus Vibes, your people and the Gratus Galaxy. The card art lives in `assets/art/home/` and is cropped from the mockup itself. The garden, counts and older doors moved to `viewGarden()` under `/app/garden`.
 
 `go(tab)` plays an intro when a person enters Give or Grow from another tab: `tabIntro()` fills `#intro` with the tab's video (`give-intro.mp4`, `grow-intro.mp4`), floods a white field at the video's bright moment, holds it 1.9 seconds, then fades while the tab renders underneath. It never runs twice at once, exits on a stall of three seconds, and a tap enters early. The first render after the opening ritual never plays an intro.
+
+## The way back
+
+Walking into a room adds a step to the phone’s own history (`goNow()` pushes), so the back gesture walks out the way it walked in. Moving between Give, Gratus and Grow, or between the journal’s three tabs, changes the step the phone is on and adds none. Each step the app writes carries `{ g, d, from, fy, y }` in `history.state`: that it is ours, how many of ours lie under it, the place it was entered from and how far down that place stood, and how far down this page stood when it was left.
+
+Anything a touch opens over the page takes a step of its own when it opens (`stepIn()`): a sheet, a held moment, the tour, the laws, a Passage. The phone’s back takes that step away and the thing closes, with the room under it untouched. Closing it by hand takes the step away the same way (`stepOff()`). Something that opens without a touch, such as the tour on a first visit or the wall when a free week ends, takes no step, because a browser does not honour a step it did not see a person ask for. A sheet like that closes when the phone steps away from the page under it.
+
+The app never adds a step while the phone is stepping back. Browsers read that as a page holding a person in and begin skipping the page’s steps, so a second press would leave the app. Writes to the history wait in `settle()` behind any step back the app asked for itself, which keeps a sheet closing and a room opening in the order they happened.
+
+`stepBack()` is the arrow in the corner and the rightward swipe. With a step of ours underneath it paints the place the room was entered from at once and lets the history follow. With none, which is a room opened from a link, it goes up to the room it belongs to (`UP`). `wayBack()` hears the phone step: it closes whatever stood above the step it landed on, reads the place from the address (`readPlace()`, the reading boot uses) and paints it only if the place changed.
+
+G47 walks all of it with the phone’s own back and forward, and counts any step added while one is being answered. It has two controls: the app as it was, where a room changed the step, and an app that adds a step while it answers one. Its back is the browser’s `history.back()`, which cannot be skipped the way a phone’s gesture can, so the count is the only place that shape is seen before a person meets it. Every scripted read in a Playwright gate counts as a touch to the page, so a check about something no touch opened has the page act on its own timer, after the last touch has run out. It has not been walked on an iPhone.
 
 ## Scenes per page
 
@@ -37,7 +49,7 @@ One object in `localStorage` under `gratus.galaxy.v1`:
   gifts{given, received}, my{emojis, recipes}, wishes[], goals[], folders[], milestones{}, seeds[], sound, made{}, opens, migrated }
 ```
 
-`entries` are the journal: day, text, emoji, tags, photo, voice, folder. `folders` are named collections an entry can be filed into. `milestones` records the day each mark first lit. `plants` are the garden: one per emoji, with the days it was kept. Older states (`gratus.v1`, `gratus.v2`) migrate on first load. Nothing here is sent anywhere.
+`entries` are the journal: day, at (the moment it was written), took (seconds on the page, pauses left out), text, emoji, tags, photo, voice, folder. `engine/journal.js` works the record out from them and reads no clock; `assets/js/record.js` draws it. `folders` are named collections an entry can be filed into. `milestones` records the day each mark first lit. `plants` are the garden: one per emoji, with the days it was kept. Older states (`gratus.v1`, `gratus.v2`) migrate on first load. Nothing here is sent anywhere.
 
 ## Growth
 

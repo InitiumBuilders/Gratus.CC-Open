@@ -2,7 +2,7 @@
 title: Start here
 audience: anyone
 time: 2 min
-updated: 2026-09-19
+updated: 2026-11-20
 verified-against: v25, 2026-09-19
 ---
 
@@ -12,7 +12,7 @@ You write one thing you are grateful for. You give it an emoji. That emoji becom
 and every day you write with it, the plant grows. After thirteen days it is ready to give,
 and when you give it, the days go with it into somebody else's garden.
 
-There is no account and nothing to sign up for. Your writing lives on your device. Open the
+There is nothing to sign up for, and an account is optional. Your writing lives on your device. Open the
 app and start; that is the whole beginning.
 
 **Three doors.** Give is where gifts are made and received. Gratus is the middle, where

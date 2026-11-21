@@ -32,6 +32,10 @@ const GATES = [
   ['G41 one doorway', 'node scripts/gates/doorway.mjs', true],
   ['G42 no glow cut', 'node scripts/gates/glow.mjs', true],
   ['G43 films let go', 'node scripts/gates/films.mjs', true],
+  ['G44 a day lands', 'node scripts/gates/journal.mjs', true],
+  ['G45 the policy', 'node scripts/gates/policy.mjs', false],
+  ['G46 the room', 'node scripts/gates/together.mjs', true],
+  ['G47 the way back', 'node scripts/gates/back.mjs', true],
   ['G7 open-source', 'node scripts/gates/open-source.mjs . --decoy', false],
   ['G9 contrast', 'node scripts/gates/contrast.mjs', false],
   ['slop', 'node scripts/gates/slop.mjs --decoy && node scripts/gates/slop.mjs', false],
@@ -66,6 +70,9 @@ for (const [name, cmd, needsBrowser] of GATES) {
   const last = out.trim().split('\n').filter(Boolean).pop() || '(no output)';
   if (code) red++; else green++;
   console.log('  ' + (code ? 'RED   ' : 'green ') + name.padEnd(20) + last.slice(0, 92));
+  // A red gate says which of its checks failed, so a red that does not come back when the
+  // gate is run alone can still be read.
+  if (code) out.split('\n').filter((l) => /^\s*(FAIL|BLOCK|MISSING|ABSENT)\b/.test(l) || /Error:/.test(l)).slice(0, 8).forEach((l) => console.log('          ' + l.trim().slice(0, 150)));
 }
 console.log('\ngates: ' + green + ' green · ' + red + ' red' + (skipped ? ' · ' + skipped + ' skipped' : ''));
 process.exit(red ? 1 : 0);

@@ -265,7 +265,7 @@ function devPanel() {
   d.innerHTML = '<span class="label" id="dv-t">dev</span><button id="dv-days">+ 30 days</button><button id="dv-hand">+ an earlier hand</button><button id="dv-reset">reset</button>';
   $('#dv-t').onclick = () => d.classList.toggle('open');
   $('#dv-days').onclick = () => { const g = current(); if (!g) return; const h = Gr.hand(g); h.kept = h.kept || []; for (let i = 1; i <= 30; i++) { const dt = new Date(); dt.setDate(dt.getDate() - 400 - h.kept.length - i); const day = dt.toISOString().slice(0, 10); if (!h.kept.includes(day)) h.kept.push(day); } h.days = h.kept.length; save(); render(); };
-  $('#dv-hand').onclick = () => { const g = current(); if (!g) return; const n = g.hands.length; g.hands.unshift({ name: ['Kris', 'Natalie', 'Sam'][n % 3], days: 21 + n * 8, since: '2026-01-0' + (1 + n), until: '2026-03-0' + (1 + n), line: ['Kept it through winter.', 'For the mornings.', null][n % 3] }); save(); render(); };
+  $('#dv-hand').onclick = () => { const g = current(); if (!g) return; const n = g.hands.length; g.hands.unshift({ name: ['Kris', 'Ava', 'Sam'][n % 3], days: 21 + n * 8, since: '2026-01-0' + (1 + n), until: '2026-03-0' + (1 + n), line: ['Kept it through winter.', 'For the mornings.', null][n % 3] }); save(); render(); };
   $('#dv-reset').onclick = () => { localStorage.removeItem(KEY); localStorage.removeItem('gratus.draft'); location.href = '/app.html?dev=1'; };
 }
 

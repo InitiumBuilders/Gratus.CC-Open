@@ -89,7 +89,7 @@
       ],
       "carried": 21,
       "origin": "gift",
-      "from": "Natalie",
+      "from": "Sam",
       "echo": "a1b2c3d4e5f60718",
       "told": [
         "landed"
@@ -104,7 +104,7 @@
         "echo": "d79f735d575dd674",
         "seen": 2,
         "emoji": "☕",
-        "to": "Natalie",
+        "to": "Sam",
         "at": "2026-09-18",
         "days": 13,
         "link": "https://www.gratus.cc/gift#eyJ2IjoxfQ"
@@ -115,7 +115,7 @@
         "id": "gift_r1",
         "echo": "a1b2c3d4e5f60718",
         "emoji": "🌻",
-        "from": "Natalie",
+        "from": "Sam",
         "at": "2026-09-14",
         "days": 21,
         "message": "For the week you carried more than your share.",

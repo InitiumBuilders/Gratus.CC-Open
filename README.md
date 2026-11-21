@@ -16,8 +16,8 @@ Live at [www.gratus.cc](https://www.gratus.cc) and [grow-gratus-cc.vercel.app](h
 
 | Tab | What happens there |
 |---|---|
-| **Grow** | Today's question; your entry in words, a photo or your voice (kept on the device, and turned into words through ElevenLabs); the emoji you are planting; tags; your Gratus Goals with the shared stream. |
-| **Gratus** | Your garden, the Growth Book (entries, threads, folders, milestones; phases, emojis, recipes), and the Gratus Galaxy. |
+| **Grow** | Today's question; your entry in words, a photo or your voice (kept on the device, and turned into words through ElevenLabs); the emoji you are planting; tags. |
+| **Gratus** | Today's Gratitude and what you kept today; the Gratitude Journal (entries, the Time Log, Milestones); your garden; the Growth Book (phases, emojis, recipes); Gratus Gives Together, the room that holds Gratus Goals with the shared stream, Gratus Vibes, your people and the Gratus Galaxy. |
 | **Give** | Give with Giveth and plant a Gratus Seed, give a Gratus Gift, support a project, or send a wish to tomorrow. The gifts you gave and received. |
 
 The whole app opens through one ritual: the doorway video plays until its light fills the screen, the light holds, and the app fades in behind it. Every page stands on one of his scenes, a still or a looping video, chosen by how many times you have opened the app.
@@ -58,7 +58,8 @@ index.html          the landing page, on the same scene and the same ritual
 assets/js/galaxy.js the app (vanilla ES module, no framework)
 assets/js/ui.js     sheets, holds, toasts, dates
 assets/css/         tokens.css (colour, type, controls) and galaxy.css (the app)
-engine/             gratus.js (laws, questions, first emoji), emoji.js, rng.js
+engine/             gratus.js (laws, questions, first emoji), emoji.js, rng.js, journal.js (days kept, time written)
+assets/js/record.js the journal's figures: the seed head, the day card, the log rows
 config/             growth-book, recipes, families, evolutions, emoji names, prompts, copy
 assets/art/gfx/     his 30 scenes, the boomerang loops, the doorway and its light, the logo
 assets/audio/       his song, A Sacred Place

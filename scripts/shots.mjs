@@ -29,10 +29,10 @@ const day = (n) => new Date(END - n * DAY).toISOString().slice(0, 10);
 const kept = (from, to) => { const out = []; for (let i = from; i >= to; i--) out.push(day(i)); return out; };
 
 const GARDEN = {
-  v: 5, feel: true, tour: 'seen', name: 'August',
+  v: 5, feel: true, tour: 'seen', name: '',
   entries: [
     { id: 'e1', day: day(0), text: 'The first coffee, before anyone was awake. The whole house still.', emoji: '☕', tags: [], feel: 'calm' },
-    { id: 'e2', day: day(1), text: 'Nat laughed at the thing I said about the cat. Kept laughing.', emoji: '❤️', tags: [], feel: 'joy' },
+    { id: 'e2', day: day(1), text: 'She laughed at the thing about the cat.', emoji: '❤️', tags: [], feel: 'joy' },
     { id: 'e3', day: day(2), text: 'Walked the long way home. The light through the trees on the hill.', emoji: '🌿', tags: [], feel: 'calm' },
     { id: 'e4', day: day(3), text: 'Hard day, and it still ended with music on and the window open.', emoji: '🎵', tags: [], feel: 'tired' },
     { id: 'e5', day: day(5), text: 'A friend called for no reason at all.', emoji: '🤝', tags: [], feel: 'love' },
@@ -60,7 +60,7 @@ const GARDEN = {
 const SHOTS = [
   ['write', '/app/grow', 0, 'the writing screen'],
   ['garden', '/app/garden', 500, 'five things growing'],
-  ['journal', '/app/book', 690, 'the journal, by day'],
+  ['journal', '/app/book', 330, 'the journal, by day'],
 ];
 
 const srv = await serve(4771);

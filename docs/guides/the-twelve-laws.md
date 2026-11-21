@@ -2,12 +2,12 @@
 title: The twelve laws
 audience: anyone
 time: 3 min
-updated: 2026-09-19
+updated: 2026-11-20
 verified-against: v25, 2026-09-19
 ---
 
 The laws are the sentences this product is built to obey. You can read all twelve in the
-app, from the menu.
+app, from Gratus Guides.
 
 The first is **Gratus means honor.** Everything else follows from it.
 

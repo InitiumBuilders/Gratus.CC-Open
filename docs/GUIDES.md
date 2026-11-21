@@ -18,7 +18,7 @@ Two emojis that appear together on three or more days make a recipe. Sixty recip
 
 ### Your journal
 
-The Growth Book's Journal has four rooms. **Entries** holds every entry by day, the last thirty days as a band, and a search box. **Threads** follows one emoji through your days; tap a thread to read it and continue it. **Folders** are collections you name; open any entry and choose a folder to file it. **Milestones** marks your own road: days in a row, entries, your first photo and voice, a plant Nurtured or Bloomed, a recipe, a gift. Nothing in it compares you with anyone. Your entries never leave your phone unless you put them in a gift.
+The Gratitude Journal has three rooms. **Journal** holds every entry by day, with a search box and one Filter button for emoji, tag and folder. **Time Log** shows the days you kept, a month at a time, and every entry with the hour it was written and how long it took. **Milestones** shows how many days you have kept and the marks that have lit: days in a row, entries, your first photo and voice, a plant Nurtured or Bloomed, a recipe, a gift. Nothing in it compares you with anyone. Your entries stay on your phone unless you put a line of them in a gift.
 
 ### Your voice
 
@@ -26,7 +26,7 @@ On Grow, tap **Voice** and speak. Tap again to stop. You hear the recording back
 
 ### Gratus Goals
 
-On Grow, under the entry, write what you are growing toward and post it. Your goals appear in the stream with everyone else's. Post as many as you like. Without a connection your goals wait on the device and post when you are back.
+On the home screen, open Gratus Gives Together. Write what you are growing toward and post it. Your goals appear in the stream with everyone else's. Post as many as you like. Without a connection your goals wait on the device and post when you are back.
 
 ### Giving
 
@@ -61,7 +61,7 @@ The profile button in the top bar opens your sheet. **Export everything** saves 
 
 ### Privacy
 
-The journal lives in your browser's storage on your device. Clearing site data removes it. A gift link contains the plant and the message you chose to put in it, and nothing else. Posted goals are public. Read the [privacy page](https://www.gratus.cc/privacy).
+The journal lives in your browser's storage on your device. Clearing site data removes it. A gift link contains the plant, its days, the message you wrote, and one line from your journal for each phase it passed. Posted goals are public. Read the [privacy page](https://www.gratus.cc/privacy).
 
 ## Building on Gratus
 

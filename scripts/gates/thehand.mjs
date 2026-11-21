@@ -166,7 +166,8 @@ for (const route of ['/app', '/app/grow', '/app/give', '/app/giveth', '/app/vibe
 
 // ── 3 · a sheet follows a thumb down ──
 {
-  const o = await withGarden('/app/grow');
+  // the entries are in the journal; the writing page no longer lists them
+  const o = await withGarden('/app/book');
   const opened = await o.page.evaluate(() => {
     const el = document.querySelector('[data-e]');
     if (el) { el.click(); return (el.textContent || '').trim().slice(0, 22); }
@@ -256,19 +257,38 @@ for (const garden of [false, true]) {
 
 // ── 7 · the focus the writing field used to swallow ──
 {
-  const o = await open(b, base, '/app/grow');
+  // the goal field lives in the room behind Gratus Gives Together; the check goes with it
+  const o = await open(b, base, '/app/goals');
   const r = await o.page.evaluate(() => {
     const inp = document.querySelector('.pillform input');
     if (!inp) return { none: true };
     inp.focus();
     return { shadow: getComputedStyle(inp.closest('.pillform')).boxShadow };
   });
-  say(!r.none && r.shadow && r.shadow !== 'none', 'focusing the writing field shows where the focus is');
+  say(!r.none && r.shadow && r.shadow !== 'none', 'focusing the goal field shows where the focus is');
   await o.close();
+  // and the page the app is for: the box somebody writes their day into
+  const w = await open(b, base, '/app/grow');
+  const f = await w.page.evaluate(() => {
+    const box = document.getElementById('write');
+    if (!box) return { none: true };
+    box.focus();
+    const c = getComputedStyle(box);
+    return { style: c.outlineStyle, width: parseFloat(c.outlineWidth) };
+  });
+  say(!f.none && f.style !== 'none' && f.width >= 2, 'and so does the journal\'s own page  (' + (f.none ? 'no box' : f.style + ' ' + f.width + 'px') + ')');
+  await w.close();
 }
 
 // ── 8 · the weight a phone carries ──
-const BUDGET = { '/': 0.55, '/app': 0.75, '/app/grow': 0.85, '/app/give': 0.75, '/app/giveth': 0.80, '/app/vibes': 0.80, '/app/guides': 0.90 };
+// Measured 2026-11-20. The journal's record came in (the day card, the time log), and more
+// than its weight went out: the pathways, a second composer, the lines written over the
+// plant sheets. So every ceiling stands where it stood. Two are new or lower: the writing
+// page stopped carrying the goals stream and its picture and came down with them, so that
+// weight cannot drift back, and the journal has a ceiling of its own for the first time.
+// The room behind Gratus Gives Together has one as well: it opened at 0.91 MB with a second
+// picture inside the goals card, and stands at 0.75 without it.
+const BUDGET = { '/': 0.55, '/app': 0.75, '/app/grow': 0.72, '/app/book': 0.70, '/app/goals': 0.80, '/app/give': 0.75, '/app/giveth': 0.80, '/app/vibes': 0.80, '/app/guides': 0.90 };
 for (const [route, cap] of Object.entries(BUDGET)) {
   const ctx = await b.newContext(PHONE);
   const page = await ctx.newPage();

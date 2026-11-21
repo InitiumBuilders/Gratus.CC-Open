@@ -29,9 +29,13 @@ console.log('G23 - the three held moments');
 
 // ── named in one place ──
 const block = (app.match(/const CEREMONIES = \{[\s\S]*?\n\};/) || [''])[0];
-say(!!block, 'the three moments are named in one place');
-for (const k of ['bloomed', 'firstGiven', 'firstReceived']) say(new RegExp('\\n  ' + k + '\\(').test(block), '  ' + k);
-say(/CEREMONIES\.bloomed\(/.test(app), 'a crossing plays the bloom through it');
+say(!!block, 'the held moments are named in one place');
+for (const k of ['firstGiven', 'firstReceived']) say(new RegExp('\\n  ' + k + '\\(').test(block), '  ' + k);
+// The third, a plant crossing into a phase, is not a card of its own any more. It is the
+// day's card, which G44 writes its way to in a browser and counts. Here, only that the
+// crossing is still what opens the Gate, and that the old card is not also played.
+say(/html: dayCard\(\{/.test(app) && /const loud = crossed \|\|/.test(app) && /\{ gate: loud \}\);/.test(app) && !/CEREMONIES\.bloomed/.test(app),
+  'a crossing is held by the day\'s own card, and the Gate opens for it  (G44 walks it)');
 
 const srv = await serve(4803);
 const b = await browser();
@@ -103,11 +107,11 @@ async function wrapAndSend(p, to) {
 // ══ ONE PERSON, SENDING ══
 const A = await phone(garden([{ id: 'p1', emoji: '☕', planted: back(21), kept: kept(21), carried: 0, origin: 'planted', from: null }]));
 
-let r1 = await wrapAndSend(A.page, 'Nat');
+let r1 = await wrapAndSend(A.page, 'Sam');
 say(r1.wrappedUp, 'wrapping a gift holds "Wrapped." on the screen');
 say(r1.shareOpen, 'and Enter leaves it for the share sheet');
 say(r1.after.up && r1.after.kind === 'firstGiven', 'the first gift ever sent is held in the middle of the screen  (' + (r1.after.kind || 'nothing') + ')');
-say(/On its way to Nat\./.test(r1.after.text || ''), 'it says who it is on its way to');
+say(/On its way to Sam\./.test(r1.after.text || ''), 'it says who it is on its way to');
 say((r1.after.text || '').includes(copy.locked.promise), 'and closes on his line, as he wrote it  ("' + copy.locked.promise + '")');
 
 const mark = await A.page.evaluate(() => {

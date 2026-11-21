@@ -8,17 +8,18 @@ import * as Gr from '../../engine/gratus.js?v=12';
 import * as E from '../../engine/emoji.js?v=12';
 import { newId } from '../../engine/rng.js?v=12';
 import { STATE_V, fresh, upgrade } from '../../engine/state.js?v=14';
-import { glyphSvg } from '../../engine/glyph.js?v=17';
-import { VIEWS, titleOf } from './views.js?v=17';
-import { TOUR, OPEN } from './tour.js?v=19';
+import { VIEWS, titleOf } from './views.js?v=18';
+import { TOUR, OPEN } from './tour.js?v=20';
 import { beat, watchTime } from './trax.js?v=18';
 import * as Acct from './account.js?v=20';
 import * as Bill from './billing.js?v=21';
-import { esc, $, $$, sheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
+import { esc, $, $$, sheet as rawSheet, toast, fmtDay, longPress, shareOrCopy, swipe, feel, setFeel } from './ui.js?v=14';
 import { keepPut, keepGet, keepDel } from './keep.js?v=13';
 import { paintMarks, passingNow, launch as markLaunch, WRAPPED } from './giftmark.js?v=42';
 import { countUp, onSeen, drawMonths, growBars, armMonths, armBars, armTrace } from './motus.js?v=41';
 import { letGo, film as FILM } from './films.js?v=44';
+import * as J from '../../engine/journal.js?v=1';
+import { dayCard, todaySlip, doorDays, doorPlant, logRows, keptCard } from './record.js?v=1';
 letGo();
 
 const KEY = 'gratus.galaxy.v1';
@@ -30,7 +31,7 @@ let C = {}, S = null, tab = 'gratus', sub = null, room = null, installEvt = null
 const SCENES = {
   guides: ['g29', 'g30', 'dlong', 'g20', 'g07'], vibes: ['g36', 'g15', 'v2', 'g05', 'g32'],
   home: ['g31', 'g32', 'g37', 'dlong', 'g29', 'g33', 'v2', 'g15', 'g36', 'd2'], grow: ['g37', 'g33', 'v3', 'g08', 'd2', 'v1', 'g06', 'g10', 'g16', 'g09'], give: ['g34', 'g35', 'g13', 'd2', 'g14', 'g30', 'dhold', 'g09', 'g12'],
-  book: ['g31', 'v1', 'g16', 'g03', 'g20', 'v3', 'g07', 'g24', 'g26', 'g25', 'g27'], galaxy: ['g36', 'g15', 'v2', 'g05'], vault: ['g17', 'v2', 'g18'], earth: ['g38', 'g23', 'v3', 'g19', 'g21'], world: ['dlong', 'g14', 'g23'], projects: ['g23', 'v1', 'g19'], goals: ['g14', 'g23', 'g04'],
+  book: ['g31', 'v1', 'g16', 'g03', 'g20', 'v3', 'g07', 'g24', 'g26', 'g25', 'g27'], galaxy: ['g36', 'g15', 'v2', 'g05'], vault: ['g17', 'v2', 'g18'], earth: ['g38', 'g23', 'v3', 'g19', 'g21'], world: ['dlong', 'g14', 'g23'], projects: ['g23', 'v1', 'g19'], 
   journey: ['g13', 'dhold', 'g13', 'dlong', 'g20', 'g07', 'g19', 'v2'], ceremony: ['g22', 'g05', 'g03'], garden: ['g33', 'g11', 'g27', 'g24', 'g25'],
   giveth: ['g38', 'g23', 'g35', 'g19', 'g21'], console: ['g36', 'g32', 'g31'], trace: ['g33', 'g37', 'g31']
 };
@@ -107,6 +108,20 @@ function T(path, fallback) {
 }
 // a count is read by a person: 16846 donors is a number, 16,846 donors is a fact
 const plural = (n, w) => (Number(n) || 0).toLocaleString() + ' ' + w + (Number(n) === 1 ? '' : 's');
+// ── the way a time is said ──
+// In the reader's own language and on their own clock, twelve hours or twenty four. An
+// entry has always carried the moment it was written; until now nothing ever showed it.
+const clockOf = (at) => { const d = new Date(at); return isNaN(d) ? '' : d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }); };
+const dayBrief = (day) => { const d = new Date(day + 'T12:00:00'); return isNaN(d) ? String(day) : d.toLocaleDateString(undefined, d.getFullYear() === new Date().getFullYear() ? { month: 'short', day: 'numeric' } : { month: 'short', day: 'numeric', year: 'numeric' }); };
+const stampOf = (at) => { const d = new Date(at); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { weekday: 'long' }) + ' \u00b7 ' + clockOf(at); };
+const FMT = {
+  clock: clockOf,
+  month: (key) => new Date(key + '-15T12:00:00').toLocaleDateString(undefined, { month: 'short' }),
+  monthLong: (key) => new Date(key + '-15T12:00:00').toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+  dayShort: (day) => { const d = new Date(day + 'T12:00:00'); return d.toLocaleDateString(undefined, { weekday: 'short' }) + ' ' + d.getDate(); },
+};
+// what the record's builders are handed: how to escape, where the words live, how a time is said
+const REC = () => ({ esc, T, plural, fmt: FMT });
 function phaseOf(d) { let out = C.book.phases[0]; for (const ph of C.book.phases) if (d >= ph.day) out = ph; return out; }
 function phaseIndex(d) { return C.book.phases.indexOf(phaseOf(d)); }
 function nextPhase(d) { return C.book.phases.find((ph) => ph.day > d) || null; }
@@ -165,12 +180,13 @@ function hero(sceneName, o) {
 // one is up, Escape, Enter and the space bar do what a tap does. The held moments already did.
 const passKey = (e) => e.key === 'Escape' || e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar';
 const INTROS = { give: { src: 'give-intro', flood: 12.6, hard: 14500 }, grow: { src: 'grow-intro', flood: 9.6, hard: 11500 } };
-let booted = false, introOn = false;
+let booted = false, introOn = false, introCancel = null;
 function tabIntro(t, then) {
   const el = $('#intro'); const cfg = INTROS[t]; if (!el || !cfg || !motionOk() || introOn) { then(); return; }
   introOn = true; let gone = false, started = false, flooded = false, moved = false, hard = 0, stall = 0;
   const onKey = (e) => { if (!gone && passKey(e)) { e.preventDefault(); out(); } };
   const out = () => { if (gone) return; gone = true; introOn = false; clearTimeout(hard); clearTimeout(stall); document.removeEventListener('keydown', onKey); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.innerHTML = ''; el.classList.remove('out'); }, 1300); if (!started) { started = true; then(); } };
+  introCancel = () => { if (gone) return; gone = true; started = true; introOn = false; clearTimeout(hard); clearTimeout(stall); document.removeEventListener('keydown', onKey); el.onclick = null; el.hidden = true; el.innerHTML = ''; };
   const flood = () => { if (flooded || gone) return; flooded = true; const w = el.querySelector('.white'); if (w) w.classList.add('on'); setTimeout(out, 1900); };
   el.innerHTML = '<video muted playsinline preload="none" poster="' + GFX(cfg.src + '-poster.webp') + '"><source src="' + FILM(cfg.src + '.mp4') + '" type="video/mp4"></video><div class="white"></div><span class="kicker skiphint">tap to enter</span>';
   el.hidden = false; const v = el.querySelector('video');
@@ -183,7 +199,153 @@ function tabIntro(t, then) {
   v.muted = true; v.play().catch(() => v.play().catch(() => null));
 }
 function go(t, s) { if (booted && !s && INTROS[t] && t !== tab) { tabIntro(t, () => goNow(t, s)); return; } goNow(t, s); }
-function goNow(t, s) { tab = t; sub = s || null; const path = '/app' + (sub ? '/' + sub : (tab === 'gratus' ? '' : '/' + tab)); if (location.pathname.endsWith('.html')) history.replaceState(null, '', location.pathname + '?tab=' + (sub || tab)); else history.replaceState(null, '', path); render(); window.scrollTo({ top: 0 }); }
+// Straight to the page. The films belong to the doors: somebody who taps Grow walks through
+// one. Somebody who taps Write Today asked for the page, and gets the page.
+function writeNow(emoji) {
+  if (emoji) draft.emoji = emoji;
+  goNow('grow');
+  setTimeout(() => { const w = $('#write'); if (w) { w.focus({ preventScroll: true }); w.scrollIntoView({ block: 'center', behavior: motionOk() ? 'smooth' : 'auto' }); } }, 120);
+}
+// ── THE WAY BACK ──
+// Walking into a room adds a step to the phone's own history, so its back gesture walks out
+// the way it walked in. Moving between the three doors, or between the journal's tabs,
+// changes the step the phone is on and adds none. Each step of ours carries how many lie
+// under it (d), the place it was entered from, and how far down that page stood.
+//
+// Something a touch opens over the page takes a step too: a sheet, a held moment, the tour,
+// the laws, a Passage. The phone's back takes that step away and the thing closes, and the
+// room under it does not move. Closing it by hand takes the step away the same way.
+//
+// Nothing here adds a step while the phone is stepping back. A browser reads a page that
+// does that as one holding a person in, and stops honouring its steps.
+const SUBS = ['book', 'log', 'marks', 'growth', 'goals', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden', 'giveth', 'console', 'guides', 'vibes'];
+const GRATUS_ROOMS = ['book', 'log', 'marks', 'growth', 'goals', 'galaxy', 'garden', 'guides', 'vibes'];
+const UP = { vault: ['give', 'world'], earth: ['give', 'world'], vibes: ['gratus', 'goals'], galaxy: ['gratus', 'goals'] };
+const stepNow = () => { const s = history.state; return s && s.g ? s : { g: 1, d: 0 }; };
+const pathOf = (t, s) => (location.pathname.endsWith('.html') ? location.pathname + '?tab=' + (s || t) : '/app' + (s ? '/' + s : (t === 'gratus' ? '' : '/' + t)));
+const inApp = () => /^\/app(\/|$)/.test(location.pathname) || location.pathname.endsWith('.html');
+let owed = 0, owedTimer = 0;      // steps back this app asked for itself and has not yet seen land
+const waiting = [];               // writes to the phone's history that wait for those to land
+let popping = false;              // the phone's own step is being answered
+const over = [];                  // what is open over the page and holds a step, lowest first
+let overN = 0, lawsStep = null;
+// a write to the history runs now, or as soon as the steps this app asked for have landed
+function settle(fn) { if (owed > 0) waiting.push(fn); else fn(); }
+function flush() { while (!owed && waiting.length) { const fn = waiting.shift(); try { fn(); } catch (e) { if (window.console) console.error(e); } } }
+// step off the step the phone stands on. If the phone never answers, the app stops waiting.
+function stepOut() {
+  owed++; history.back();
+  clearTimeout(owedTimer); owedTimer = setTimeout(() => { if (owed) { owed = 0; flush(); } }, 4000);
+}
+// a step whose sheet is gone: nothing stands on one
+const deadStep = () => { const s = history.state; return !!(s && s.g && s.ov && !over.some((o) => o.id === s.ov)); };
+// after a step of our own lands, the address says where the app is
+function syncAddress() {
+  if (room || !inApp() || location.pathname.endsWith('.html')) return;
+  if (location.pathname !== pathOf(tab, sub)) history.replaceState(stepNow(), '', pathOf(tab, sub));
+}
+// something opened over the page takes a step, if a touch opened it
+function stepIn(shut) {
+  const touched = !navigator.userActivation || navigator.userActivation.isActive;
+  if (!touched || popping) return null;
+  const o = { id: ++overN, shut, d: 0, held: false, gone: false };
+  over.push(o);
+  settle(() => {
+    if (o.gone) return;
+    const cur = stepNow();
+    history.pushState({ g: 1, d: cur.d + 1, from: cur.from, fy: cur.fy, ov: o.id, room: room ? 1 : 0 }, '');
+    o.d = cur.d + 1; o.held = true;
+  });
+  return o;
+}
+// it was closed by hand: its step goes with it
+function stepOff(o) {
+  if (!o || o.gone) return;
+  o.gone = true;
+  const i = over.indexOf(o); if (i >= 0) over.splice(i, 1);
+  settle(() => { if (o.held && stepNow().ov === o.id) stepOut(); });
+}
+// every sheet in the app is one of these
+function sheet(html, opts) {
+  const o = Object.assign({}, opts || {}); const mine = o.onClose; let step = null;
+  o.onClose = (result) => { stepOff(step); if (mine) mine(result); };
+  const sh = rawSheet(html, o);
+  if (!o.sticky) step = stepIn(() => sh.close());
+  return sh;
+}
+function goNow(t, s, o) {
+  const to = s || null; const here = [tab, sub]; const flat = !!(o && o.replace); const y = Math.round(window.scrollY);
+  // a room entered while the phone's own step is being answered changes the step instead of adding one
+  const enter = !!to && !(t === tab && to === sub) && !flat && !popping;
+  settle(() => {
+    const cur = stepNow();
+    if (enter) {
+      history.replaceState(Object.assign({}, cur, { y }), '');
+      history.pushState({ g: 1, d: cur.d + 1, from: here, fy: y }, '', pathOf(t, to));
+    } else if (!to && !flat && cur.d > 0 && !cur.ov && cur.from && cur.from[0] === t && !cur.from[1]) {
+      // the top of the tab this room was entered from: going there is going back, so it is one
+      stepOut();
+    } else history.replaceState(Object.assign({}, cur, { y: 0 }), '', pathOf(t, to));
+  });
+  tab = t; sub = to; render(); window.scrollTo({ top: 0 });
+}
+// The arrow in the corner, and the swipe that does the same. A room that was walked into is
+// walked out of the way the phone would do it: the place it was entered from is painted at
+// once, where it stood, and the phone's history follows. A room opened from a link has
+// nothing behind it, so it goes up to the room it belongs to.
+function stepBack() {
+  settle(() => {
+    const cur = stepNow();
+    if (cur.d > 0 && cur.from && !cur.ov) {
+      stepOut();
+      tab = cur.from[0]; sub = cur.from[1] || null; render(); window.scrollTo({ top: cur.fy || 0 });
+      return;
+    }
+    const up = UP[sub]; goNow(up ? up[0] : tab, up ? up[1] : null, { replace: true });
+  });
+}
+// the place an address names; anything it does not know is the home
+function readPlace() {
+  const q = new URLSearchParams(location.search).get('tab'); const m = /^\/app\/?(\w+)?/.exec(location.pathname);
+  const want = q || (m && m[1]) || 'gratus';
+  if (SUBS.includes(want)) { tab = GRATUS_ROOMS.includes(want) ? 'gratus' : 'give'; sub = want; }
+  else { tab = ['grow', 'gratus', 'give'].includes(want) ? want : 'gratus'; sub = null; }
+  return want;
+}
+// the phone stepped, back or forward
+function wayBack() {
+  if (owed > 0) {
+    // a step this app asked for has landed
+    owed--;
+    if (deadStep()) { stepOut(); return; }
+    if (!owed) { clearTimeout(owedTimer); flush(); if (!owed) syncAddress(); }
+    return;
+  }
+  const st = history.state; const ours = !!(st && st.g);   // a link to a # writes a step that is not ours
+  popping = true;
+  try {
+    if (introOn && introCancel) introCancel();
+    if (ours) {
+      // whatever is open above the step the phone landed on closes, highest first
+      for (let i = over.length - 1; i >= 0; i--) {
+        const o = over[i];
+        if (o.held && o.d > st.d) { over.splice(i, 1); o.gone = true; try { o.shut(); } catch (e) { if (window.console) console.error(e); } }
+      }
+      if (owed) return;                         // closing one of them took a step of its own, and that one finishes this
+      if (deadStep()) { stepOut(); return; }
+    }
+    // a sheet a touch did not open holds no step, so nothing above closed it: it goes with the page under it
+    $$('#sheets .scrim').forEach((s) => s.click());
+    if (room && !(st && st.room)) closeRoom(true);
+    if (!$('#laws').hidden && !lawsStep) { $('#laws').hidden = true; document.body.classList.remove('room'); }
+    const was = [tab, sub];
+    if (ours && inApp()) readPlace();
+    if (!ours || was[0] !== tab || was[1] !== sub) {
+      render();
+      if (ours) { const y = st.y || 0; window.scrollTo({ top: y }); requestAnimationFrame(() => { if (Math.abs(window.scrollY - y) > 2) window.scrollTo({ top: y }); }); }
+    }
+  } finally { popping = false; }
+}
 // The app is one render away from a blank screen at all times: anything that throws part
 // way through building a view leaves whatever was there before, or nothing. This is the
 // floor under that. It never hides the fault, it says it out loud and keeps the doors
@@ -219,7 +381,9 @@ function renderNow() {
   void VIEWS;
   checkMilestones(); checkAlchemy();
   const root = $('#view'); let s = '';
-  if (sub === 'book') s = topBar({ back: true }) + viewBook();
+  if (JOURNAL_ROOMS.includes(sub)) s = topBar({ back: true }) + viewBook();
+  else if (sub === 'growth') s = topBar({ back: true }) + viewGrowthBook();
+  else if (sub === 'goals') s = topBar({ back: true }) + viewTogether();
   else if (sub === 'garden') s = topBar({ back: true }) + viewGarden();
   else if (sub === 'projects') s = topBar({ back: true }) + viewProjects();
   else if (sub === 'world') s = topBar({ back: true }) + viewWorld();
@@ -241,7 +405,7 @@ function renderNow() {
     // a ring drawn around a word is not something a screen reader can see
     if (here) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
-  const back = $('#top-back'); if (back) back.addEventListener('click', () => go(sub === 'vault' || sub === 'earth' ? 'give' : tab, sub === 'vault' || sub === 'earth' ? 'world' : null));
+  const back = $('#top-back'); if (back) back.addEventListener('click', stepBack);
   $('#top-you').addEventListener('click', youSheet);
   { const ts = $('#top-sound'); if (ts) ts.addEventListener('click', toggleSound); }
   wire();
@@ -250,43 +414,18 @@ function renderNow() {
 // ══ GRATUS GUIDES · what this is for, and how it works ══════════════════════════════════════
 function viewGuides() {
   const ph = C.book.phases;
-  const guide = (ico, title, body) => '<div class="glass guide"><span class="g-ico">' + ico + '</span><div><b>' + title + '</b><span class="body">' + body + '</span></div></div>';
-  return hero(scene('guides'), { cls: 'room-hero', h1: 'Gratus Guides', k1: 'Why any of this exists.', k2: 'And how to walk it.' }) +
+  const fact = (ico, title, body) => '<div class="glass guide"><span class="g-ico">' + ico + '</span><div><b>' + title + '</b><span class="body">' + body + '</span></div></div>';
+  return hero(scene('guides'), { cls: 'room-hero', h1: 'Gratus Guides', k1: T('locked.headline', '') }) +
     '<div class="page">' +
-    '<div class="glass card creed"><span class="kicker gold">The mission</span>' +
-    '<p class="statement">Gratitude, grown daily, and given away.</p>' +
-    '<p class="body">Gratitude works and does not stick. People start, feel the lift, and stop, because a list of good things never changes and never points anywhere. Gratus makes gratitude grow, and then lets you give it away, so the practice has somewhere to go.</p></div>' +
-    '<div class="glass card creed"><span class="kicker gold">The vision</span>' +
-    '<p class="statement">A kinder world grows from here.</p>' +
-    '<p class="body">A world where noticing something good is the first move of a chain: you keep it, it grows, you give it, someone receives it, and it grows again in their hands. Gratitude as a thing in motion rather than a feeling that fades by lunchtime.</p></div>' +
-    '<div class="eyebrow"><h2>The loop</h2><span class="more">five steps</span></div>' +
-    '<div class="loopline">' + [['✍️', 'Write', 'One honest line about today.'], ['🌱', 'Plant', 'An emoji carries it.'], ['↩︎', 'Return', 'It grows on the days you write about it.'], ['✨', 'Make', 'Two threads together make a recipe.'], ['🎁', 'Give', 'When it is ready, it can leave your hands.']].map(([i2, n, l]) => '<div class="loopstep"><span class="ls-ico">' + i2 + '</span><b>' + n + '</b><span>' + l + '</span></div>').join('<i class="ls-join" aria-hidden="true"></i>') + '</div>' +
-    '<div class="eyebrow"><h2>How a Gratus grows</h2></div>' +
-    '<div class="rows">' + ph.map((p, k) => '<div class="glass phase"><span class="ico' + (k === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.meaning) + '</span></span><span class="day">day ' + p.day + '</span></div>').join('') + '</div>' +
-    '<div class="eyebrow"><h2>The Gratus Sound</h2><span class="more">five notes</span></div>' +
-    '<div class="glass card"><p class="body">The five phases are five notes of one chord. Planted is the root. Nurtured is the fifth above it, Deepened the octave, Bloomed the third above that, and Ready to Give the fifth above that. When a plant crosses into a phase you hear its note and every note underneath it, so the chord is built by the growing. Giving plays the whole chord and lets it fall back to the root, which is what you are left holding.</p>' +
-    '<div class="notes">' + ph.map((p, k) => '<button class="chip note" data-note="' + k + '">' + p.icon + ' ' + esc(p.name) + '<i>' + esc(TONE_NAMES[k] || '') + '</i></button>').join('') + '</div>' +
-    '<button class="btn mint wide" data-note="given">Hear what giving sounds like</button>' +
-    (S.sound ? '<p class="cap">Tap a phase to hear the chord as far as it goes.</p>'
-             : '<p class="cap">The sound is off right now. The switch is at the top of the screen.</p>') +
-    '</div>' +
-    '<div class="eyebrow"><h2>What we promise</h2></div>' +
+    '<div class="loopline">' + [['✍️', 'Write'], ['🌱', 'Plant'], ['↩︎', 'Return'], ['✨', 'Make'], ['🎁', 'Give']].map(([i2, n]) => '<div class="loopstep"><span class="ls-ico">' + i2 + '</span><b>' + n + '</b></div>').join('') + '</div>' +
+    '<div class="rows">' + ph.map((p, k) => '<div class="glass phase"><span class="ico' + (k === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b></span><span class="day">day ' + p.day + '</span></div>').join('') + '</div>' +
     '<div class="rows">' +
-    guide('🔒', 'Your journal never leaves this device.', 'Not to us, not to anyone. The only things that travel are what you choose to give: a gift, a goal, a seed, a vibe.') +
-    guide('🫱', 'Nothing to buy, ever.', 'No tiers, no ranks, no upgrade. A gate refuses those words in the code before anything ships.') +
-    guide('🌾', 'No one is compared with anyone.', 'Days in a row, marks on your own road. Never a score against another person.') +
-    guide('🕯️', 'A quiet day is still a day.', 'Nothing here counts what you did not do, and nothing here asks you to hurry.') +
-    guide('📖', 'Open, all of it.', 'Code, art, video, song and words, MIT. Read it, take it, build on it.') +
+    fact('🔒', 'Your journal stays on this device.', 'What travels is what you choose to give.') +
+    fact('🎁', 'A gift is free to open.', 'Gratus is free for a week, then $24 a month.') +
+    fact('📖', 'Open source.', 'Code, art, film, song and words. MIT.') +
     '</div>' +
-    '<div class="eyebrow"><h2>Where to start</h2></div>' +
-    '<div class="rows">' +
-    '<button class="glass opt" id="gd-write"><span class="ico">🌱</span><span class="grow"><b>Write today</b><span>One line. It takes a minute and it starts everything.</span></span><span class="arrow">›</span></button>' +
-    '<button class="glass opt" id="gd-book"><span class="ico">📖</span><span class="grow"><b>The Growth Book</b><span>Your journal by day, the phases, the emojis, the recipes.</span></span><span class="arrow">›</span></button>' +
-    '<button class="glass opt" id="gd-vibes"><span class="ico">✦</span><span class="grow"><b>Gratus Vibes</b><span>The small rooms: a few people, one feed, gratitude out loud.</span></span><span class="arrow">›</span></button>' +
-    '<button class="glass opt" id="gd-giveth"><span class="ico gold">🤝</span><span class="grow"><b>Give with Giveth</b><span>Real projects, zero fees. Your words ride with the gift.</span></span><span class="arrow">›</span></button>' +
-    '<button class="glass opt" id="gd-laws"><span class="ico">⚖️</span><span class="grow"><b>The twelve laws</b><span>The whole thing, one line at a time.</span></span><span class="arrow">›</span></button>' +
-    '</div>' +
-    '<p class="statement quiet" style="text-align:center">\u201cGratus means honor.\u201d</p>' +
+    '<div class="actions"><button class="btn mint" id="gd-write">Write Today</button><button class="btn" id="gd-tour">' + esc(M('tour')) + '</button><button class="btn" id="gd-laws">' + esc(M('laws')) + '</button><a class="btn" href="/docs">Read the guides</a></div>' +
+    '<p class="statement quiet" style="text-align:center">“Gratus means honor.”</p>' +
     '</div>';
 }
 // ══ GRATUS VIBES · the small rooms ══════════════════════════════════════════════════════════
@@ -351,14 +490,13 @@ function vibePassageSheet(v) {
 function viewVibes() {
   const v = vibeNow;
   if (vibeCounts === null && S.vibes.length) loadVibeCounts();
-  return hero(scene('vibes'), { cls: 'room-hero', h1: 'Gratus Vibes', k1: 'The small rooms.', k2: 'A few people. One feed. Gratitude out loud.' }) +
+  return hero(scene('vibes'), { cls: 'room-hero', h1: 'Gratus Vibes', k1: 'A Few People. One Feed.' }) +
     '<div class="page">' +
     (S.vibes.length ? '<div class="chips row">' + S.vibes.map((x) => '<button class="chip' + (v && v.code === x.code ? ' on' : '') + '" data-vopen="' + esc(x.code) + '">' + esc(x.emoji || '✦') + ' ' + esc(x.name || x.code) + (vibeUnread(x) ? '<i class="dot"></i>' : '') + '</button>').join('') + '</div>' : '') +
     (unreadRooms() ? '<p class="vibeline"><i class="vibemark"></i>' + (unreadRooms() === 1 ? 'One of your rooms has words you have not read.' : unreadRooms() + ' of your rooms have words you have not read.') + '</p>' : '') +
-    (!v ? '<div class="glass card"><span class="kicker mint">What a Vibe is</span><p class="body">A small room with a name and a code. Anyone holding the code is in it. People post short gratitudes there with an emoji from their own garden, and that is all that travels: your journal stays on your device.</p>' +
+    (!v ? '<div class="glass card"' + (S.vibes.length ? '' : ' data-state="empty"') + '><p class="body">A room with a name and a code. Everyone holding the code reads what is posted there.</p>' +
       '<div class="two"><input class="field" id="vb-code" maxlength="12" placeholder="e.g. K7M2QP" aria-label="a vibe code"><button class="btn" id="vb-join">Go in</button></div>' +
-      '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' +
-      '' : '') +
+      '<button class="btn mint wide" id="vb-make">Start a Vibe ✦</button></div>' : '') +
     (vibeState === 'loading' ? '<p class="cap">Opening the room...</p>' : '') +
     (vibeState === 'offline' && !v ? '<p class="cap">No vibe answered on that code. Check it and try again.</p>' : '') +
     (v ? '<div class="glass card vibehead"><span class="v-ico">' + esc(v.emoji) + '</span><div><b>' + esc(v.name) + '</b>' + (v.about ? '<span class="body">' + esc(v.about) + '</span>' : '') +
@@ -374,7 +512,7 @@ function viewVibes() {
       (v.posts.length ? '<div class="eyebrow"><h2>The room</h2><span class="more">' + v.posts.length + ' shown' + '</span></div><div class="rows">' +
         v.posts.map((p) => '<div class="glass vpost"><span class="orb sm"><span>' + esc(p.emoji) + '</span></span><span class="grow"><span class="kicker">' + esc(p.name) + ' · ' + esc(fmtDay(String(p.at).slice(0, 10))) + '</span><b>' + esc(p.text) + '</b></span></div>').join('') + '</div>'
         : '<p class="cap">Nobody has said anything here yet.</p>') : '') +
-    '<p class="cap">A Vibe holds what people choose to say in it. It is not your journal, and your journal never comes here.</p>' +
+    '' +
     '</div>';
 }
 function makeVibeSheet() {
@@ -412,12 +550,14 @@ function openRoomPassage(g, mine) {
     '<h1>' + esc(g.n || 'A room') + '</h1>' +
     '<div class="glass stats"><div><b>' + (g.c[0] || 0) + '</b><span>' + (g.c[0] === 1 ? 'gratitude' : 'gratitudes') + '</span></div><div><b>' + (g.c[1] || 0) + '</b><span>' + (g.c[1] === 1 ? 'voice' : 'voices') + '</span></div></div>' +
     (g.f && g.f.length ? '<span class="kicker mint">What it grew</span><div class="roomfield">' + g.f.map((x) => '<span class="rf"><span class="orb sm"><span>' + esc(x[0]) + '</span></span><b>' + (x[1] || 0) + '</b></span>').join('') + '</div>' : '') +
-    '<p class="cap">No code is in this page, so it cannot let anyone into the room, and not one word of what was said is here either.</p>' +
+    '<p class="cap">This page shows what the room grew. The code and the words stay inside the room.</p>' +
     (mine ? '' : '<a class="btn mint wide" href="/app/vibes">Start a room of your own ✦</a>') +
     '<p class="statement quiet" style="text-align:center">“Gratus means honor.”</p>' +
     '</div></div>';
   root.hidden = false; document.body.classList.add('room');
-  const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/passage') history.replaceState(null, '', '/app'); };
+  let step = null;
+  const close = () => { stepOff(step); root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/passage') settle(() => history.replaceState(stepNow(), '', '/app')); };
+  step = stepIn(close);
   $('#pa-x', root).addEventListener('click', close);
 }
 function passageOf() {
@@ -462,7 +602,9 @@ function openPassage(g, mine) {
     '<p class="statement quiet" style="text-align:center">\u201cGratitude Moves Worlds.\u201d</p>' +
     '</div></div>';
   root.hidden = false; document.body.classList.add('room');
-  const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/passage') history.replaceState(null, '', '/app'); };
+  let step = null;
+  const close = () => { stepOff(step); root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/passage') settle(() => history.replaceState(stepNow(), '', '/app')); };
+  step = stepIn(close);
   $('#pa-x', root).addEventListener('click', close);
   const s2 = $('#pa-share2', root); if (s2) s2.addEventListener('click', () => shareOrCopy('My Gratus Passage', 'What grew in my garden.', passageLink()).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
 }
@@ -546,7 +688,7 @@ function sunSheet() {
   const s = S.sun;
   const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>🔆</span></span><h2>Sunlight</h2><span class="kicker mint">Your part in the commons</span></div>' +
     '<p class="body">Paste the public address you give with on Giveth. Gratus reads how much you take part there: projects you boost with GIVpower, gifts you have given, projects you have liked. That reading is sunlight, and it feeds the alchemy marks.</p>' +
-    '<p class="cap">Read only. Gratus never asks you to connect a wallet, never asks for a key or a seed phrase, and never signs anything. A public address is public.</p>' +
+    '<p class="cap">Read only. A public address is all Gratus reads, and all it needs.</p>' +
     '<input class="field" id="sun-addr" placeholder="0x..." aria-label="your public address" value="' + esc((s && s.address) || '') + '">' +
     '<button class="btn mint wide" id="sun-go">Read it</button>' +
     (s && s.found ? '<div class="glass stats"><div><b>' + s.boosted + '</b><span>boosted</span></div><div><b>' + s.given + '</b><span>gifts</span></div><div><b>' + s.sun + '</b><span>sunlight</span></div></div>' : ''), { autofocus: true });
@@ -770,6 +912,7 @@ function viewGiveth() {
     (gvList && gvList.length ? '<div class="rows">' + gvList.map(projectRow).join('') + '</div>' : gvState === 'live' ? '<p class="cap">Nothing with those words. Try another lane, or another category.</p>' : '') +
     (gvMore ? '<button class="btn wide" id="gv-more">Show more of the ' + gvTotal.toLocaleString() + '</button>' : '') +
     '<button class="glass opt" id="gv-console"><span class="ico">' + I.people + '</span><span class="grow"><b>I run a project</b><span>Read the seeds people planted with their gifts, and water them.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="gv-sun"><span class="ico">🔆</span><span class="grow"><b>Sunlight on Giveth</b></span><span class="arrow">›</span></button>' +
     '<p class="cap">Gratus is not Giveth and holds no money. Giving happens on giveth.io, in your own wallet. A seed is a note, not a payment.</p>' +
     '</div>';
 }
@@ -815,7 +958,7 @@ async function projectSheet(slug) {
     '<div class="actions"><button class="btn mint" id="gv-seed">Plant a Gratus Seed &amp; give ' + esc(p.bloom) + '</button>' +
       '<button class="btn" id="gv-grow">' + (grown.length ? 'Growing ' + plural(grown.length, 'Gratus') + ' for them' : 'Grow a Gratus Gift for them 🌱') + '</button>' +
       '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">Read it on Giveth ↗</a></div>' +
-    '<p class="cap">Giving happens on giveth.io in your own wallet. Gratus never touches the money.</p>' +
+    '<p class="cap">Giving happens on giveth.io, in your own wallet. The money goes from you to them.</p>' +
     '<div id="gv-updates"></div><div id="gv-donors"></div>' +
     '<button class="btn" data-similar="' + esc(p.slug) + '">Others like this one</button>';
   $('#gv-seed', sh.el).addEventListener('click', () => { sh.close(); seedSheet(p); });
@@ -856,7 +999,7 @@ function growForSheet(p) {
     if (!pl) { pl = { id: newId('p'), emoji: e, planted: today(), kept: [], carried: 0, origin: 'planted', from: null }; S.plants.push(pl); }
     pl.forProject = { slug: p.slug, title: p.title, bloom: p.bloom };
     save(); sh.close(); toast(nameOf(e) + ' is growing for ' + p.title);
-    draft.emoji = e; go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 120);
+    writeNow(e);
   }));
   $$('[data-gfnow]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); const pl = S.plants.find((x) => x.id === b.dataset.gfnow); if (pl) giveToProject(pl, p); }));
 }
@@ -1108,7 +1251,7 @@ async function similarSheet(slug) {
   try {
     const r = await fetch('/api/giveth?q=similar&slug=' + encodeURIComponent(slug), { cache: 'no-store' });
     const d = await r.json().catch(() => ({})); const ps = (d.projects || []).filter((p) => p.slug !== slug);
-    sh.el.innerHTML = '<div class="grabber" aria-hidden="true"></div><h2>The flow continues</h2><p class="body">Projects like the one you gave to. Gratitude routed along what it is already near, rather than a fresh start each time.</p>' +
+    sh.el.innerHTML = '<div class="grabber" aria-hidden="true"></div><h2>The flow continues</h2><p class="body">Projects like the one you gave to.</p>' +
       (ps.length ? '<div class="rows">' + ps.map(projectRow).join('') + '</div>' : '<p class="cap">Giveth has nothing similar to hand right now.</p>');
     $$('[data-gv]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); projectSheet(b.dataset.gv); }));
   } catch (e) { sh.close(); toast('Giveth is not answering right now.'); }
@@ -1124,21 +1267,25 @@ function traceBlock() {
     '<p class="cap">A bloom is the moment somebody wrote back.</p>';
 }
 // ── GRATUS · the home: his new look, text for text ──
-function door(art, title, line, id) {
-  return '<button class="hcard door" id="' + id + '"><img class="door-art" src="/assets/art/home/' + art + '.jpg" alt=""><span class="door-words"><b>' + title + '</b><span>' + line + '</span></span><span class="door-go">›</span></button>';
+function door(art, title, line, id, holds) {
+  return '<button class="hcard door" id="' + id + '"><img class="door-art" src="/assets/art/home/' + art + '.jpg" alt=""><span class="door-words"><b>' + title + '</b><span>' + line + '</span>' + (holds || '') + '</span><span class="door-go">›</span></button>';
 }
+// The home is his, text for text. What it gained is the day: once something is written the
+// card under his question holds it, and each of his doors shows what is behind it now.
 function viewGratus() {
   setScene(scene('home'));
+  const mine = S.entries.filter((e) => e.day === today());
+  const near = nearest();
   return '<section class="home14">' +
     '<header class="hh"><button class="hbtn" id="home-menu" aria-label="menu">' + I.menu + '</button><div class="hbrand"><img class="hlogo" src="' + LOGO + '" alt=""><span class="hname">Gratus<em>.CC</em></span></div><button class="hbtn" id="top-you" aria-label="you">' + I.user + '</button><p class="htag">Gratus Helps You Grow Gratitude Daily<br>And Empowers You To Give Gratus Gifts.</p></header>' +
-    '<div class="hcard hero14"><div class="hero14-top"><h2>Today\'s Gratitude</h2><p>What are you grateful for today?</p></div><img class="hero14-art" src="/assets/art/home/hero-band.webp" alt=""><button class="gpill" id="write-today">' + I.feather + '<span>Write Today</span><span class="arr">→</span></button></div>' +
-    door('journal', 'Gratitude Journal', 'Write and journal every day.', 'open-journal') +
-    door('sprout', 'Grow Your Gratus Garden!', 'Grow gratitude every day.', 'open-garden') +
+    '<div class="hcard hero14"><div class="hero14-top"><h2>Today\'s Gratitude</h2><p>What are you grateful for today?</p></div><img class="hero14-art" src="/assets/art/home/hero-band.webp" alt="">' +
+    (mine.length ? '<div class="hm-today">' + todaySlip(mine[mine.length - 1], T('home.keptToday', '') + (mine[mine.length - 1].at ? ' \u00b7 ' + clockOf(mine[mine.length - 1].at) : ''), REC()) +
+      (mine.length > 1 ? '<button class="hm-more" id="hm-more">+ ' + (mine.length - 1) + ' ' + esc(T('home.more', '')) + '</button>' : '') + '</div>' : '') +
+    '<button class="gpill" id="write-today">' + I.feather + '<span>Write Today</span><span class="arr">→</span></button></div>' +
+    door('journal', 'Gratitude Journal', 'Write and journal every day.', 'open-journal', doorDays(J.keptDays(S.entries).length, REC())) +
+    door('sprout', 'Grow Your Gratus Garden!', 'Grow gratitude every day.', 'open-garden', near ? doorPlant({ face: face(near.p), pct: near.pct, next: near.nx ? { name: near.nx.name, away: near.away } : null }, REC()) : '') +
     '<div class="hcard door gifts" id="open-gifts"><img class="door-art" src="/assets/art/home/giftbox.webp" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family.</span><button class="gpill sm" id="send-gift">' + I.giftline + '<span>Send a Gift</span><span class="arr">→</span></button></span><span class="door-go">›</span></div>' +
-    '<div class="together"><h2><i>✦</i>Gratus Gives Together<i>✦</i></h2><p>Set Your Gratus Goals</p></div>' +
-    goalsBlock() +
-    door('journal', 'Gratus Vibes', 'The small rooms. A few people, one feed.', 'open-vibes') +
-    door('sprout', 'Gratus Guides', 'Why any of this exists, and how to walk it.', 'open-guides') +
+    '<button class="together" id="open-together"><b><i>✦</i>Gratus Gives Together<i>✦</i></b><span>Set Your Gratus Goals</span></button>' +
     '</section>';
 }
 // ── the garden room: a field with a horizon, the plants in it, the seeds above it ──
@@ -1166,88 +1313,54 @@ function gardenField() {
   }
   return '<div class="glass garden field">' + art(scene('garden')) + '<i class="horizon" aria-hidden="true"></i>' + orbs + '</div>';
 }
-// ── the glyph ──
-// The one thing here that is yours and could not exist without the days you put in. It is
-// drawn from the garden and nothing else, so it is the same figure every time you open it
-// and nobody else's garden draws it. engine/glyph.js holds the drawing and refuses to read
-// a clock; scripts/tests/glyph.test.mjs holds the promise.
-function glyphBlock() {
-  const days = S.plants.reduce((t, p) => t + daysOf(p), 0);
-  if (!S.plants.length) return '';
-  return '<div class="glass glyphcard"><div class="eyebrow"><h2>Your Glyph</h2><span class="more">' + plural(days, 'day') + '</span></div>' +
-    '<div class="glyphfig" aria-hidden="false">' + glyphSvg(S, { size: 240 }) + '</div>' +
-    '<p class="cap">One arm for each thing growing, as long as the days you gave it.</p>' +
-    '<button class="btn" id="glyph-share">Share your Glyph</button></div>';
-}
-
 function viewGarden() {
   const n = S.plants.filter((p) => !p.private).length;
   const care = S.plants.reduce((t, p) => t + daysOf(p), 0);
   const ready = S.plants.filter((p) => daysOf(p) >= 13).length;
-  const pledged = S.plants.filter((p) => p.forProject).length;
-  const tendedToday = S.plants.filter((p) => (p.kept || []).includes(today())).length;
-  const entries = S.entries.slice().reverse();
-  const lanes = [['all', 'Everything'], ['growing', 'Growing'], ['ready', 'Ready to give'], ['dedicated', 'For a project']];
-  const phases = C.book.phases;
-  return hero(scene('garden'), { cls: 'room-hero', h1: 'Your Gratus Garden', k1: 'Grow gratitude every day.', k2: plural(n, 'plant') + ' · ' + plural(care, 'day') + ' of care' }) +
+  return hero(scene('garden'), { cls: 'room-hero', h1: 'Your Gratus Garden', k1: 'Grow gratitude every day.' }) +
     '<div class="page">' +
     '<div class="glass stats in"><div><b>' + n + '</b><span>' + (n === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + care + '</b><span>' + (care === 1 ? 'day of care' : 'days of care') + '</span></div><div><b>' + ready + '</b><span>ready to give</span></div></div>' +
-    (n ? '<div class="chips row">' + lanes.map(([k, t]) => '<button class="chip' + (gardenFilter === k ? ' on' : '') + '" data-gfilter="' + k + '">' + t + (k === 'dedicated' && pledged ? ' · ' + pledged : '') + '</button>').join('') + '</div>' : '') +
-    (n ? '<div class="chips row end"><button class="chip' + (gardenView === 'field' ? ' on' : '') + '" data-gview="field">✦ Field</button><button class="chip' + (gardenView === 'list' ? ' on' : '') + '" data-gview="list">☰ List</button><button class="chip' + (gardenSort === 'days' ? ' on' : '') + '" data-gsort="days">Most days</button><button class="chip' + (gardenSort === 'recent' ? ' on' : '') + '" data-gsort="recent">Newest</button><button class="chip' + (gardenSort === 'name' ? ' on' : '') + '" data-gsort="name">By name</button></div>' : '') +
-    (n ? '<div class="glass card tended"><span class="kicker mint">Today</span><p class="body"><b>' + tendedToday + '</b> of ' + plural(n, 'plant') + ' tended. ' + (tendedToday >= n ? 'The whole garden has had a word today.' : 'Each one grows on the days you write about it.') + '</p>' + (tendedToday < n ? '<button class="btn mint" id="tend-now">Tend one now 🌱</button>' : '') + '</div>' : '') +
     gardenField() +
-    glyphBlock() +
-    (n ? '<div class="phaseline">' + phases.map((p, i) => '<span class="ph' + (S.plants.some((x) => phaseIndex(daysOf(x)) === i) ? ' on' : '') + '"><i>' + p.icon + '</i>' + esc(p.name) + '</span>').join('') + '</div>' +
-      '<p class="cap">Tap one to open it.</p>' : '') +
+    (n ? '<div class="chips row end"><button class="chip' + (gardenView === 'field' ? ' on' : '') + '" data-gview="field">✦ Field</button><button class="chip' + (gardenView === 'list' ? ' on' : '') + '" data-gview="list">☰ List</button></div>' : '') +
     traceBlock() +
-    '<button class="glass opt" id="open-book"><span class="ico">📖</span><span class="grow"><b>The Gratus Growth Book</b><span>Your gratitude journal, by day. The phases, the emojis, the recipes.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="open-book"><span class="ico">📖</span><span class="grow"><b>The Gratus Growth Book</b><span>Phases · Emojis · Recipes</span></span><span class="arrow">›</span></button>' +
     (S.gifts.received.length ? '<div class="eyebrow"><h2>Gifts received</h2></div><div class="rows">' + S.gifts.received.slice().reverse().slice(0, 3).map((g) => '<div class="glass opt"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>From ' + esc(g.from || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + '</span></span></div>').join('') + '</div>' : '') +
-    (entries.length ? '<div class="eyebrow"><h2>Entries</h2>' + (entries.length > 4 ? '<button class="more" id="all-entries">All ' + entries.length + '</button>' : '') + '</div><div class="rows">' + entries.slice(0, 4).map(entryCard).join('') + '</div>' : '') +
-    '<button class="glass opt" id="open-galaxy"><span class="ico"><img src="' + LOGO + '" alt="" style="width:30px;height:30px"></span><span class="grow"><b>The Gratus Galaxy</b><span>People · Projects · A brighter planet.</span></span><span class="arrow">›</span></button>' +
     '</div>';
 }
 
-// ── EVERYWHERE, IN FOUR GROUPS ──
+// ── TOGETHER ──
+// One room for everything that is shared: the goals stream, the small rooms, the people
+// you keep. They stood in three places; his line names the one door.
+function viewTogether() {
+  return hero(scene('vibes'), { cls: 'room-hero', h1: 'Gratus Gives Together', k1: 'Set Your Gratus Goals' }) +
+    '<div class="page">' + goalsBlock() +
+    '<button class="glass opt" id="tg-vibes"><span class="ico">\u2726</span><span class="grow"><b>' + esc(M('vibes')) + '</b></span><span class="arrow">\u203a</span></button>' +
+    '<button class="glass opt" id="tg-people"><span class="ico">\u273f</span><span class="grow"><b>' + esc(M('people')) + '</b></span><span class="arrow">\u203a</span></button>' +
+    '<button class="glass opt" id="tg-galaxy"><span class="ico">\u2726</span><span class="grow"><b>' + esc(M('galaxy')) + '</b></span><span class="arrow">\u203a</span></button>' +
+    '</div>';
+}
+
+// ── EVERYWHERE ──
 //
-// This was fourteen buttons in a column, which is not a menu, it is an inventory. A person
-// looking for the journal had to read the word "Giveth" on the way. Four groups, named
-// after what somebody is trying to do, and the row you are standing on is marked so the
-// menu answers "where am I" as well as "where else".
-//
-// No row explains itself. A menu that describes every destination is a menu nobody reads.
+// Eight rows, one for each room a person looks for by name. The row you are standing on is
+// marked, so the menu answers "where am I" as well as "where else". No row explains itself.
 const MENU = [
-  ['write', [
-    ['m-book', '\ud83d\udcd6', 'book', 'gratus', 'book'],
-    ['m-garden', '\ud83c\udf31', 'garden', 'gratus', 'garden'],
-    ['m-guides', '\u2727', 'guides', 'gratus', 'guides'],
-  ]],
-  ['give', [
-    ['m-give', '\ud83c\udf81', 'gifts', 'give', null],
-    ['m-giveth', '\ud83e\udd1d', 'giveth', 'give', 'giveth'],
-    ['m-passage', '\u2726', 'passage', null, null],
-  ]],
-  ['together', [
-    ['m-vibes', '\u2726', 'vibes', 'gratus', 'vibes'],
-    ['m-people', '\u273f', 'people', null, null],
-    ['m-galaxy', '\u2726', 'galaxy', 'gratus', 'galaxy'],
-  ]],
-  ['you', [
-    ['m-account', '\u2726', 'account', null, null],
-    ['m-tour', '\u2726', 'tour', null, null],
-    ['m-laws', '\u2727', 'laws', null, null],
-    ['m-you', '\u2727', 'keep', null, null],
-  ]],
+  ['m-book', '\ud83d\udcd6', 'book', 'gratus', 'book'],
+  ['m-log', '\u25f7', 'log', 'gratus', 'log'],
+  ['m-garden', '\ud83c\udf31', 'garden', 'gratus', 'garden'],
+  ['m-growth', '\u2727', 'growth', 'gratus', 'growth'],
+  ['m-give', '\ud83c\udf81', 'gifts', 'give', null],
+  ['m-giveth', '\ud83e\udd1d', 'giveth', 'give', 'giveth'],
+  ['m-together', '\u2726', 'together', 'gratus', 'goals'],
+  ['m-guides', '\u2727', 'guides', 'gratus', 'guides'],
 ];
 const M = (k) => T('menu.' + k, '');
 
 function menuSheet() {
   const here = (t, s) => t !== null && t === tab && (s || null) === (sub || null);
-  const body = MENU.map(([name, rows]) =>
-    '<span class="kicker mint mgroup">' + esc(M(name)) + '</span><div class="rows">' +
-    rows.map(([id, ico, key, t, s]) => '<button class="glass opt mrow' + (here(t, s) ? ' on' : '') + '" id="' + id + '">' +
+  const body = '<div class="rows">' + MENU.map(([id, ico, key, t, s]) => '<button class="glass opt mrow' + (here(t, s) ? ' on' : '') + '" id="' + id + '">' +
       '<span class="ico">' + ico + '</span><span class="grow"><b>' + esc(M(key)) + '</b></span>' +
-      (here(t, s) ? '<span class="mhere">\u2022</span>' : '<span class="arrow">\u203a</span>') + '</button>').join('') +
-    '</div>').join('');
+      (here(t, s) ? '<span class="mhere">\u2022</span>' : '<span class="arrow">\u203a</span>') + '</button>').join('') + '</div>';
   // his lines close the sheet, which is where the old menu carried them
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:64px;height:64px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>' + esc(M('title')) + '</h2>' +
     '<span class="kicker mint">' + esc(T('locked.headline', '')) + '</span>' +
@@ -1257,88 +1370,92 @@ function menuSheet() {
     '<p class="kicker mint" style="text-align:center;margin-top:16px">' + esc(T('locked.promise', '')) + '</p>' +
     '<p class="kicker" style="text-align:center">' + esc(T('locked.tags', '')) + '</p>');
   const on = (id, fn) => { const b = $('#' + id, sh.el); if (b) b.addEventListener('click', () => { feel('tap'); sh.close(); fn(); }); };
-  on('m-book', () => go('gratus', 'book'));
+  const room = (s) => () => go('gratus', s);
+  on('m-book', room('book'));
+  on('m-log', room('log'));
+  on('m-growth', room('growth'));
   on('m-garden', () => go('gratus', 'garden'));
   on('m-guides', () => go('gratus', 'guides'));
   on('m-give', () => go('give'));
   on('m-giveth', () => go('give', 'giveth'));
-  on('m-passage', () => setTimeout(passageSheet, 300));
-  on('m-vibes', () => go('gratus', 'vibes'));
-  on('m-people', () => setTimeout(() => (Acct.signedIn() ? friendsSheet() : accountSheet()), 300));
-  on('m-galaxy', () => go('gratus', 'galaxy'));
-  on('m-account', () => setTimeout(accountSheet, 300));
-  on('m-tour', () => setTimeout(tourAgain, 300));
-  on('m-laws', openLaws);
-  on('m-you', () => setTimeout(youSheet, 300));
+  on('m-together', room('goals'));
   const snd = $('#m-sound', sh.el);
   if (snd) snd.addEventListener('click', () => { toggleSound(); snd.textContent = S.sound ? M('mute') : M('play'); });
 }
-function entryCard(e) {
-  return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '✦')) + '</span><span style="display:grid;gap:6px;min-width:0"><span class="kicker">' + (e.star ? '\u2605 ' : '') + esc(e.day === today() ? 'Today · ' : '') + esc(fmtDay(e.day)) + (e.voice ? ' · 🎙 ' + fmtDur(e.voice.dur) : '') + (e.folder && folderOf(e.folder) ? ' · 📁 ' + esc(folderOf(e.folder).name) : '') + '</span><span class="text">' + esc(e.text || '(an emoji, no words)') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
+function entryCard(e, o) {
+  o = o || {};
+  // Under a heading that already names the day, the card says the hour. Anywhere else it
+  // says both. An entry from before the clock was kept says its day and nothing more.
+  const hour = e.at ? clockOf(e.at) : '';
+  const took = Number(e.took) || 0;
+  const when = o.lead ? o.lead + (hour ? ' \u00b7 ' + hour : '')
+    : o.day ? hour
+    : (e.day === today() ? 'Today' : dayBrief(e.day)) + (hour ? ' \u00b7 ' + hour : '');
+  const facts = [when, took >= 10 ? J.span(took) : '', e.voice ? '\ud83c\udf99 ' + fmtDur(e.voice.dur) : '', e.folder && folderOf(e.folder) ? '\ud83d\udcc1 ' + folderOf(e.folder).name : ''].filter(Boolean).join(' \u00b7 ');
+  return '<button class="glass entry" data-e="' + esc(e.id) + '"><span class="thumb">' + (e.photo ? '<img src="' + e.photo + '" alt="">' : esc(e.emoji || '\u2726')) + '</span><span style="display:grid;gap:6px;min-width:0">' +
+    (facts || e.star ? '<span class="kicker">' + (e.star ? '\u2605 ' : '') + esc(facts) + '</span>' : '') +
+    '<span class="text">' + esc(e.text || '') + '</span>' + (e.tags && e.tags.length ? '<span class="tags">' + e.tags.map((t) => '<span>' + esc(t) + '</span>').join('') + '</span>' : '') + '</span></button>';
 }
 
 // ── GROW · plant today ──
 let draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
+// The writing clock: how long a hand was on the page. It starts with the first touch of
+// the page, it is kept with the entry it timed, and it goes nowhere else.
+let draftClock = J.clock();
+const pageTouched = () => { J.touch(draftClock, Date.now()); };
 // ── THE STANDING ──
 // A word written today is not an entry, it is a day of care on something that is
 // growing. This says which plant is nearest its next crossing and what one word
 // would do to it, so the daily act has a stake. It counts care, never absence:
 // it says what a word does, never what not writing did.
-function standingBlock() {
-  if (!S.plants.length) {
-    const first = C.book.phases[0], next = C.book.phases[1];
-    return '<div class="glass card standing empty">' +
-      '<span class="stand-ring" style="--pct:0"><span class="stand-face">' + first.icon + '</span></span>' +
-      '<span class="stand-words"><span class="kicker gold">Nothing planted yet</span>' +
-      '<b>Your first word plants something.</b></span></div>';
-  }
+// the plant nearest its next line, and what one word would do to it
+function nearest() {
+  if (!S.plants.length) return null;
   const rows = S.plants.map((p) => { const d = daysOf(p); return { p, d, nx: nextPhase(d), ph: phaseOf(d) }; });
   const moving = rows.filter((x) => x.nx).sort((a, b) => (a.nx.day - a.d) - (b.nx.day - b.d));
-  const ready = rows.filter((x) => !x.nx);
-  const x = moving[0] || ready[0];
-  if (!x) return '';
-  const tended = (x.p.kept || []).includes(today());
-  const away = x.nx ? x.nx.day - x.d : 0;
+  const x = moving[0] || rows.filter((r) => !r.nx)[0];
+  if (!x) return null;
   const prev = (C.book.phases[phaseIndex(x.d)] || {}).day || 0;
-  const pct = x.nx ? Math.max(6, Math.round(((x.d - prev) / (x.nx.day - prev)) * 100)) : 100;
-  const line = !x.nx
-    ? esc(nameOf(face(x.p))) + ' is ready to give.'
-    : away <= 1
-      ? (tended ? esc(nameOf(face(x.p))) + ' crosses into ' + esc(x.nx.name) + ' with tomorrow\u2019s word.'
-                : 'One word today and ' + esc(nameOf(face(x.p))) + ' crosses into ' + esc(x.nx.name) + '.')
-      : esc(nameOf(face(x.p))) + ' is ' + esc(plural(away, 'day')) + ' from ' + esc(x.nx.name) + '.';
-  return '<div class="glass card standing">' +
-    '<span class="stand-ring" style="--pct:' + pct + '"><span class="stand-face">' + esc(face(x.p)) + '</span></span>' +
-    '<span class="stand-words"><span class="kicker gold">' + esc(x.ph.name) + ' \u00b7 ' + esc(plural(x.d, 'day') + ' of care') + '</span>' +
-    '<b>' + line + '</b></span></div>';
+  x.pct = x.nx ? Math.max(6, Math.round(((x.d - prev) / (x.nx.day - prev)) * 100)) : 100;
+  x.away = x.nx ? x.nx.day - x.d : 0;
+  x.tended = (x.p.kept || []).includes(today());
+  return x;
+}
+// What is growing comes first. The plants somebody is already tending used to sit behind
+// "Show every emoji", after twelve they had never used.
+function growPalette() {
+  const out = [];
+  const mine = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)).map((p) => face(p));
+  for (const e of mine.concat(C.book.starters.filter((s) => !plantFor(s)), S.my.emojis.filter((s) => !plantFor(s)))) if (!out.includes(e)) out.push(e);
+  return out;
 }
 function viewGrow() {
-  const pal = palette();
+  const pal = growPalette();
+  const tags = C.book.tags.concat(draft.tags.filter((t) => !C.book.tags.includes(t)));
   return hero(scene('grow'), { h1: 'Grow', k1: 'Plant Today', k2: 'A Brighter Tomorrow', low: '<p class="statement in" style="--i:2">What are you grateful for today?</p>' }) +
     '<div class="page">' +
-    standingBlock() +
     '<div class="glass card">' +
     '<textarea class="field" id="write" rows="3" placeholder="Start your gratitude entry..." aria-label="your gratitude entry">' + esc(draft.text) + '</textarea>' +
-    '<div class="tools"><span class="chip on">' + I.text + ' Text</span><label class="chip" id="photo-chip">' + I.cam + ' Photo<input type="file" id="photo" accept="image/*" hidden></label>' + (navigator.mediaDevices && window.MediaRecorder ? '<button class="chip" id="voice">' + I.mic + ' Voice</button>' : '') + '</div>' +
+    '<div class="tools"><label class="chip" id="photo-chip">' + I.cam + ' Photo<input type="file" id="photo" accept="image/*" hidden></label>' + (navigator.mediaDevices && window.MediaRecorder ? '<button class="chip" id="voice">' + I.mic + ' Voice</button>' : '') + '</div>' +
     '<div class="photoprev" id="photoprev" hidden></div>' +
     '<div class="glass voiceprev" id="voiceprev"' + (draft.voice ? '' : ' hidden') + '><span class="kicker mint">Your voice · ' + fmtDur(draft.voiceDur) + '</span><audio controls id="voice-audio"></audio><button class="btn sm quiet" id="voice-drop">Remove the recording</button></div>' +
     '<span class="kicker mint">The emoji you are planting</span>' +
     '<div class="pick" id="pick">' + pal.map((e) => '<button class="orb' + (draft.emoji === e ? ' on' : '') + '" data-pick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '<button class="orb empty" id="pick-any" aria-label="any emoji"><span>+</span></button></div>' +
-    (pal.length > 8 ? '<button class="btn sm quiet pick-more" id="pick-more">Show every emoji</button>' : '') +
-    '<span class="kicker mint">Tags</span><div class="chips" id="tags">' + C.book.tags.concat(draft.tags.filter((t) => !C.book.tags.includes(t))).map((t) => '<button class="chip' + (draft.tags.includes(t) ? ' on' : '') + '" data-tag="' + esc(t) + '">' + esc(t) + '</button>').join('') + '<button class="chip" id="tag-any">+ tag</button></div>' +
+    // Tags are asked for, not laid out: thirteen of them stood between the words and the
+    // button that keeps them. They open in place, and stay open once one is chosen.
+    '<div class="chips" id="tags"' + (draft.tags.length ? '' : ' hidden') + '>' + tags.map((t) => '<button class="chip' + (draft.tags.includes(t) ? ' on' : '') + '" data-tag="' + esc(t) + '">' + esc(t) + '</button>').join('') + '<button class="chip" id="tag-any">+ tag</button></div>' +
+    '<div class="gw-more">' + (pal.length > 7 ? '<button class="btn sm quiet pick-more" id="pick-more">Show every emoji</button>' : '') +
+      (draft.tags.length ? '' : '<button class="btn sm quiet" id="tags-open">+ ' + esc(T('grow.tags', 'Tags')) + '</button>') + '</div>' +
     '<button class="btn mint wide" id="plant">Plant My Gratus 🌱</button></div>' +
     '<p class="kicker" style="text-align:center">A small moment. A brighter tomorrow.</p>' +
-    goalsBlock() +
-    (S.entries.length ? '<div class="eyebrow"><h2>Recent</h2></div><div class="rows">' + S.entries.slice().reverse().slice(0, 2).map(entryCard).join('') + '</div>' : '') +
     '</div>';
 }
 // ── GRATUS GOALS · what you are growing toward, and the stream of everyone's ──
 let feed = null, feedState = 'idle';
-const SEED_GOALS = [{ id: 'seed1', text: 'Write one line of thanks every morning this month.', name: 'Augie', emoji: '☕', at: '2026-09-17T08:00:00Z' }, { id: 'seed2', text: 'Give my first Gratus Gift to my sister.', name: 'Kris', emoji: '❤️', at: '2026-09-18T12:00:00Z' }, { id: 'seed3', text: 'Plant a tree with the kids and keep it in the garden here.', name: 'Natalie', emoji: '🌳', at: '2026-09-19T09:00:00Z' }];
 function goalRow(g, mine) { const d = new Date(g.at); const when = isNaN(d) ? '' : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); return '<div class="glass goal' + (mine ? ' mine' : '') + '"><span class="orb"><span>' + esc(g.emoji || '🌱') + '</span></span><span class="grow"><b>' + esc(g.text) + '</b><span>' + esc(g.name || 'Someone') + (when ? ' · ' + esc(when) : '') + (mine && !g.synced ? ' · on this device' : '') + '</span></span>' + (mine ? '<button class="x" data-goal-x="' + esc(g.id) + '" aria-label="remove">×</button>' : '') + '</div>'; }
 function goalsBlock() {
-  const mine = S.goals.slice().reverse(); const others = (feed || (feedState === 'offline' ? SEED_GOALS : [])).filter((g) => !S.goals.some((m) => m.id === g.id || (m.text === g.text && m.name === g.name)));
-  return '<div class="glass stream">' + art(scene('goals')) + '<div class="eyebrow" style="padding-top:0"><h2>Gratus Goals</h2><span class="more">' + (feedState === 'live' ? 'the stream' : feedState === 'offline' ? 'not connected' : '') + '</span></div>' +
+  const mine = S.goals.slice().reverse(); const others = (feed || []).filter((g) => !S.goals.some((m) => m.id === g.id || (m.text === g.text && m.name === g.name)));
+  return '<div class="glass stream"' + (mine.length || others.length ? '' : ' data-state="empty"') + '><div class="eyebrow" style="padding-top:0"><h2>Gratus Goals</h2>' + (feedState === 'offline' ? '<span class="more">not connected</span>' : '') + '</div>' +
     '<p class="cap">What are you growing toward? Everyone here can see these.</p>' +
     '<div class="pillform" style="max-width:none"><input id="goal-in" maxlength="160" placeholder="A goal I am growing toward..." aria-label="a Gratus goal" autocomplete="off"><button class="go" id="goal-post" aria-label="post the goal">→</button></div>' +
     (mine.length ? '<div class="rows">' + mine.map((g) => goalRow(g, true)).join('') + '</div>' : '') +
@@ -1347,7 +1464,7 @@ function goalsBlock() {
 async function loadFeed() {
   if (feedState === 'loading') return; feedState = 'loading';
   try { const r = await fetch('/api/goals', { cache: 'no-store' }); const j = await r.json().catch(() => ({})); if (r.ok && j.ok) { feed = j.goals || []; feedState = 'live'; for (const g of S.goals) if (!g.synced) postGoal(g); } else { feedState = 'offline'; } } catch (e) { feedState = 'offline'; }
-  if (tab === 'grow' && !sub) render();
+  if (tab === 'gratus' && sub === 'goals') { const gi = $('#goal-in'); const typed = gi ? gi.value : ''; render(); const g2 = $('#goal-in'); if (g2 && typed) g2.value = typed; }
 }
 async function postGoal(g) {
   try { const r = await fetch('/api/goals', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: g.text, name: g.name, emoji: g.emoji }) }); const j = await r.json().catch(() => ({})); if (r.ok && j.ok) { g.synced = true; if (j.goal) g.id = j.goal.id; save(); } } catch (e) {}
@@ -1359,8 +1476,12 @@ function addGoal(text) {
 }
 function plantNow() {
   const text = ($('#write') ? $('#write').value : draft.text).trim(); const emoji = draft.emoji;
-  if (!text && !emoji) { toast('A word or an emoji. Either grows.'); return; }
-  const t = today(); const e = { id: newId('e'), day: t, at: new Date().toISOString(), text, emoji, tags: draft.tags.slice(), photo: draft.photo, voice: draft.voice ? { mime: draft.voice.type || 'audio/webm', dur: draft.voiceDur } : null, folder: null };
+  if (!text && !emoji) { toast('Write a word or pick an emoji.'); return; }
+  const t = today(); const now = Date.now();
+  pageTouched();
+  const keptBefore = J.keptDays(S.entries).length;
+  const e = { id: newId('e'), day: t, at: new Date(now).toISOString(), text, emoji, tags: draft.tags.slice(), photo: draft.photo, voice: draft.voice ? { mime: draft.voice.type || 'audio/webm', dur: draft.voiceDur } : null, folder: null };
+  const secs = J.took(draftClock); if (secs) e.took = secs;
   S.entries.push(e); if (draft.voice) keepPut(e.id, draft.voice).catch(() => toast('The recording could not be kept on this device.'));
   let p = emoji ? plantFor(emoji) : null; let isNew = false; const before = p ? face(p) : null;
   // the phase BEFORE today's word, so a crossing can be told from an ordinary day
@@ -1369,31 +1490,34 @@ function plantNow() {
   if (p && !p.kept.includes(t)) p.kept.push(t);
   const made = [];
   for (const r of allRecipes()) { if (S.made[r.id]) continue; const st = recipeState(r); if (st.made) { S.made[r.id] = t; made.push(r); if (!plantFor(r.result)) S.plants.push({ id: newId('p'), emoji: r.result, planted: t, kept: [t], carried: 0, origin: 'recipe', from: r.name }); } }
-  save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
+  save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 }; draftClock = J.clock();
   const after = p ? face(p) : null; const d = p ? daysOf(p) : 0; const ph = p ? phaseOf(d) : null;
   const phNow = p ? phaseIndex(d) : -1;
-  const crossed = p && phNow > phPre;
-  const seq = [];
-  if (crossed) seq.push(CEREMONIES.bloomed(after, ph, phNow, d));
-  // a crossing already said the phase; saying it twice makes the moment ordinary
-  if (p && before && after !== before) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><span class="kicker mint">' + esc(before + ' → ' + after) + '</span><h2>' + esc(nameOf(after)) + '</h2><p class="lead">' + esc((E.stage(p.emoji, d, C.evo) || {}).line || '') + '</p><span class="kicker">tap to continue</span></div>');
-  else if (p && !crossed) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><h2>' + esc(ph.name + '.') + '</h2><p class="lead">' + esc(nameOf(after)) + ' · ' + esc(plural(d, 'day')) + '. ' + esc(ph.meaning) + '</p>' + (nextPhase(d) ? '<span class="kicker mint">' + esc(nextPhase(d).name + ' in ' + plural(nextPhase(d).day - d, 'day')) + '</span>' : '<span class="kicker gold">Ready to give</span>') + '<span class="kicker">tap to continue</span></div>');
-  else if (!p) seq.push({ html: '<div class="cer"><span class="big">✦</span><h2>Kept.</h2><p class="lead">A moment of gratitude has a place now.</p><span class="kicker">tap to continue</span></div>', on: soundKept });
-  for (const r of made) seq.push('<div class="cer"><span class="big">' + esc(r.result) + '</span><span class="kicker mint">' + esc(r.formula.join(' + ') + ' → ' + r.result) + '</span><h2>' + esc(r.name) + '</h2><p class="lead">' + esc(r.statement) + '</p><span class="kicker">a recipe came together · tap to continue</span></div>');
-  playCeremonies(seq, () => { go('gratus'); if (crossed && p) offerReturn(p, 'grew', ph.name); });
+  const crossed = !!p && phNow > phPre;
+  const nx = p ? nextPhase(d) : null;
+  // Every mark this entry lit is taken here and said once, on the card. Left for the next
+  // paint to find, a crossing was told twice: on its own card, and again as a milestone
+  // behind a second film, about the same day.
+  const lit = lightMilestones();
+  const kept = J.keptDays(S.entries).length;
+  const seq = [{
+    html: dayCard({
+      face: p ? after : '✦', kept, fresh: kept > keptBefore, stamp: stampOf(now),
+      phase: ph ? ph.name : '', crossed, next: nx ? { name: nx.name, away: nx.day - d } : null,
+      // his line closes the crossing that makes a plant a gift
+      call: crossed && !nx ? (S.gifts.given.length ? 'Give the Gift That Keeps On Giving.' : T('locked.call', '')) : '', marks: lit,
+    }, REC()),
+    on: () => (crossed ? soundPhase(phNow) : soundKept()),
+  }];
+  if (p && before && after !== before) seq.push('<div class="cer"><span class="big">' + esc(after) + '</span><span class="kicker mint">' + esc(before + ' → ' + after) + '</span><span class="kicker">' + esc(T('ceremony.tap', '')) + '</span></div>');
+  for (const r of made) seq.push('<div class="cer"><span class="big">' + esc(r.result) + '</span><span class="kicker mint">' + esc(r.formula.join(' + ') + ' → ' + r.result) + '</span><h2>' + esc(r.name) + '</h2><span class="kicker">' + esc(T('ceremony.tap', '')) + '</span></div>');
+  // The Gate opens for a crossing and for the marks worth stopping for. An ordinary day is
+  // answered at once: a word that was kept does not wait behind a film to be told so.
+  const loud = crossed || lit.some((m) => m.big);
+  void isNew;
+  playCeremonies(seq, () => { go('gratus'); if (crossed && p) offerReturn(p, 'grew', ph.name); }, { gate: loud });
 }
 const CEREMONIES = {
-  bloomed(after, ph, phNow, d) {
-    return {
-      html: '<div class="cer cross"><span class="big">' + esc(after) + '</span>' +
-        '<span class="kicker gold">' + esc(nameOf(after)) + (phNow === 0 ? ' begins' : ' has crossed') + '</span>' +
-        '<h2>' + esc(ph.name) + '.</h2>' +
-        '<p class="lead">' + esc(ph.meaning) + '</p>' +
-        '<span class="kicker mint">' + esc(plural(d, 'day') + ' of care \u00b7 ' + TONE_NAMES[Math.min(phNow, TONE_NAMES.length - 1)]) + '</span>' +
-        '<span class="kicker">' + esc(T('ceremony.tap', '')) + '</span></div>',
-      on: () => soundPhase(phNow),
-    };
-  },
   firstGiven(given) {
     return {
       html: '<div class="cer first-given"><img class="cer-mark" src="' + WRAPPED + '" alt="">' +
@@ -1426,8 +1550,8 @@ const CEREMONIES = {
   },
 };
 
-function playCeremonies(list, done) {
-  const root = $('#ceremony'); let k = 0; let gate = motionOk();
+function playCeremonies(list, done, opts) {
+  const root = $('#ceremony'); let k = 0; let gate = motionOk() && !(opts && opts.gate === false); const loud = !(opts && opts.gate === false);
   // A held moment you cannot leave is charged to a person every time after the first. So
   // whatever a tap would do right now, Escape, Enter and the space bar do too: the pre-roll
   // film, a card, a card that leaves by launching. One listener, for as long as the list runs.
@@ -1444,23 +1568,30 @@ function playCeremonies(list, done) {
   // a single Escape skipped the film on the root, revealed the card, then bubbled to the
   // document and closed the card it had just revealed. A key does one thing.
   document.addEventListener('keydown', onKey);
+  // The moment ends once, by its last card or by the phone stepping back out of it. Its
+  // timers may still fire after that, and they find nothing left to do.
+  let ended = false; let step = null;
+  const finish = () => { if (ended) return; ended = true; list.length = 0; root.onclick = null; root.hidden = true; root.innerHTML = ''; document.removeEventListener('keydown', onKey); stepOff(step); if (done) done(); };
   const next = () => {
+    if (ended) return;
     const item = list.shift();
-    if (!item) { root.hidden = true; root.innerHTML = ''; document.removeEventListener('keydown', onKey); if (done) done(); return; }
+    if (!item) { finish(); return; }
     // a card may carry its own note: a string is a card with nothing to say aloud
     const html = typeof item === 'string' ? item : item.html;
     const on = typeof item === 'string' ? null : item.on;
     const leave = typeof item === 'string' ? null : item.leave;
     root.hidden = false; root.onclick = null;
     try { root.focus({ preventScroll: true }); } catch (e) {}
-    const show = () => { root.innerHTML = art(scene('ceremony', k++)) + '<div class="flash on"></div>' + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0, gone = false; const close = () => { if (gone) return; gone = true; clearTimeout(t); root.onclick = null; if (leave) leave(next); else next(); }; root.onclick = close; t = setTimeout(close, leave ? 7200 : 5600); };
+    const show = () => { if (ended) return; root.innerHTML = art(scene('ceremony', k++)) + (loud ? '<div class="flash on"></div>' : '') + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0, gone = false; const close = () => { if (gone) return; gone = true; clearTimeout(t); root.onclick = null; if (leave) leave(next); else next(); }; root.onclick = close; t = setTimeout(close, leave ? 7200 : 5600); };
     if (gate) {
       gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + FILM('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
       const v = root.querySelector('video'); let fired = false; const fire = () => { if (fired) return; fired = true; clearTimeout(tm); show(); };
       const tm = setTimeout(fire, 9000); v.addEventListener('ended', fire); v.addEventListener('timeupdate', () => { if (v.currentTime >= 24.6) fire(); }); v.addEventListener('error', fire); root.onclick = fire;
       v.currentTime = 17; v.play().catch(fire);
     } else show();
-  }; next();
+  };
+  step = stepIn(finish);
+  next();
 }
 
 // ── GIVE ──
@@ -1469,11 +1600,10 @@ function viewGive() {
     '<div class="page">' + '<p class="kicker mint" id="his-call" style="text-align:center;font-weight:600"></p>' +
     '<div class="glass card"><span class="kicker mint">Choose how to give:</span>' +
     '<button class="glass opt" id="give-gift"><span class="ico gold">' + I.gift + '</span><span class="grow"><b>Give a Gratus Gift</b><span>Turn your gratitude into a gift for someone else.</span></span><span class="arrow">›</span></button>' +
-    '<button class="glass opt" id="give-giveth"><span class="ico gold">' + I.giveth + '</span><span class="grow"><b>Give with Giveth</b><span>Real projects, zero fees, on chain. Plant a Gratus Seed with your gift.</span></span><span class="arrow">›</span></button>' +
+    '<button class="glass opt" id="give-giveth"><span class="ico gold">' + I.giveth + '</span><span class="grow"><b>Give with Giveth</b><span>Plant a Gratus Seed with your gift.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-project"><span class="ico">' + I.people + '</span><span class="grow"><b>Support a Project</b><span>Give to people, places or causes that matter.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-world"><span class="ico">' + I.globe + '</span><span class="grow"><b>Give to the World</b><span>Be part of a kinder, brighter planet.</span></span><span class="arrow">›</span></button>' +
     '<p class="statement quiet" style="text-align:center">“Give what grows.”</p></div>' +
-    partnerCard('Giveth.IO') +
     (S.gifts.given.length ? '<div class="eyebrow"><h2>Gifts you gave</h2></div><div class="rows">' + S.gifts.given.slice().reverse().slice(0, 4).map((g) => '<button class="glass opt" data-given="' + esc(g.id) + '"><span class="ico">' + esc(g.emoji) + '</span><span class="grow"><b>To ' + esc(g.to || 'someone') + '</b><span>' + esc(plural(g.days, 'day')) + ' · ' + esc(fmtDay(g.at)) + (Number(g.seen) ? ' · ' + esc(plural(Number(g.seen), 'word') + ' back') : '') + '</span></span><span class="arrow">link</span></button>').join('') + '</div>' : '') +
     '<p class="kicker" style="text-align:center">Give today. A brighter tomorrow.</p></div>';
 }
@@ -1558,40 +1688,24 @@ function viewGalaxy() {
 }
 
 // ── THE GROWTH BOOK ──
-let bookTab = 'journal', recipeCat = 'all', qOffset = 0, journalQuery = '';
-// ── write where you are standing: the composer as a sheet, so the journal never has to be left ──
-function quickWrite(pre) {
-  const pal = palette().slice(0, 10); const t = today();
-  const dr = { text: (pre && pre.text) || '', emoji: (pre && pre.emoji) || null, tags: [] };
-  const pool = Gr.questionPool(C.prompts); const q = Gr.question(pool, t + ':j', qOffset);
-  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>🌱</span></span><h2>Today</h2><span class="kicker mint">' + esc(q) + '</span></div>' +
-    '<textarea class="field" id="qw-text" rows="4" maxlength="1234" placeholder="What are you grateful for today?" aria-label="your entry">' + esc(dr.text) + '</textarea>' +
-    '<span class="kicker mint">The emoji you are planting</span>' +
-    '<div class="pick">' + pal.map((e) => '<button class="orb' + (dr.emoji === e ? ' on' : '') + '" data-qwpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
-    '<span class="kicker mint">Tags</span><div class="chips">' + C.book.tags.slice(0, 9).map((x) => '<button class="chip" data-qwtag="' + esc(x) + '">' + esc(x) + '</button>').join('') + '</div>' +
-    '<button class="btn mint wide" id="qw-plant">Plant My Gratus 🌱</button>' +
-    '<button class="btn quiet" id="qw-full">Open the full composer</button>', { autofocus: true });
-  $$('[data-qwpick]', sh.el).forEach((b) => b.addEventListener('click', () => { dr.emoji = dr.emoji === b.dataset.qwpick ? null : b.dataset.qwpick; $$('[data-qwpick]', sh.el).forEach((x) => x.classList.toggle('on', x.dataset.qwpick === dr.emoji)); }));
-  $$('[data-qwtag]', sh.el).forEach((b) => b.addEventListener('click', () => { const x = b.dataset.qwtag; dr.tags = dr.tags.includes(x) ? dr.tags.filter((y) => y !== x) : dr.tags.concat([x]); b.classList.toggle('on', dr.tags.includes(x)); }));
-  $('#qw-full', sh.el).addEventListener('click', () => { draft.text = $('#qw-text', sh.el).value; draft.emoji = dr.emoji; draft.tags = dr.tags.slice(); sh.close(); go('grow'); });
-  $('#qw-plant', sh.el).addEventListener('click', () => {
-    draft.text = $('#qw-text', sh.el).value; draft.emoji = dr.emoji; draft.tags = dr.tags.slice();
-    if (!draft.text.trim() && !draft.emoji) { toast('A word or an emoji. Either grows.'); return; }
-    sh.close(); plantNow();
-  });
+let growthTab = 'phases', recipeCat = 'all', journalQuery = '';
+// The journal's rooms each have an address, so a tab is a place: it can be opened from
+// anywhere, reloaded, and kept on a home screen.
+const JOURNAL_ROOMS = ['book', 'log', 'marks'];
+function journalRoom(s) {
+  sub = s;
+  settle(() => history.replaceState(stepNow(), '', pathOf('gratus', s)));
+  render();   // the page stays where it is: this is a tab, not a doorway
 }
 // ── a day, opened ──
 function daySheet(day) {
   const es = S.entries.filter((e) => e.day === day);
-  const grew = S.plants.filter((p) => (p.kept || []).includes(day));
-  sheet('<div class="hero-sm"><span class="orb lg' + (es.length ? ' lit' : '') + '"><span>' + esc(es.length ? (es[0].emoji || '✦') : '·') + '</span></span><h2>' + esc(day === today() ? 'Today' : fmtDay(day)) + '</h2><span class="kicker mint">' + (es.length ? plural(es.length, 'entry').replace('entrys', 'entries') : 'Nothing written') + (grew.length ? ' · ' + plural(grew.length, 'plant') + ' grew' : '') + '</span></div>' +
-    (grew.length ? '<div class="chips">' + grew.map((p) => '<span class="chip">' + esc(face(p)) + ' ' + esc(nameOf(face(p))) + '</span>').join('') + '</div>' : '') +
-    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">No entry on this day.</p>') +
-    (day === today() ? '<button class="btn mint wide" id="dy-write">Write today\u2019s entry 🌱</button>' : ''));
-  $$('[data-e]').forEach((b) => b.addEventListener('click', () => entrySheet(S.entries.find((x) => x.id === b.dataset.e))));
-  const w = $('#dy-write'); if (w) w.addEventListener('click', quickWrite);
+  if (!es.length) return;
+  const sh = sheet('<div class="hero-sm"><h2>' + esc(day === today() ? 'Today' : fmtDay(day)) + '</h2><span class="kicker mint">' + plural(es.length, 'entry').replace('entrys', 'entries') + '</span></div>' +
+    '<div class="rows">' + es.map((e) => entryCard(e, { day: true })).join('') + '</div>');
+  $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); }));
 }
-let jTab = 'entries', jMonth = 0, jDay = '', jEmoji = '', jTag = '', jFolder = '', jStar = false;
+let jMonth = 0, jDay = '', jEmoji = '', jTag = '', jFolder = '', jStar = false;
 const monthKey = (off) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return d.getFullYear() + '-' + pad2(d.getMonth() + 1); };
 function monthGrid(off) {
   const key = monthKey(off); const [Y, M] = key.split('-').map(Number);
@@ -1603,85 +1717,115 @@ function monthGrid(off) {
   for (let i = 0; i < lead; i++) cells += '<i class="pad"></i>';
   for (let d = 1; d <= days; d++) {
     const k = key + '-' + pad2(d); const n = byDay[k] || 0; const future = k > t;
-    cells += '<button class="cal-d' + (n ? ' on' : '') + (k === t ? ' today' : '') + (k === jDay ? ' sel' : '') + (future ? ' future' : '') + '" data-calday="' + k + '"' + (future ? ' disabled' : '') + '><span>' + d + '</span>' + (n > 1 ? '<i class="dots">' + '•'.repeat(Math.min(3, n)) + '</i>' : n ? '<i class="dots">•</i>' : '') + '</button>';
+    const cls = 'cal-d' + (n ? ' on' : '') + (k === t ? ' today' : '') + (future ? ' future' : '');
+    cells += n ? '<button class="' + cls + '" data-calday="' + k + '" aria-label="' + esc(fmtDay(k) + ', ' + plural(n, 'entry').replace('entrys', 'entries')) + '"><span>' + d + '</span><i class="dots">' + '•'.repeat(Math.min(3, n)) + '</i></button>'
+      : '<span class="' + cls + '"><span>' + d + '</span></span>';
   }
   const written = Object.keys(byDay).filter((k) => k.startsWith(key)).length;
   const mEntries = S.entries.filter((e) => e.day.startsWith(key));
   const mEmoji = new Set(mEntries.map((e) => e.emoji).filter(Boolean)).size;
   const mWords = mEntries.reduce((n, e) => n + (e.text || '').split(/\s+/).filter(Boolean).length, 0);
+  const mSecs = mEntries.reduce((n, e) => n + J.secsOf(e), 0);
   const label = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
   return '<div class="glass cal"><div class="cal-head"><button class="cal-nav" data-calmove="-1" aria-label="the month before">‹</button><b>' + esc(label) + '</b><button class="cal-nav" data-calmove="1"' + (off >= 0 ? ' disabled' : '') + ' aria-label="the month after">›</button></div>' +
     '<div class="cal-dow"><i>M</i><i>T</i><i>W</i><i>T</i><i>F</i><i>S</i><i>S</i></div>' +
     '<div class="cal-grid">' + cells + '</div>' +
-    '<div class="monthsum"><span><b>' + written + '</b>' + (written === 1 ? 'day' : 'days') + '</span><span><b>' + mEntries.length + '</b>' + (mEntries.length === 1 ? 'entry' : 'entries') + '</span><span><b>' + mEmoji + '</b>' + (mEmoji === 1 ? 'emoji' : 'emojis') + '</span><span><b>' + mWords + '</b>words</span></div>' +
-    '<p class="cap">' + (jDay ? 'Showing ' + esc(fmtDay(jDay)) + '. Hold a day to open it.' : 'Tap a day to show it. Hold one to open it.') + '</p></div>';
+    '<div class="monthsum"><span><b>' + written + '</b>' + (written === 1 ? 'day' : 'days') + '</span><span><b>' + mEntries.length + '</b>' + (mEntries.length === 1 ? 'entry' : 'entries') + '</span><span><b>' + mWords + '</b>words</span>' + (mSecs ? '<span><b>' + esc(J.brief(mSecs)) + '</b>writing</span>' : '<span><b>' + mEmoji + '</b>' + (mEmoji === 1 ? 'emoji' : 'emojis') + '</span>') + '</div></div>';
 }
+// The journal opens on the words. The ways of narrowing it (an emoji, a tag, a folder, the
+// ones kept close) stood in three rows between the title and the first entry; they open
+// when they are asked for now, behind one button beside the search.
+let jFilters = false;
 function viewJournal() {
-  const t = today(); const pool = Gr.questionPool(C.prompts); const q = Gr.question(pool, t + ':j', qOffset);
-  let body = '';
-  if (jTab === 'threads') body = viewThreads();
-  else if (jTab === 'folders') body = viewFolders();
-  else if (jTab === 'milestones') body = viewMilestones();
-  else {
-    const qq = journalQuery.trim().toLowerCase();
-    const list = S.entries.filter((e) => {
-      if (jDay && e.day !== jDay) return false;
-      if (jEmoji && e.emoji !== jEmoji) return false;
-      if (jTag && !(e.tags || []).includes(jTag)) return false;
-      if (jFolder && e.folder !== jFolder) return false;
-      if (jStar && !e.star) return false;
-      if (!qq) return true;
-      return (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim();
-    }).slice().reverse();
-    const byDay = []; for (const e of list) { const last = byDay[byDay.length - 1]; if (last && last.day === e.day) last.items.push(e); else byDay.push({ day: e.day, items: [e] }); }
-    const emojis = Array.from(new Set(S.entries.map((e) => e.emoji).filter(Boolean))).slice(0, 14);
-    const tags = Array.from(new Set(S.entries.flatMap((e) => e.tags || []))).slice(0, 14);
-    const filtering = jDay || jEmoji || jTag || jFolder || jStar || qq;
-    body = monthGrid(jMonth) +
-      '<input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
-      (emojis.length ? '<div class="chips row">' + emojis.map((e) => '<button class="chip' + (jEmoji === e ? ' on' : '') + '" data-jemoji="' + esc(e) + '"><span class="emoji">' + esc(e) + '</span> ' + esc(nameOf(e)) + '</button>').join('') + '</div>' : '') +
+  const t = today();
+  const qq = journalQuery.trim().toLowerCase();
+  const list = S.entries.filter((e) => {
+    if (jDay && e.day !== jDay) return false;
+    if (jEmoji && e.emoji !== jEmoji) return false;
+    if (jTag && !(e.tags || []).includes(jTag)) return false;
+    if (jFolder && e.folder !== jFolder) return false;
+    if (jStar && !e.star) return false;
+    if (!qq) return true;
+    return (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim();
+  // newest day first, and inside a day in the order it was written. Sorted, because a
+  // journal that was restored or merged is not always stored in the order it was kept.
+  }).map((e, i) => [e, i]).sort((a, b) => (a[0].day === b[0].day ? (String(a[0].at || '').localeCompare(String(b[0].at || '')) || a[1] - b[1]) : (a[0].day < b[0].day ? 1 : -1))).map((x) => x[0]);
+  const byDay = []; for (const e of list) { const last = byDay[byDay.length - 1]; if (last && last.day === e.day) last.items.push(e); else byDay.push({ day: e.day, items: [e] }); }
+  if (!S.entries.length) return '<div class="glass card" data-state="empty"><p class="statement">What are you grateful for today?</p><button class="btn mint" id="j-write">Write Today</button></div>';
+  const emojis = Array.from(new Set(S.entries.map((e) => e.emoji).filter(Boolean))).slice(0, 14);
+  const tags = Array.from(new Set(S.entries.flatMap((e) => e.tags || []))).slice(0, 14);
+  const filtering = jDay || jEmoji || jTag || jFolder || jStar || qq;
+  const open = jFilters || jEmoji || jTag || jFolder || jStar;
+  return '<div class="jr-find"><input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
+      '<button class="chip' + (open ? ' on' : '') + '" id="j-filters">' + esc(T('journal.filter', 'Filter')) + '</button></div>' +
+    (open ? (emojis.length ? '<div class="chips row">' + emojis.map((e) => '<button class="chip' + (jEmoji === e ? ' on' : '') + '" data-jemoji="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span class="emoji">' + esc(e) + '</span></button>').join('') + '</div>' : '') +
       (tags.length ? '<div class="chips row">' + tags.map((x) => '<button class="chip' + (jTag === x ? ' on' : '') + '" data-jtag="' + esc(x) + '">' + esc(x) + '</button>').join('') + '</div>' : '') +
-      (S.folders.length ? '<div class="chips row">' + S.folders.map((f) => '<button class="chip' + (jFolder === f.id ? ' on' : '') + '" data-jfolder="' + esc(f.id) + '">📁 ' + esc(f.name) + '</button>').join('') + '</div>' : '') +
-      (S.entries.some((e) => e.star) ? '<button class="chip' + (jStar ? ' on' : '') + '" id="j-star">★ Kept close</button>' : '') +
-      (filtering ? '<button class="btn sm quiet" id="j-clear">Clear the filters · ' + plural(list.length, 'entry').replace('entrys', 'entries') + '</button>' : '') +
-      (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map(entryCard).join('') + '</div>').join('')
-        : '<p class="cap">' + (filtering ? 'Nothing here with that filter.' : 'Nothing written yet. Every entry you plant lives here, by day.') + '</p>');
-  }
-  return '<div class="glass card"><span class="kicker mint">Today\'s question</span><h3 class="q"><button id="j-q" aria-label="another question">' + esc(q) + '</button></h3><button class="btn mint" id="j-write">Write today\'s entry 🌱</button></div>' +
-    '<div class="glass seg" style="grid-template-columns:repeat(4,minmax(max-content,1fr))">' + [['entries', 'Entries'], ['threads', 'Threads'], ['folders', 'Folders'], ['milestones', 'Milestones']].map(([k, n]) => '<button class="' + (jTab === k ? 'on' : '') + '" data-jt="' + k + '">' + n + '</button>').join('') + '</div>' + body;
+      '<div class="chips row">' + S.folders.map((f) => '<button class="chip' + (jFolder === f.id ? ' on' : '') + '" data-jfolder="' + esc(f.id) + '">📁 ' + esc(f.name) + '</button>').join('') +
+        (S.entries.some((e) => e.star) ? '<button class="chip' + (jStar ? ' on' : '') + '" id="j-star">★ Kept Close</button>' : '') +
+        '<button class="chip" id="j-newfolder">' + esc(T('journal.folder', '')) + '</button></div>' : '') +
+    (filtering ? '<div class="actions jr-filter"><button class="btn sm quiet" id="j-clear">Clear · ' + plural(list.length, 'entry').replace('entrys', 'entries') + '</button>' +
+      (jFolder && folderOf(jFolder) ? '<button class="btn sm quiet" id="j-folder-edit">' + esc(T('journal.folderEdit', '')) + '</button>' : '') + '</div>' : '') +
+    (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map((e) => entryCard(e, { day: true })).join('') + '</div>').join('')
+      : '<p class="cap">Nothing here with that filter.</p>');
 }
-function viewBook() {
+// ── THE TIME LOG ──
+// When each entry was written and how long it took, by day, for as long as the journal has
+// been kept. All of it is read off the entries on this device, at the moment the tab opens.
+// It lists what was kept. A day with nothing written is a cell like any other in a
+// calendar, with nothing said about it.
+function viewLog() {
+  const tot = J.totals(S.entries);
+  if (!tot.entries) return '<div class="glass card" data-state="empty"><p class="body">' + esc(T('log.empty', '')) + '</p><button class="btn mint" id="j-write">Write Today</button></div>';
+  // one month at a time: the calendar says which days were kept, the rows under it say when
+  const month = J.logMonths(S.entries).find((m) => m.key === monthKey(jMonth));
+  return '<div class="glass stats"><div><b>' + tot.days.toLocaleString() + '</b><span>' + esc(T('log.days', '')) + '</span></div>' +
+    '<div><b>' + tot.entries.toLocaleString() + '</b><span>' + esc(T('log.entries', '')) + '</span></div>' +
+    '<div><b>' + (tot.timed ? esc(J.brief(tot.secs)) : tot.words.toLocaleString()) + '</b><span>' + esc(T(tot.timed ? 'log.time' : 'log.words', '')) + '</span></div></div>' +
+    monthGrid(jMonth) +
+    (month ? logRows(month, REC()) : '') +
+    '<p class="cap">' + esc(T('log.each', '')) + '</p>';
+}
+// ── MILESTONES ──
+function viewMarks() {
+  return keptCard(J.totals(S.entries).days, REC()) +
+    '<div class="miles">' + MILESTONES.map(([id, name, ico]) => { const when = S.milestones[id]; return '<div class="glass mile' + (when ? ' lit' : '') + '"><span class="orb"><span>' + ico + '</span></span><span>' + esc(name) + '</span>' + (when ? '<span class="when">' + esc(fmtDay(when)) + '</span>' : '') + '</div>'; }).join('') + '</div>';
+}
+// ── THE GROWTH BOOK · how a Gratus grows: the phases, the emojis, the recipes ──
+function viewGrowth() {
   const ph = C.book.phases; let body = '';
-  if (bookTab === 'journal') body = viewJournal();
-  else if (bookTab === 'phases') body = '<div class="rows">' + ph.map((p, i) => '<div class="glass phase"><span class="ico' + (i === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b><span class="cap">' + esc(p.meaning) + '</span></span><span class="day">day ' + p.day + (ph[i + 1] ? '<br>' + (ph[i + 1].day - p.day) + ' to next' : '') + '</span></div>').join('') + '</div><p class="cap">A day counts once. The arcs below run on 0, 3, 8, 21 and 55 days.</p>';
-  else if (bookTab === 'paths') {
-    // A model is a pattern; a pathway is a walk. The app has never told anybody what to do
-    // with it beyond "write something", and for most people that is not enough to start.
-    const list = ((C.pathways && C.pathways.pathways) || []);
-    body = '<p class="body">A pathway is a walk somebody has already made: a real thing people go through, and what to do on which day. Follow one exactly or read it and do it your own way.</p>' +
-      '<div class="rows">' + list.map((p) => '<button class="glass opt path" data-path="' + esc(p.id) + '">' +
-        '<span class="ico">' + esc(p.face) + '</span><span class="grow"><b>' + esc(p.name) + '</b>' +
-        '<span>' + esc(p.days ? plural(p.days, 'day') : 'no schedule') + ' \u00b7 ' + esc(p.who) + '</span>' +
-        '<span class="line">' + esc(p.why) + '</span></span><span class="arrow">\u203a</span></button>').join('') + '</div>';
-  }
-  else if (bookTab === 'emojis') { const pal = palette(); body = '<div class="glass card"><span class="kicker mint">Your palette</span><div class="chips">' + pal.map((e) => '<button class="orb' + (plantFor(e) ? ' lit' : '') + '" data-arc="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div><div class="two"><input class="field" id="new-emoji" placeholder="any emoji" aria-label="a new emoji"><button class="btn" id="add-emoji">Add an emoji</button></div></div>' +
-    '<div class="eyebrow"><h2>Arcs</h2><span class="more">' + C.evo.chains.length + ' chains</span></div><div class="rows">' + C.evo.chains.map((ch) => '<button class="glass recipe" data-chain="' + esc(ch.id) + '"><span class="f">' + ch.stages.map((s) => esc(s.emoji)).join('<span class="op">→</span>') + '</span><span class="name">' + esc(ch.arc) + '</span><span class="line">' + esc(ch.stages[0].line) + '</span></button>').join('') + '</div>'; }
-  else { const cats = C.recipes.categories; const list = allRecipes().filter((r) => recipeCat === 'all' || r.cat === recipeCat); body = '<div class="chips row"><button class="chip' + (recipeCat === 'all' ? ' on' : '') + '" data-rcat="all">All</button>' + Object.keys(cats).map((k) => '<button class="chip' + (recipeCat === k ? ' on' : '') + '" data-rcat="' + k + '">' + esc(cats[k].name) + '</button>').join('') + '<button class="chip' + (recipeCat === 'mine' ? ' on' : '') + '" data-rcat="mine">Mine</button></div>' +
-    alchemyBlock() + '<div class="eyebrow"><h2>Recipes</h2></div><button class="btn wide" id="add-recipe">+ Add a recipe</button><div class="rows">' + list.map((r) => { const st = recipeState(r); return '<button class="glass recipe' + (st.made ? ' made' : '') + '" data-recipe="' + esc(r.id) + '"><span class="f">' + r.formula.map(esc).join('<span class="op">+</span>') + '<span class="op">→</span>' + esc(r.result) + '</span><span class="cat">' + esc(r.cat === 'mine' ? 'Mine' : (cats[r.cat] || {}).name || '') + '</span><span class="name">' + esc(r.name) + '</span><span class="line">' + esc(r.statement) + (st.made ? ' · made' : ' · ' + st.days + ' of ' + st.need + ' days together') + '</span></button>'; }).join('') + '</div>'; }
-  return hero(scene('book'), { cls: 'room-hero', h1: 'Growth Book', k1: 'Your Gratitude Journal', k2: 'Journal · Phases · Emojis · Recipes' }) +
-    '<div class="page"><div class="glass seg" style="grid-template-columns:repeat(5,minmax(max-content,1fr))">' + [['journal', 'Journal'], ['phases', 'Phases'], ['paths', 'Pathways'], ['emojis', 'Emojis'], ['recipes', 'Recipes']].map(([k, n]) => '<button class="' + (bookTab === k ? 'on' : '') + '" aria-pressed="' + (bookTab === k ? 'true' : 'false') + '" data-book="' + k + '">' + n + '</button>').join('') + '</div>' + body + '</div>';
+  if (growthTab === 'emojis') { const pal = palette(); body = '<div class="glass card"><span class="kicker mint">Your palette</span><div class="chips">' + pal.map((e) => '<button class="orb' + (plantFor(e) ? ' lit' : '') + '" data-arc="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div><div class="two"><input class="field" id="new-emoji" placeholder="any emoji" aria-label="a new emoji"><button class="btn" id="add-emoji">Add an emoji</button></div></div>' +
+    '<div class="eyebrow"><h2>Arcs</h2><span class="more">' + C.evo.chains.length + ' chains</span></div><div class="rows">' + C.evo.chains.map((ch) => '<button class="glass recipe" data-chain="' + esc(ch.id) + '"><span class="f">' + ch.stages.map((s) => esc(s.emoji)).join('<span class="op">→</span>') + '</span></button>').join('') + '</div>'; }
+  else if (growthTab === 'recipes') { const cats = C.recipes.categories; const list = allRecipes().filter((r) => recipeCat === 'all' || r.cat === recipeCat); body = '<div class="chips row"><button class="chip' + (recipeCat === 'all' ? ' on' : '') + '" data-rcat="all">All</button>' + Object.keys(cats).map((k) => '<button class="chip' + (recipeCat === k ? ' on' : '') + '" data-rcat="' + k + '">' + esc(cats[k].name) + '</button>').join('') + '<button class="chip' + (recipeCat === 'mine' ? ' on' : '') + '" data-rcat="mine">Mine</button></div>' +
+    alchemyBlock() + '<div class="eyebrow"><h2>Recipes</h2></div><button class="btn wide" id="add-recipe">+ Add a recipe</button><div class="rows">' + list.map((r) => { const st = recipeState(r); return '<button class="glass recipe' + (st.made ? ' made' : '') + '" data-recipe="' + esc(r.id) + '"><span class="f">' + r.formula.map(esc).join('<span class="op">+</span>') + '<span class="op">→</span>' + esc(r.result) + '</span><span class="cat">' + esc(r.cat === 'mine' ? 'Mine' : (cats[r.cat] || {}).name || '') + '</span><span class="name">' + esc(r.name) + '</span><span class="line">' + (st.made ? 'made' : st.days + ' of ' + st.need + ' days together') + '</span></button>'; }).join('') + '</div>'; }
+  else body = '<div class="rows">' + ph.map((p, i) => '<div class="glass phase"><span class="ico' + (i === ph.length - 1 ? ' gold' : '') + '">' + p.icon + '</span><span><b>' + esc(p.name) + '</b></span><span class="day">day ' + p.day + (ph[i + 1] ? '<br>' + (ph[i + 1].day - p.day) + ' to next' : '') + '</span></div>').join('') + '</div><p class="cap">A day counts once. An emoji changes at 3, 8, 21 and 55 days.</p>';
+  return '<div class="glass seg">' + [['phases', 'Phases'], ['emojis', 'Emojis'], ['recipes', 'Recipes']].map(([k, n]) => '<button class="' + (growthTab === k ? 'on' : '') + '" aria-pressed="' + (growthTab === k ? 'true' : 'false') + '" data-growth="' + k + '">' + n + '</button>').join('') + '</div>' + body;
+}
+// Two rooms behind one door. The journal: what was written, its log, its marks. And the
+// Growth Book: how a Gratus grows. They used to be one room of nine tabs, with the days
+// somebody wrote two rows of buttons down. Three tabs fit a phone; a fourth was cut off at
+// the edge of the glass, which is how the book came to have its own room.
+function viewBook() {
+  const tabs = [['book', T('journal.tabJournal', 'Journal')], ['log', T('journal.tabLog', 'Time Log')], ['marks', T('journal.tabMarks', 'Milestones')]];
+  const body = sub === 'log' ? viewLog() : sub === 'marks' ? viewMarks() : viewJournal();
+  return hero(scene('book'), { cls: 'room-hero book-hero', h1: 'Gratitude Journal', k1: 'Write and journal every day.' }) +
+    '<div class="page"><div class="glass seg">' + tabs.map(([k, n]) => '<button class="' + (sub === k ? 'on' : '') + '" aria-pressed="' + (sub === k ? 'true' : 'false') + '" data-book="' + k + '">' + esc(n) + '</button>').join('') + '</div>' + body +
+    '<button class="glass opt" id="gb-open"><span class="ico">\ud83c\udf31</span><span class="grow"><b>' + esc(T('menu.growth', '')) + '</b><span>Phases \u00b7 Emojis \u00b7 Recipes</span></span><span class="arrow">\u203a</span></button></div>';
+}
+function viewGrowthBook() {
+  return hero(scene('book'), { cls: 'room-hero', h1: 'Growth Book', k1: 'Phases \u00b7 Emojis \u00b7 Recipes' }) +
+    '<div class="page">' + viewGrowth() +
+    '<button class="glass opt" id="gb-journal"><span class="ico">\ud83d\udcd6</span><span class="grow"><b>Gratitude Journal</b><span>Write and journal every day.</span></span><span class="arrow">\u203a</span></button></div>';
 }
 function arcSheet(emoji) {
-  const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const seed = p ? p.emoji : emoji; const arc = E.arc(seed, d, C.evo); const sch = E.schedule(C.evo); const ph = phaseOf(d); const nx = nextPhase(d);
+  const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const seed = p ? p.emoji : emoji; const arc = E.arc(seed, d, C.evo); const ph = phaseOf(d); const nx = nextPhase(d);
   const recipes = allRecipes().filter((r) => r.formula.includes(emoji) || r.result === emoji);
   const forp = p && p.forProject;
   const sh = sheet('<div class="hero-sm"><span class="orb xl' + (p ? ' lit' : '') + '"><span>' + esc(emoji) + '</span></span><h2>' + esc(nameOf(emoji)) + '</h2><span class="kicker mint">' + (p ? esc(ph.name + ' · ' + plural(d, 'day')) + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : '') : 'Not planted yet') + '</span></div>' +
-    (p ? '<p class="body">' + esc(ph.meaning) + '</p>' : '') +
-    (arc ? '<div><span class="kicker mint">' + esc(arc.chain.arc) + '</span><div class="arc" style="padding-top:8px">' + arc.stages.map((s, i) => (i ? '<span class="arrow">→</span>' : '') + '<span class="' + (s.reached ? '' : 'dim') + '" title="' + esc(s.name) + '">' + esc(s.emoji) + '</span>').join('') + '</div><div class="rows" style="padding-top:8px">' + arc.chain.stages.map((s, i) => '<div class="cap"><b style="color:var(--ink)">' + esc(s.emoji + ' ' + s.name) + '</b> · day ' + (sch[i] != null ? sch[i] : '') + ' · ' + esc(s.line) + '</div>').join('') + '</div></div>' : '<p class="cap">This emoji keeps its shape. The phases are its growth.</p>') +
+    (arc ? '<div class="arc">' + arc.stages.map((s, i) => (i ? '<span class="arrow">→</span>' : '') + '<span class="' + (s.reached ? '' : 'dim') + '" title="' + esc(s.name) + '">' + esc(s.emoji) + '</span>').join('') + '</div>' : '') +
     (recipes.length ? '<div><span class="kicker mint">In these recipes</span><div class="rows" style="padding-top:8px">' + recipes.slice(0, 6).map((r) => '<div class="cap"><b style="color:var(--ink)">' + esc(r.formula.join(' + ') + ' → ' + r.result) + '</b> · ' + esc(r.name) + '</div>').join('') + '</div></div>' : '') +
     '<div class="actions">' + (p ? '<button class="btn mint" id="as-write">Write about it</button>' + (phaseIndex(d) >= 4 ? '<button class="btn gold" id="as-give">Give it as a Gratus Gift</button>' : '') : '<button class="btn mint" id="as-plant">Plant it</button>') + '</div>');
-  const w = $('#as-write', sh.el); if (w) w.addEventListener('click', () => { sh.close(); draft.emoji = emoji; go('grow'); });
-  const pl = $('#as-plant', sh.el); if (pl) pl.addEventListener('click', () => { sh.close(); draft.emoji = emoji; go('grow'); });
+  const w = $('#as-write', sh.el); if (w) w.addEventListener('click', () => { sh.close(); writeNow(emoji); });
+  const pl = $('#as-plant', sh.el); if (pl) pl.addEventListener('click', () => { sh.close(); writeNow(emoji); });
   const gv = $('#as-give', sh.el); if (gv) gv.addEventListener('click', () => { sh.close(); giveSheet(p); });
 }
 function recipeSheet(r) {
@@ -1689,7 +1833,7 @@ function recipeSheet(r) {
   const sh = sheet('<div class="hero-sm"><div class="arc">' + r.formula.map((e) => '<span class="orb lg"><span>' + esc(e) + '</span></span>').join('<span class="arrow">+</span>') + '<span class="arrow">→</span><span class="orb lg' + (st.made ? ' lit' : '') + '" style="--h:#F2C97D"><span>' + esc(st.made ? r.result : '?') + '</span></span></div><span class="kicker mint">' + esc(r.cat === 'mine' ? 'Your recipe' : ((cats[r.cat] || {}).name || '') + ' · ' + ((cats[r.cat] || {}).line || '')) + '</span><h2>' + esc(r.name) + '</h2><p class="lead">' + esc(r.statement) + '</p></div>' +
     '<p class="body">' + (st.made ? 'Made. ' + esc(r.result) + ' is in your garden.' : 'Write about ' + esc(r.formula[0]) + ' and ' + esc(r.formula[1]) + ' on the same day, ' + plural(st.need, 'time') + '. ' + st.days + ' so far.') + '</p>' + (r.loop ? '<p class="cap mono">' + esc(r.loop) + '</p>' : '') +
     '<div class="actions"><button class="btn mint" id="rs-write">Write with these</button>' + (r.cat === 'mine' ? '<button class="btn quiet" id="rs-del">Remove this recipe</button>' : '') + '</div>');
-  $('#rs-write', sh.el).addEventListener('click', () => { sh.close(); draft.emoji = r.formula[0]; go('grow'); toast('Plant ' + r.formula[0] + ' today, then ' + r.formula[1] + '.'); });
+  $('#rs-write', sh.el).addEventListener('click', () => { sh.close(); writeNow(r.formula[0]); toast('Plant ' + r.formula[0] + ' today, then ' + r.formula[1] + '.'); });
   const del = $('#rs-del', sh.el); if (del) del.addEventListener('click', () => { S.my.recipes = S.my.recipes.filter((x) => x.id !== r.id); save(); sh.close(); render(); });
 }
 function addRecipeSheet() {
@@ -1799,10 +1943,10 @@ function buildGift(p, to, from, message) {
   return { v: 1, id: newId('gift'), e: echoId(), emoji: face(p), seed: p.emoji, days: d, from: from || 'Someone', to: to || '', message: message || '', at: today(), journey, reflections: mine.length, acts: tags.length, tags: tags.slice(0, 4) };
 }
 function giveSheet(pre) {
-  const plants = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)); if (!plants.length) { toast('Plant something first. A gift is grown.'); go('grow'); return; }
+  const plants = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)); if (!plants.length) { toast('Plant something first.'); go('grow'); return; }
   let chosen = pre || plants[0];
-  const sh = sheet('<h2>Give a Gratus Gift</h2><p class="body">Choose what grew. Write why. It travels inside its own link, with the days it took.</p><div class="pick" id="gpick">' + plants.map((p) => '<button class="orb' + (p === chosen ? ' on' : '') + (phaseIndex(daysOf(p)) >= 4 ? ' lit' : '') + '" data-gp="' + esc(p.id) + '" aria-label="' + esc(nameOf(face(p))) + '"><span>' + esc(face(p)) + '</span></button>').join('') + '</div><p class="cap" id="gsub"></p><input class="field" id="g-to" placeholder="for whom" maxlength="40" aria-label="for whom"><textarea class="field" id="g-msg" rows="3" maxlength="600" placeholder="Thank you for..." aria-label="your message"></textarea><input class="field" id="g-from" placeholder="from" maxlength="40" value="' + esc(S.name || '') + '" aria-label="from"><button class="btn gold wide" id="g-wrap">Wrap it 🎁</button>');
-  const sub2 = () => { const d = daysOf(chosen); $('#gsub', sh.el).textContent = nameOf(face(chosen)) + ' · ' + plural(d, 'day') + ' · ' + phaseOf(d).name + (phaseIndex(d) < 4 ? ' · gifts grow best at Ready to Give (day ' + C.book.phases[4].day + ')' : ''); }; sub2();
+  const sh = sheet('<h2>Give a Gratus Gift</h2><p class="body">Choose what grew. Write why. The link carries its days and one line from your journal for each phase.</p><div class="pick" id="gpick">' + plants.map((p) => '<button class="orb' + (p === chosen ? ' on' : '') + (phaseIndex(daysOf(p)) >= 4 ? ' lit' : '') + '" data-gp="' + esc(p.id) + '" aria-label="' + esc(nameOf(face(p))) + '"><span>' + esc(face(p)) + '</span></button>').join('') + '</div><p class="cap" id="gsub"></p><input class="field" id="g-to" placeholder="for whom" maxlength="40" aria-label="for whom"><textarea class="field" id="g-msg" rows="3" maxlength="600" placeholder="Thank you for..." aria-label="your message"></textarea><input class="field" id="g-from" placeholder="from" maxlength="40" value="' + esc(S.name || '') + '" aria-label="from"><button class="btn gold wide" id="g-wrap">Wrap it 🎁</button>');
+  const sub2 = () => { const d = daysOf(chosen); $('#gsub', sh.el).textContent = nameOf(face(chosen)) + ' · ' + plural(d, 'day') + ' · ' + phaseOf(d).name; }; sub2();
   $$('[data-gp]', sh.el).forEach((b) => b.addEventListener('click', () => { chosen = S.plants.find((p) => p.id === b.dataset.gp); $$('[data-gp]', sh.el).forEach((x) => x.classList.toggle('on', x === b)); sub2(); }));
   $('#g-wrap', sh.el).addEventListener('click', () => {
     beat('gift');   // one count. No emoji, no words, no recipient, no giver.
@@ -1832,8 +1976,13 @@ function shareSheet(g) {
 
 // ── THE GIFT JOURNEY (the receiver's eight pages) ──
 const DEMO_GIFT = { v: 1, id: 'demo', emoji: '❤️', seed: '🤍', days: 12, from: 'Augie', to: 'you', message: 'Thank you for always being there. You make life brighter, kinder, and more meaningful. This is my way of saying I see you, I appreciate you, and I\'m grateful for you.', at: '2026-09-17', journey: [{ phase: 'Planted', icon: '❤️', day: '2026-09-05', line: 'I\'m grateful for you.' }, { phase: 'Nurtured', icon: '🌱', day: '2026-09-07', line: 'You always make time.' }, { phase: 'Deepened', icon: '💧', day: '2026-09-10', line: 'You inspire me.' }, { phase: 'Bloomed', icon: '☀️', day: '2026-09-14', line: 'Life is better with you in it.' }, { phase: 'Ready to Give', icon: '💗', day: '2026-09-17', line: 'Gratitude grows love.' }], reflections: 4, acts: 3, tags: ['Love', 'Support', 'Friendship', 'Gratitude'] };
-function openJourney(g, o) { o = o || {}; room = { g, i: 0, choice: 'garden', o }; document.body.classList.add('room'); if (!o.routed) history.pushState({ room: 1 }, '', '/gift'); renderJourney(); }
-function closeRoom(byRoute) { const r = $('#room'); r.hidden = true; r.innerHTML = ''; document.body.classList.remove('room'); room = null; if (!byRoute && location.pathname === '/gift') history.replaceState(null, '', '/app'); }
+function openJourney(g, o) { o = o || {}; room = { g, i: 0, choice: 'garden', o }; document.body.classList.add('room'); if (!o.routed && !popping) { const from = [tab, sub]; const fy = Math.round(window.scrollY); settle(() => { const cur = stepNow(); history.pushState({ g: 1, d: cur.d + 1, from, fy, room: 1 }, '', '/gift'); }); } renderJourney(); }
+function closeRoom(byRoute) {
+  const r = $('#room'); r.hidden = true; r.innerHTML = ''; document.body.classList.remove('room'); room = null;
+  if (byRoute) return;
+  // a journey opened inside the app took a step, and leaves it; one opened from a link stands on the link's own step
+  settle(() => { const cur = stepNow(); if (cur.room && cur.d > 0) stepOut(); else if (location.pathname === '/gift') history.replaceState(Object.assign({}, cur, { room: 0 }), '', pathOf(tab, sub)); });
+}
 function renderJourney() {
   const r = $('#room'); const { g, i } = room; const name = nameOf(g.emoji);
   const page = (body, foot) => '<div class="room-page">' + art(SCENES.journey[i], 'rart') + '<div class="rhead">' + (i ? '<button id="rj-back" aria-label="back">‹</button>' : '<span style="width:40px"></span>') + '<span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="rj-x" aria-label="close">×</button></div><div class="rbody">' + body + '</div><div class="rfoot">' + foot + '</div></div>';
@@ -1877,45 +2026,35 @@ function saveGift() {
 // ── sheets: entries, you, the laws ──
 function entrySheet(e) {
   const folders = S.folders.map((f) => '<button class="chip' + (e.folder === f.id ? ' on' : '') + '" data-efold="' + esc(f.id) + '">📁 ' + esc(f.name) + '</button>').join('');
-  const sh = sheet('<span class="kicker mint">' + esc(fmtDay(e.day)) + (e.emoji ? ' · ' + esc(e.emoji) + ' ' + esc(nameOf(e.emoji)) : '') + '</span>' +
+  const hour = e.at ? clockOf(e.at) : ''; const took = Number(e.took) || 0;
+  const sh = sheet('<span class="kicker mint">' + (e.emoji ? esc(e.emoji) + ' \u00b7 ' : '') + esc(fmtDay(e.day)) + (hour ? ' \u00b7 ' + esc(hour) : '') + (took >= 10 ? ' \u00b7 ' + esc(J.span(took)) : '') + '</span>' +
     (e.photo ? '<img src="' + e.photo + '" alt="" style="border-radius:14px;max-height:280px;width:100%;object-fit:cover">' : '') +
-    '<p class="lead" style="white-space:pre-wrap">' + esc(e.text || '(an emoji, no words)') + '</p>' +
+    '<p class="jr-page">' + esc(e.text || e.emoji || '') + '</p>' +
     (e.voice ? '<div class="glass voiceprev"><span class="kicker mint">Your voice · ' + fmtDur(e.voice.dur) + '</span><audio controls id="en-audio"></audio></div>' : '') +
     (e.tags && e.tags.length ? '<div class="chips">' + e.tags.map((t) => '<span class="chip">' + esc(t) + '</span>').join('') + '</div>' : '') +
-    '<span class="kicker mint">Folder</span><div class="chips">' + folders + '<button class="chip" id="en-newfolder">+ new folder</button></div>' +
-    '<div class="actions">' + (e.emoji ? '<button class="btn mint" id="en-thread">Continue this thread ' + esc(e.emoji) + '</button>' : '') + '<button class="btn" id="en-star">' + (e.star ? '★ Kept close' : '☆ Keep this one close') + '</button><button class="btn quiet" id="en-del">Delete this entry</button></div>' +
-    '<p class="cap">Deleting an entry never takes a day from an emoji.</p>');
+    (folders ? '<div class="chips">' + folders + '</div>' : '') +
+    '<div class="actions">' + (e.emoji ? '<button class="btn mint" id="en-thread">Write Again ' + esc(e.emoji) + '</button>' : '') + '<button class="btn" id="en-star">' + (e.star ? '★ Kept Close' : '☆ Keep Close') + '</button><button class="btn quiet" id="en-del">Delete</button></div>');
   if (e.voice) keepGet(e.id).then((b) => { const au = $('#en-audio', sh.el); if (!au) return; if (b) au.src = URL.createObjectURL(b); else au.outerHTML = '<p class="cap">The recording is not on this device.</p>'; }).catch(() => null);
   $$('[data-efold]', sh.el).forEach((b) => b.addEventListener('click', () => { e.folder = e.folder === b.dataset.efold ? null : b.dataset.efold; save(); $$('[data-efold]', sh.el).forEach((x) => x.classList.toggle('on', x.dataset.efold === e.folder)); toast(e.folder ? 'Filed in ' + folderOf(e.folder).name : 'Taken out of its folder'); render(); }));
-  $('#en-newfolder', sh.el).addEventListener('click', () => { sh.close(); newFolder((f) => { e.folder = f.id; save(); render(); toast('Filed in ' + f.name); }); });
   const th = $('#en-thread', sh.el); if (th) th.addEventListener('click', () => { sh.close(); continueThread(e.emoji); });
   $('#en-star', sh.el).addEventListener('click', () => { e.star = !e.star; save(); sh.close(); render(); toast(e.star ? 'Kept close' : 'Let go'); });
   $('#en-del', sh.el).addEventListener('click', () => { if (!confirm('Delete this entry?')) return; S.entries = S.entries.filter((x) => x.id !== e.id); if (e.voice) keepDel(e.id).catch(() => null); save(); sh.close(); render(); });
 }
 function folderOf(id) { return S.folders.find((f) => f.id === id) || null; }
-function newFolder(then) {
-  const sh = sheet('<h2>A new folder</h2><p class="body">A person, a season, a place. Entries you file here stay easy to find.</p><input class="field" id="nf-name" placeholder="name the folder" maxlength="40" aria-label="folder name"><button class="btn mint" id="nf-go">Make the folder</button>', { autofocus: true });
-  $('#nf-go', sh.el).addEventListener('click', () => { const name = $('#nf-name', sh.el).value.trim(); if (!name) { toast('A name'); return; } const f = { id: newId('f'), name, made: today() }; S.folders.push(f); save(); sh.close(); if (then) then(f); else render(); });
+function newFolder() {
+  const sh = sheet('<h2>A New Folder</h2><input class="field" id="nf-name" placeholder="name the folder" maxlength="40" aria-label="folder name"><button class="btn mint" id="nf-go">Make the folder</button>', { autofocus: true });
+  $('#nf-go', sh.el).addEventListener('click', () => { const name = $('#nf-name', sh.el).value.trim(); if (!name) { toast('A name'); return; } S.folders.push({ id: newId('f'), name, made: today() }); save(); sh.close(); render(); });
 }
 function folderSheet(f) {
   const es = S.entries.filter((e) => e.folder === f.id).slice().reverse();
   const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>📁</span></span><h2>' + esc(f.name) + '</h2><span class="kicker mint">' + plural(es.length, 'entry').replace('entrys', 'entries') + ' · since ' + esc(fmtDay(f.made)) + '</span></div>' +
-    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">Nothing filed here yet.</p>') +
+    (es.length ? '<div class="rows">' + es.map((e) => entryCard(e)).join('') + '</div>' : '<p class="cap">Nothing filed here yet.</p>') +
     '<div class="two"><input class="field" id="fo-name" value="' + esc(f.name) + '" maxlength="40" aria-label="folder name"><button class="btn" id="fo-save">Rename</button></div><div class="links"><button id="fo-del">Delete the folder</button></div><p class="cap">Deleting a folder keeps every entry; they simply leave the folder.</p>');
   $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); }));
   $('#fo-save', sh.el).addEventListener('click', () => { const n = $('#fo-name', sh.el).value.trim(); if (!n) return; f.name = n; save(); sh.close(); render(); toast('Renamed'); });
   $('#fo-del', sh.el).addEventListener('click', () => { if (!confirm('Delete the folder "' + f.name + '"? The entries stay.')) return; S.entries.forEach((e) => { if (e.folder === f.id) e.folder = null; }); S.folders = S.folders.filter((x) => x.id !== f.id); save(); sh.close(); render(); });
 }
-function threadEntries(emoji) { const p = plantFor(emoji); return S.entries.filter((e) => e.emoji === emoji || (p && (e.emoji === p.emoji || e.emoji === face(p)))); }
-function threadSheet(emoji) {
-  const p = plantFor(emoji); const d = p ? daysOf(p) : 0; const ph = phaseOf(d); const nx = nextPhase(d); const es = threadEntries(emoji).slice().reverse();
-  const sh = sheet('<div class="hero-sm"><span class="orb xl' + (p ? ' lit' : '') + '"><span>' + esc(p ? face(p) : emoji) + '</span></span><h2>' + esc(nameOf(emoji)) + '</h2><span class="kicker mint">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + '</span></div>' +
-    '<button class="btn mint wide" id="th-go">Continue this thread ' + esc(emoji) + '</button>' +
-    (es.length ? '<div class="rows">' + es.map(entryCard).join('') + '</div>' : '<p class="cap">No words yet on this thread.</p>'));
-  $('#th-go', sh.el).addEventListener('click', () => { sh.close(); continueThread(emoji); });
-  $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); }));
-}
-function continueThread(emoji) { draft.emoji = emoji; go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 80); }
+function continueThread(emoji) { writeNow(emoji); }
 // ── milestones: the journal's own way of marking the road; never a score, never a comparison ──
 function daysInRow() {
   const set = new Set(S.entries.map((e) => e.day)); let n = 0; const d = new Date();
@@ -1925,7 +2064,6 @@ function daysInRow() {
   return n;
 }
 const careDays = () => S.plants.reduce((n, p) => n + daysOf(p), 0);
-const wordCount = () => S.entries.reduce((n, e) => n + (e.text || '').split(/\s+/).filter(Boolean).length, 0);
 const MILESTONES = [
   ['first-entry', 'First entry', '✦', () => S.entries.length >= 1],
   ['three-in-row', 'Three days in a row', '🌱', () => daysInRow() >= 3],
@@ -1947,34 +2085,25 @@ const MILESTONES = [
   ['first-bloom', 'A seed watered and bloomed', '🌻', () => S.seeds.some((s) => s.status === 'bloomed')],
   ['care-30', 'Thirty days of care', '🕯️', () => careDays() >= 30],
   ['care-100', 'A hundred days of care', '🔥', () => careDays() >= 100],
+  ['hour', 'An hour on the page', '⏳', () => J.totals(S.entries).secs >= 3600],
 ];
+// the marks worth stopping the day for
+const BIG = { 'seven-in-row': 1, 'thirty-in-row': 1, bloomed: 1, ready: 1, 'first-gift': 1, received: 1, 'first-bloom': 1, 'care-100': 1 };
+// Lighting a mark and announcing it are two acts. Planting lights them and says them on
+// its own card; anything else that lights one (a folder made, a gift kept) is announced here.
+function lightMilestones() {
+  if (!S) return []; const now = today(); const lit = [];
+  for (const [id, name, ico, test] of MILESTONES) { let ok = false; try { ok = test(); } catch (e) { ok = false; } if (!S.milestones[id] && ok) { S.milestones[id] = now; lit.push({ id, name, ico, big: !!BIG[id] }); } }
+  if (lit.length) save();
+  return lit;
+}
 function checkMilestones() {
-  if (!S) return; const now = today(); const lit = [];
-  for (const [id, name, ico, test] of MILESTONES) { let ok = false; try { ok = test(); } catch (e) { ok = false; } if (!S.milestones[id] && ok) { S.milestones[id] = now; lit.push({ id, name, ico }); } }
+  const lit = lightMilestones();
   if (!lit.length) return;
-  save();
-  const BIG = { 'seven-in-row': 1, 'thirty-in-row': 1, bloomed: 1, ready: 1, 'first-gift': 1, received: 1, 'first-bloom': 1, 'care-100': 1 };
-  const big = lit.filter((x) => BIG[x.id]);
-  if (big.length) playCeremonies(big.map((x) => '<div class="cer"><span class="big">' + esc(x.ico) + '</span><h2>' + esc(x.name) + '</h2><p>A mark on your own road. Nothing here compares you with anyone.</p><span class="kicker">tap to continue</span></div>'), () => render());
+  const big = lit.filter((x) => x.big);
+  if (big.length) playCeremonies(big.map((x) => '<div class="cer"><span class="big">' + esc(x.ico) + '</span><h2>' + esc(x.name) + '</h2><span class="kicker">tap to continue</span></div>'), () => render());
   else setTimeout(() => toast('Milestone · ' + lit[0].name), 600);
 }
-function viewMilestones() {
-  const row = daysInRow(); const lit = MILESTONES.filter(([id]) => S.milestones[id]).length;
-  return '<div class="glass stats"><div><b>' + row + '</b><span>' + (row === 1 ? 'day in a row' : 'days in a row') + '</span></div><div><b>' + S.entries.length + '</b><span>' + (S.entries.length === 1 ? 'entry' : 'entries') + '</span></div><div><b>' + careDays() + '</b><span>days of care</span></div></div>' +
-    '<div class="glass stats"><div><b>' + wordCount() + '</b><span>words</span></div><div><b>' + S.plants.length + '</b><span>' + (S.plants.length === 1 ? 'plant' : 'plants') + '</span></div><div><b>' + lit + '</b><span>of ' + MILESTONES.length + ' marks</span></div></div>' +
-    '<p class="cap">Milestones mark your own road.</p>' +
-    '<div class="miles">' + MILESTONES.map(([id, name, ico]) => { const when = S.milestones[id]; return '<div class="glass mile' + (when ? ' lit' : '') + '"><span class="orb"><span>' + ico + '</span></span><span>' + esc(name) + '</span>' + (when ? '<span class="when">' + esc(fmtDay(when)) + '</span>' : '') + '</div>'; }).join('') + '</div>';
-}
-function viewThreads() {
-  const th = S.plants.slice().sort((a, b) => daysOf(b) - daysOf(a)).map((p) => { const em = face(p); const es = threadEntries(p.emoji); const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d); const last = es[es.length - 1]; const forp = p.forProject ? ' · for ' + p.forProject.title : '';
-    return '<button class="glass thread" data-thread="' + esc(p.emoji) + '"><span class="orb' + (d >= 9 ? ' lit' : '') + '"><span>' + esc(em) + '</span></span><span class="grow"><b>' + esc(nameOf(em)) + '</b><span class="cap">' + esc(ph.name) + ' · ' + plural(d, 'day') + ' · ' + plural(es.length, 'entry').replace('entrys', 'entries') + (nx ? ' · ' + esc(nx.name) + ' in ' + plural(nx.day - d, 'day') : ' · ready to give') + esc(forp) + '</span>' + (last && last.text ? '<span class="line">' + esc(last.text) + '</span>' : '') + '</span><span class="arrow">›</span></button>'; }).join('');
-  return '<p class="cap">One emoji, followed through your days.</p>' + (th ? '<div class="rows">' + th + '</div>' : '<p class="cap">Plant an emoji and its thread begins here.</p>');
-}
-function viewFolders() {
-  const fl = S.folders.map((f) => { const n = S.entries.filter((e) => e.folder === f.id).length; return '<button class="glass opt" data-folder="' + esc(f.id) + '"><span class="ico">📁</span><span class="grow"><b>' + esc(f.name) + '</b><span>' + plural(n, 'entry').replace('entrys', 'entries') + '</span></span><span class="arrow">›</span></button>'; }).join('');
-  return '<button class="btn wide" id="new-folder">+ New folder</button>' + (fl ? '<div class="rows">' + fl + '</div>' : '<p class="cap">A person, a season, a place. File entries into it from any entry.</p>');
-}
-
 // The whole garden, as a file on this device. The same one the You sheet offers and the
 // same one the wall offers, because a promise made in two places is kept by one function.
 function exportGarden() {
@@ -1989,12 +2118,11 @@ function youSheet() {
   const col = C.copy.locked.colophon; const d = S.plants.reduce((n, p) => n + daysOf(p), 0);
   const sh = sheet('<div class="hero-sm"><img src="' + LOGO + '" alt="" style="width:88px;height:88px;filter:drop-shadow(0 0 18px rgba(180,255,120,.5))"><h2>' + esc(S.name || 'You') + '</h2><span class="kicker mint">' + esc(S.entries.length + (S.entries.length === 1 ? ' entry' : ' entries') + ' · ' + plural(S.plants.length, 'plant') + ' · ' + plural(d, 'day') + ' of care') + '</span></div>' +
     '<input class="field" id="you-name" placeholder="your name, for the gifts you give" maxlength="40" aria-label="your name" value="' + esc(S.name || '') + '">' +
-    '<div class="actions"><button class="btn" id="you-save">Save</button>' + (installEvt || /iphone|ipad|android/i.test(navigator.userAgent) ? '<button class="btn mint" id="you-install">Add Gratus to your phone</button>' : '') + '<button class="btn mint" id="you-passage">Share my Gratus Passage</button><button class="btn" id="you-sun">🔆 Sunlight on Giveth</button><button class="btn" id="you-laws">The twelve laws</button><button class="btn" id="you-export">Export everything</button><label class="btn" id="you-restore">Restore from a file<input type="file" id="you-file" accept="application/json,.json" hidden></label><button class="btn quiet" id="you-reset">Start over on this device</button></div>' +
+    '<div class="actions"><button class="btn" id="you-save">Save</button>' + (installEvt || /iphone|ipad|android/i.test(navigator.userAgent) ? '<button class="btn mint" id="you-install">Add Gratus to your phone</button>' : '') + '<button class="btn" id="you-account">' + esc(M('account')) + '</button><button class="btn mint" id="you-passage">Share my Gratus Passage</button><button class="btn" id="you-export">Export everything</button><label class="btn" id="you-restore">Restore from a file<input type="file" id="you-file" accept="application/json,.json" hidden></label><button class="btn quiet" id="you-reset">Start over on this device</button></div>' +
     '<div class="cap" style="display:grid;gap:4px;padding-top:8px"><b style="color:var(--ink)">' + esc(col.name) + '</b><span>' + esc(col.method) + '</span><span>' + esc(col.date) + ' · <a href="' + esc(col.makerUrl || '#') + '" target="_blank" rel="noopener">' + esc(col.maker) + '</a></span><span style="color:var(--ink-2)">' + esc(col.words) + '</span><span style="color:var(--ink-2)">' + esc(col.close) + '</span><span>Voice recordings stay on this device and are not in the export.</span><span><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span></div>');
   $('#you-save', sh.el).addEventListener('click', () => { S.name = $('#you-name', sh.el).value.trim(); save(); sh.close(); toast('Saved'); });
   const ins = $('#you-install', sh.el); if (ins) ins.addEventListener('click', () => { sh.close(); promptInstall(); });
-  $('#you-laws', sh.el).addEventListener('click', () => { sh.close(); openLaws(); });
-  const sn = $('#you-sun', sh.el); if (sn) sn.addEventListener('click', () => { sh.close(); sunSheet(); });
+  $('#you-account', sh.el).addEventListener('click', () => { sh.close(); setTimeout(accountSheet, 300); });
   const pg = $('#you-passage', sh.el); if (pg) pg.addEventListener('click', () => { sh.close(); passageSheet(); });
   $('#you-export', sh.el).addEventListener('click', exportGarden);
   $('#you-file', sh.el).addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { let o = null; try { o = JSON.parse(rd.result); } catch (e) { o = null; }
@@ -2009,8 +2137,9 @@ function openLaws() {
   const root = $('#laws'); const laws = Gr.laws(C.prompts.statements); const ord = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
   root.innerHTML = '<button class="btn quiet skip" id="laws-x">Close</button>' + laws.map((l, i) => '<section class="law"><span class="kicker mint">' + ord[i] + '</span><h1>' + esc(l) + '</h1></section>').join('') + '<section class="law"><img src="' + LOGO + '" alt="" width="88" height="88"><p class="statement quiet">' + esc(C.copy.locked.colophon.close) + '</p><button class="btn mint" id="laws-done">Keep today</button></section>';
   root.hidden = false; document.body.classList.add('room'); root.scrollTop = 0;
-  const close = () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/app/laws') history.replaceState(null, '', '/app'); };
-  $('#laws-x', root).addEventListener('click', close); $('#laws-done', root).addEventListener('click', () => { close(); go('grow'); });
+  const close = () => { stepOff(lawsStep); lawsStep = null; root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); if (location.pathname === '/app/laws') settle(() => history.replaceState(stepNow(), '', '/app')); };
+  lawsStep = stepIn(close);
+  $('#laws-x', root).addEventListener('click', close); $('#laws-done', root).addEventListener('click', () => { close(); writeNow(); });
 }
 // ═══ THE GRATUS SOUND ═══
 //
@@ -2025,7 +2154,6 @@ function openLaws() {
 // sound switch the app already has, it is never played on an ordinary tap, and it
 // sits under his song rather than over it.
 const TONES = [146.83, 220.00, 293.66, 369.99, 440.00]; // D3 · A3 · D4 · F#4 · A4
-const TONE_NAMES = ['the root', 'the fifth', 'the octave', 'the third above', 'the fifth above'];
 let AC = null;
 function audioCtx() {
   if (!S.sound) return null;
@@ -2057,7 +2185,6 @@ function soundPhase(i) {
   feel('phase');
   for (let k = 0; k <= i && k < TONES.length; k++) tone(TONES[k], k * .17, 3.2 - k * .24, .085 - k * .007);
 }
-function soundNote(i) { if (TONES[i]) tone(TONES[i], 0, 2.4, .085); }
 // a word kept: the root alone, quietly
 function soundKept() { feel('tap'); tone(TONES[0], 0, 1.3, .06); }
 // a bloom: the root, the octave and the third above it, which is the chord opening
@@ -2170,7 +2297,7 @@ function wireSwipe() {
       hint(null);
       if (sub) {
         settle();
-        if (dir === -1) { feel('commit'); go(tab); }     // a swipe to the right is a step back
+        if (dir === -1) { feel('commit'); stepBack(); }     // a swipe to the right is a step back
         return;
       }
       const i = DOORS.indexOf(tab);
@@ -2203,18 +2330,6 @@ function wireSwipe() {
 // ── what a hold on a growing thing opens ──
 // The three things anyone wants from a plant they are already looking at, without
 // walking anywhere to reach them.
-function pathSheet(id) {
-  const p = ((C.pathways && C.pathways.pathways) || []).find((x) => x.id === id);
-  if (!p) return;
-  const sh = sheet('<div class="hero-sm"><span class="orb xl lit"><span>' + esc(p.face) + '</span></span><h2>' + esc(p.name) + '</h2>' +
-    '<span class="kicker mint">' + esc(p.days ? plural(p.days, 'day') : 'no schedule') + ' \u00b7 ' + esc(p.who) + '</span></div>' +
-    '<p class="body">' + esc(p.why) + '</p>' +
-    '<div class="rows">' + (p.steps || []).map((s) => '<div class="glass step">' +
-      '<span class="ico">' + (s.day ? esc('day ' + s.day) : '\u00b7') + '</span>' +
-      '<span class="grow"><b>' + esc(s.do) + '</b><span class="line">' + esc(s.note) + '</span></span></div>').join('') + '</div>' +
-    '<button class="btn mint wide" id="path-go">Start it now</button>');
-  $('#path-go', sh.el).addEventListener('click', () => { sh.close(); goNow('grow'); setTimeout(() => { const f = $('#write') || $('textarea.field'); if (f) f.focus(); }, 380); });
-}
 
 function plantQuick(p) {
   const d = daysOf(p); const ph = phaseOf(d); const nx = nextPhase(d);
@@ -2226,7 +2341,7 @@ function plantQuick(p) {
     '<button class="btn" id="pq-write">Write today with it</button>' +
     '<button class="btn gold" id="pq-give">Give this one</button></div>');
   $('#pq-look', sh.el).addEventListener('click', () => { sh.close(); arcSheet(face(p)); });
-  $('#pq-write', sh.el).addEventListener('click', () => { sh.close(); draft.emoji = face(p); goNow('grow'); setTimeout(() => { const f = $('#write'); if (f) f.focus(); }, 320); });
+  $('#pq-write', sh.el).addEventListener('click', () => { sh.close(); writeNow(face(p)); });
   $('#pq-give', sh.el).addEventListener('click', () => { sh.close(); giveSheet(p); });
 }
 
@@ -2235,11 +2350,14 @@ function plantQuick(p) {
 // Receiving a gift is free for ever and is never asked about here: /gift and a gift
 // journey open for anybody, with no account and no card, because a paywall in a stranger's
 // hands is the one place this product must never put one.
-let billState = null;
+let billState = null, billAt = 0;
 const receiving = () => location.pathname.startsWith('/gift') || document.body.classList.contains('room');
 
-async function billCheck() {
+async function billCheck(again) {
   if (receiving()) return;
+  // asked on arrival, when an account changes, and otherwise no more than every ten minutes
+  if (!again && billAt && Date.now() - billAt < 600000) return;
+  billAt = Date.now();
   try { billState = await Bill.status(); } catch (e) { return; }
   // Until the rail can take money, nobody's week ends and nobody is warned that it will.
   // A wall with nothing behind it is not a price, it is a locked door.
@@ -2437,7 +2555,7 @@ function accountSheet() {
           } catch (e) { say.textContent = 'Signed in. The saved copy could not be opened with that password.'; }
         }
         feel('commit');
-        sh.close(); render();
+        sh.close(); billCheck(true); render();
         toast(mode === 'up' ? 'Your garden is kept. gratus.cc/gg/' + ($('#ac-handle', form) ? $('#ac-handle', form).value.trim().toLowerCase() : '') : 'Signed in.');
       } catch (e) {
         b.disabled = false; b.textContent = mode === 'up' ? 'Create my account' : 'Sign in';
@@ -2498,7 +2616,7 @@ function accountInner(sh) {
 // It lights one real control at a time on the real screen, says what it is, and waits.
 // Doing the thing moves it on, and so does Next. A step whose control is not on this build
 // is skipped rather than pointed at, because a hole cut around nothing teaches nothing.
-let tourAt = -1, tourOff = null;
+let tourAt = -1, tourOff = null, tourStep = null;
 // Escape skips it from any card, the same as Skip. Enter is left alone, so it still presses
 // whichever tour button has focus.
 document.addEventListener('keydown', (e) => {
@@ -2508,6 +2626,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 function tourStop() {
+  stepOff(tourStep); tourStep = null;
   if (tourOff) { tourOff(); tourOff = null; }
   const r = $('#tour'); if (r) { r.hidden = true; r.innerHTML = ''; }
   document.body.classList.remove('touring');
@@ -2522,19 +2641,20 @@ function tourEnd(finished) {
 function tourOpen() {
   const root = $('#tour'); if (!root) return;
   root.hidden = false;
+  if (!tourStep) tourStep = stepIn(() => tourEnd(false));
   document.body.classList.add('touring');
   root.innerHTML = '<div class="tourcard mid">' +
     '<span class="kicker mint">' + esc(OPEN.k) + '</span><h2>' + esc(OPEN.h) + '</h2>' +
     '<p class="body">' + esc(OPEN.p) + '</p>' +
-    '<button class="btn mint wide" id="tour-go">Walk me through it</button>' +
-    '<button class="btn sm quiet" id="tour-skip">I will find my way</button></div>';
+    '<button class="btn mint wide" id="tour-go">Show Me How</button>' +
+    '<button class="btn sm quiet" id="tour-skip">Skip</button></div>';
   $('#tour-go', root).addEventListener('click', () => { feel('tap'); tourAt = -1; tourNext(); });
   $('#tour-skip', root).addEventListener('click', () => tourEnd(false));
 }
 
 function tourNext() {
   tourAt++;
-  if (tourAt >= TOUR.length) { tourNote(); return; }
+  if (tourAt >= TOUR.length) { tourEnd(false); return; }
   const step = TOUR[tourAt];
   if (step.at && tab !== step.at && !sub) goNow(step.at);
   else if (step.at && sub !== step.at && ['garden'].includes(step.at)) goNow('gratus', step.at);
@@ -2558,7 +2678,7 @@ function tourPaint(step) {
         'width:' + Math.min(innerWidth - 8, b.width + pad * 2) + 'px;height:' + (b.height + pad * 2) + 'px"></div>' +
       '<div class="tourcard near" style="' + (below ? 'top:' + Math.round(b.bottom + 18) + 'px' : 'bottom:' + Math.round(innerHeight - b.top + 18) + 'px') + '">' +
         '<span class="kicker mint">' + esc(step.k) + '</span>' +
-        '<p class="body">' + esc(step.p) + '</p>' +
+        (step.p ? '<p class="body">' + esc(step.p) + '</p>' : '') +
         '<div class="tourdots" aria-hidden="true">' + TOUR.map((x, n) => '<i' + (n === tourAt ? ' class="on"' : '') + '></i>').join('') + '</div>' +
         '<div class="two"><button class="btn sm quiet" id="tour-skip">Skip</button>' +
         '<button class="btn mint" id="tour-next">' + (tourAt === TOUR.length - 1 ? 'Done' : 'Next') + '</button></div>' +
@@ -2574,27 +2694,16 @@ function tourPaint(step) {
   }, motionOk() ? 340 : 20);
 }
 
-function tourNote() {
-  tourStop();
-  const root = $('#tour'); if (!root) return;
-  root.hidden = false;
-  document.body.classList.add('touring');
-  root.innerHTML = '<div class="tourcard mid">' +
-    '<span class="kicker mint">That is the whole of it</span><h2>Nothing here decays.</h2>' +
-    '<p class="body">No streaks, no scores, nobody to be compared to. Your journal stays on this device. The tour is in the menu whenever you want it again.</p>' +
-    '<button class="btn mint wide" id="tour-go">Write my first one</button>' +
-    '<button class="btn sm quiet" id="tour-read">Read the guides</button></div>';
-  $('#tour-go', root).addEventListener('click', () => tourEnd(true));
-  $('#tour-read', root).addEventListener('click', () => { tourEnd(false); location.href = '/docs'; });
-}
 
+let tourTimer = 0;
 function tourMaybe() {
   if (S.tour === 'seen') return;
   if (S.plants.length || S.entries.length) { S.tour = 'seen'; save(); return; }
   if (location.search.includes('notour')) return;
   // They came through the footer for the laws; the tour waits for their next visit.
   if (location.pathname === '/app/laws') return;
-  setTimeout(() => receiving() || tourOpen(), 700);
+  clearTimeout(tourTimer);
+  tourTimer = setTimeout(() => { if (S.tour !== 'seen' && !receiving() && !$('#tour .tourcard')) tourOpen(); }, 700);
 }
 function tourAgain() { S.tour = ''; save(); tourAt = -1; tourOpen(); }
 
@@ -2779,6 +2888,10 @@ function sendOff(given, then) {
   if (!from) { sending = false; if (then) then(); }
 }
 
+// Every paint used to start the session clock again, ask the server about billing again and
+// count itself as a view, and a search of the journal paints on every key. So one letter
+// typed was one request, one beacon, and three more listeners that were never taken off.
+let wiredOnce = false, viewWas = '';
 function wire() {
   watchVisibility();
   watchMark();
@@ -2787,14 +2900,8 @@ function wire() {
   wireConnectivity();
   tourMaybe();
   billCheck();
-  beat('view');
-  watchTime();
-  { const gs = $('#glyph-share'); if (gs) gs.addEventListener('click', () => {
-      const days = S.plants.reduce((t, p) => t + daysOf(p), 0);
-      shareOrCopy('My Gratus Glyph', plural(S.plants.length, 'thing') + ' growing, ' + plural(days, 'day') + ' of care.', location.origin + '/app/garden')
-        .then((r) => toast(r === 'copied' ? 'Link copied' : r === 'shared' ? 'Shared' : 'Copy it by hand'));
-    }); }
-  $$('[data-path]').forEach((b) => b.addEventListener('click', () => pathSheet(b.dataset.path)));
+  { const here = tab + '/' + (sub || ''); if (here !== viewWas) { viewWas = here; beat('view'); } }
+  if (!wiredOnce) { wiredOnce = true; watchTime(); }
   $$('[data-p]').forEach((b) => {
     const of = () => S.plants.find((x) => x.id === b.dataset.p);
     b.addEventListener('click', () => { const p = of(); if (p) arcSheet(face(p)); });
@@ -2802,39 +2909,42 @@ function wire() {
   });
   $$('[data-e]').forEach((b) => b.addEventListener('click', () => entrySheet(S.entries.find((x) => x.id === b.dataset.e))));
   const qk = $('#quick'); if (qk) qk.addEventListener('submit', (ev) => { ev.preventDefault(); draft.text = $('#quick-in').value.trim(); go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center' }); } }, 350); });
-  const fp = $('#first-plant'); if (fp) fp.addEventListener('click', () => go('grow'));
+  const fp = $('#first-plant'); if (fp) fp.addEventListener('click', () => writeNow());
   const hm = $('#home-menu'); if (hm) hm.addEventListener('click', menuSheet);
-  const wt = $('#write-today'); if (wt) wt.addEventListener('click', () => { go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 120); });
-  const oj = $('#open-journal'); if (oj) oj.addEventListener('click', () => { jTab = 'entries'; go('gratus', 'book'); });
+  const wt = $('#write-today'); if (wt) wt.addEventListener('click', () => writeNow());
+  { const hm = $('#hm-more'); if (hm) hm.addEventListener('click', () => { jDay = today(); jMonth = 0; go('gratus', 'book'); }); }
+  const oj = $('#open-journal'); if (oj) oj.addEventListener('click', () => go('gratus', 'book'));
   const ogd = $('#open-garden'); if (ogd) ogd.addEventListener('click', () => go('gratus', 'garden'));
-  { const b1 = $('#open-vibes'); if (b1) b1.addEventListener('click', () => go('gratus', 'vibes')); const b2 = $('#open-guides'); if (b2) b2.addEventListener('click', () => go('gratus', 'guides')); }
+  { const ot = $('#open-together'); if (ot) ot.addEventListener('click', () => go('gratus', 'goals')); }
+  { const tv = $('#tg-vibes'); if (tv) tv.addEventListener('click', () => go('gratus', 'vibes')); const tp = $('#tg-people'); if (tp) tp.addEventListener('click', () => (Acct.signedIn() ? friendsSheet() : accountSheet())); const tx = $('#tg-galaxy'); if (tx) tx.addEventListener('click', () => go('gratus', 'galaxy')); }
   const ogf = $('#open-gifts'); if (ogf) ogf.addEventListener('click', (ev) => { if (ev.target.closest('#send-gift')) return; go('give'); });
   const sg = $('#send-gift'); if (sg) sg.addEventListener('click', (ev) => { ev.stopPropagation(); go('give'); setTimeout(() => giveSheet(null), 400); });
-  const ob = $('#open-book'); if (ob) ob.addEventListener('click', () => go('gratus', 'book'));
+  const ob = $('#open-book'); if (ob) ob.addEventListener('click', () => go('gratus', 'growth'));
   const og = $('#open-galaxy'); if (og) og.addEventListener('click', () => go('gratus', 'galaxy'));
-  const ae = $('#all-entries'); if (ae) ae.addEventListener('click', () => { const sh = sheet('<h2>All entries</h2><div class="rows">' + S.entries.slice().reverse().map(entryCard).join('') + '</div>'); $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); })); });
-  const w = $('#write'); if (w) w.addEventListener('input', () => { draft.text = w.value; });
-  $$('[data-pick]').forEach((b) => b.addEventListener('click', () => { draft.emoji = draft.emoji === b.dataset.pick ? null : b.dataset.pick; $$('[data-pick]').forEach((x) => x.classList.toggle('on', x.dataset.pick === draft.emoji)); }));
-  const pm = $('#pick-more'); if (pm) pm.addEventListener('click', () => { const pk = $('#pick'); if (!pk) return; const open = pk.classList.toggle('open'); pm.textContent = open ? 'Show fewer' : 'Show every emoji'; });
+  const ae = $('#all-entries'); if (ae) ae.addEventListener('click', () => { const sh = sheet('<h2>All entries</h2><div class="rows">' + S.entries.slice().reverse().map((e) => entryCard(e)).join('') + '</div>'); $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); })); });
+  const w = $('#write'); if (w) w.addEventListener('input', () => { draft.text = w.value; pageTouched(); });
+  $$('[data-pick]').forEach((b) => b.addEventListener('click', () => { pageTouched(); draft.emoji = draft.emoji === b.dataset.pick ? null : b.dataset.pick; $$('[data-pick]').forEach((x) => x.classList.toggle('on', x.dataset.pick === draft.emoji)); }));
+  const pm = $('#pick-more'); if (pm) { const pk0 = $('#pick'); if (pk0 && pk0.scrollHeight <= pk0.clientHeight + 2) pm.hidden = true; } if (pm) pm.addEventListener('click', () => { const pk = $('#pick'); if (!pk) return; const open = pk.classList.toggle('open'); pm.textContent = open ? 'Show fewer' : 'Show every emoji'; });
   const pa = $('#pick-any'); if (pa) pa.addEventListener('click', () => { const sh = sheet('<h2>Any emoji</h2><p class="body">Type or paste one. It joins your palette when you plant it.</p><input class="field" id="any-in" placeholder="🌱" aria-label="an emoji"><button class="btn mint" id="any-go">Use it</button>', { autofocus: true }); $('#any-go', sh.el).addEventListener('click', () => { const e = Gr.firstEmoji($('#any-in', sh.el).value); if (!e) { toast('An emoji'); return; } if (!palette().includes(e)) S.my.emojis.push(e); draft.emoji = e; draft.text = $('#write') ? $('#write').value : draft.text; save(); sh.close(); render(); }); });
-  $$('[data-tag]').forEach((b) => b.addEventListener('click', () => { const t = b.dataset.tag; draft.tags = draft.tags.includes(t) ? draft.tags.filter((x) => x !== t) : draft.tags.concat([t]); b.classList.toggle('on', draft.tags.includes(t)); }));
-  const ta = $('#tag-any'); if (ta) ta.addEventListener('click', () => { const t = prompt('A tag'); if (t && t.trim()) { draft.tags.push(t.trim().slice(0, 24)); draft.text = $('#write') ? $('#write').value : draft.text; render(); } });
   const ph = $('#photo'); if (ph) ph.addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const img = new Image(); const url = URL.createObjectURL(f); img.onload = () => { const s = Math.min(1, 360 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); draft.photo = c.toDataURL('image/jpeg', .72); URL.revokeObjectURL(url); const pv = $('#photoprev'); pv.hidden = false; pv.innerHTML = '<img src="' + draft.photo + '" alt=""><button class="chip" id="photo-rm">remove</button>'; $('#photo-rm').addEventListener('click', () => { draft.photo = null; pv.hidden = true; pv.innerHTML = ''; }); }; img.src = url; });
   const vc = $('#voice'); if (vc) vc.addEventListener('click', () => { if (rec) stopRec(); else startRec(vc); });
   const vd = $('#voice-drop'); if (vd) vd.addEventListener('click', () => { draft.voice = null; draft.voiceDur = 0; showVoice(); });
   if (draft.voice) showVoice();
+  $$('[data-tag]').forEach((b) => b.addEventListener('click', () => { pageTouched(); const t = b.dataset.tag; draft.tags = draft.tags.includes(t) ? draft.tags.filter((x) => x !== t) : draft.tags.concat([t]); b.classList.toggle('on', draft.tags.includes(t)); }));
+  const ta = $('#tag-any'); if (ta) ta.addEventListener('click', () => { const t = prompt('A tag'); if (t && t.trim()) { draft.tags.push(t.trim().slice(0, 24)); draft.text = $('#write') ? $('#write').value : draft.text; render(); } });
+  { const to = $('#tags-open'); if (to) to.addEventListener('click', () => { const tg = $('#tags'); if (tg) tg.hidden = false; to.remove(); }); }
   const pl = $('#plant'); if (pl) pl.addEventListener('click', plantNow);
   const gpst = $('#goal-post'); if (gpst) gpst.addEventListener('click', () => { const t = $('#goal-in').value.trim(); if (!t) { toast('A goal, in your words.'); return; } addGoal(t); });
   const gin = $('#goal-in'); if (gin) gin.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); $('#goal-post').click(); } });
   $$('[data-goal-x]').forEach((b) => b.addEventListener('click', () => { S.goals = S.goals.filter((g) => g.id !== b.dataset.goalX); save(); render(); }));
-  if (tab === 'grow' && !sub && feedState === 'idle') loadFeed();
-  const jq = $('#j-q'); if (jq) jq.addEventListener('click', () => { qOffset++; render(); });
-  const jw = $('#j-write'); if (jw) jw.addEventListener('click', () => { draft.text = draft.text || ''; go('grow'); setTimeout(() => { const w = $('#write'); if (w) { w.focus(); w.scrollIntoView({ block: 'center' }); } }, 350); });
+  if (sub === 'goals' && feedState === 'idle') loadFeed();
+  const jw = $('#j-write'); if (jw) jw.addEventListener('click', () => writeNow());
   const js = $('#j-search'); if (js) js.addEventListener('input', () => { journalQuery = js.value; const v = js.value; render(); const n = $('#j-search'); if (n) { n.focus(); n.setSelectionRange(v.length, v.length); } });
   const gg = $('#give-gift'); if (gg) gg.addEventListener('click', () => giveSheet(null));
   { const c = $('#his-call'); if (c) c.textContent = T('locked.call', 'Give Your First Gratus Gift Today!'); }
-  const gp = $('#give-project'); if (gp) gp.addEventListener('click', () => go('give', 'projects'));
   const gvd = $('#give-giveth'); if (gvd) gvd.addEventListener('click', () => go('give', 'giveth'));
+  const gp = $('#give-project'); if (gp) gp.addEventListener('click', () => go('give', 'projects'));
+  const gw = $('#give-world'); if (gw) gw.addEventListener('click', () => go('give', 'world'));
   $$('[data-gv]').forEach((b) => b.addEventListener('click', () => projectSheet(b.dataset.gv)));
   $$('[data-gvlane]').forEach((b) => b.addEventListener('click', () => { gvLane = b.dataset.gvlane; gvState = 'idle'; gvList = null; render(); }));
   $$('[data-gvcat]').forEach((b) => b.addEventListener('click', () => { gvCat = b.dataset.gvcat; gvState = 'idle'; gvList = null; render(); }));
@@ -2842,6 +2952,7 @@ function wire() {
   const gvs = $('#gv-search'); if (gvs) { gvs.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { gvSearch = gvs.value.trim(); gvState = 'idle'; gvList = null; render(); } }); gvs.addEventListener('search', () => { gvSearch = gvs.value.trim(); gvState = 'idle'; gvList = null; render(); }); }
   const gvl = $('#gv-learn'); if (gvl) gvl.addEventListener('click', givethLearnSheet);
   const gvc = $('#gv-console'); if (gvc) gvc.addEventListener('click', () => go('give', 'console'));
+  { const gs = $('#gv-sun'); if (gs) gs.addEventListener('click', sunSheet); }
   $$('[data-seed]').forEach((b) => b.addEventListener('click', () => mySeedSheet(b.dataset.seed)));
   // lower casing what they type used to be harmless and is not any more: Giveth looks a
   // project up by the exact spelling of its slug, capitals and all.
@@ -2852,7 +2963,6 @@ function wire() {
   $$('[data-water]').forEach((b) => b.addEventListener('click', () => waterSheet(b.dataset.water)));
   $$('[data-flow]').forEach((b) => b.addEventListener('click', () => { go('give', 'giveth'); setTimeout(() => projectSheet(b.dataset.flow), 300); }));
   $$('[data-similar]').forEach((b) => b.addEventListener('click', () => similarSheet(b.dataset.similar)));
-  const gw = $('#give-world'); if (gw) gw.addEventListener('click', () => go('give', 'world'));
   $$('[data-given]').forEach((b) => b.addEventListener('click', () => { const g = S.gifts.given.find((x) => x.id === b.dataset.given); if (g) shareSheet(g); }));
   $$('[data-cat]').forEach((b) => b.addEventListener('click', () => { projFilter = b.dataset.cat; render(); }));
   const de = $('#door-earth'); if (de) de.addEventListener('click', () => go('give', 'earth'));
@@ -2860,9 +2970,15 @@ function wire() {
   $$('[data-scope]').forEach((b) => b.addEventListener('click', () => { wishScope = b.dataset.scope; $$('[data-scope]').forEach((x) => x.classList.toggle('on', x === b)); }));
   const ws = $('#wish-send'); if (ws) ws.addEventListener('click', () => { const t = $('#wish').value.trim(); if (!t) { toast('A wish, in your words.'); return; } S.wishes.push({ id: newId('w'), text: t.slice(0, 300), scope: wishScope, at: today() }); save(); render(); toast('Sent to tomorrow.'); });
   $$('[data-node]').forEach((b) => b.addEventListener('click', () => { const n = b.dataset.node; if (n === 'give') go('give'); else go('give', n); }));
-  $$('[data-book]').forEach((b) => b.addEventListener('click', () => { bookTab = b.dataset.book; render(); }));
-  $$('[data-jt]').forEach((b) => b.addEventListener('click', () => { jTab = b.dataset.jt; render(); }));
-  $$('[data-calday]').forEach((b) => { b.addEventListener('click', () => { jDay = jDay === b.dataset.calday ? '' : b.dataset.calday; render(); }); longPress(b, { on: () => daySheet(b.dataset.calday) }); });
+  $$('[data-book]').forEach((b) => b.addEventListener('click', () => journalRoom(b.dataset.book)));
+  $$('[data-growth]').forEach((b) => b.addEventListener('click', () => { growthTab = b.dataset.growth; render(); }));
+  { const a = $('#gb-open'); if (a) a.addEventListener('click', () => go('gratus', 'growth')); const z = $('#gb-journal'); if (z) z.addEventListener('click', () => go('gratus', 'book')); }
+  $$('[data-le]').forEach((b) => b.addEventListener('click', () => { const e = S.entries.find((x) => x.id === b.dataset.le); if (e) entrySheet(e); }));
+  { const nx = $('.ld-rungs .next'); if (nx && nx.scrollIntoView) nx.scrollIntoView({ block: 'nearest', inline: 'center' }); }
+  { const nf = $('#j-newfolder'); if (nf) nf.addEventListener('click', newFolder); }
+  { const fe = $('#j-folder-edit'); if (fe) fe.addEventListener('click', () => { const f = folderOf(jFolder); if (f) folderSheet(f); }); }
+  $$('[data-calday]').forEach((b) => b.addEventListener('click', () => daySheet(b.dataset.calday)));
+  { const jf = $('#j-filters'); if (jf) jf.addEventListener('click', () => { jFilters = !jFilters; if (!jFilters) { jEmoji = jTag = jFolder = ''; jStar = false; } render(); }); }
   $$('[data-calmove]').forEach((b) => b.addEventListener('click', () => { jMonth = Math.min(0, jMonth + Number(b.dataset.calmove)); jDay = ''; render(); }));
   $$('[data-jemoji]').forEach((b) => b.addEventListener('click', () => { jEmoji = jEmoji === b.dataset.jemoji ? '' : b.dataset.jemoji; render(); }));
   $$('[data-jtag]').forEach((b) => b.addEventListener('click', () => { jTag = jTag === b.dataset.jtag ? '' : b.dataset.jtag; render(); }));
@@ -2871,7 +2987,7 @@ function wire() {
   const js2 = $('#j-star'); if (js2) js2.addEventListener('click', () => { jStar = !jStar; render(); });
   $$('[data-gfilter]').forEach((b) => b.addEventListener('click', () => { gardenFilter = b.dataset.gfilter; render(); }));
   { const on = (id, fn) => { const b = $(id); if (b) b.addEventListener('click', fn); };
-    on('#gd-write', () => quickWrite()); on('#gd-book', () => go('gratus', 'book')); on('#gd-vibes', () => go('gratus', 'vibes'));
+    on('#gd-write', () => writeNow()); on('#gd-tour', () => tourAgain()); on('#gd-book', () => go('gratus', 'growth')); on('#gd-vibes', () => go('gratus', 'vibes'));
     on('#gd-giveth', () => go('give', 'giveth')); on('#gd-laws', openLaws); }
   $$('[data-vopen]').forEach((b) => b.addEventListener('click', () => loadVibe(b.dataset.vopen)));
   $$('[data-note]').forEach((b) => b.addEventListener('click', () => { const v = b.dataset.note; if (v === 'given') soundGiven(); else soundPhase(Number(v)); }));
@@ -2896,10 +3012,6 @@ function wire() {
     }); }
   $$('[data-gview]').forEach((b) => b.addEventListener('click', () => { gardenView = b.dataset.gview; render(); }));
   $$('[data-gsort]').forEach((b) => b.addEventListener('click', () => { gardenSort = b.dataset.gsort; render(); }));
-  const tn = $('#tend-now'); if (tn) tn.addEventListener('click', () => { const next = S.plants.filter((p) => !(p.kept || []).includes(today())).sort((a, b) => daysOf(b) - daysOf(a))[0]; quickWrite(next ? { emoji: face(next) } : null); });
-  $$('[data-thread]').forEach((b) => b.addEventListener('click', () => threadSheet(b.dataset.thread)));
-  $$('[data-folder]').forEach((b) => b.addEventListener('click', () => { const f = folderOf(b.dataset.folder); if (f) folderSheet(f); }));
-  const nf = $('#new-folder'); if (nf) nf.addEventListener('click', () => newFolder());
   $$('[data-arc]').forEach((b) => b.addEventListener('click', () => arcSheet(b.dataset.arc)));
   $$('[data-chain]').forEach((b) => b.addEventListener('click', () => { const ch = C.evo.chains.find((x) => x.id === b.dataset.chain); arcSheet(ch.stages[0].emoji); }));
   $$('[data-rcat]').forEach((b) => b.addEventListener('click', () => { recipeCat = b.dataset.rcat; render(); }));
@@ -2910,15 +3022,17 @@ function wire() {
 
 // ── boot ──
 async function boot() {
-  const [evo, names, prompts, copy, book, recipes, alchemy, families, partners, pathways] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy', 'families', 'partners', 'pathways'].map((n) => fetch('/config/' + n + '.json?v=21').then((r) => r.json())));
-  C = { evo, names, prompts, copy, book, recipes, alchemy, families, partners, pathways }; load(); stars(); songInit();
+  const [evo, names, prompts, copy, book, recipes, alchemy, families, partners] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy', 'families', 'partners'].map((n) => fetch('/config/' + n + '.json?v=22').then((r) => r.json())));
+  C = { evo, names, prompts, copy, book, recipes, alchemy, families, partners }; load(); stars(); songInit();
   if ('serviceWorker' in navigator && !location.search.includes('dev=1')) navigator.serviceWorker.register('/sw.js').catch(() => null);
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));
-  window.addEventListener('popstate', () => { if (room) closeRoom(true); if (!$('#laws').hidden) { $('#laws').hidden = true; document.body.classList.remove('room'); } render(); });
-  const q = new URLSearchParams(location.search).get('tab'); const m = /^\/app\/?(\w+)?/.exec(location.pathname); const want = q || (m && m[1]) || 'gratus';
-  const SUBS = ['book', 'projects', 'world', 'vault', 'earth', 'galaxy', 'garden', 'giveth', 'console', 'guides', 'vibes'];
-  if (SUBS.includes(want)) { tab = ['book', 'galaxy', 'garden', 'guides', 'vibes'].includes(want) ? 'gratus' : 'give'; sub = want; } else if (['grow', 'gratus', 'give'].includes(want)) tab = want;
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  // The step this page loads on is marked as ours. After a reload with something open, the
+  // step still says so and nothing is open any more, so the app steps off it.
+  window.addEventListener('popstate', wayBack);
+  { const s = history.state; if (!(s && s.g)) history.replaceState({ g: 1, d: 0 }, ''); else if (s.ov) { if (s.d > 0) stepOut(); else history.replaceState({ g: 1, d: 0 }, ''); } }
+  const want = readPlace();
   const isGift = location.pathname === '/gift' || location.pathname.endsWith('gift.html') || location.hash.startsWith('#gift');
   const isPassage = location.pathname === '/passage';
   const projPage = /^\/p\/([a-z0-9:-]+)/.exec(location.pathname);

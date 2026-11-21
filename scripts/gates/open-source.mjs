@@ -5,9 +5,11 @@
 // Rules are taught shapes. A new kind of secret needs a new rule AND a new decoy.
 import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { join, relative, extname, basename } from 'node:path';
+import { homedir } from 'node:os';
 
 const ROOT = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : process.cwd();
 const DECOY = process.argv.includes('--decoy');
+const REQUIRE_NAMES = process.argv.includes('--require-names');
 const SKIP_DIRS = new Set(['.git', 'node_modules', '.vercel']);
 const BINARY = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.ico', '.mp4', '.mp3', '.wav', '.woff', '.woff2', '.ttf', '.pdf', '.zip']);
 const SELF = 'scripts/gates/open-source.mjs';
@@ -30,7 +32,16 @@ const RULES = [
   ['personal email', /[A-Za-z0-9._%+-]+@(gmail|googlemail|outlook|hotmail|proton|protonmail|yahoo|icloud|me)\.[a-z]{2,}/i, 'contact augustdecoy@gmail.com'],
   ['secret assignment', /(TOKEN|SECRET|PASSWORD|PASSPHRASE|API_KEY)\s*[:=]\s*["'][^"'\s]{12,}["']/, 'const SECRET = "decoydecoydecoy123"'],
 ];
-const FORBIDDEN_FILES = [/^\.env(\..*)?$/, /^\.vercel$/];
+// Names that must not leave: people who never asked to be in a public repository. The list
+// is not in this file, because this file is public, and it is not in this tree, because
+// everything in the tree is deployed and mirrored. It is read from the path in
+// GRATUS_PRIVATE_NAMES, or from .config/gratus/private-names under the home folder, one
+// word a line. A hit never prints the name. With --require-names a missing list is a
+// failure, and that is how the publish script runs this.
+const NAMES_AT = process.env.GRATUS_PRIVATE_NAMES || join(homedir(), '.config', 'gratus', 'private-names');
+const NAMES = existsSync(NAMES_AT) ? readFileSync(NAMES_AT, 'utf8').split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#')) : [];
+const NAME_RULE = NAMES.length ? new RegExp('\\b(' + NAMES.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')\\b', 'i') : null;
+const FORBIDDEN_FILES = [/^\.env(\..*)?$/, /^\.vercel$/, /^\.private-names$/];
 // .env.example is the one file in that family a public repository should carry: it is how
 // somebody cloning this knows which secrets the code expects. It is allowed only while it
 // holds no values, which is a thing this gate can check rather than a filename it has to
@@ -61,17 +72,26 @@ function scan() {
         if (envExampleIsSafe(text)) continue;
         hits.push(`${e.forbidden}: a value is filled in; this file carries names only`); fired.add('env.example with a value'); continue;
       }
-      hits.push(`${e.forbidden}: forbidden file (env or vercel state)`); fired.add('forbidden file'); continue;
+      hits.push(`${e.forbidden}: forbidden file (env, vercel state or a private list)`); fired.add('forbidden file'); continue;
     }
     const lines = readFileSync(e.file, 'utf8').split('\n');
-    lines.forEach((line, i) => { for (const [name, re] of RULES) if (re.test(line)) { hits.push(`${e.rel}:${i + 1}: ${name} · ${line.trim().slice(0, 90)}`); fired.add(name); } });
+    lines.forEach((line, i) => {
+      for (const [name, re] of RULES) if (re.test(line)) { hits.push(`${e.rel}:${i + 1}: ${name} · ${line.trim().slice(0, 90)}`); fired.add(name); }
+      if (NAME_RULE && NAME_RULE.test(line)) { hits.push(`${e.rel}:${i + 1}: a private name`); fired.add('private name'); }
+    });
   }
   return { hits, fired };
+}
+
+if (REQUIRE_NAMES && !NAMES.length) {
+  console.log('OPEN-SOURCE GATE: BLOCK \u00b7 the list of private names is missing, so names cannot be checked');
+  process.exit(1);
 }
 
 if (DECOY) {
   const dir = join(ROOT, '.decoys'); mkdirSync(dir, { recursive: true });
   RULES.forEach(([name, , decoy], i) => writeFileSync(join(dir, `decoy-${i}.txt`), decoy + '\n'));
+  if (NAMES.length) writeFileSync(join(dir, 'decoy-name.txt'), 'a gift for ' + NAMES[0] + '\n');
   writeFileSync(join(ROOT, '.env.decoy'), 'X=1\n');
   const realExample = existsSync(join(ROOT, '.env.example')) ? readFileSync(join(ROOT, '.env.example'), 'utf8') : null;
   writeFileSync(join(ROOT, '.env.example'), '# a decoy\nGRATUS_SALT=this-is-a-real-looking-secret\n');
@@ -85,13 +105,14 @@ if (DECOY) {
     console.log('open-source gate DECOY TEST: FAIL \u00b7 the real .env.example is being blocked: ' + after[0]);
     process.exit(1);
   }
-  const missed = RULES.map(([n]) => n).concat(['forbidden file', 'env.example with a value']).filter((n) => !fired.has(n));
+  const missed = RULES.map(([n]) => n).concat(['forbidden file', 'env.example with a value'], NAMES.length ? ['private name'] : []).filter((n) => !fired.has(n));
   if (missed.length) { console.log('open-source gate DECOY TEST: FAIL · rules that did not fire:', missed.join(', ')); process.exit(1); }
-  console.log(`open-source gate DECOY TEST: PASS · ${RULES.length + 2} rules, every decoy caught`);
+  console.log(`open-source gate DECOY TEST: PASS · ${RULES.length + 2 + (NAMES.length ? 1 : 0)} rules, every decoy caught`);
   process.exit(0);
 }
 
 const { hits } = scan();
+if (!NAMES.length) console.log('  note: no list of private names was given, so names are not being checked');
 for (const h of hits) console.log('  BLOCK', h);
 console.log(`open-source gate: ${hits.length} hit${hits.length === 1 ? '' : 's'} in ${relative(process.cwd(), ROOT) || '.'}`);
 console.log(hits.length ? 'OPEN-SOURCE GATE: BLOCK' : 'OPEN-SOURCE GATE: PASS');

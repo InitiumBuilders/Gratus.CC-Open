@@ -17,19 +17,20 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - The emoji you are planting, chosen from your palette; the first emoji is suggested by the engine.
 - Tags (Love, Support, Friendship, Gratitude, Health, Friends, Music, Family, Nature, Work, Home, Rest, and your own).
 - Plant My Gratus: the planting ceremony through the Gate's light, then the Planted moment.
-- Gratus Goals: post what you are growing toward, as many as you like. Your goals and everyone's goals in the shared stream. Offline, the stream shows seed goals labelled "as imagined" and your goals wait on the device.
+- Gratus Goals: post what you are growing toward, as many as you like. Your goals and everyone's goals in the shared stream, in the Gratus Gives Together room. Offline, your goals wait on the device.
 
 ## Gratus (the home)
 
-- His new look, text for text: Today's Gratitude and Write Today; the doors Gratitude Journal, Grow Your Gratus Garden!, Give Gratus Gifts with Send a Gift; Gratus Gives Together with Set Your Gratus Goals and the shared stream. The menu button opens every room, the song, and your sheet.
-- Your Gratus Garden, its own room: a field with a horizon, or a list; every emoji sized by phase with a ring filling toward the next one; a diamond on the ones growing for a Giveth project; lanes for Everything, Growing, Ready to give and For a project; ordering by days, newest or name; a Today card saying how many plants have had a word, with one tap to tend another; and the phase legend beneath.
+- His new look, text for text: Today's Gratitude and Write Today; the doors Gratitude Journal, Grow Your Gratus Garden!, Give Gratus Gifts with Send a Gift; Gratus Gives Together with Set Your Gratus Goals, the door to the room that holds Gratus Goals, Gratus Vibes, your people and the Gratus Galaxy. The menu button opens eight rooms and the song. The person in the corner opens your sheet and your account.
+- Your Gratus Garden, its own room: a field with a horizon, or a list; every emoji sized by phase with a ring filling toward the next one; a diamond on the ones growing for a Giveth project; the gifts you received.
 - Entries, plants and gifts counts.
+- The phone's back gesture walks out of a room the way it walked in, and returns the page to where it was left. With a sheet, a held moment or the laws open, it closes that and the page stays, on the home page too.
+- The Gratitude Journal, three rooms: Journal (search, one Filter button for emoji, tag, folder and the ones kept close, and every entry by day with the hour it was written and how long it took), Time Log (days kept, entries and time writing; one month at a time, the calendar and under it every entry of the month), Milestones (the journal's head with a seed for every day kept, and twenty-one marks).
 - The Growth Book:
-  - Journal, four rooms: Entries (today's question, a real month calendar with the month summed up, tap a day to show it and hold one to open it, a composer that opens where you are standing so you never have to leave, search, starred entries, and filters by emoji, tag and folder), Threads (one emoji followed through your days, with its phase and the day it grows next; continue a thread from any entry), Folders (make them, file entries into them from any entry, rename, delete without losing an entry), Milestones (eighteen marks on your own road: days in a row, entries, photo, voice, folder, goal, phases, recipe, gifts, days of care; a toast when one lights).
-  - Phases: Planted, Nurtured, Deepened, Bloomed, Ready to Give, with the day each begins and what it means.
+  - Phases: Planted, Nurtured, Deepened, Bloomed, Ready to Give, with the day each begins.
   - Emojis: your palette, evolution arcs, and adding your own.
   - Recipes: **Harmonic alchemy** first, twelve marks that each need both halves of you, something given and something tended, each showing its own progress in plain words; then the sixty recipes, the ones you have made lit, and adding your own.
-- The Gratus Galaxy: People, Places, Projects, Partners. The map is real; the nodes beyond your own garden are imagined.
+- The Gratus Galaxy: People, Places, Projects, Partners, each a door, with your own garden's counts and the partners on file under it.
 
 ## Give
 
@@ -45,8 +46,8 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - **Grow a Gratus Gift for a project** — dedicate an emoji to a Giveth project. Every day you write about it, it grows. At Ready to Give it can be given to them, carrying every day you held it.
 - Give a Gratus Gift: choose a plant, write a message, get a link. The whole journey rides in the link. The Share sheet copies it.
 - The receiver's journey: eight pages, unwrap, how it grew, the message, keep it or plant it.
-- Support a Project: the project list is imagined; the flow is real.
-- Give to the World: Gratus Earth (heal places), Gratus Vault (a wish for tomorrow), Gratus World. Rooms exist; the data is imagined.
+- Support a Project: Giveth's projects by category, read live.
+- Give to the World: Gratus Earth (heal places, Giveth's projects by kind) and Gratus Vault (a wish for tomorrow, kept on your device).
 - Gifts you gave and received, with links.
 
 ## The Return
@@ -63,13 +64,9 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 
 - When the day's word carries a plant into a new phase, the screen stops and says so, and the phase sounds. Only when something actually moved.
 
-## The standing
-
-- At the top of Grow: the plant nearest its next crossing, how far it has come, and what one word today would do to it.
-
 ## Gratus Guides
 
-- Why any of this exists: the mission, the vision, the five-step loop, how a Gratus grows, and the five things the app promises. A door from the home and from the menu.
+- The loop in five words, the five phases with their days, and what is yours: where your journal is kept, the price, and that the code is open. The tour and the twelve laws open from here.
 
 ## Gratus Vibes
 
@@ -82,7 +79,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Privacy and terms pages.
 - **Your Gratus Passage** — a link that shows what grew: your emojis and their days, the seeds that bloomed, the marks you have earned. It carries not one word of your journal. The whole page rides inside the link, like a Gratus Gift, so nothing is uploaded and there is nothing to delete later.
 - Export everything as a file, and restore from one, in the profile sheet.
-- **Sunlight**: paste the public address you give with on Giveth and Gratus reads how much you tend the commons there. Read only; Gratus never connects a wallet or signs anything.
+- **Sunlight**, on the Give with Giveth page: paste the public address you give with on Giveth and Gratus reads how much you tend the commons there. Read only; Gratus never connects a wallet or signs anything.
 - The Emotional TRACE constellation in your garden: every seed you planted, bloomed or waiting.
 - A dev panel behind `?dev=1`: add days, add an earlier hand, reset.
 

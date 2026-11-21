@@ -6,6 +6,7 @@
 //
 //   node scripts/gates/people-ui.mjs
 import { serve, browser, open } from './lib/harness.mjs';
+import { month } from './lib/garden.mjs';
 
 let fails = 0;
 const say = (ok, m) => { if (!ok) fails++; console.log('  ' + (ok ? 'pass  ' : 'FAIL  ') + m); };
@@ -38,6 +39,18 @@ await page.route('**/api/account**', async (r) => {
   await r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
 });
 await page.evaluate(() => localStorage.setItem('gratus.account.token', 'a.b.c'));
+// Somebody with people has a garden. An empty one is a first visit, and the app meets a
+// first visit with the tour as soon as it changes rooms, which covers the door being walked.
+await page.evaluate((g) => localStorage.setItem('gratus.galaxy.v1', JSON.stringify(g)), month());
+await page.reload({ waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(900);
+// The marks a garden has already earned light the first time it is opened, and the large
+// ones are held on the screen. Walk past them once, so the walk starts from a garden at rest.
+for (let i = 0, quiet = 0; i < 60 && quiet < 4; i++) {
+  const up = await page.evaluate(() => { const r = document.getElementById('ceremony'); return !!r && !r.hidden; });
+  if (up) { quiet = 0; await page.keyboard.press('Escape'); } else quiet++;
+  await page.waitForTimeout(260);
+}
 
 const text = () => page.evaluate(() => (document.body.innerText || '').replace(/\s+/g, ' '));
 const sheetText = () => page.evaluate(() => {
@@ -74,13 +87,16 @@ say(!!sent && sent.includes('TESTRM'), 'tapping him writes a line carrying the c
 say(!!sent && /\/app\/vibes\?code=TESTRM/.test(sent), 'and a link that walks straight into the room');
 await shut(); await page.waitForTimeout(400);
 
-// ── the list itself, reached the way a thumb reaches it: the home menu ──
+// ── the list itself, reached the way a thumb reaches it: the door on the home page ──
+const centre = (id) => page.evaluate((i) => { const el = document.getElementById(i); if (el) el.scrollIntoView({ block: 'center', behavior: 'instant' }); return !!el; }, id);
 await page.goto(srv.base + '/app?nosplash=1&notour=1&dev=1', { waitUntil: 'domcontentloaded' });
 await page.waitForTimeout(1200);
-await page.click('#home-menu');
-await page.waitForTimeout(500);
-say((await sheetText()).includes('Your people'), 'the menu has a door to your people');
-await page.click('#m-people');
+say(await centre('open-together'), 'the home page has a door to Gratus Gives Together');
+await page.click('#open-together');
+await page.waitForTimeout(900);
+say(/\/app\/goals$/.test(new URL(page.url()).pathname), 'which is a room with an address  (' + new URL(page.url()).pathname + ')');
+say(await centre('tg-people'), 'and the room has a door to your people');
+await page.click('#tg-people');
 await page.waitForTimeout(700);
 s = await sheetText();
 say(s.includes('Your people') && s.includes('Ben'), 'and it opens on the list  (' + s.slice(0, 40) + ')');
@@ -99,8 +115,8 @@ say(s.includes('The Kitchen Table'), 'and the room you just walked into is one o
 // ── and with no account, the door still goes somewhere ──
 await shut(); await page.waitForTimeout(400);
 await page.evaluate(() => localStorage.removeItem('gratus.account.token'));
-await page.click('#home-menu'); await page.waitForTimeout(400);
-await page.click('#m-people'); await page.waitForTimeout(600);
+await centre('tg-people');
+await page.click('#tg-people'); await page.waitForTimeout(600);
 s = await sheetText();
 say(/Keep your garden|Gratus account/.test(s), 'without an account it opens on making one, never on nothing  (' + s.slice(0, 40) + ')');
 

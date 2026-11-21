@@ -127,7 +127,6 @@ html.landed .art { opacity: 1; animation: none; }
 .partner .quote { color: var(--ink-2); font-size: 14px; line-height: 20px; font-style: italic; }
 .projects { display: grid; gap: 12px; }
 .project { display: grid; grid-template-columns: 96px 1fr; gap: 14px; padding: 12px; align-items: center; text-align: left; width: 100%; color: var(--ink); text-decoration: none; }
-.project .pic { width: 96px; height: 96px; border-radius: var(--r-14); background-size: cover; background-position: center; border: 1px solid var(--hair); }
 .project .grow { display: grid; gap: 4px; }
 .project .grow b { font-size: 17px; font-weight: 500; }
 .project .tag { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--violet-text); }
@@ -258,7 +257,6 @@ html.landed .room-page .rart { opacity: 1; animation: none; }
 .goal.mine { border-color: var(--hair-hue); }
 .goal .x { color: var(--ink-3); font-size: 18px; padding: 6px; }
 .stream { position: relative; overflow: hidden; padding: 18px; display: grid; gap: 12px; }
-.stream .art { -webkit-mask-image: none; mask-image: none; opacity: .28; animation: none; }
 .stream > :not(.art) { position: relative; z-index: 1; }
 .band { display: flex; gap: 4px; height: 12px; }
 .band i { flex: 1; border-radius: 3px; background: var(--raise-2); }
@@ -269,7 +267,6 @@ html.landed .room-page .rart { opacity: 1; animation: none; }
 .q { text-align: left; }
 .q button { text-align: left; font: inherit; color: inherit; line-height: inherit; }
 #ceremony video.explode { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-#ceremony .cer.hidden-until { opacity: 0; }
 #ceremony .cer.reveal { animation: reveal 900ms var(--ease) forwards; }
 @keyframes reveal { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
 #ceremony .flash { position: absolute; inset: 0; background: #fff7d6; opacity: 0; pointer-events: none; z-index: 0; }
@@ -462,12 +459,7 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
   .tabs .bar { width: min(100%, 560px); }
 }
 
-/* ── v13 · the journal's rooms: threads, folders, milestones; the voice ── */
-.thread { display: flex; align-items: center; gap: 12px; padding: 12px 14px; width: 100%; text-align: left; color: var(--ink); }
-.thread .grow { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.thread b { font-size: 19px; font-weight: 600; }
-.thread .line { font-size: 16px; line-height: 22px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.thread .arrow { color: var(--violet-text); font-size: 20px; font-weight: 600; }
+/* ── v13 · the journal's rooms; the voice ── */
 .miles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .mile { display: grid; justify-items: center; align-content: start; gap: 6px; padding: 14px 8px; text-align: center; font-size: 14px; font-weight: 600; line-height: 18px; color: var(--ink); }
 .mile .orb { filter: grayscale(1) brightness(.75); }
@@ -500,7 +492,6 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 .hbtn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .hbrand { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
 .hlogo { width: 66px; height: 66px; flex: none; border-radius: 26%; filter: drop-shadow(0 0 12px rgba(185, 255, 228, .6)) drop-shadow(0 0 26px rgba(242, 201, 125, .45)); }
-.hwords { display: grid; gap: 2px; min-width: 0; }
 .hname { font-family: var(--display); font-size: 36px; line-height: 38px; font-weight: 600; color: #F2C97D; text-shadow: 0 0 18px rgba(242, 201, 125, .45), 0 2px 10px rgba(0, 0, 0, .8); white-space: nowrap; }
 .hname em { font-style: normal; color: #7FE7C3; }
 .htag { font-size: 14px; line-height: 18px; font-weight: 600; color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .9); }
@@ -527,9 +518,9 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 .door.gifts .door-art { min-height: 150px; }
 .door.gifts .gpill.sm { justify-self: start; margin-top: 8px; }
 .together { position: relative; z-index: 1; text-align: center; display: grid; gap: 4px; padding: 14px 0 4px; }
-.together h2 { font-family: var(--display); font-size: 30px; line-height: 34px; font-weight: 500; color: #FFE9B0; text-shadow: 0 0 16px rgba(242, 201, 125, .4), 0 2px 10px rgba(0, 0, 0, .9); display: flex; align-items: center; justify-content: center; gap: 12px; }
-.together h2 i { font-style: normal; color: #F2C97D; font-size: 18px; }
-.together p { font-size: 18px; line-height: 24px; font-weight: 600; color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .9); }
+.together h2, .together b { font-family: var(--display); font-size: 30px; line-height: 34px; font-weight: 500; color: #FFE9B0; text-shadow: 0 0 16px rgba(242, 201, 125, .4), 0 2px 10px rgba(0, 0, 0, .9); display: flex; align-items: center; justify-content: center; gap: 12px; }
+.together h2 i, .together b i { font-style: normal; color: #F2C97D; font-size: 18px; }
+.together p, .together > span { font-size: 18px; line-height: 24px; font-weight: 600; color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, .9); }
 .home14 .stream { border-radius: 26px; background: linear-gradient(180deg, rgba(9, 18, 24, .84), rgba(5, 9, 18, .9)); border: 1px solid rgba(242, 201, 125, .45); }
 /* the bar, as drawn: Give · Gratus · Grow, the logo in a gold ring rising from the bar, a gold line beneath */
 .tabs { height: calc(112px + var(--sab)); }
@@ -576,7 +567,6 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 .door.gifts .gpill.sm { white-space: nowrap; font-size: 16px; padding: 0 14px; gap: 8px; min-height: 44px; }
 .door.gifts .gpill.sm .arr { font-size: 18px; }
 .together { background: linear-gradient(180deg, rgba(5, 9, 18, .78), rgba(5, 9, 18, .66)); border: 1px solid rgba(242, 201, 125, .28); border-radius: 26px; padding: 14px 16px; }
-.home14 .stream .art { display: none; }
 .tabs .star.on span.lbl { color: #F2C97D; }
 
 /* ── v15 · the Emotional TRACE and the Giveth room ── */
@@ -604,11 +594,11 @@ a.gpill { color: #1E2A10; }
 
 /* ── v17 · nothing runs off the page: a flex or grid child must be allowed to shrink ── */
 .stream > *, .page > *, .rows > *, .card > *, .actions > *, .home14 > * { min-width: 0; }
-.opt .grow, .thread .grow, .goal .grow, .entry > span, .gvp-words, .door-words, .project .grow, .choice .grow, .partner .grow { min-width: 0; }
-.goal .grow b, .goal .grow span, .opt .grow b, .opt .grow span, .thread b { overflow-wrap: anywhere; }
+.opt .grow, .goal .grow, .entry > span, .gvp-words, .door-words, .project .grow, .choice .grow, .partner .grow { min-width: 0; }
+.goal .grow b, .goal .grow span, .opt .grow b, .opt .grow span { overflow-wrap: anywhere; }
 .stream { overflow: visible; }
 .glass, .hcard, .stream, .card { max-width: 100%; }
-.entry .text, .gvp-words b, .door-words b, .thread .line { overflow-wrap: anywhere; }
+.entry .text, .gvp-words b, .door-words b { overflow-wrap: anywhere; }
 /* the palette wraps instead of running off the edge, with a second row and a gentle end */
 .pick { display: flex; flex-wrap: wrap; gap: 8px; overflow: visible; max-height: 124px; overflow-y: hidden; transition: max-height var(--t) var(--ease); }
 .pick.open { max-height: 460px; overflow-y: auto; }
@@ -655,12 +645,7 @@ a.gpill { color: #1E2A10; }
 .garden.field { height: 400px; }
 .garden.field .horizon { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(242, 201, 125, .55), transparent); box-shadow: 0 0 18px rgba(242, 201, 125, .35); pointer-events: none; z-index: 0; }
 .garden .orb.pledged::after { content: "◆"; position: absolute; right: -2px; top: -6px; font-size: 13px; color: #FFD98A; text-shadow: 0 0 6px rgba(255, 217, 138, .9); }
-.garden .orb[style*="--pct"]::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; padding: 2px; background: conic-gradient(rgba(185, 255, 228, .95) calc(var(--pct, 0) * 1%), rgba(255, 255, 255, .1) 0); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; pointer-events: none; }
-.phaseline { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-.phaseline .ph { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--ink); background: rgba(5, 9, 18, .55); border: 1px solid var(--hair); }
-.phaseline .ph i { font-style: normal; font-family: var(--emoji); }
-.phaseline .ph.on { border-color: var(--hair-hue); box-shadow: 0 0 14px rgba(110, 217, 192, .25); }
-/* a grid or flex child must be allowed to shrink, everywhere, or it pushes the page wider than the phone */
+.garden .orb[style*="--pct"]::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; padding: 2px; background: conic-gradient(rgba(185, 255, 228, .95) calc(var(--pct, 0) * 1%), rgba(255, 255, 255, .1) 0); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; pointer-events: none; }/* a grid or flex child must be allowed to shrink, everywhere, or it pushes the page wider than the phone */
 .glass > *, .cal > *, .card > *, .page > *, .home14 > *, .sheet > *, .rows > *, .actions > *, .gv-facts > *, .trace3 > * { min-width: 0; }
 .cal-grid, .cal-dow, .cal-d, .seg, .seg > * { min-width: 0; }
 .cal-d { padding: 0; }
@@ -677,10 +662,7 @@ a.gpill { color: #1E2A10; }
 /* ── v18 · the month at a glance, and the garden's own controls ── */
 .monthsum { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .monthsum span { display: grid; justify-items: center; gap: 1px; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--ink); text-align: center; min-width: 0; }
-.monthsum b { font-family: var(--display); font-size: 22px; line-height: 26px; font-weight: 500; color: #FFE9B0; }
-.tended { padding: 14px 16px; display: grid; gap: 8px; }
-.tended .btn { justify-self: start; }
-/* the Passage reads: the scene stays bright at the top, the words stand on deep glass */
+.monthsum b { font-family: var(--display); font-size: 22px; line-height: 26px; font-weight: 500; color: #FFE9B0; }/* the Passage reads: the scene stays bright at the top, the words stand on deep glass */
 .room-page.passage::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(180deg, rgba(5, 9, 18, .72) 0%, rgba(5, 9, 18, .3) 14%, rgba(5, 9, 18, .1) 24%, rgba(5, 9, 18, .82) 44%, rgba(5, 9, 18, .94) 100%); }
 .room-page.passage .rbody { background: linear-gradient(180deg, rgba(5, 9, 18, 0), rgba(5, 9, 18, .55) 10%, rgba(5, 9, 18, .72) 24%); border-radius: 32px 32px 0 0; padding-top: 22px; margin-top: 22svh; }
 .room-page.passage .rbody > * { position: relative; z-index: 1; }
@@ -698,15 +680,11 @@ a.gpill { color: #1E2A10; }
 .gvp-tags { gap: 6px; }
 
 /* ── v19 · Gratus Guides ── */
-.creed { display: grid; gap: 8px; padding: 20px; text-align: center; }
-.creed .statement { font-size: 30px; line-height: 34px; color: #FFE9B0; }
-.creed .body { text-align: left; }
-.loopline { display: grid; gap: 8px; }
-.loopstep { display: grid; grid-template-columns: 52px 1fr; grid-template-areas: "ico name" "ico line"; align-items: center; gap: 2px 12px; padding: 12px 16px; border-radius: 22px; background: rgba(5, 9, 18, .6); border: 1px solid rgba(242, 201, 125, .28); }
-.loopstep .ls-ico { grid-area: ico; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-family: var(--emoji); font-size: 24px; background: var(--wash); border: 1px solid var(--hair-hue); box-shadow: var(--glow); }
-.loopstep b { grid-area: name; font-family: var(--display); font-size: 24px; font-weight: 500; color: #FFE9B0; }
-.loopstep > span:last-child { grid-area: line; font-size: 16px; line-height: 21px; color: var(--ink); }
-.ls-join { display: block; width: 2px; height: 14px; margin-left: 42px; background: linear-gradient(180deg, rgba(242, 201, 125, .8), rgba(242, 201, 125, .15)); border-radius: 2px; }
+/* the loop: five words in a row */
+.loopline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 4px 0 8px; }
+.loopstep { display: grid; justify-items: center; gap: 8px; min-width: 0; }
+.loopstep .ls-ico { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; font-family: var(--emoji); font-size: 23px; background: var(--wash); border: 1px solid var(--hair-hue); box-shadow: var(--glow); }
+.loopstep b { font-family: var(--display); font-size: 19px; line-height: 22px; font-weight: 500; color: #FFE9B0; }
 .guide { display: grid; grid-template-columns: 48px 1fr; gap: 14px; padding: 16px; align-items: start; }
 .guide .g-ico { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-family: var(--emoji); font-size: 22px; background: rgba(5, 9, 18, .6); border: 1px solid var(--hair-2); }
 .guide div { display: grid; gap: 4px; min-width: 0; }
@@ -733,7 +711,7 @@ a.gpill { color: #1E2A10; }
   -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
   mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
 }
-.chips.row::-webkit-scrollbar, .phaseline::-webkit-scrollbar { display: none; }
+.chips.row::-webkit-scrollbar { display: none; }
 /* ⚠ A FLEX ITEM'S IMPLICIT min-width: auto IS THE ONLY THING STOPPING IT SHRINKING BELOW
    ITS OWN TEXT, and writing any min-width at all replaces it. This row is a nowrap flex
    scroller; when `min-width: 52px` went on to make the short chips wide enough to tap,
@@ -742,16 +720,6 @@ a.gpill { color: #1E2A10; }
    each other. It shipped, and he photographed it on his phone.
    flex: 0 0 auto is the fix: a chip is exactly as wide as its word, and the row scrolls. */
 .chips.row .chip { flex: 0 0 auto; font-size: 14px; padding: 0 15px; min-height: 44px; min-width: 52px; }
-
-/* the phase legend was five chips wrapping 2 + 2 + 1, an orphan on its own line.
-   One row, scrolled, on every width. */
-.phaseline {
-  flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none;
-  padding-right: 26px;
-  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
-  mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent 100%);
-}
-.phaseline .ph { flex: none; }
 
 /* a day that has not happened yet is quiet, not unreadable */
 .cal-d.future { opacity: .45; }
@@ -807,42 +775,15 @@ html { overflow-x: clip; }
 /* the scrim only darkens the last third, where the words begin */
 .gvp .gvp-art::after { background: linear-gradient(180deg, transparent 64%, rgba(5, 9, 18, .8) 100%); }
 
-/* THE STANDING · what one word today would do */
-.standing { display: grid; grid-template-columns: 74px 1fr; gap: 16px; align-items: center; }
-.stand-words { display: grid; gap: 5px; min-width: 0; }
-.stand-words b { font-family: var(--display); font-size: 23px; line-height: 27px; font-weight: 500; color: #FFF7D6; text-wrap: balance; }
-.stand-ring {
-  position: relative; width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center;
-  background: conic-gradient(#FFD98A calc(var(--pct) * 1%), rgba(255, 255, 255, .1) 0);
-}
-.stand-ring::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: rgba(5, 9, 18, .92); }
-.stand-face { position: relative; font-family: var(--emoji); font-size: 32px; line-height: 1; }
-
 /* THE CROSSING · the one card in the app that is allowed to be loud */
 .cer.cross .big { filter: drop-shadow(0 0 30px rgba(255, 217, 138, .55)); }
 .cer.cross h2 { color: #FFE9B0; }
 
 /* ═══ v24 · the sound made learnable, and a room with a face ══════════════ */
 
-.notes { display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0 4px; }
-.chip.note { min-height: 46px; flex-direction: column; align-items: flex-start; gap: 0; padding: 6px 13px; line-height: 19px; }
-.chip.note i { font-style: normal; font-size: 13px; line-height: 15px; font-weight: 600; color: #FFD98A; }
-
 .roomfield { display: flex; flex-wrap: wrap; gap: 10px; padding: 2px 0; }
 .rf { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px 5px 5px; border-radius: 999px; background: rgba(5, 9, 18, .55); border: 1px solid var(--hair); }
 .rf b { font-family: var(--display); font-size: 19px; line-height: 20px; font-weight: 600; color: #FFE9B0; }
-
-/* ═══ v25 · five is a list of five ════════════════════════════════════════ */
-
-/* Wrapped as chips the five phases fell 2 + 2 + 1 and left Ready to Give alone
-   on its own line. A grammar is read down, so it is written down: one row each,
-   the phase on the left and the interval on the right. */
-.notes { display: grid; grid-template-columns: 1fr; gap: 8px; }
-.chip.note {
-  flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px;
-  min-height: 50px; padding: 8px 16px; border-radius: 18px; font-size: 16px; line-height: 22px;
-}
-.chip.note i { margin-left: auto; font-size: 14px; line-height: 19px; text-align: right; }
 
 /* ═══ v26 · depth, and three actions that fit ═════════════════════════════ */
 
@@ -858,16 +799,11 @@ html { overflow-x: clip; }
 #scene .layer { transition: opacity 1.4s ease, transform 1.1s var(--ease); }
 body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 
-
 /* a room's three actions: the two that share sit together, and leaving sits
    apart and quiet, because it is a different kind of act */
 .vibehead .actions { grid-auto-flow: row; grid-template-columns: 1fr 1fr; gap: 8px; }
 .vibehead .actions .btn { white-space: nowrap; }
 .vibehead .actions #vb-leave { grid-column: 1 / -1; }
-
-/* ═══ v28 · the standing, before anything is standing ═════════════════════ */
-.standing.empty .stand-ring { background: conic-gradient(rgba(255, 217, 138, .22) 0, rgba(255, 255, 255, .1) 0); }
-.standing.empty .stand-face { opacity: .92; }
 
 /* ═══ v34 · the act is on the screen ══════════════════════════════════════ */
 
@@ -886,13 +822,6 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
    cleared it by sixteen pixels, which is why it was never seen: the first run is fine
    and every run after it is not. Forty-six lifts it clear in both. */
 .hero { min-height: 46svh; }
-
-/* the standing carries one line, so it stands one line tall */
-.standing { grid-template-columns: 58px 1fr; gap: 12px; padding: 14px 16px; }
-.standing .stand-ring { width: 58px; height: 58px; }
-.standing .stand-ring::before { inset: 4px; }
-.standing .stand-face { font-size: 26px; }
-.standing .stand-words b { font-size: 20px; line-height: 25px; }
 
 /* ═══ THE HAND ══════════════════════════════════════════════════════════════════════
    Everything below is about a thumb on a phone.
@@ -946,10 +875,6 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 }
 
 /* the glyph: his figure, drawn from days, given room and nothing else */
-.glyphcard { display: grid; gap: 12px; justify-items: center; text-align: center; }
-.glyphfig { width: min(240px, 68vw); color: var(--violet-text); filter: drop-shadow(0 0 18px rgba(110, 217, 192, .35)); }
-.glyphfig svg { width: 100%; height: auto; display: block; }
-
 /* Decorative layers clip their own contents. A star placed at ninety-nine per cent of the
    width has a right edge past the glass, and one pixel over is still over. */
 .stars, .embers, .aura { overflow: clip; }
@@ -1052,11 +977,6 @@ body.touring { overflow: hidden; }
 
 /* a pathway, and the days inside it */
 .glass.step { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; }
-.glass.step .ico { flex: 0 0 auto; font-size: 13px; font-weight: 600; color: var(--violet-text);
-  letter-spacing: .04em; min-width: 54px; padding-top: 2px; }
-.glass.step .line, .glass.opt.path .line { display: block; font-size: 15px; line-height: 22px; color: var(--ink-2); margin-top: 3px; }
-.glass.opt.path { align-items: flex-start; }
-
 /* ── the Giveth pitch: one number reigning, then the shape of five years ── */
 /* The hero comes down so the figure and the three facts under it both land above the tab
    bar on a phone. Measured, not guessed: the bar owns the last 112px of an 812px screen. */
@@ -1081,7 +1001,6 @@ body.touring { overflow: hidden; }
 
 /* ── the menu, in groups ── */
 .menu { display: grid; gap: 6px; margin: 4px 0 14px; }
-.menu .mgroup { margin: 12px 0 2px; }
 .menu .rows { gap: 8px; }
 .mrow b { font-size: 17px; line-height: 24px; }
 .mrow.on { border-color: var(--hair-hue); box-shadow: var(--lit-rest), inset 0 -7px 11px rgba(110, 217, 192, .14); }
@@ -1275,3 +1194,129 @@ html.wrapped .tabs .star span.lbl { color: #FFD98A; }
    flat at the top of the core while it was still alight. They rise straight up the middle
    of the bar and cannot reach any edge. */
 .tabs .star .core .embers { overflow: visible; }
+
+/* ═══ THE DAY, LANDED ═════════════════════════════════════════════════════════════════
+   One card answers an entry: the journal's head, a seed for every day kept, with what
+   was planted at its centre and today's seed arriving last. Under it, the count. */
+.dc { gap: 12px; }
+.dc-ring { position: relative; width: min(62vw, 244px); aspect-ratio: 1; display: grid; place-items: center; margin: -4px 0 -2px; }
+.dc-ring .jr-head { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.dc-face { position: relative; font-family: var(--emoji); font-size: clamp(62px, 19vw, 82px); line-height: 1; filter: drop-shadow(0 0 26px rgba(110, 217, 192, .5)); animation: rise var(--t) var(--ease) both; }
+.dc.cross .dc-face { filter: drop-shadow(0 0 30px rgba(255, 217, 138, .6)); }
+.dc-foot { display: grid; justify-items: center; gap: 8px; padding-top: 4px; animation: rise var(--t) var(--ease) 480ms both; }
+.dc-kept { display: grid; justify-items: center; gap: 2px; font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); text-shadow: 0 1px 10px rgba(0, 0, 0, .9); animation: rise var(--t) var(--ease) 360ms both; }
+.dc-kept b { font-family: var(--display); font-weight: 500; font-size: 72px; line-height: 68px; letter-spacing: 0; color: #FFE9B0; text-shadow: 0 0 28px rgba(242, 201, 125, .4), 0 1px 10px rgba(0, 0, 0, .9); }
+/* the day a plant crosses, the phase is the headline and the count stands under it */
+.dc.cross .dc-kept { display: inline-flex; align-items: baseline; gap: 9px; }
+.dc.cross .dc-kept b { font-size: 32px; line-height: 32px; text-shadow: 0 1px 10px rgba(0, 0, 0, .9); }
+.dc-call { font-size: 15px; letter-spacing: .04em; text-transform: none; }
+.dc-mark { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; line-height: 20px; font-weight: 600; color: #FFE9B0; text-shadow: 0 1px 10px rgba(0, 0, 0, .9); }
+.dc-mark i { font-style: normal; font-family: var(--emoji); font-size: 18px; line-height: 1; }
+
+/* the seed head: one seed a day, the same figure wherever a count of days is drawn */
+.jr-head circle { fill: #7FE7C3; }
+.jr-head circle.n { fill: #FFF7D6; filter: drop-shadow(0 0 5px rgba(255, 217, 138, .95)); }
+.jr-head:not(.still) circle { transform-box: fill-box; transform-origin: center; animation: jr-seed 420ms var(--ease) both; animation-delay: var(--w, 0ms); }
+.jr-head:not(.still) circle.n { animation: jr-land 900ms cubic-bezier(.16, 1, .3, 1) both; animation-delay: calc(var(--w, 0ms) + 260ms); }
+@keyframes jr-seed { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: none; } }
+@keyframes jr-land { 0% { opacity: 0; transform: scale(5); } 55% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+/* stillness is the whole head, there at once: the delays go with the motion */
+@media (prefers-reduced-motion: reduce) {
+  .jr-head:not(.still) circle, .jr-head:not(.still) circle.n { animation: none; }
+  .dc-face, .dc-foot, .dc-kept { animation: none; }
+}
+
+/* ═══ WHAT EACH DOOR HOLDS ═══════════════════════════════════════════════════════════
+   The home is his, text for text. Under his two lines each door now carries one more,
+   read off the garden: how many days the journal holds, and which plant is nearest its
+   next line. Nothing is drawn until there is something to draw. */
+.door .door-words > .hm-row { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 15px; line-height: 20px; font-weight: 600; color: #fff; white-space: nowrap; }
+.hm-row b { font-family: var(--display); font-weight: 500; font-size: 25px; line-height: 24px; color: #FFE9B0; margin-right: -2px; }
+.hm-row em { font-style: normal; color: #FFE9B0; }
+.hm-row .jr-head { width: 34px; height: 34px; flex: none; overflow: visible; }
+.hm-ring { position: relative; width: 32px; height: 32px; flex: none; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(#FFD98A calc(var(--pct) * 1%), rgba(255, 255, 255, .16) 0); }
+.hm-ring::before { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: rgba(5, 9, 18, .94); }
+.hm-ring span { position: relative; font-family: var(--emoji); font-size: 15px; line-height: 1; letter-spacing: 0; }
+
+/* today, kept: the entry itself, under the question it answered */
+.hm-today { position: relative; z-index: 1; display: grid; gap: 0; padding: 0 20px; margin-top: -22px; }
+/* It is an entry, so a tap opens it. It is not a card: the words stand on the dark the
+   picture fades into, with nothing drawn round them. */
+.hm-today .hm-kept { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 14px; align-items: center; width: 100%; padding: 6px 0; text-align: left; color: var(--ink);
+  background: none; border: 0; border-radius: 0; }
+.hm-face { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; font-family: var(--emoji); font-size: 28px; line-height: 1;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, .14), rgba(255, 255, 255, .03) 60%); box-shadow: 0 0 0 1px rgba(242, 201, 125, .4), 0 0 18px rgba(242, 201, 125, .22); }
+.hm-face img { width: 100%; height: 100%; object-fit: cover; }
+.hm-words { display: grid; gap: 5px; min-width: 0; }
+.hm-line { font-family: var(--display); font-size: 24px; line-height: 29px; color: #FFF7D6; text-shadow: 0 1px 10px rgba(0, 0, 0, .8);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.hm-words .kicker { letter-spacing: .12em; }
+.hm-more { justify-self: center; min-height: 44px; padding: 0 14px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--violet-text); }
+.hero14 .hm-today + .gpill { margin-top: 12px; }
+
+.gw-more { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; }
+.gw-more:empty { display: none; }
+
+/* ═══ THE TIME LOG ════════════════════════════════════════════════════════════════════
+   One month at a time: the calendar says which days were kept, and the rows under it
+   say when each entry was written and how long it took. */
+.jr-month { padding: 0; }
+.jr-rows { display: grid; padding: 8px 6px; }
+.jr-row { display: grid; grid-template-columns: 62px 76px 26px minmax(0, 1fr) auto; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; border-radius: 14px; text-align: left; color: var(--ink); font-size: 15px; line-height: 20px; }
+.jr-row .jr-d { font-weight: 700; color: #FFE9B0; }
+.jr-row .jr-t { font-weight: 600; }
+.jr-row .jr-e { font-family: var(--emoji); font-size: 18px; line-height: 1; text-align: center; }
+.jr-row .jr-s, .jr-row .jr-w { font-size: 14px; }
+.jr-row .jr-w { text-align: right; white-space: nowrap; }
+.jr-row:active { background: rgba(255, 255, 255, .06); }
+@media (max-width: 359px) { .jr-row { grid-template-columns: 58px 72px 24px minmax(0, 1fr); } .jr-row .jr-w { display: none; } }
+.jr-filter { grid-auto-flow: column; justify-content: start; }
+.jr-find { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+
+/* an entry, opened: the page it was written on */
+.jr-page { margin: 0; padding: 16px 16px 18px 18px; border-left: 2px solid var(--paper-margin); border-radius: 6px 20px 20px 6px;
+  background-image: linear-gradient(180deg, rgba(38, 29, 17, .86), rgba(26, 20, 12, .92)), repeating-linear-gradient(180deg, transparent 0 31px, var(--paper-rule) 31px 32px);
+  font-family: var(--display); font-size: 23px; line-height: 32px; color: var(--paper-ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ═══ THE DAYS KEPT ═════════════════════════════════════════════════════════════════ */
+.ld { justify-items: center; gap: 4px; padding: 20px 16px 22px; }
+.ld .jr-head { width: 156px; height: 156px; overflow: visible; }
+.ld-words { display: grid; justify-items: center; gap: 2px; }
+.ld-words b { font-family: var(--display); font-weight: 500; font-size: 60px; line-height: 60px; color: #FFE9B0; }
+
+/* an entry's line of facts: tighter than a heading, so the day, the hour and the time it took hold one line */
+.entry .kicker { letter-spacing: .1em; }
+
+/* ═══ FEATHERED ═══════════════════════════════════════════════════════════════════════
+   Where one thing meets another there used to be a line. The page under every hero began
+   with a rounded lip and a highlight along it, so the scene ended at a drawn edge; and
+   whatever scrolled toward the bar was cut by the bar. Neither has an edge now. */
+
+/* The scene runs into the page. The page begins as nothing and deepens over seventy-two
+   pixels, inside the hero's own darkening, so there is no place where one stops. */
+.page { border-radius: 0; box-shadow: none; margin-top: -72px; padding-top: 72px;
+  background: linear-gradient(180deg, rgba(5, 9, 18, 0) 0, rgba(5, 9, 18, .42) 34px, rgba(5, 9, 18, .76) 78px, rgba(5, 9, 18, .84) 132px, rgba(5, 9, 18, .84)); }
+
+/* What scrolls toward the bar goes into the dark before it gets there. */
+.tabs::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: calc(128px + var(--sab)); z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 9, 18, 0) 0, rgba(5, 9, 18, .3) 24%, rgba(5, 9, 18, .86) 50%, rgba(5, 9, 18, .96) 100%); }
+
+/* The journal is a room somebody works in, so what they came for is on the first screen:
+   the title, and under it the three tabs and today. The other rooms keep their height. */
+.hero.book-hero { min-height: 40svh; }
+
+/* ═══ GLASS THAT DOES NOT BLUR WHAT IS UNDER IT ═══════════════════════════════════════
+   Every card in a page asked the phone to blur whatever was behind it, and to do it again
+   on each frame of a scroll. Behind a card in a page is the page, which is already dark,
+   so the blur changed almost nothing that could be seen. Measured on the journal with
+   fifty entries, at a quarter of this machine’s speed, twice each way: 41 and 52 ms a
+   frame with it, 16.7 without. The bar, the sheets and the scrims keep theirs: they are
+   fixed, there is one of each, and what is behind them is the whole moving page. */
+.page .glass, .home14 .glass, .page .pillform, .home14 .pillform { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* ═══ TABS THAT FIT THE GLASS ═════════════════════════════════════════════════════════
+   Three tabs sit in a row on any phone once the smallest gives up a little padding. */
+@media (max-width: 359px) { .seg button { padding: 0 6px; font-size: 15px; } }
+
+/* his fourth line on the home screen is a door: the same plate, and a tap opens the room */
+button.together { width: 100%; font: inherit; color: inherit; cursor: pointer; }

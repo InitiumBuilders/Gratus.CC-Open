@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Publish a clean copy of this app to the public repo, and prove the copy is clean twice.
 #   1. export the tree without git state, env files, vercel state or node_modules
+#      (.env.example goes: it holds the names and no values, and the gate checks that)
 #   2. run the open-source gate on the export; any hit stops everything
 #   3. commit the export on top of the public repo's history and push
 #   4. clone the public repo back and run the gate on what the world sees
+# The list of private names is read from outside the tree. Without it nothing is published.
 # Usage: bash scripts/publish-open.sh "commit message"
 set -u
 export PATH="$HOME/.local/bin:$PATH"
@@ -12,10 +14,14 @@ PUB_URL="${GRATUS_PUBLIC_REPO:-https://github.com/InitiumBuilders/Gratus.CC-Open
 MSG="${1:-open source sync}"
 OUT="$(mktemp -d)"; CB="$(mktemp -d)"
 trap 'rm -rf "$OUT" "$CB"' EXIT
+NAMES="${GRATUS_PRIVATE_NAMES:-$HOME/.config/gratus/private-names}"
+[ -s "$NAMES" ] || { echo "PUBLISH STOPPED: the list of private names is missing, so names cannot be checked"; exit 1; }
+[ -e "$SRC/.private-names" ] && { echo "PUBLISH STOPPED: .private-names is in the tree, and everything in the tree is deployed. Move it out"; exit 1; }
 
-rsync -a --delete --exclude .git --exclude .vercel --exclude node_modules --exclude '.env*' --exclude '*.log' --exclude .decoys "$SRC"/ "$OUT"/
+rsync -a --delete --exclude .git --exclude .vercel --exclude node_modules --include '.env.example' --exclude '.env*' --exclude '.private-names' --exclude '*.log' --exclude .decoys "$SRC"/ "$OUT"/
+[ -f "$OUT/.env.example" ] || { echo "PUBLISH STOPPED: the export has no .env.example, and the docs gate needs it"; exit 1; }
 echo "== open-source gate on the export"
-node "$OUT/scripts/gates/open-source.mjs" "$OUT" || { echo "PUBLISH STOPPED: the export is not clean"; exit 1; }
+GRATUS_PRIVATE_NAMES="$NAMES" node "$OUT/scripts/gates/open-source.mjs" "$OUT" --require-names || { echo "PUBLISH STOPPED: the export is not clean"; exit 1; }
 
 cd "$OUT" || exit 1
 git init -q -b main
@@ -31,5 +37,5 @@ echo "== pushed $(git rev-parse --short HEAD) → $PUB_URL"
 
 echo "== clone-back gate"
 git clone -q --depth 1 "$PUB_URL" "$CB/x" || { echo "CLONE-BACK FAILED"; exit 1; }
-node "$CB/x/scripts/gates/open-source.mjs" "$CB/x" || { echo "CLONE-BACK GATE: BLOCK · the public copy has a hit; fix and republish now"; exit 1; }
+GRATUS_PRIVATE_NAMES="$NAMES" node "$CB/x/scripts/gates/open-source.mjs" "$CB/x" --require-names || { echo "CLONE-BACK GATE: BLOCK · the public copy has a hit; fix and republish now"; exit 1; }
 echo "== public copy is clean: $(cd "$CB/x" && git rev-parse --short HEAD)"

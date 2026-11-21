@@ -23,10 +23,14 @@ for (const route of ROUTES) {
   const errs = [];
   o.page.on('pageerror', (e) => errs.push('throw: ' + String(e.message).slice(0, 120)));
   o.page.on('console', (m) => { if (m.type() === 'error') errs.push('console: ' + m.text().slice(0, 120)); });
+  // what is checked is waited for, up to four seconds: a busy machine is slow, and slow is not wrong
+  await o.page.waitForFunction(() => (document.body.innerText || '').trim().length > 200 || !!document.querySelector('[data-state="empty"]'), null, { timeout: 4000 }).catch(() => null);
   await o.page.waitForTimeout(500);
   const real = errs.filter((e) => !/Failed to load resource|net::ERR|status of 40|status of 50/i.test(e));
   const body = await o.page.evaluate(() => (document.body.innerText || '').trim().length);
-  say(real.length === 0 && body > 200, route.padEnd(13) + ' text ' + String(body).padStart(5) + (real.length ? '  ' + real.slice(0, 2).join(' | ') : ''));
+  // a room that is short on purpose says so, and a designed empty state counts as rendered: G12's rule
+  const designed = await o.page.evaluate(() => !!document.querySelector('[data-state="empty"]'));
+  say(real.length === 0 && (body > 200 || designed), route.padEnd(13) + ' text ' + String(body).padStart(5) + (designed && body <= 200 ? '  a designed empty state' : '') + (real.length ? '  ' + real.slice(0, 2).join(' | ') : ''));
   await o.close();
 }
 
@@ -37,7 +41,8 @@ for (const route of ROUTES) {
   const thrown = [];
   page.on('pageerror', (e) => thrown.push(String(e.message).slice(0, 140)));
   await page.goto(base + '/', { waitUntil: 'load' });
-  await page.waitForTimeout(1500);
+  await page.waitForFunction(() => document.documentElement.classList.contains('anim') && (document.body.innerText || '').trim().length > 400, null, { timeout: 5000 }).catch(() => null);
+  await page.waitForTimeout(300);
   const state = await page.evaluate(() => ({
     anim: document.documentElement.classList.contains('anim'),
     landed: [...document.querySelectorAll('.hs, .line, .act')].filter((e) => e.classList.contains('on')).length,
@@ -65,7 +70,7 @@ for (const route of ROUTES) {
     const door = [...document.querySelectorAll('button, a')].find((x) => /I run a project/i.test(x.textContent || ''));
     if (door) door.click();
   });
-  await o.page.waitForTimeout(900);
+  await o.page.waitForFunction(() => [...document.querySelectorAll('button, a')].some((x) => /claim/i.test(x.textContent || '')), null, { timeout: 5000 }).catch(() => null);
   const where = await o.page.evaluate(() => {
     const el = [...document.querySelectorAll('button, a')].find((x) => /claim/i.test(x.textContent || ''));
     return el ? { text: el.textContent.trim().slice(0, 40), id: el.id || '' } : null;
@@ -82,7 +87,8 @@ for (const route of ROUTES) {
       const el = [...document.querySelectorAll('button, a')].find((x) => /claim/i.test(x.textContent || ''));
       el.click();
     });
-    await o.page.waitForTimeout(1200);
+    await o.page.waitForFunction(() => /gratus-abc123/.test(document.body.innerText || ''), null, { timeout: 5000 }).catch(() => null);
+    await o.page.waitForTimeout(200);
     const text = await o.page.evaluate(() => document.body.innerText || '');
     say(!thrown.length, 'the claim button throws nothing' + (thrown.length ? ' (' + thrown[0] + ')' : ''));
     say(!!asked && asked.act === 'claim', 'tapping "' + where.text + '" asks the trace for a code');

@@ -53,11 +53,9 @@ const STATS = { at: new Date().toISOString(), usd: 7177892, donors: 29335, liste
 async function look(quiet) {
   const ctx = await b.newContext({ viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
-  const loud = [];
+  const loud = []; let asked = 0;
   page.on('pageerror', (e) => loud.push(String(e.message).slice(0, 80)));
-  await page.route('**/api/giveth-stats**', (r) => (quiet
-    ? r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'quiet' }) })
-    : r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STATS) })));
+  await page.route('**/api/giveth**', (r) => { asked++; return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STATS) }); });
   await page.goto(srv.base + '/?nosplash=1', { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(2200);
   await page.evaluate(() => {
@@ -65,16 +63,20 @@ async function look(quiet) {
     document.querySelectorAll('img[loading=lazy]').forEach((i) => { i.loading = 'eager'; i.src = i.src; });
   });
   await page.waitForTimeout(2000);
-  return { page, ctx, loud };
+  return { page, ctx, loud, get asked() { return asked; } };
 }
 
 const live = await look(false);
 const text = (await live.page.evaluate(() => document.body.innerText)).replace(/\s+/g, ' ');
-say(text.includes('$7,177,892'), 'the front page fills with the live figure');
-say(/29,335 people/.test(text) && /7,736 projects/.test(text), 'and says who gave it and to how many projects');
+// The Giveth figure and its act stood here. They have a page of their own (G34 walks it),
+// and the front page now asks nobody anything: his lines, the app, the gift, the Galaxy, the price.
+say(live.asked === 0, 'the front page asks Giveth nothing  (' + live.asked + ' requests)');
+say(!/Giveth is not answering|Reading Giveth/.test(text) && !/\$0\b/.test(text), 'so there is no figure to wait for, and none to be wrong');
 const imgs = await live.page.evaluate(() => [...document.querySelectorAll('.screen img')].map((i) => ({ s: i.getAttribute('src'), w: i.naturalWidth })));
 say(imgs.length >= 3 && imgs.every((i) => i.w > 0), 'every photograph of the app loads  (' + imgs.map((i) => i.w).join(', ') + ')');
 say(live.loud.length === 0, 'nothing thrown' + (live.loud.length ? '  (' + live.loud[0] + ')' : ''));
+const acts = await live.page.evaluate(() => document.querySelectorAll('section.act').length);
+say(acts <= 6, 'it is six acts or fewer  (' + acts + ')');
 for (const w of [320, 375, 390]) {
   await live.page.setViewportSize({ width: w, height: 800 });
   await live.page.waitForTimeout(350);
@@ -82,14 +84,6 @@ for (const w of [320, 375, 390]) {
   say(spill === 0, 'nothing pushes the page sideways at ' + w + '  (' + spill + 'px)');
 }
 await live.ctx.close();
-
-// ── and when Giveth says nothing, the page does not invent a zero ──
-const dark = await look(true);
-const t2 = (await dark.page.evaluate(() => document.body.innerText)).replace(/\s+/g, ' ');
-say(!/\$0\b/.test(t2), 'a quiet Giveth never becomes $0');
-say(/Giveth is not answering/.test(t2), 'it says nobody answered');
-say(!/\$7,177,892/.test(t2), 'and no figure is left standing from a page that failed to read one');
-await dark.ctx.close();
 
 await b.close(); await srv.close();
 console.log('G35 the front door: ' + (fails ? 'FAIL - ' + fails : 'PASS'));

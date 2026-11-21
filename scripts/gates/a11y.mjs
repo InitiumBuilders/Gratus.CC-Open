@@ -63,8 +63,14 @@ const MEASURE = () => {
   // every interactive element
   for (const el of document.querySelectorAll('a[href], button, input, select, textarea, [role="button"], [tabindex]')) {
     if (!vis(el)) continue;
-    const r = el.getBoundingClientRect();
+    let r = el.getBoundingClientRect();
     const sel = el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + '.' + String(el.className).slice(0, 24);
+    // A control lying under the bar, or below the fold, cannot be judged where it lies:
+    // what a thumb would land on there is the bar, or nothing. Both used to be waved
+    // through, which made this a gate for the first screen of every page. So a control
+    // smaller than its target is brought to the middle of the glass before the page is
+    // asked what a thumb finds.
+    if (r.width < 44 || r.height < 44) { el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }); r = el.getBoundingClientRect(); }
     // A control may be drawn whatever size the design asks for. What has to be forty-four
     // is the target, and this app draws that underneath the mark rather than inflating the
     // mark: his chips stay his chips and a thumb still finds them. Reading the box calls a
@@ -87,6 +93,7 @@ const MEASURE = () => {
     const says = el.hasAttribute('aria-pressed') || el.hasAttribute('aria-selected') || el.hasAttribute('aria-current') || el.hasAttribute('aria-expanded');
     if (on && !says) out.noState.push(sel);
   }
+  window.scrollTo(0, 0);
   return out;
 };
 
@@ -104,6 +111,18 @@ for (const [name, route] of views) {
     + ' · silent toggles ' + String(m.noState.length).padStart(3));
   m.tiny.slice(0, 4).forEach((x) => console.log('          ' + x.w + 'x' + x.h + '  ' + x.sel + '  ' + x.t));
   m.small.slice(0, 3).forEach((x) => console.log('          ' + x.px + 'px  ' + x.sel + '  ' + x.t));
+}
+// the control: a small target at the foot of a long page, the kind that was never judged
+{
+  const v = await open(b, server.base, '/app/guides', { settle: 1500 });
+  await v.page.evaluate(() => {
+    const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:0';
+    for (const n of ['a', 'b', 'c']) { const x = document.createElement('button'); x.textContent = n; x.className = 'planted-' + n; x.style.cssText = 'width:30px;height:30px;padding:0;position:static'; row.appendChild(x); }
+    (document.querySelector('.page') || document.body).appendChild(row);
+  });
+  const m = await v.page.evaluate(MEASURE);
+  await v.close();
+  say(m.tiny.some((x) => /planted-b/.test(x.sel)), 'the control: a 30px target planted at the foot of a page is seen');
 }
 if (tinyAll) fails++;
 if (smallAll) fails++;

@@ -82,7 +82,7 @@ ok('folder id still bound', up.entries[0].folder === 'f_morning');
 ok('voice record kept', JSON.stringify(up.entries[1].voice) === JSON.stringify(raw.entries[1].voice));
 ok('gift echo kept', up.gifts.given[0].echo === raw.gifts.given[0].echo);
 ok('returns seen count kept', up.gifts.given[0].seen === raw.gifts.given[0].seen);
-ok('gifted plant keeps its origin', up.plants[2].from === 'Natalie' && up.plants[2].origin === 'gift');
+ok('gifted plant keeps its origin', up.plants[2].from === 'Sam' && up.plants[2].origin === 'gift');
 ok('bloomed seed keeps its reply', up.seeds[0].water.reply === raw.seeds[0].water.reply);
 ok('seed author key kept', up.seeds[0].mine === raw.seeds[0].mine);
 

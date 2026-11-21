@@ -19,6 +19,8 @@ if [ "$T" != "0" ] || [ "$C" != "0" ] || [ "$B" != "0" ] || [ "$S" != "0" ] || [
 echo "== decoys first: a gate that has stopped biting is worse than no gate"
 node scripts/gates/slop.mjs --decoy || { echo "SLOP GATE CANNOT BE TRUSTED, not shipping"; exit 1; }
 node scripts/gates/open-source.mjs . --decoy || { echo "GATE CANNOT BE TRUSTED, not shipping"; exit 1; }
+echo "== nothing private in what gets deployed (the whole tree is served)"
+[ -e .private-names ] && { echo "A PRIVATE LIST IS IN THE TREE, not shipping"; exit 1; }
 echo "== stamp entry scripts (a returning browser must never keep an old app.js)"
 STAMP="$(date +%s)"
 sed -i -E "s#galaxy\.js\?v=[0-9a-z]+#galaxy.js?v=${STAMP}#g" app.html sw.js
@@ -27,9 +29,6 @@ echo "stamp ${STAMP}"
 echo "== commit"
 git add -A >/dev/null 2>&1
 git commit -q -m "${1:-ship}" 2>/dev/null && git log --oneline -1 || echo "(nothing new to commit)"
-echo "== preview env (idempotent)"
-for K in GRATUS_SALT CRON_SECRET; do vercel env ls 2>/dev/null | grep -q "$K.*Preview" || { vercel env pull /tmp/gratus-env.txt --environment production >/dev/null 2>&1; V="$(grep "^$K=" /tmp/gratus-env.txt | cut -d= -f2- | tr -d '"')"; [ -n "$V" ] && printf '%s' "$V" | vercel env add "$K" preview >/dev/null 2>&1 && echo "added $K to preview"; }; done
-rm -f /tmp/gratus-env.txt
 echo "== deploy"
 command -v vercel >/dev/null 2>&1 || { echo "DEPLOY FAILED: vercel is not on PATH (run ship.sh from a login shell)"; exit 1; }
 vercel deploy --prod --yes 2>&1 | tail -6
@@ -42,5 +41,11 @@ for TRY in 1 2 3 4 5 6 7 8; do
   [ "$LIVE" = "galaxy.js?v=${STAMP}" ] && break; sleep 5
 done
 if [ "$LIVE" = "galaxy.js?v=${STAMP}" ]; then echo "LIVE STAMP MATCHES: ${LIVE} (try ${TRY})"; else echo "DEPLOY DID NOT LAND: live=${LIVE:-none} local=galaxy.js?v=${STAMP}"; exit 1; fi
+echo "== refute: does the live site answer for a private file?"
+for P in /.env /.env.local /.vercel/project.json /.private-names; do
+  CODE="$(curl -s -o /dev/null -w '%{http_code}' "https://gratus-in-motus.vercel.app$P")"
+  [ "$CODE" = "200" ] && { echo "PRIVATE FILE SERVED: $P. Take the deployment down and rotate what the file held"; exit 1; }
+done
+echo "none of the four is served"
 echo "== public mirror"
 bash scripts/publish-open.sh "${1:-ship}" || { echo "PUBLIC MIRROR NOT UPDATED (the live deploy stands; fix the hit and run scripts/publish-open.sh)"; exit 1; }

@@ -2,14 +2,15 @@
 title: The Passage
 audience: anyone
 time: 2 min
-updated: 2026-09-19
+updated: 2026-11-20
 verified-against: v25, 2026-09-19
 ---
 
 The Passage is a page you can share that shows what you are growing without showing what
 you wrote.
 
-Open it from the menu, or go to /passage.
+Open it from your sheet: the person in the top corner, then Share my Gratus Passage. Or go
+to /passage.
 
 **What it shows.** Your emojis, their phases, the days of care. The shape of the thing.
 

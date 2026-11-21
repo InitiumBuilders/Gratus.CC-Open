@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/css/tokens.css?v=36">
-<link rel="stylesheet" href="/assets/css/galaxy.css?v=37">
+<link rel="stylesheet" href="/assets/css/galaxy.css?v=38">
 <style>
   body { background: var(--ground); }
   .site { position: relative; z-index: 2; }
@@ -37,20 +37,15 @@
   .mark { width: 128px; height: 128px; border-radius: 26%; filter: drop-shadow(0 0 22px rgba(185, 255, 228, .6)) drop-shadow(0 0 60px rgba(242, 201, 125, .45)); animation: breathe 7s ease-in-out infinite; }
   .cta { display: grid; gap: 12px; justify-items: center; width: min(100% - 40px, 340px); }
   .cta .gpill { width: 100%; }
-  .plate { width: 100%; border-radius: 26px; overflow: hidden; border: 1px solid rgba(242, 201, 125, .4); box-shadow: 0 0 30px rgba(242, 201, 125, .14), 0 18px 44px rgba(0, 0, 0, .6); }
-  .plate img { width: 100%; height: auto; display: block; }
-  /* a real screen, in a phone, photographed rather than drawn */
+  /* the app on a phone, photographed */
   .screens { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: min(100%, 460px); justify-items: center; }
   .screens.one { grid-template-columns: 1fr; width: min(100%, 260px); }
-  .screen { width: 100%; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .14);
+  .screen { width: 100%; border-radius: 22px; overflow: hidden;
     box-shadow: 0 0 26px rgba(110, 217, 192, .12), 0 16px 40px rgba(0, 0, 0, .66); background: var(--ground); }
   .screen img { width: 100%; height: auto; display: block; }
-  .bignum { font-family: var(--display); font-weight: 500; font-size: clamp(44px, 13vw, 78px); line-height: 1.02;
-    color: #FFF7D6; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; text-shadow: 0 2px 26px rgba(0, 0, 0, .85); }
-  .bignum.waiting { font-size: clamp(22px, 6vw, 30px); color: var(--ink-3); }
+  .plate { width: 100%; border-radius: 26px; overflow: hidden; border: 1px solid rgba(242, 201, 125, .4); box-shadow: 0 0 30px rgba(242, 201, 125, .14), 0 18px 44px rgba(0, 0, 0, .6); }
+  .plate img { width: 100%; height: auto; display: block; }
   .trio { display: grid; gap: 12px; width: 100%; }
-  .step { padding: 18px 20px; display: grid; gap: 6px; text-align: left; }
-  .step b { font-family: var(--display); font-size: 27px; line-height: 30px; font-weight: 500; color: #FFE9B0; }
   .foot { text-align: center; padding: 72px 20px calc(80px + var(--sab)); display: grid; gap: 8px; justify-items: center; color: var(--ink); font-size: 16px; line-height: 22px; background: linear-gradient(180deg, rgba(5, 9, 18, 0), rgba(5, 9, 18, .94) 22%); }
   .foot .script { font-family: var(--display); font-style: italic; font-size: 34px; line-height: 40px; color: #FFE9B0; text-shadow: 0 0 18px rgba(242, 201, 125, .4); }
   .foot a { color: #B9FFE4; }
@@ -83,57 +78,24 @@
 </section>
 
 <section class="act wrap">
-  <span class="kicker mint">Every day</span>
   <h2 class="line">Today's Gratitude</h2>
-  <p class="lead">What are you grateful for today? Write it, speak it, or keep a photo of it. Then plant an emoji for it, and it grows a phase for every day you return to it.</p>
+  <p class="lead">What are you grateful for today?</p>
   <div class="screens"><div class="screen"><img src="/assets/art/shots/write.webp" alt="The Gratus writing screen on a phone" width="390" height="844" loading="lazy"></div><div class="screen"><img src="/assets/art/shots/journal.webp" alt="The Gratus journal, by day" width="390" height="844" loading="lazy"></div></div>
   <a class="gpill" href="/app/grow">🌱<span>Write Today</span><span class="arr">→</span></a>
 </section>
 
 <section class="act wrap">
-  <span class="kicker mint">Three doors</span>
   <h2 class="line">Grow · Gratus · Give</h2>
   <div class="trio">
-    <a class="hcard door" href="/app/book"><img class="door-art" src="/assets/art/home/journal.webp" alt=""><span class="door-words"><b>Gratitude Journal</b><span>Write and journal every day. Entries, threads, folders, and the milestones on your own road.</span></span><span class="door-go">›</span></a>
-    <a class="hcard door" href="/app/garden"><img class="door-art" src="/assets/art/home/sprout.webp" alt=""><span class="door-words"><b>Grow Your Gratus Garden!</b><span>Grow gratitude every day. Planted, Nurtured, Deepened, Bloomed, Ready to Give.</span></span><span class="door-go">›</span></a>
-    <a class="hcard door" href="/app/give"><img class="door-art" src="/assets/art/home/giftbox.webp" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family. The whole journey rides inside the link.</span></span><span class="door-go">›</span></a>
+    <a class="hcard door" href="/app/book"><img class="door-art" src="/assets/art/home/journal.webp" alt=""><span class="door-words"><b>Gratitude Journal</b><span>Write and journal every day.</span></span><span class="door-go">›</span></a>
+    <a class="hcard door" href="/app/garden"><img class="door-art" src="/assets/art/home/sprout.webp" alt=""><span class="door-words"><b>Grow Your Gratus Garden!</b><span>Grow gratitude every day.</span></span><span class="door-go">›</span></a>
+    <a class="hcard door" href="/app/give"><img class="door-art" src="/assets/art/home/giftbox.webp" alt=""><span class="door-words"><b>Give Gratus Gifts</b><span>Send meaningful gifts to friends + family.</span></span><span class="door-go">›</span></a>
   </div>
-</section>
-
-<section class="act wrap">
-  <span class="kicker mint">Nothing here shrinks</span>
-  <h2 class="line">A garden that only ever grows.</h2>
-  <p class="lead">Every emoji you plant grows a phase for each day you write about it: Planted, Nurtured, Deepened, Bloomed, Ready to Give. Miss a week and nothing is taken away. There are no streaks to break here.</p>
   <div class="screens one"><div class="screen"><img src="/assets/art/shots/garden.webp" alt="A Gratus garden with five things growing" width="390" height="844" loading="lazy"></div></div>
-  <a class="gpill sm" href="/app/garden">🌱<span>Start Your Gratus Garden</span><span class="arr">→</span></a>
-</section>
-
-<section class="act wrap" id="giveth-act">
-  <span class="kicker gold">What Giveth has moved</span>
-  <b class="bignum waiting" id="gv-total">Reading Giveth...</b>
-  <p class="lead" id="gv-said">Given through Giveth to real projects, with nothing taken on the way. Read from their own API as this page opened.</p>
-  <p class="lead" id="gv-quiet" hidden>Giveth is not answering right now. Every figure on this page is read from them as it opens and none of it is kept on this side, which is why there is nothing in its place.</p>
-  <template id="gv-shape"><span>given through Giveth by {people} people to {projects} projects, with nothing taken on the way. Read from their own API as this page opened.</span></template>
-  <a class="gpill sm" href="/app/giveth">🤝<span>See the whole picture</span><span class="arr">→</span></a>
 </section>
 
 <section class="act wrap">
-  <span class="kicker gold">With Giveth</span>
-  <h2 class="line">The Emotional TRACE</h2>
-  <p class="lead">Giveth moves the capital: real projects, zero fees, on chain. Gratus carries what the capital was for.</p>
-  <div class="trio">
-    <div class="hcard step"><b>Begin</b><span class="body">You give to a project and plant a Gratus Seed: a few words, in your own voice, about why.</span></div>
-    <div class="hcard step"><b>Become</b><span class="body">The people who run it read your seed beside the capital. The money funds the work. The seed funds the morale.</span></div>
-    <div class="hcard step"><b>Bridge</b><span class="body">They water it with a line back. Your seed blooms into that project's own emoji, and keeps their words inside it.</span></div>
-  </div>
-  <a class="gpill" href="/app/giveth">🤝<span>Give with Giveth</span><span class="arr">→</span></a>
-</section>
-
-<section class="act wrap">
-  <span class="kicker gold">Every gift carries a story</span>
   <h2 class="line">Gratus Gives Gifts That Keep On Growing</h2>
-  <p class="lead">Someone grows an emoji with days of gratitude and wraps it with a message. You unwrap it, walk its journey, and choose how to keep it. Then it keeps growing in your garden.</p>
-  <div class="plate"><img src="/assets/art/home/hero-band.webp" alt="A star rising over still water, held in green leaves" width="1200" height="600" loading="lazy"></div>
   <a class="gpill sm" href="/gift">🎁<span>Open a sample gift</span><span class="arr">→</span></a>
 </section>
 
@@ -146,10 +108,9 @@
 </section>
 
 <section class="act wrap">
-  <span class="kicker mint">On your phone</span>
-  <h2 class="line">Add Gratus to your home screen.</h2>
-  <p class="lead">On Android, in Chrome, open the menu and choose “Add to Home screen”. On iPhone, in Safari, tap Share, then “Add to Home Screen”. Gratus opens full screen and works offline, and your journal stays on your device either way.</p>
-  <p class="lead"><b>Opening a gift somebody sends you is free, for ever, with no account.</b> Growing your own garden is free for a week, and $24 a month after that. An account is optional: it keeps a sealed copy of your garden that nobody here can read, and gives you a page at gratus.cc/gg/your-name.</p>
+  <h2 class="line">Add Gratus To Your Home Screen</h2>
+  <p class="lead">On Android, in Chrome, open the menu and choose “Add to Home screen”. On iPhone, in Safari, tap Share, then “Add to Home Screen”. Your journal stays on your device.</p>
+  <p class="lead"><b>Opening a gift somebody sends you is free, for ever, with no account.</b> Growing your own garden is free for a week, and $24 a month after that. An account is optional.</p>
   <a class="gpill" href="/app">✦<span>Open the app</span><span class="arr">→</span></a>
 </section>
 
@@ -165,9 +126,9 @@
   <span>9/2/2026 · <a href="https://x.com/BuiltByAugust" target="_blank" rel="noopener">@BuiltByAugust</a></span>
   <span>Journal Every Day. Give Gifts The Grow.</span>
   <span>Gratus In Motus. Gratitude In Motion. Give Gifts That Grow. Gratus Gives.</span>
-  <span><a href="/app/laws">The twelve laws</a> · <a href="https://github.com/InitiumBuilders/Gratus.CC-Open" target="_blank" rel="noopener">Open source, MIT</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
+  <span><a href="/app/giveth">Give with Giveth</a> · <a href="/app/laws">The twelve laws</a> · <a href="https://github.com/InitiumBuilders/Gratus.CC-Open" target="_blank" rel="noopener">Open source, MIT</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
 </footer>
 </div>
-  <script type="module" src="/assets/js/landing.js?v=1790500000"></script>
+  <script type="module" src="/assets/js/landing.js?v=1795200000"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@ if (!handle) {
       '<div><b>' + N(g.days) + '</b><span>Days of care</span></div>' +
       '<div><b>' + N(g.ready) + '</b><span>Ready to give</span></div></div>' +
       ((g.faces || []).length ? '<div class="faces">' + g.faces.map((f) => '<i>' + esc(f) + '</i>').join('') + '</div>' : '') +
-      '<p class="kick" style="text-align:center">The shape of a garden. Never a word of what is written in it.</p>' +
+      '<p class="kick" style="text-align:center">The shape of a garden. The words stay with the person who wrote them.</p>' +
       '<p style="text-align:center;margin-top:30px"><button class="pill" id="keep" hidden>Keep ' + esc(p.name) + ' close</button>' +
       '<a class="pill" href="/app" style="display:inline-flex">Grow your own</a></p>' +
       '<p class="kick" id="keepsay" style="text-align:center"></p>';

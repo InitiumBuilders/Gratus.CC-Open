@@ -2,16 +2,16 @@
 title: Your people, and handing them a room
 audience: anyone with an account
 time: 2 min
-updated: 2026-09-19
-verified-against: v34, 2026-09-19
+updated: 2026-11-20
+verified-against: v46, 2026-11-20
 ---
 
 Keeping somebody puts their Gratus page on your list. It is one-sided on purpose: there is
 no request to approve, nothing for anyone to decline, and keeping somebody sends them
 nothing at all.
 
-**Keeping somebody.** Open your account, then Your people. Type their handle and press
-Keep. A handle is the last part of somebody's page address, so the person at
+**Keeping somebody.** On the home screen, open Gratus Gives Together, then Your people.
+Type their handle and press Keep. A handle is the last part of somebody's page address, so the person at
 gratus.cc/gg/ben has the handle ben. Capitals are fine, because a handle is one case
 underneath. You can also open somebody's page while you are signed in on that device and
 press Keep close.
