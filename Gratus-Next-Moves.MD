@@ -2,7 +2,7 @@
 
 The roadmap, the open questions, and the answers already given. Updated with every ship. Newest thinking at the top of each list.
 
-## Where it stands (v50, 2026-11-21)
+## Where it stands (v51, 2026-11-21)
 
 Gratus is a gratitude journal first, and the journal is solid now. Half an entry survives the phone ending the page, a restore takes back any export, and a journal kept for years opens in about a second. The phone's back gesture walks rooms, sheets and the gift's pages the way it walks any app. Every surface ends in soft light, with nothing drawn as a line. The gates (G1 to G51), most of them with controls that prove they still bite, hold all of it.
 
@@ -11,11 +11,13 @@ Two things are not known yet: how it behaves on an iPhone in Safari, where nothi
 ## Next moves, in order
 
 1. **Walk it on a real iPhone.** Safari has its own rules for the back gesture, masks and a press. Done when home, writing, planting, the journal, the back gesture and a gift link all behave there as they do in Chromium.
-2. **The films.** Eight films weigh three to fourteen megabytes each against ceilings of 1.5 to 2.5 (G8 is red), and the front page's own film is the heaviest. Smaller encodings, judged against the originals at phone size, make a first visit on a slow connection faster. Done when G8 is green and nobody can see the difference.
-3. **The second day.** Before building anything meant to bring people back to write, read where the first visit ends and how many people write once and never again. Choose a number from that reading, then make the smallest change that moves it, inside the house rules: nothing that nags, and no presence words.
-4. **The hours on /trax.** The old counting inflated the stored hours; hours since v47 are honest. The choice is to leave them, to count from 2026-11-21 with a line that says so, or to rewrite the stored history.
-5. **The stylesheet.** It still carries layers of history. The proof used in v49 (every computed style recorded before and after, then compared) makes it safe to fold near-duplicate rules together, and tens of kilobytes are there.
-6. **The gift on two phones.** Give from one device and keep it on another (move 7 below). It is still the truest test of the loop.
+2. **The first ten people.** The counts were read on 2026-11-21: since September 20, 16 people opened Gratus, 5 gifts were wrapped and 12 days of care were added; this month, 3 people. A second day cannot be measured with three people, and no feature can do what people arriving can. This one is August's: his channels, the Giveth pitch that is written and not yet sent, the people he would hand a gift to.
+3. **The films.** Nine films weigh three to fourteen megabytes each against ceilings of 1.5 to 2.5 (G8 is red), and the front page's own film is the heaviest. Smaller encodings, judged against the originals at phone size, make a first visit on a slow connection faster. Done when G8 is green and nobody can see the difference.
+   Measured on 2026-11-21 with two-pass H.264 encodes (SSIM against the original, where 1.0 is identical): five films fit their ceilings and stay near the original (both tab intros, the opening film, and the v1 and v2 scenes, 0.95 to 0.97; 21.7 MB down to 8.8 MB). Four detailed loops lose visible detail at 2 MB and need about 3 MB (d2), 4 MB (v3), 5 MB (dhold) and more than 5 MB (dlong, the front page's scene) to stay near the original; encoding them smaller in width does not help. The choice between new ceilings for those four and softer films is August's.
+4. **The second day, once there are people.** /trax already counts each device once a day by a salted hash, so how many people write on a second day can be counted from what is already kept, with nothing new collected. Choose a number from that reading, then make the smallest change that moves it, inside the house rules: nothing that nags, and no presence words.
+5. **The hours on /trax.** The old counting inflated the stored hours; hours since v47 are honest. The choice is to leave them, to count from 2026-11-21 with a line that says so, or to rewrite the stored history.
+6. **The stylesheet.** It still carries layers of history. The proof used in v49 (every computed style recorded before and after, then compared) makes it safe to fold near-duplicate rules together, and tens of kilobytes are there.
+7. **The gift on two phones.** Give from one device and keep it on another (move 7 below). It is still the truest test of the loop.
 
 ## The one loop
 

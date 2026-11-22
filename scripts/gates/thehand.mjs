@@ -290,8 +290,10 @@ for (const garden of [false, true]) {
 // picture inside the goals card, and stands at 0.75 without it.
 // 2026-11-21: v48 added 3.5 KB of code that every page carries (the words being written
 // are kept on the device, and the journal draws a page at a time). The Giveth room sat
-// 2 KB under its ceiling and went 1 KB over it, so its ceiling is 0.81.
-const BUDGET = { '/': 0.55, '/app': 0.75, '/app/grow': 0.72, '/app/book': 0.70, '/app/goals': 0.80, '/app/give': 0.75, '/app/giveth': 0.81, '/app/vibes': 0.80, '/app/guides': 0.90 };
+// 2 KB under its ceiling and went 1 KB over it, so its ceiling was 0.81 for v48 to v50.
+// v51 took out the border colours that v49's no-line rule makes dead (2 KB), and the room
+// weighs 0.799 again, so its ceiling is back at 0.80.
+const BUDGET = { '/': 0.55, '/app': 0.75, '/app/grow': 0.72, '/app/book': 0.70, '/app/goals': 0.80, '/app/give': 0.75, '/app/giveth': 0.80, '/app/vibes': 0.80, '/app/guides': 0.90 };
 for (const [route, cap] of Object.entries(BUDGET)) {
   const ctx = await b.newContext(PHONE);
   const page = await ctx.newPage();

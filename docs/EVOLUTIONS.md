@@ -2,6 +2,11 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v51 · The weight comes back (2026-11-21)
+
+- Since v49 one rule makes every border colour transparent, so the 75 border colours written above it could never be seen. They are gone (2 KB), every width and style stays where it was, and eight rules left with nothing in them went with them. Every element on 61 screens at three widths was checked to compute the same style without them.
+- The Giveth room weighs 0.799 MB again, so its ceiling in G28 is back at 0.80, where it stood before v48 added the draft and the journal's paging.
+
 ## v50 · A field reads as a field (2026-11-21)
 
 - After v49 the search box and the other text fields were soft dark wells whose edge was hard to find. Their rim of light is brighter now, and they are lit along the top like every other surface, still without a line.
