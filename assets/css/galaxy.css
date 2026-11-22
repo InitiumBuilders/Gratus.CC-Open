@@ -1285,7 +1285,7 @@ button.together { width: 100%; font: inherit; color: inherit; cursor: pointer; }
 
 /* the paper: its margin is a warm light along the left edge */
 .entry, .entrycard { box-shadow: var(--margin-light), 0 0 18px rgba(242, 201, 125, .06), var(--rim-gold); }
-input.field, select.field { box-shadow: inset 0 0 14px rgba(255, 255, 255, .1), inset 0 2px 8px rgba(0, 0, 0, .3); }
+input.field, select.field { box-shadow: inset 0 0 14px rgba(255, 255, 255, .16), inset 0 10px 14px -12px rgba(255, 255, 255, .26), inset 0 2px 8px rgba(0, 0, 0, .3); }
 textarea.field { box-shadow: var(--margin-light), inset 0 0 14px rgba(242, 201, 125, .08), inset 0 2px 8px rgba(0, 0, 0, .3); }
 input.field:focus, select.field:focus { box-shadow: inset 0 0 16px rgba(110, 217, 192, .24), var(--glow); }
 textarea.field:focus { box-shadow: var(--margin-light), inset 0 0 16px rgba(110, 217, 192, .22), var(--glow); }

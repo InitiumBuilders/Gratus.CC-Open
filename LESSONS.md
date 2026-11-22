@@ -74,3 +74,12 @@
 ## v8 (2026-09-19)
 - **A `> *` rule eats the art layer.** `.hero > * { position: relative }` turned the absolute background into a grid item and every hero shrank to an inset rectangle. Exclude the art: `.hero > :not(.art)`.
 - **Ask for the art before drawing it.** Twenty-eight of his scenes and a logo were one message away; the v7 crops of his mockups were a worse version of what he already had.
+
+## v46 to v50 (2026-11-21)
+- A line on the screen that no rule draws is a seam between two layers. The wash over each room's picture reached full strength exactly where the page's own darkening began, so the scene showed again below it. It looked designed for months; reading the pixel rows across the edge found it in a minute.
+- Style a thing by its class, never by a data attribute it carries. A rim meant for journal paper was written against `[data-e]`, which also marks the tappable row on the home card, and it boxed that row.
+- A focus rule sets an outline and nothing about shape. Ours set every focused button's corners to 6px, which squared the pills for anyone using a keyboard.
+- A stylesheet cleanup is proven by the browser, not by reading. Every computed property of every element on 61 screens at three widths was recorded before 381 overridden declarations came out, and again after. Zero differences; the only noise was the test server's port inside a URL.
+- Restore has to accept what export writes. Export had moved on to version 5 while restore still asked for version 1, so every export made for a new phone was refused. A gate now takes a month out and puts it back.
+- Never push to the history while answering a popstate: phone browsers then skip the page's own steps. Writes wait until the app's own step back has landed.
+- Every Playwright `page.evaluate` counts as a user gesture. To test what happens without a touch, set a timer inside the page and read nothing until it has fired.

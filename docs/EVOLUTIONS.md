@@ -2,6 +2,10 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v50 · A field reads as a field (2026-11-21)
+
+- After v49 the search box and the other text fields were soft dark wells whose edge was hard to find. Their rim of light is brighter now, and they are lit along the top like every other surface, still without a line.
+
 ## v49 · Feathered edges (2026-11-21)
 
 - **Nothing is drawn with a line.** Every surface ended in a one-pixel line: glass, cards, the Give options, the menu rows, fields, chips, the round buttons, the calendar and the bar. Measured across every view, there were 111 kinds. A surface ends where its light ends now: brightest at the rim, fading inward into the glass and outward into the night, and a little brighter along the top. The cards on the home page keep their gold and mint as light inside the edge, laid over the picture. The paper's margin is a warm light along its left edge, and dividers fade at both ends. Every border keeps its width, so nothing moved by a pixel, and a phone in forced colours draws them again.

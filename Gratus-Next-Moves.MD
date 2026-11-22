@@ -2,6 +2,21 @@
 
 The roadmap, the open questions, and the answers already given. Updated with every ship. Newest thinking at the top of each list.
 
+## Where it stands (v50, 2026-11-21)
+
+Gratus is a gratitude journal first, and the journal is solid now. Half an entry survives the phone ending the page, a restore takes back any export, and a journal kept for years opens in about a second. The phone's back gesture walks rooms, sheets and the gift's pages the way it walks any app. Every surface ends in soft light, with nothing drawn as a line. The gates (G1 to G51), most of them with controls that prove they still bite, hold all of it.
+
+Two things are not known yet: how it behaves on an iPhone in Safari, where nothing since v46 has been walked, and why so few people write a second day. Very few people use it so far; [/trax](https://www.gratus.cc/trax) keeps the count.
+
+## Next moves, in order
+
+1. **Walk it on a real iPhone.** Safari has its own rules for the back gesture, masks and a press. Done when home, writing, planting, the journal, the back gesture and a gift link all behave there as they do in Chromium.
+2. **The films.** Eight films weigh three to fourteen megabytes each against ceilings of 1.5 to 2.5 (G8 is red), and the front page's own film is the heaviest. Smaller encodings, judged against the originals at phone size, make a first visit on a slow connection faster. Done when G8 is green and nobody can see the difference.
+3. **The second day.** Before building anything meant to bring people back to write, read where the first visit ends and how many people write once and never again. Choose a number from that reading, then make the smallest change that moves it, inside the house rules: nothing that nags, and no presence words.
+4. **The hours on /trax.** The old counting inflated the stored hours; hours since v47 are honest. The choice is to leave them, to count from 2026-11-21 with a line that says so, or to rewrite the stored history.
+5. **The stylesheet.** It still carries layers of history. The proof used in v49 (every computed style recorded before and after, then compared) makes it safe to fold near-duplicate rules together, and tens of kilobytes are there.
+6. **The gift on two phones.** Give from one device and keep it on another (move 7 below). It is still the truest test of the loop.
+
 ## The one loop
 
 Write → plant → return → phase → recipe → give → the gift grows again.
@@ -100,7 +115,7 @@ These change the shape of the work. Each one is a fork.
 20. ~~**The landing page in the new look.**~~ Done in v15: acts with one statement each, his card art, gold pills, the Emotional TRACE named.
 21. **The console needs the app's own look.** It is functional and plain next to the rest.
 23. ~~**Mobile overflow.**~~ Fixed in v17 and measured on every page. The rule to keep: any grid or flex child that holds text needs `min-width: 0`, or it refuses to shrink and widens the whole document.
-24. **A written overflow gate.** The audit that found these was run by hand. Make it a script so a future ship cannot reintroduce them.
+24. ~~**A written overflow gate.**~~ Done: `scripts/gates/overflow.mjs` runs in every suite.
 22. **A seed should be withdrawable.** Once planted it cannot be taken back, from either side.
 
 16. ~~**The voice function needs a limit.**~~ Shipped in v20: forty recordings per device per day, six hundred across everyone, reserved before the call to ElevenLabs. Still open: a size cap smaller than six megabytes, and the key itself should be rotated, because it was once pasted into a chat window.
