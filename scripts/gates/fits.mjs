@@ -14,7 +14,9 @@
 // button on every view: is the thing inside it actually inside it?
 //
 //   node scripts/gates/fits.mjs
-import { serve, browser, open, VIEWS } from './lib/harness.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { serve, browser, open, VIEWS, ROOT } from './lib/harness.mjs';
 
 let fails = 0;
 const say = (ok, m) => { if (!ok) fails++; console.log('  ' + (ok ? 'pass  ' : 'FAIL  ') + m); };
@@ -60,6 +62,35 @@ for (const w of [320, 375, 430]) {
   say(bad.length === 0, VIEWS.length + ' views at ' + w + ', every word inside its own pill'
     + (bad.length ? '\n        ' + bad.slice(0, 6).join('\n        ') : ''));
 }
+
+// The mark and the name on the home page sit between its two buttons at every width. With fixed
+// sizes they ran nine pixels under each button at 360. The control puts the fixed sizes back.
+const GAL = fs.readFileSync(path.join(ROOT, 'assets/css/galaxy.css'), 'utf8');
+const FLUID = '.hname { font-size: clamp(22px, calc(16.35vw - 29.4px), 38px); line-height: 1.1; }';
+const fixed = GAL.split(FLUID).length === 2 ? GAL.replace(FLUID, () => '.hname { font-size: 38px; line-height: 42px; }').replace(/\.hlogo \{ width: clamp\([^}]*\}/, () => '.hlogo { width: 60px; height: 60px; }') : null;
+say(!!fixed, 'the header control has its line to change');
+async function header(gal) {
+  const worst = [];
+  for (const w of [320, 360, 375, 390, 412, 430]) {
+    const ctx = await b.newContext({ viewport: { width: w, height: 800 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce', serviceWorkers: 'block' });
+    await ctx.route('**/api/**', (r) => r.fulfill({ status: 204, body: '' }));
+    if (gal) await ctx.route('**/assets/css/galaxy.css*', (r) => r.fulfill({ status: 200, contentType: 'text/css; charset=utf-8', body: gal }));
+    const page = await ctx.newPage();
+    await page.goto(srv.base + '/app?nosplash=1&notour=1&dev=1', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1500);
+    const gap = await page.evaluate(() => {
+      const btns = [...document.querySelectorAll('.hh .hbtn')]; const logo = document.querySelector('.hh .hlogo'); const name = document.querySelector('.hh .hname');
+      if (btns.length < 2 || !logo || !name) return null;
+      return Math.round(Math.min(logo.getBoundingClientRect().left - btns[0].getBoundingClientRect().right, btns[btns.length - 1].getBoundingClientRect().left - name.getBoundingClientRect().right));
+    });
+    worst.push([w, gap]);
+    await ctx.close();
+  }
+  return worst;
+}
+const hb = await header();
+say(hb.every(([, g]) => g !== null && g >= 2), 'the mark and the name sit between the header buttons at every width  (' + hb.map(([w, g]) => w + ': ' + g + 'px').join(', ') + ')');
+if (fixed) { const hc = await header(fixed); say(hc.some(([, g]) => g !== null && g < 0), 'the control: fixed sizes run under a button  (' + hc.map(([w, g]) => w + ': ' + g + 'px').join(', ') + ')'); }
 
 await b.close(); await srv.close();
 console.log('G37 everything fits: ' + (fails ? 'FAIL - ' + fails : 'PASS'));

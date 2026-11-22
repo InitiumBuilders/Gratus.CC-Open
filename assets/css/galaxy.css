@@ -486,8 +486,6 @@ p.kicker, .kicker.skiphint { font-size: 17px; line-height: 24px; font-weight: 60
 /* ── v14.1 · the header on a phone: brand row, then his two lines; doors on one breath; every block on a plate ── */
 .hh { grid-template-columns: 46px 1fr 46px; grid-template-rows: auto auto; row-gap: 6px; padding: calc(12px + var(--sat)) 12px 12px; background: linear-gradient(180deg, rgba(5, 9, 18, .82), rgba(5, 9, 18, .62)); border-radius: 26px; border: 1px solid; margin-top: 6px; }
 .hh .htag { grid-column: 1 / -1; text-align: center; margin: 0; }
-.hlogo { width: 60px; height: 60px; }
-.hname { font-size: 38px; line-height: 42px; }
 .door { grid-template-columns: 104px 1fr 30px; gap: 12px; }
 .door .door-art { width: 104px; }
 .door .door-words b { font-size: 25px; line-height: 28px; }
@@ -1240,7 +1238,7 @@ html.wrapped .tabs .star span.lbl { color: #FFD98A; }
 /* his fourth line on the home screen is a door: the same plate, and a tap opens the room */
 button.together { width: 100%; font: inherit; color: inherit; cursor: pointer; }
 
-/* ═══ FEATHERED EDGES ═════════════════════════════════════════════════════════════════
+/* ═══ FEATHERED EDGES ═══
    Nothing here is drawn with a line. A surface ends where its light ends: brightest at the
    rim, falling away inward into the glass and outward into the night, and a little brighter
    along the top, where the light comes from. Every border keeps its width and loses its
@@ -1357,7 +1355,7 @@ textarea.field:focus { box-shadow: var(--margin-light), inset 0 0 16px rgba(110,
    pair, so every line wore two. One pair is enough. */
 .tl q { quotes: none; }
 
-/* ═══ A TOUCH THAT ANSWERS ════════════════════════════════════════════════════════════
+/* ═══ A TOUCH THAT ANSWERS ═══
    What a finger presses gives a little under it, and springs back when it lets go, the way
    a thing with weight does. Small things give more than large ones. Under reduced motion the
    press changes nothing. */
@@ -1379,3 +1377,19 @@ textarea.field:focus { box-shadow: var(--margin-light), inset 0 0 16px rgba(110,
   .chip:not(.on):hover, .top .you:hover, .top .back:hover, .top .sound:not(.on):hover, .cal-nav:hover { box-shadow: var(--rim-hi); }
   .hbtn:hover { box-shadow: inset 0 0 12px rgba(242, 201, 125, .46), inset 0 8px 10px -8px rgba(255, 236, 190, .55), 0 0 18px rgba(242, 201, 125, .26); }
 }
+
+/* ═══ THE NAME BETWEEN THE BUTTONS ═══
+   At a fixed size they ran under both buttons on a small phone (9px at 360). They scale with
+   the screen and reach full size at 412. G37 measures them. */
+.hlogo { width: clamp(36px, calc(25.8vw - 46.4px), 60px); height: clamp(36px, calc(25.8vw - 46.4px), 60px); }
+.hname { font-size: clamp(22px, calc(16.35vw - 29.4px), 38px); line-height: 1.1; }
+
+/* his Give heading, in his mockup's serif */
+.glass .give-head { font-size: 24px; line-height: 30px; font-weight: 500; color: var(--ink); text-align: left; margin: 0 2px 4px; }
+
+/* ═══ A ROOM ARRIVES ═══
+   A room's first blocks rise into place, 28 ms apart, touchable from the first frame. Reduced
+   motion: none. */
+@keyframes room-in { from { opacity: 0; transform: translateY(10px); } }
+.arrive { animation: room-in .34s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--k, 0) * 28ms); }
+@media (prefers-reduced-motion: reduce) { .arrive { animation: none; } }

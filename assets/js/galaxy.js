@@ -1624,7 +1624,7 @@ function playCeremonies(list, done, opts) {
 function viewGive() {
   return hero(scene('give'), { h1: 'Give', k1: 'Grow With Gratus!', k2: 'Give And Grow Together!', low: '<p class="statement in" style="--i:2">Give the Gift That Keeps On Giving.</p>' }) +
     '<div class="page">' + '<p class="kicker mint" id="his-call" style="text-align:center;font-weight:600"></p>' +
-    '<div class="glass card"><span class="kicker mint">Choose how to give:</span>' +
+    '<div class="glass card"><h2 class="give-head">Choose how to give:</h2>' +
     '<button class="glass opt" id="give-gift"><span class="ico gold">' + I.gift + '</span><span class="grow"><b>Give a Gratus Gift</b><span>Turn your gratitude into a gift for someone else.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-giveth"><span class="ico gold">' + I.giveth + '</span><span class="grow"><b>Give with Giveth</b><span>Plant a Gratus Seed with your gift.</span></span><span class="arrow">›</span></button>' +
     '<button class="glass opt" id="give-project"><span class="ico">' + I.people + '</span><span class="grow"><b>Support a Project</b><span>Give to people, places or causes that matter.</span></span><span class="arrow">›</span></button>' +
@@ -2994,6 +2994,16 @@ function sendOff(given, then) {
 // count itself as a view, and a search of the journal paints on every key. So one letter
 // typed was one request, one beacon, and three more listeners that were never taken off.
 let wiredOnce = false, viewWas = '';
+// A room's first blocks rise in as it opens (A ROOM ARRIVES, galaxy.css): only those there now,
+// so a repaint never plays it twice; a block with its own animation keeps it.
+let arriveT = 0;
+function arrive() {
+  const v = document.getElementById('view'); if (!v) return;
+  const els = [...v.querySelectorAll('.hero > :not(.art), .page > *, .home14 > *')].filter((el) => getComputedStyle(el).animationName === 'none').slice(0, 12);
+  els.forEach((el, i) => { el.style.setProperty('--k', String(Math.min(i, 6))); el.classList.add('arrive'); });
+  clearTimeout(arriveT);
+  arriveT = setTimeout(() => els.forEach((el) => { el.classList.remove('arrive'); el.style.removeProperty('--k'); }), 900);
+}
 function wire() {
   watchVisibility();
   watchMark();
@@ -3002,7 +3012,7 @@ function wire() {
   wireConnectivity();
   tourMaybe();
   billCheck();
-  { const here = tab + '/' + (sub || ''); if (here !== viewWas) { viewWas = here; beat('view'); } }
+  { const here = tab + '/' + (sub || ''); if (here !== viewWas) { const was = viewWas; viewWas = here; beat('view'); if (was) arrive(); } }
   if (!wiredOnce) { wiredOnce = true; watchTime(); }
   $$('[data-p]').forEach((b) => {
     const of = () => S.plants.find((x) => x.id === b.dataset.p);

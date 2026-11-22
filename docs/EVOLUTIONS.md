@@ -2,6 +2,12 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v52 · A room arrives (2026-11-21)
+
+- **A room arrives.** A room used to appear all at once while its world crossfaded in behind it, so the page landed in two ways at the same moment. Its first blocks rise into place now, a few hundredths of a second apart, and can be touched from the first frame. A repaint a moment later never plays it twice, and under reduced motion nothing moves.
+- **The name fits between the buttons.** The mark and the name on the home page were a fixed size, wider than the room between the two buttons on a small phone: at 360 they ran nine pixels under each one. They scale with the screen now and reach their full size at 412. G37 measures them at six widths, with a control that puts the fixed sizes back.
+- **His Give heading in his serif.** "Choose how to give:" was set as small capitals in mint; his mockup draws it as a serif heading in white, and it is one now. The words are his and unchanged.
+
 ## v51 · The weight comes back (2026-11-21)
 
 - Since v49 one rule makes every border colour transparent, so the 75 border colours written above it could never be seen. They are gone (2 KB), every width and style stays where it was, and eight rules left with nothing in them went with them. Every element on 61 screens at three widths was checked to compute the same style without them.

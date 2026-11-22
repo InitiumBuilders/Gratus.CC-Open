@@ -8,6 +8,7 @@
 // used to stop at full strength, which drew a line across the screen), that a keyboard focus
 // ring leaves a button its own shape (the old focus rule squared every pill's corners), and that
 // a press gives under the finger and springs back, and changes nothing under reduced motion.
+// Since v52 it also checks that a room arrives: its first blocks rise into place as it opens.
 // Each check has a control that puts the old line back and must be seen.
 //
 //   node scripts/gates/edges.mjs
@@ -22,6 +23,8 @@ console.log('G51 - no line is drawn');
 
 const GAL = fs.readFileSync(path.join(ROOT, 'assets/css/galaxy.css'), 'utf8');
 const TOK = fs.readFileSync(path.join(ROOT, 'assets/css/tokens.css'), 'utf8');
+const APP = fs.readFileSync(path.join(ROOT, 'assets/js/galaxy.js'), 'utf8');
+const CALL = 'if (was) arrive();';
 const LAW = '*, *::before, *::after { border-color: transparent !important; }';
 const FOCUS = 'outline: 2px solid var(--violet-text); outline-offset: 3px; }';
 const PRESS = ':is(.opt, .together, .jr-row, .doorcard, .entry, button.hcard, .hm-kept):active { scale: .985; }';
@@ -32,6 +35,7 @@ const controls = {
   square: once(TOK, FOCUS) ? TOK.replace(FOCUS, () => 'outline: 2px solid var(--violet-text); outline-offset: 3px; border-radius: var(--r-6); }') : null,
   still: once(GAL, PRESS) ? GAL.replace(PRESS, () => '') : null,
   seam: WASH.test(GAL) ? GAL.replace(WASH, () => '') : null,
+  appears: once(APP, CALL) ? APP.replace(CALL, () => '') : null,
 };
 for (const [k, v] of Object.entries(controls)) say(!!v, 'the ' + k + ' control has its line to change');
 
@@ -42,6 +46,7 @@ async function context(o = {}) {
   await ctx.route('**/api/**', (r) => r.fulfill({ status: 204, body: '' }));
   if (o.gal) await ctx.route('**/assets/css/galaxy.css*', (r) => r.fulfill({ status: 200, contentType: 'text/css; charset=utf-8', body: o.gal }));
   if (o.tok) await ctx.route('**/assets/css/tokens.css*', (r) => r.fulfill({ status: 200, contentType: 'text/css; charset=utf-8', body: o.tok }));
+  if (o.js) await ctx.route('**/assets/js/galaxy.js*', (r) => r.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8', body: o.js }));
   await ctx.addInitScript((g) => { if (!localStorage.getItem('gratus.galaxy.v1')) localStorage.setItem('gratus.galaxy.v1', JSON.stringify(g)); }, month());
   return ctx;
 }
@@ -142,6 +147,24 @@ say(p1.held === '0.985' && p1.after === 'none', 'holding a Give option gives und
 const p2 = await press('reduce');
 say(p2.held === 'none' && p2.after === 'none', 'under reduced motion a press changes nothing  (' + p2.held + ')');
 if (controls.still) { const p3 = await press('no-preference', controls.still); say(p3.held === 'none', 'the control: a press that does nothing is seen  (' + p3.held + ')'); }
+
+// 5 · a room arrives: its first blocks rise into place as it opens, then let go of the motion
+async function arriving(motion, js) {
+  const ctx = await context({ motion, js, mouse: true }); const page = await ctx.newPage(); await arrive(page, '/app');
+  await page.evaluate(() => { const d = document.getElementById('open-journal'); if (d) d.scrollIntoView({ block: 'center', behavior: 'instant' }); });
+  await page.waitForTimeout(400);
+  await page.click('#open-journal');
+  const at = await page.evaluate(() => { const a = document.querySelectorAll('#view .arrive'); return { n: a.length, anim: a[0] ? getComputedStyle(a[0]).animationName : 'none', path: location.pathname }; });
+  await page.waitForTimeout(1300);
+  const after = await page.evaluate(() => document.querySelectorAll('#view .arrive').length);
+  await ctx.close();
+  return { ...at, after };
+}
+const a1 = await arriving('no-preference');
+say(a1.path === '/app/book' && a1.n >= 3 && a1.anim === 'room-in' && a1.after === 0, 'opening the journal, its first blocks rise into place and then let go  (' + a1.n + ' blocks, ' + a1.anim + ', ' + a1.after + ' left after)');
+const a2 = await arriving('reduce');
+say(a2.anim === 'none', 'under reduced motion a room simply appears  (' + a2.anim + ')');
+if (controls.appears) { const a3 = await arriving('no-preference', controls.appears); say(a3.n === 0, 'the control: a room that appears all at once is seen  (' + a3.n + ' blocks)'); }
 
 await b.close(); await srv.close();
 console.log('G51 no line is drawn: ' + (fails ? 'FAIL - ' + fails : 'PASS'));
