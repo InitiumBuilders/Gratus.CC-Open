@@ -202,7 +202,7 @@ function go(t, s) { if (booted && !s && INTROS[t] && t !== tab) { tabIntro(t, ()
 // Straight to the page. The films belong to the doors: somebody who taps Grow walks through
 // one. Somebody who taps Write Today asked for the page, and gets the page.
 function writeNow(emoji) {
-  if (emoji) draft.emoji = emoji;
+  if (emoji) { draft.emoji = emoji; keepDraft(); }
   goNow('grow');
   setTimeout(() => { const w = $('#write'); if (w) { w.focus({ preventScroll: true }); w.scrollIntoView({ block: 'center', behavior: motionOk() ? 'smooth' : 'auto' }); } }, 120);
 }
@@ -1405,6 +1405,26 @@ function entryCard(e, o) {
 
 // ── GROW · plant today ──
 let draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 };
+// The words being written are kept on the device as they are typed. A phone ends a page left
+// in the background whenever it wants the memory, and somebody halfway through an entry who
+// answered a message came back to an empty box. A photo and a recording stay in memory only.
+const DRAFT = 'gratus.draft';
+function keepDraft() {
+  try {
+    if (draft.text || draft.emoji || draft.tags.length) localStorage.setItem(DRAFT, JSON.stringify({ text: draft.text, emoji: draft.emoji, tags: draft.tags }));
+    else localStorage.removeItem(DRAFT);
+  } catch (e) { /* a full or blocked store keeps the words in memory, as before */ }
+}
+function readDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DRAFT) || 'null');
+    if (d && typeof d.text === 'string') {
+      draft.text = d.text.slice(0, 20000);
+      draft.emoji = typeof d.emoji === 'string' ? d.emoji : null;
+      draft.tags = Array.isArray(d.tags) ? d.tags.filter((t) => typeof t === 'string').slice(0, 24) : [];
+    }
+  } catch (e) { /* an unreadable draft is left where it is */ }
+}
 // The writing clock: how long a hand was on the page. It starts with the first touch of
 // the page, it is kept with the entry it timed, and it goes nowhere else.
 let draftClock = J.clock();
@@ -1496,7 +1516,7 @@ function plantNow() {
   if (p && !p.kept.includes(t)) p.kept.push(t);
   const made = [];
   for (const r of allRecipes()) { if (S.made[r.id]) continue; const st = recipeState(r); if (st.made) { S.made[r.id] = t; made.push(r); if (!plantFor(r.result)) S.plants.push({ id: newId('p'), emoji: r.result, planted: t, kept: [t], carried: 0, origin: 'recipe', from: r.name }); } }
-  save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 }; draftClock = J.clock();
+  save(); draft = { text: '', emoji: null, tags: [], photo: null, voice: null, voiceDur: 0 }; draftClock = J.clock(); keepDraft();
   const after = p ? face(p) : null; const d = p ? daysOf(p) : 0; const ph = p ? phaseOf(d) : null;
   const phNow = p ? phaseIndex(d) : -1;
   const crossed = !!p && phNow > phPre;
@@ -1742,10 +1762,26 @@ function monthGrid(off) {
 // ones kept close) stood in three rows between the title and the first entry; they open
 // when they are asked for now, behind one button beside the search.
 let jFilters = false;
-function viewJournal() {
-  const t = today();
+// The journal draws the newest days first, a page at a time. Somebody who has kept it for
+// four years has fifteen hundred entries, and drawing every one on opening took seven seconds
+// on a phone and most of a second for each letter typed in search. A day is never cut in two.
+const JOURNAL_PAGE = 40;
+let jShown = JOURNAL_PAGE, jSig = '';
+// The journal in reading order: newest day first, and inside a day in the order it was
+// written. Sorted because a journal that was restored or merged is not always stored in the
+// order it was kept, and sorted once each time the journal changes, not once per letter typed.
+let jSorted = [], jSortedFor = null, jSortedKey = '';
+function journalInOrder() {
+  const key = S.entries.length + '|' + (S.entries.length ? S.entries[0].id + '|' + S.entries[S.entries.length - 1].id : '');
+  if (jSortedFor !== S.entries || key !== jSortedKey) {
+    jSorted = S.entries.map((e, i) => [e, i]).sort((a, b) => (a[0].day === b[0].day ? (String(a[0].at || '').localeCompare(String(b[0].at || '')) || a[1] - b[1]) : (a[0].day < b[0].day ? 1 : -1))).map((x) => x[0]);
+    jSortedFor = S.entries; jSortedKey = key;
+  }
+  return jSorted;
+}
+function journalMatches() {
   const qq = journalQuery.trim().toLowerCase();
-  const list = S.entries.filter((e) => {
+  return journalInOrder().filter((e) => {
     if (jDay && e.day !== jDay) return false;
     if (jEmoji && e.emoji !== jEmoji) return false;
     if (jTag && !(e.tags || []).includes(jTag)) return false;
@@ -1753,14 +1789,28 @@ function viewJournal() {
     if (jStar && !e.star) return false;
     if (!qq) return true;
     return (e.text || '').toLowerCase().includes(qq) || (e.tags || []).some((x) => x.toLowerCase().includes(qq)) || (e.emoji || '') === journalQuery.trim();
-  // newest day first, and inside a day in the order it was written. Sorted, because a
-  // journal that was restored or merged is not always stored in the order it was kept.
-  }).map((e, i) => [e, i]).sort((a, b) => (a[0].day === b[0].day ? (String(a[0].at || '').localeCompare(String(b[0].at || '')) || a[1] - b[1]) : (a[0].day < b[0].day ? 1 : -1))).map((x) => x[0]);
+  });
+}
+function journalList() {
+  const t = today(); const qq = journalQuery.trim().toLowerCase();
+  // a new search or filter starts again from the newest day
+  const sig = [jDay, jEmoji, jTag, jFolder, jStar, qq].join('|');
+  if (sig !== jSig) { jSig = sig; jShown = JOURNAL_PAGE; }
+  const list = journalMatches();
   const byDay = []; for (const e of list) { const last = byDay[byDay.length - 1]; if (last && last.day === e.day) last.items.push(e); else byDay.push({ day: e.day, items: [e] }); }
+  const days = []; let shown = 0;
+  for (const d of byDay) { if (days.length && shown >= jShown) break; days.push(d); shown += d.items.length; }
+  const filtering = jDay || jEmoji || jTag || jFolder || jStar || qq;
+  return (filtering ? '<div class="actions jr-filter"><button class="btn sm quiet" id="j-clear">Clear · ' + plural(list.length, 'entry').replace('entrys', 'entries') + '</button>' +
+      (jFolder && folderOf(jFolder) ? '<button class="btn sm quiet" id="j-folder-edit">' + esc(T('journal.folderEdit', '')) + '</button>' : '') + '</div>' : '') +
+    (days.length ? days.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map((e) => entryCard(e, { day: true })).join('') + '</div>').join('')
+      : '<p class="cap">Nothing here with that filter.</p>') +
+    (shown < list.length ? '<button class="btn sm quiet wide" id="j-more">' + esc(T('journal.more', '')) + '</button>' : '');
+}
+function viewJournal() {
   if (!S.entries.length) return '<div class="glass card" data-state="empty"><p class="statement">What are you grateful for today?</p><button class="btn mint" id="j-write">Write Today</button></div>';
   const emojis = Array.from(new Set(S.entries.map((e) => e.emoji).filter(Boolean))).slice(0, 14);
   const tags = Array.from(new Set(S.entries.flatMap((e) => e.tags || []))).slice(0, 14);
-  const filtering = jDay || jEmoji || jTag || jFolder || jStar || qq;
   const open = jFilters || jEmoji || jTag || jFolder || jStar;
   return '<div class="jr-find"><input class="field" id="j-search" placeholder="Search your gratitude..." aria-label="search entries" value="' + esc(journalQuery) + '">' +
       '<button class="chip' + (open ? ' on' : '') + '" id="j-filters">' + esc(T('journal.filter', 'Filter')) + '</button></div>' +
@@ -1769,10 +1819,18 @@ function viewJournal() {
       '<div class="chips row">' + S.folders.map((f) => '<button class="chip' + (jFolder === f.id ? ' on' : '') + '" data-jfolder="' + esc(f.id) + '">📁 ' + esc(f.name) + '</button>').join('') +
         (S.entries.some((e) => e.star) ? '<button class="chip' + (jStar ? ' on' : '') + '" id="j-star">★ Kept Close</button>' : '') +
         '<button class="chip" id="j-newfolder">' + esc(T('journal.folder', '')) + '</button></div>' : '') +
-    (filtering ? '<div class="actions jr-filter"><button class="btn sm quiet" id="j-clear">Clear · ' + plural(list.length, 'entry').replace('entrys', 'entries') + '</button>' +
-      (jFolder && folderOf(jFolder) ? '<button class="btn sm quiet" id="j-folder-edit">' + esc(T('journal.folderEdit', '')) + '</button>' : '') + '</div>' : '') +
-    (byDay.length ? byDay.map((d) => '<div class="dayhead"><b>' + esc(d.day === t ? 'Today' : fmtDay(d.day)) + '</b><span class="cap">' + plural(d.items.length, 'entry').replace('entrys', 'entries') + '</span></div><div class="rows">' + d.items.map((e) => entryCard(e, { day: true })).join('') + '</div>').join('')
-      : '<p class="cap">Nothing here with that filter.</p>');
+    '<div id="jr-list">' + journalList() + '</div>';
+}
+// Typing in search, or asking for earlier days, draws the list again and nothing else, so
+// the box keeps its cursor and the rest of the page is not built again for every letter.
+function redrawList() {
+  const box = $('#jr-list'); if (!box) { render(); return; }
+  box.innerHTML = journalList();
+  $$('[data-e]', box).forEach((b) => b.addEventListener('click', () => entrySheet(S.entries.find((x) => x.id === b.dataset.e))));
+  const jc = $('#j-clear', box); if (jc) jc.addEventListener('click', () => { jDay = jEmoji = jTag = jFolder = journalQuery = ''; jStar = false; render(); });
+  const fe = $('#j-folder-edit', box); if (fe) fe.addEventListener('click', () => { const f = folderOf(jFolder); if (f) folderSheet(f); });
+  const more = $('#j-more', box); if (more) more.addEventListener('click', () => { jShown += JOURNAL_PAGE * 2; redrawList(); });
+  nameToggles(box);
 }
 // ── THE TIME LOG ──
 // When each entry was written and how long it took, by day, for as long as the journal has
@@ -2167,9 +2225,12 @@ function youSheet() {
   const pg = $('#you-passage', sh.el); if (pg) pg.addEventListener('click', () => { sh.close(); passageSheet(); });
   $('#you-export', sh.el).addEventListener('click', exportGarden);
   $('#you-file', sh.el).addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { let o = null; try { o = JSON.parse(rd.result); } catch (e) { o = null; }
-    if (!o || o.v !== 1 || !Array.isArray(o.entries) || !Array.isArray(o.plants)) { toast('That file is not a Gratus export.'); return; }
+    // Any Gratus export, from the first version on. It used to accept version 1 only, while
+    // export writes the version the journal is at, so every export made since was refused.
+    if (!o || typeof o !== 'object' || !(Number(o.v) >= 1) || !Array.isArray(o.entries) || !Array.isArray(o.plants)) { toast('That file is not a Gratus export.'); return; }
     if (!confirm('Restore ' + o.entries.length + (o.entries.length === 1 ? ' entry' : ' entries') + ' and ' + plural(o.plants.length, 'plant') + '? This replaces what is on this device.')) return;
-    const next = Object.assign(fresh(), o, { opens: (S.opens || 0), migrated: true }); for (const k of Object.keys(S)) delete S[k]; Object.assign(S, next); save(); sh.close(); render(); toast('Restored'); };
+    // the same upgrade a stored journal gets on opening, so an older file arrives as this version
+    const next = Object.assign(upgrade(o), { opens: (S.opens || 0), migrated: true }); for (const k of Object.keys(S)) delete S[k]; Object.assign(S, next); save(); sh.close(); render(); toast('Restored'); };
     rd.readAsText(f); });
   $('#you-reset', sh.el).addEventListener('click', () => { if (confirm('Start over on this device? Everything here will be gone. Export first if you want it.')) { for (const k of Object.keys(localStorage)) if (k.startsWith('gratus.')) localStorage.removeItem(k); location.href = location.pathname.endsWith('.html') ? location.pathname : '/app'; } });
 }
@@ -2278,7 +2339,7 @@ async function transcribe(blob) {
   try {
     const r = await fetch('/api/voice', { method: 'POST', headers: { 'Content-Type': blob.type || 'audio/webm', 'X-Gratus': 'voice' }, body: blob });
     const j = r.ok ? await r.json() : null; const text = j && j.text; if (!text) throw new Error('no words');
-    const w = $('#write'); const cur = (w ? w.value : draft.text).trim(); draft.text = (cur + (cur ? ' ' : '') + text).trim(); if (w) w.value = draft.text; toast('Heard you');
+    const w = $('#write'); const cur = (w ? w.value : draft.text).trim(); draft.text = (cur + (cur ? ' ' : '') + text).trim(); if (w) w.value = draft.text; keepDraft(); toast('Heard you');
   } catch (e) { toast('Kept the recording. The words can come later.'); }
 }
 // ── one doorway per arrival ──
@@ -2962,17 +3023,16 @@ function wire() {
   const sg = $('#send-gift'); if (sg) sg.addEventListener('click', (ev) => { ev.stopPropagation(); go('give'); setTimeout(() => giveSheet(null), 400); });
   const ob = $('#open-book'); if (ob) ob.addEventListener('click', () => go('gratus', 'growth'));
   const og = $('#open-galaxy'); if (og) og.addEventListener('click', () => go('gratus', 'galaxy'));
-  const ae = $('#all-entries'); if (ae) ae.addEventListener('click', () => { const sh = sheet('<h2>All entries</h2><div class="rows">' + S.entries.slice().reverse().map((e) => entryCard(e)).join('') + '</div>'); $$('[data-e]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); entrySheet(S.entries.find((x) => x.id === b.dataset.e)); })); });
-  const w = $('#write'); if (w) w.addEventListener('input', () => { draft.text = w.value; pageTouched(); });
-  $$('[data-pick]').forEach((b) => b.addEventListener('click', () => { pageTouched(); draft.emoji = draft.emoji === b.dataset.pick ? null : b.dataset.pick; $$('[data-pick]').forEach((x) => x.classList.toggle('on', x.dataset.pick === draft.emoji)); }));
+  const w = $('#write'); if (w) w.addEventListener('input', () => { draft.text = w.value; pageTouched(); keepDraft(); });
+  $$('[data-pick]').forEach((b) => b.addEventListener('click', () => { pageTouched(); draft.emoji = draft.emoji === b.dataset.pick ? null : b.dataset.pick; keepDraft(); $$('[data-pick]').forEach((x) => x.classList.toggle('on', x.dataset.pick === draft.emoji)); }));
   const pm = $('#pick-more'); if (pm) { const pk0 = $('#pick'); if (pk0 && pk0.scrollHeight <= pk0.clientHeight + 2) pm.hidden = true; } if (pm) pm.addEventListener('click', () => { const pk = $('#pick'); if (!pk) return; const open = pk.classList.toggle('open'); pm.textContent = open ? 'Show fewer' : 'Show every emoji'; });
   const pa = $('#pick-any'); if (pa) pa.addEventListener('click', () => { const sh = sheet('<h2>Any emoji</h2><p class="body">Type or paste one. It joins your palette when you plant it.</p><input class="field" id="any-in" placeholder="🌱" aria-label="an emoji"><button class="btn mint" id="any-go">Use it</button>', { autofocus: true }); $('#any-go', sh.el).addEventListener('click', () => { const e = Gr.firstEmoji($('#any-in', sh.el).value); if (!e) { toast('An emoji'); return; } if (!palette().includes(e)) S.my.emojis.push(e); draft.emoji = e; draft.text = $('#write') ? $('#write').value : draft.text; save(); sh.close(); render(); }); });
   const ph = $('#photo'); if (ph) ph.addEventListener('change', (ev) => { const f = ev.target.files[0]; if (!f) return; const img = new Image(); const url = URL.createObjectURL(f); img.onload = () => { const s = Math.min(1, 360 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); draft.photo = c.toDataURL('image/jpeg', .72); URL.revokeObjectURL(url); const pv = $('#photoprev'); pv.hidden = false; pv.innerHTML = '<img src="' + draft.photo + '" alt=""><button class="chip" id="photo-rm">remove</button>'; $('#photo-rm').addEventListener('click', () => { draft.photo = null; pv.hidden = true; pv.innerHTML = ''; }); }; img.src = url; });
   const vc = $('#voice'); if (vc) vc.addEventListener('click', () => { if (rec) stopRec(); else startRec(vc); });
   const vd = $('#voice-drop'); if (vd) vd.addEventListener('click', () => { draft.voice = null; draft.voiceDur = 0; showVoice(); });
   if (draft.voice) showVoice();
-  $$('[data-tag]').forEach((b) => b.addEventListener('click', () => { pageTouched(); const t = b.dataset.tag; draft.tags = draft.tags.includes(t) ? draft.tags.filter((x) => x !== t) : draft.tags.concat([t]); b.classList.toggle('on', draft.tags.includes(t)); }));
-  const ta = $('#tag-any'); if (ta) ta.addEventListener('click', () => { const t = prompt('A tag'); if (t && t.trim()) { draft.tags.push(t.trim().slice(0, 24)); draft.text = $('#write') ? $('#write').value : draft.text; render(); } });
+  $$('[data-tag]').forEach((b) => b.addEventListener('click', () => { pageTouched(); const t = b.dataset.tag; draft.tags = draft.tags.includes(t) ? draft.tags.filter((x) => x !== t) : draft.tags.concat([t]); keepDraft(); b.classList.toggle('on', draft.tags.includes(t)); }));
+  const ta = $('#tag-any'); if (ta) ta.addEventListener('click', () => { const t = prompt('A tag'); if (t && t.trim()) { draft.tags.push(t.trim().slice(0, 24)); draft.text = $('#write') ? $('#write').value : draft.text; keepDraft(); render(); } });
   { const to = $('#tags-open'); if (to) to.addEventListener('click', () => { const tg = $('#tags'); if (tg) tg.hidden = false; to.remove(); }); }
   const pl = $('#plant'); if (pl) pl.addEventListener('click', plantNow);
   const gpst = $('#goal-post'); if (gpst) gpst.addEventListener('click', () => { const t = $('#goal-in').value.trim(); if (!t) { toast('A goal, in your words.'); return; } addGoal(t); });
@@ -2980,7 +3040,8 @@ function wire() {
   $$('[data-goal-x]').forEach((b) => b.addEventListener('click', () => { S.goals = S.goals.filter((g) => g.id !== b.dataset.goalX); save(); render(); }));
   if (sub === 'goals' && feedState === 'idle') loadFeed();
   const jw = $('#j-write'); if (jw) jw.addEventListener('click', () => writeNow());
-  const js = $('#j-search'); if (js) js.addEventListener('input', () => { journalQuery = js.value; const v = js.value; render(); const n = $('#j-search'); if (n) { n.focus(); n.setSelectionRange(v.length, v.length); } });
+  const js = $('#j-search'); if (js) js.addEventListener('input', () => { journalQuery = js.value; redrawList(); });
+  const jm = $('#j-more'); if (jm) jm.addEventListener('click', () => { jShown += JOURNAL_PAGE * 2; redrawList(); });
   const gg = $('#give-gift'); if (gg) gg.addEventListener('click', () => giveSheet(null));
   { const c = $('#his-call'); if (c) c.textContent = T('locked.call', 'Give Your First Gratus Gift Today!'); }
   const gvd = $('#give-giveth'); if (gvd) gvd.addEventListener('click', () => go('give', 'giveth'));
@@ -3064,7 +3125,7 @@ function wire() {
 // ── boot ──
 async function boot() {
   const [evo, names, prompts, copy, book, recipes, alchemy, families, partners] = await Promise.all(['evolutions', 'emoji-names', 'prompts', 'copy', 'growth-book', 'recipes', 'alchemy', 'families', 'partners'].map((n) => fetch('/config/' + n + '.json?v=22').then((r) => r.json())));
-  C = { evo, names, prompts, copy, book, recipes, alchemy, families, partners }; load(); stars(); songInit();
+  C = { evo, names, prompts, copy, book, recipes, alchemy, families, partners }; load(); readDraft(); stars(); songInit();
   if ('serviceWorker' in navigator && !location.search.includes('dev=1')) navigator.serviceWorker.register('/sw.js').catch(() => null);
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
   $$('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));

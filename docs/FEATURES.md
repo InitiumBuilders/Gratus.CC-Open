@@ -16,6 +16,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - The entry: text, a photo (resized on the device and kept with the entry), and your voice. A recording is kept on the device (IndexedDB) and its words return through ElevenLabs speech to text into the entry. If the words cannot come, the recording is still kept.
 - The emoji you are planting, chosen from your palette; the first emoji is suggested by the engine.
 - Tags (Love, Support, Friendship, Gratitude, Health, Friends, Music, Family, Nature, Work, Home, Rest, and your own).
+- What is being written is kept on the device until it is planted, so a phone that ends the page loses nothing.
 - Plant My Gratus: the planting ceremony through the Gate's light, then the Planted moment.
 - Gratus Goals: post what you are growing toward, as many as you like. Your goals and everyone's goals in the shared stream, in the Gratus Gives Together room. Offline, your goals wait on the device.
 
@@ -25,7 +26,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - Your Gratus Garden, its own room: a field with a horizon, or a list; every emoji sized by phase with a ring filling toward the next one; a diamond on the ones growing for a Giveth project; the gifts you received.
 - Entries, plants and gifts counts.
 - The phone's back gesture walks out of a room the way it walked in, and returns the page to where it was left. With a sheet, a held moment or the laws open, it closes that and the page stays, on the home page too.
-- The Gratitude Journal, three rooms: Journal (search, one Filter button for emoji, tag, folder and the ones kept close, and every entry by day with the hour it was written and how long it took), Time Log (days kept, entries and time writing; one month at a time, the calendar and under it every entry of the month), Milestones (the journal's head with a seed for every day kept, and twenty-one marks).
+- The Gratitude Journal, three rooms: Journal (search, one Filter button for emoji, tag, folder and the ones kept close, and every entry by day with the hour it was written and how long it took, the newest days first with earlier ones a tap away), Time Log (days kept, entries and time writing; one month at a time, the calendar and under it every entry of the month), Milestones (the journal's head with a seed for every day kept, and twenty-one marks).
 - The Growth Book:
   - Phases: Planted, Nurtured, Deepened, Bloomed, Ready to Give, with the day each begins.
   - Emojis: your palette, evolution arcs, and adding your own.
@@ -78,7 +79,7 @@ What the app does today, tab by tab, and what is still imagined. "Imagined" mean
 - The twelve laws, one line per screen, from the top bar.
 - Privacy and terms pages.
 - **Your Gratus Passage** — a link that shows what grew: your emojis and their days, the seeds that bloomed, the marks you have earned. It carries not one word of your journal. The whole page rides inside the link, like a Gratus Gift, so nothing is uploaded and there is nothing to delete later.
-- Export everything as a file, and restore from one, in the profile sheet.
+- Export everything as a file, and restore from one, in the profile sheet. A file from any version of Gratus restores.
 - **Sunlight**, on the Give with Giveth page: paste the public address you give with on Giveth and Gratus reads how much you tend the commons there. Read only; Gratus never connects a wallet or signs anything.
 - The Emotional TRACE constellation in your garden: every seed you planted, bloomed or waiting.
 - A dev panel behind `?dev=1`: add days, add an earlier hand, reset.

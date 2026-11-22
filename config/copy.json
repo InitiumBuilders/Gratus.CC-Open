@@ -218,7 +218,8 @@
     "tabMarks": "Milestones",
     "folder": "+ Folder",
     "folderEdit": "Rename or remove this folder",
-    "filter": "Filter"
+    "filter": "Filter",
+    "more": "Show earlier entries"
   },
   "log": {
     "days": "Days Kept",

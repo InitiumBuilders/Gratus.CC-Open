@@ -137,6 +137,10 @@ At 1024px and wider the scene layer has two children: `.back`, the poster of the
 
 Tokens live in `tokens.css`. Every ink is white and solid; mint (`#B9FFE4`) is for growing and labels, gold (`#FFD98A`) for giving. Body type is 18 on 28 and nothing is set under 14px. A kicker whose text ends a sentence is tagged `.say` at render (a MutationObserver watches the body) and reads in sentence case at 17px; kickers that are labels keep small caps. Fields, segments and buttons stand on dark glass so they read on any scene.
 
+## The journal, at any size
+
+`journalInOrder()` sorts the journal once each time it changes. `journalList()` draws whole days, newest first, up to `JOURNAL_PAGE` (40) entries, and `#j-more` adds more. Typing in search calls `redrawList()`, which draws the list region and nothing else, so the search box is never built again while somebody types. A new search or filter starts from the newest day. What is being written is kept under `gratus.draft` by `keepDraft()` and read back by `readDraft()` at boot; planting clears it. G50 holds the shape at 1,500 entries and G49 holds the draft and the restore.
+
 ## Time in the app
 
 `assets/js/trax.js` counts seconds only while `document.visibilityState` is `visible`. A page leaving the screen sends what it counted, a page that stays sends every two minutes, and the clock never starts again on a hidden page. The server caps a device at twelve hours a day. G48 holds it to that on a faked clock.

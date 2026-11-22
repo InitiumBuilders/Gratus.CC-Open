@@ -2,6 +2,13 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v48 · The words are kept (2026-11-21)
+
+- **Restore takes back what export writes.** Export saves the journal at the version it is (5); restore accepted version 1 only and answered "That file is not a Gratus export." to every export made since. The guides tell people to export before changing phones. Restore now accepts any Gratus export and runs it through the same upgrade a stored journal gets, so a file from the first version comes back as this one.
+- **Half an entry survives the phone ending the page.** The words being written lived in memory only, and a phone ends a page left in the background whenever it wants the memory. The words, the emoji and the tags are kept on the device as they are written, are there again when the page opens, and are cleared the moment the entry is planted. A photo and a recording stay in memory.
+- **A journal kept for years opens at once.** It drew every entry on opening and drew the whole page again for each letter typed in search: at four years (1,500 entries) that was 13,000 elements, 6.8 seconds to open and up to 2.7 seconds a letter on a phone-speed CPU. It draws the newest days first, whole days up to forty entries, with Show earlier entries under them; search draws only the list and still reaches every entry; the journal is sorted once each time it changes. Side by side on a loaded machine: about a second to open where it took ten to sixteen, and about a quarter of a second a letter where it took up to eleven.
+- **The gates.** G49 writes half an entry and ends the page, exports a month and restores it into an empty phone, and restores a first-version file. G50 opens four years of journal and searches it for the oldest entry. Each has controls.
+
 ## v47 · The gift turns back (2026-11-21)
 
 - **A gift's pages turn back with the phone's back.** A gift link is how most people first meet Gratus, and its eight pages turned with buttons only, so back on page five left the gift. A page a tap turns is a step now. The unwrapping turns by itself and takes no step, so back from the gift goes to its first page. From the first page, back leaves, the way a link does. Done and close take the journey's steps with them.

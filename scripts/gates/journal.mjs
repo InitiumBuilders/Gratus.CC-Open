@@ -68,6 +68,8 @@ const FAULTS = {
   everyPaint: [
     ["if (here !== viewWas) { viewWas = here; beat('view'); }", "beat('view');"],
     ['if (!again && billAt && Date.now() - billAt < 600000) return;', ''],
+    // search draws only the list now, so the fault also puts back a whole page drawn per letter
+    ['journalQuery = js.value; redrawList();', "journalQuery = js.value; const v = js.value; render(); const n = $('#j-search'); if (n) { n.focus(); n.setSelectionRange(v.length, v.length); }"],
   ],
   noWishDoor: [["  const gw = $('#give-world'); if (gw) gw.addEventListener('click', () => go('give', 'world'));\n", '']],
   noFolder: [["'<button class=\"chip\" id=\"j-newfolder\">' + esc(T('journal.folder', '')) + '</button></div>'", "'</div>'"]],

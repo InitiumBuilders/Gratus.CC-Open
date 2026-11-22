@@ -2,8 +2,8 @@
 title: Exporting and restoring
 audience: anyone
 time: 2 min
-updated: 2026-09-19
-verified-against: v25, 2026-09-19
+updated: 2026-11-21
+verified-against: v48, 2026-11-21
 ---
 
 Because there is no account, the copy you keep is the copy that exists.
@@ -14,7 +14,7 @@ garden: plants, days, entries, folders, milestones, gifts and seeds.
 **Keep it somewhere real.** A cloud drive, an email to yourself, anywhere that is not only
 this browser.
 
-**Restore.** The same sheet takes the file back. Restoring replaces what is in the browser
+**Restore.** The same sheet takes the file back, from any version of Gratus. Restoring replaces what is in the browser
 with what is in the file.
 
 **When to do it.** Before clearing browser data, before changing phones, and every so often
