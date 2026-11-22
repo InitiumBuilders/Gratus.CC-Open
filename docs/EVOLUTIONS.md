@@ -2,6 +2,17 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v49 · Feathered edges (2026-11-21)
+
+- **Nothing is drawn with a line.** Every surface ended in a one-pixel line: glass, cards, the Give options, the menu rows, fields, chips, the round buttons, the calendar and the bar. Measured across every view, there were 111 kinds. A surface ends where its light ends now: brightest at the rim, fading inward into the glass and outward into the night, and a little brighter along the top. The cards on the home page keep their gold and mint as light inside the edge, laid over the picture. The paper's margin is a warm light along its left edge, and dividers fade at both ends. Every border keeps its width, so nothing moved by a pixel, and a phone in forced colours draws them again.
+- **The line under every room's picture is gone.** The wash that darkens a room's picture ended at full strength exactly where the page began, so the scene showed again just below it and drew a line across the screen on Give, Grow, the journal and every other room. The wash lets go over the last 72 pixels, where the page's own darkening takes over. At a desk the page column's sides and end fade into the scene as well.
+- **Keyboard focus keeps a button's shape.** The focus rule set every focused button's corners to 6 pixels, so a round pill turned into a rectangle the moment a keyboard reached it. The ring follows the button's own shape now.
+- **A touch that answers.** What a finger presses gives a little under it and springs back when it lets go: round buttons most, chips and pills less, whole cards least. Under reduced motion a press changes nothing. With a pointer, the light at an edge rises as the pointer reaches it.
+- **The light that travels round the mark in the bar** is a soft band, brightest just inside its edge.
+- **One pair of quotation marks.** Each line on the gift's journey page wore two pairs: the page wrote its own and the browser added a second.
+- **Lighter than before.** The stylesheet carried 381 declarations that a later rule with the very same selector always overrode. They are gone, and every element on 61 screens at three widths was checked to compute the same style without them. With the new edges in, every page weighs less than it did in v48.
+- **The gate.** G51 walks every view for a border or an outline a person can see at rest, checks the wash, the focus ring and the press, and puts each old line back as a control.
+
 ## v48 · The words are kept (2026-11-21)
 
 - **Restore takes back what export writes.** Export saves the journal at the version it is (5); restore accepted version 1 only and answered "That file is not a Gratus export." to every export made since. The guides tell people to export before changing phones. Restore now accepts any Gratus export and runs it through the same upgrade a stored journal gets, so a file from the first version comes back as this one.

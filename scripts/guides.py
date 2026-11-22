@@ -122,7 +122,7 @@ PAGE = """<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css?v=36">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=37">
 <link rel="stylesheet" href="/assets/css/page.css?v=2">
 </head>
 <body class="doc guide">

@@ -32,7 +32,7 @@ p { margin: 0; text-wrap: pretty; }
 a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: .2em; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; background: none; padding: 0; -webkit-tap-highlight-color: transparent; }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--violet-text); outline-offset: 3px; border-radius: var(--r-6); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--violet-text); outline-offset: 3px; }
 img, svg, canvas, video { display: block; max-width: 100%; }
 ::selection { background: var(--hue-48); }
 ::-webkit-scrollbar { width: 0; height: 0; }
