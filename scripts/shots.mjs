@@ -71,8 +71,10 @@ const b = await browser();
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
 const page = await ctx.newPage();
 
+// Since v56 the app has three worlds and an automated browser is shown Day. The photographs are
+// taken at night, the world of his mockups; a world named once stays for the visit.
 // seed once, on the origin, before the app boots
-await page.goto(srv.base + '/app?nosplash=1&notour=1&dev=1', { waitUntil: 'domcontentloaded' });
+await page.goto(srv.base + '/app?nosplash=1&notour=1&dev=1&look=night', { waitUntil: 'domcontentloaded' });
 await page.evaluate((g) => localStorage.setItem('gratus.galaxy.v1', JSON.stringify(g)), GARDEN);
 
 for (const [name, route, down, what] of SHOTS) {

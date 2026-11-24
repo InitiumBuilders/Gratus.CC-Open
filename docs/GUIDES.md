@@ -91,7 +91,7 @@ Run the tests after any change to the configs.
 
 ### Type and colour
 
-`assets/css/tokens.css` holds every token. Inks are white; mint is for growing and labels; gold for giving. Add new text with the existing roles (`.lead`, `.body`, `.cap`, `.kicker`, `.label`, `.statement`). A kicker whose text ends with a full stop reads as a sentence automatically. Never set text in alpha and never under 14px; the contrast gate and the readability audit will catch it.
+`assets/css/tokens.css` holds every token. Inks are white; the accent for growing and labels is mint by day, ice at night and pearl at the golden hours; gold is for giving. Add new text with the existing roles (`.lead`, `.body`, `.cap`, `.kicker`, `.label`, `.statement`). A kicker whose text ends with a full stop reads as a sentence automatically. Never set text in alpha and never under 14px; the contrast gate and the readability audit will catch it.
 
 ### Gates
 

@@ -2,6 +2,10 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v57 · The front page shows the night (2026-11-24)
+
+- **The front page's photographs are of the app as it is now.** Its three photographs of the app (the writing screen, the journal and the garden) were taken before v56, in the green of the old look. They are retaken at night, the world of his mockups: the writing screen under an arc of light, the journal's pages over the night, and the garden's five plants on their island under a crescent moon. They are lighter too: 277 KB together before, 193 KB now.
+
 ## v56 · The light of your day (2026-11-24)
 
 - **The world follows the light of your day.** Every room used to put a different painting behind itself on each open (glades, golden arches, waterfalls, galaxies), with no thread between them, and August said "it still all looks kinda ai generated". Three worlds follow the phone's own clock now. Night, from 8 pm to 5 am, is the world of his mockups: a night sky, the Earth, one thing lit. Golden is the first and last light: the arches, the ring of the sun, the rivers of light, the moon over the clouds. Day is the gardens. Each room keeps its symbol in each world (the island and its sprout on Grow, the heart on Give, the galaxy in the Galaxy), and within a world the scenes still turn with each open.

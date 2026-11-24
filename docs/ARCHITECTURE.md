@@ -40,7 +40,7 @@ G47 walks all of it with the phone’s own back and forward, and counts any step
 
 ## Scenes per page
 
-`SCENES` maps each page to a list of scene names. `scene(key, i)` picks one by the number of opens, so the app changes every time it is opened and still feels the same. Home leads with the long zoom of the Gate; every list leads with a video.
+Each page has a list of scene names, and `scene(key, i)` picks one by the number of opens, so the app changes every time it is opened and still feels the same. `SCENES` holds the lists from before v56; they are used only for a page a world leaves out.
 
 Since v56 the lists come from the world the clock is in. `LOOKS` (plain JSON between `/*looks*/` and `/*end looks*/`, so G52 can read it) holds three worlds, `night`, `golden` and `day`, each with a list for every page. `lookAt(hour)` gives night from 20:00 to 04:59, golden from 05:00 to 08:59 and from 17:00 to 19:59, and day between. `look()` takes `?look=night|golden|day` first and keeps it for the visit (session storage), because the app's own steps drop the query; an automated browser (`navigator.webdriver`) sees day unless the address says `?look=auto`, so the gates are the same at any hour. `sceneList(key)` falls back to `SCENES` for a page a world leaves out, and `wire()` writes the world to `<html data-look>` on every paint. Each scene layer carries `data-scene` with the painting's name.
 
@@ -145,7 +145,7 @@ At 1024px and wider the scene layer has two children: `.back`, the poster of the
 
 ## Type and colour
 
-Tokens live in `tokens.css`. Every ink is white and solid; mint (`#B9FFE4`) is for growing and labels, gold (`#FFD98A`) for giving. Body type is 18 on 28 and nothing is set under 14px. A kicker whose text ends a sentence is tagged `.say` at render (a MutationObserver watches the body) and reads in sentence case at 17px; kickers that are labels keep small caps. Fields, segments and buttons stand on dark glass so they read on any scene.
+Tokens live in `tokens.css`. Every ink is white and solid. The accent for growing and labels (`--violet-text`) is mint (`#B9FFE4`) by day, ice (`#CFF3FF`) at night and pearl (`#FFEFD6`) at the golden hours, set by the world; gold (`#FFD98A`) is for giving in all three. Body type is 18 on 28 and nothing is set under 14px. A kicker whose text ends a sentence is tagged `.say` at render (a MutationObserver watches the body) and reads in sentence case at 17px; kickers that are labels keep small caps. Fields, segments and buttons stand on dark glass so they read on any scene.
 
 ## Edges and touch
 
