@@ -35,7 +35,54 @@ const SCENES = {
   journey: ['g13', 'dhold', 'g13', 'dlong', 'g20', 'g07', 'g19', 'v2'], ceremony: ['g22', 'g05', 'g03'], garden: ['g33', 'g11', 'g27', 'g24', 'g25'],
   giveth: ['g38', 'g23', 'g35', 'g19', 'g21'], console: ['g36', 'g32', 'g31'], trace: ['g33', 'g37', 'g31']
 };
-function scene(key, i) { const list = SCENES[key]; if (typeof list === 'string') return list; return list[(((S && S.opens) || 0) + (i || 0)) % list.length]; }
+// THE LIGHT OF YOUR DAY. The world follows the clock of the phone that holds it. Night (8 pm to
+// 5 am) is the world of his mockups: a night sky, the Earth, one thing lit. Golden is the first and
+// last light: the arches, the ring of the sun, the rivers, the moon over the clouds. Day is the
+// gardens. Each room keeps its symbol in each world (the island and its sprout on Grow, the heart
+// on Give, the galaxy in the Galaxy), and within a world the scenes still turn with each open.
+// A gift opens in the night of his drawing in every world: its eight pages follow his mockup.
+// SCENES above is the world before v56, kept for any room a world leaves out. ?look=night|golden|
+// day names a world for the visit; ?look=auto follows the clock even in an automated browser, which otherwise
+// sees Day, so every gate reads the same page whatever the hour. The table is plain JSON between
+// its markers, so G52 reads the very lists the app reads.
+const LOOKS = /*looks*/{
+  "night": {
+    "home": ["g31", "g32", "g37", "g33"], "grow": ["g33", "g11", "g17"], "book": ["g32", "g17", "g31", "g37"],
+    "garden": ["g33", "g11", "g37"], "give": ["g34", "g13"], "galaxy": ["g36", "g15"],
+    "guides": ["g37", "grow-intro-poster", "g17"], "vibes": ["g32", "g36", "g15"], "vault": ["g17", "g18"],
+    "earth": ["g15", "g36"], "world": ["g15", "g34", "g36"], "projects": ["g15", "g36"], "giveth": ["g15", "g34", "g36"],
+    "journey": ["g34", "g13", "g34", "g32", "g15", "g13", "g37", "g33"], "ceremony": ["g31", "g33", "g37"],
+    "console": ["g32", "g31", "g36"], "trace": ["g33", "g37", "g31"]
+  },
+  "golden": {
+    "home": ["g21", "g18", "g35"], "grow": ["g23", "g38", "g18"], "book": ["g18", "g38", "g21"],
+    "garden": ["g35", "g23", "g38"], "give": ["g21", "g35", "dhold"], "galaxy": ["g36", "g12"],
+    "guides": ["g30", "g29", "g21"], "vibes": ["g18", "g35", "g21"], "vault": ["g18", "g21"],
+    "earth": ["g38", "g23", "g21"], "world": ["dlong", "g23", "g21"], "projects": ["g23", "g38"], "giveth": ["g21", "g38", "g23"],
+    "journey": ["g34", "g13", "g34", "g32", "g15", "g13", "g37", "g33"], "ceremony": ["g21", "g18", "g38"],
+    "console": ["g18", "g21", "g12"], "trace": ["g23", "g38", "g35"]
+  },
+  "day": {
+    "home": ["g16", "g20", "v2", "g22", "g19"], "grow": ["g08", "g06", "v3", "g10", "g09"], "book": ["g16", "v1", "g03", "g20", "v3", "g07"],
+    "garden": ["g24", "g25", "g27", "g26"], "give": ["g09", "g05", "g13"], "galaxy": ["v2", "g05", "g04"],
+    "guides": ["g20", "g07", "g22"], "vibes": ["v2", "g05", "g10"], "vault": ["g04", "g22"],
+    "earth": ["g19", "g22", "g16"], "world": ["g19", "g16", "g22"], "projects": ["g19", "g16"], "giveth": ["g19", "g22", "g16"],
+    "journey": ["g34", "g13", "g34", "g32", "g15", "g13", "g37", "g33"], "ceremony": ["g22", "g05", "g03"],
+    "console": ["g16", "g20"], "trace": ["g24", "g25", "g27"]
+  }
+}/*end looks*/;
+function lookAt(h) { return h >= 20 || h < 5 ? 'night' : (h < 9 || h >= 17) ? 'golden' : 'day'; }
+function look() {
+  // a world named in the address stays for the visit: the app's own steps drop the query
+  let q = new URLSearchParams(location.search).get('look');
+  try { if (q) sessionStorage.setItem('gratus.look', q); else q = sessionStorage.getItem('gratus.look'); } catch (e) {}
+  if (q && LOOKS[q]) return q;
+  if (navigator.webdriver && q !== 'auto') return 'day';
+  return lookAt(new Date().getHours());
+}
+function sceneList(key) { const w = LOOKS[look()]; return (w && w[key]) || SCENES[key]; }
+function scene(key, i) { const list = sceneList(key); if (typeof list === 'string') return list; return list[(((S && S.opens) || 0) + (i || 0)) % list.length]; }
+document.documentElement.dataset.look = look();
 const motionOk = () => !matchMedia('(prefers-reduced-motion: reduce)').matches && !(navigator.connection && navigator.connection.saveData);
 function art(name, cls) {
   if (name[0] === 'v' || (name[0] === 'd' && name !== 'dlong-x')) { const poster = GFX(name + '-poster.webp'); return motionOk() ? '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + poster + ')"><video autoplay muted loop playsinline poster="' + poster + '" aria-hidden="true"><source src="' + FILM(name + '.mp4') + '" type="video/mp4"></video></div>' : '<div class="art' + (cls ? ' ' + cls : '') + '" style="background-image:url(' + poster + ')"></div>'; }
@@ -44,7 +91,7 @@ function art(name, cls) {
 let sceneNow = null;
 function setScene(name) {
   const root = $('#scene'); if (!root || sceneNow === name) return; sceneNow = name;
-  const old = Array.from(root.children); const layer = document.createElement('div'); layer.className = 'layer';
+  const old = Array.from(root.children); const layer = document.createElement('div'); layer.className = 'layer'; layer.dataset.scene = name;
   const video = name[0] === 'v' || name[0] === 'd'; const poster = video ? GFX(name + '-poster.webp') : GFX(name + '.webp');
   layer.innerHTML = '<div class="back" style="background-image:url(' + poster + ')"></div>' +
     (video && motionOk() ? '<video class="fore" autoplay muted loop playsinline poster="' + poster + '" aria-hidden="true"><source src="' + FILM(name + '.mp4') + '" type="video/mp4"></video>' : '<img class="fore" src="' + poster + '" alt="" aria-hidden="true">');
@@ -162,7 +209,23 @@ function depthWatch(root) {
   window.addEventListener('scroll', depthOff, { passive: true });
   depthOff();
 }
-function stars() { const el = $('.stars'); if (!el || el.children.length) return; let s = ''; for (let i = 0; i < 70; i++) s += '<i style="left:' + (1 + Math.random() * 97).toFixed(1) + '%;top:' + (1 + Math.random() * 97).toFixed(1) + '%;--tw:' + (3 + Math.random() * 6).toFixed(1) + 's;--d:' + (Math.random() * 6).toFixed(1) + 's;opacity:' + (.2 + Math.random() * .6).toFixed(2) + '"></i>'; el.innerHTML = s; }
+// YOUR SKY. The lights over every room were seventy points scattered at random. Since v56 they
+// are the days you have kept: one light for each, always in the same place (a day's place comes
+// from its own date), the newest the brightest and today's the largest. A garden with no day yet
+// has no light of its own, and the first day lights the first. The newest SKY_MAX days are drawn
+// and one in three twinkles, so a sky kept for years asks less of a phone than the seventy did.
+const SKY_MAX = 120;
+const skyHash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+function stars() {
+  const el = $('.stars'); if (!el) return;
+  const days = J.keptDays((S && S.entries) || []).slice(-SKY_MAX);
+  const t = today(); const sig = days.length + '|' + (days[days.length - 1] || '') + '|' + t;
+  if (el.dataset.sky === sig) return; el.dataset.sky = sig;
+  el.innerHTML = days.map((d, i) => {
+    const a = skyHash(d), b = skyHash('sky ' + d); const age = days.length > 1 ? i / (days.length - 1) : 1;
+    return '<i class="' + (d === t ? 'now' : (a % 3 ? 'held' : 'lit')) + '" style="left:' + (3 + (a % 9400) / 100).toFixed(1) + '%;top:' + (2 + (b % 6400) / 100).toFixed(1) + '%;--tw:' + (4 + (a % 50) / 10).toFixed(1) + 's;--d:-' + ((b % 60) / 10).toFixed(1) + 's;--o:' + (0.45 + 0.5 * age).toFixed(2) + ';--s:' + (0.8 + 0.5 * age).toFixed(2) + '"></i>';
+  }).join('');
+}
 
 // ── shell ──
 function topBar(o) {
@@ -1596,8 +1659,8 @@ function playCeremonies(list, done, opts) {
   document.addEventListener('keydown', onKey);
   // The moment ends once, by its last card or by the phone stepping back out of it. Its
   // timers may still fire after that, and they find nothing left to do.
-  let ended = false; let step = null;
-  const finish = () => { if (ended) return; ended = true; list.length = 0; root.onclick = null; root.hidden = true; root.innerHTML = ''; document.removeEventListener('keydown', onKey); stepOff(step); if (done) done(); };
+  let ended = false; let step = null; let risen = null;
+  const finish = () => { if (ended) return; ended = true; const here = skySeeds(root); const seeds = here && here.length ? here : risen; list.length = 0; root.onclick = null; root.hidden = true; root.innerHTML = ''; document.removeEventListener('keydown', onKey); stepOff(step); if (done) done(); skyRise(seeds); };
   const next = () => {
     if (ended) return;
     const item = list.shift();
@@ -1608,7 +1671,7 @@ function playCeremonies(list, done, opts) {
     const leave = typeof item === 'string' ? null : item.leave;
     root.hidden = false; root.onclick = null;
     try { root.focus({ preventScroll: true }); } catch (e) {}
-    const show = () => { if (ended) return; root.innerHTML = art(scene('ceremony', k++)) + (loud ? '<div class="flash on"></div>' : '') + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0, gone = false; const close = () => { if (gone) return; gone = true; clearTimeout(t); root.onclick = null; if (leave) leave(next); else next(); }; root.onclick = close; t = setTimeout(close, leave ? 7200 : 5600); };
+    const show = () => { if (ended) return; root.innerHTML = art(scene('ceremony', k++)) + (loud ? '<div class="flash on"></div>' : '') + html.replace(/<div class="cer([ "])/, '<div class="cer reveal$1'); if (on) try { on(); } catch (e) {} let t = 0, gone = false; const close = () => { if (gone) return; gone = true; clearTimeout(t); root.onclick = null; const sd = skySeeds(root); if (sd && sd.length) risen = sd; if (leave) leave(next); else next(); }; root.onclick = close; t = setTimeout(close, leave ? 7200 : 5600); };
     if (gate) {
       gate = false; root.innerHTML = '<video class="explode" muted playsinline preload="none" poster="' + GFX('explode-poster.webp') + '"><source src="' + FILM('explode.mp4') + '#t=17" type="video/mp4"></video><span class="kicker" style="position:absolute;left:0;right:0;bottom:calc(40px + var(--sab));text-align:center;z-index:1;text-shadow:0 1px 10px #000">tap to skip</span>';
       const v = root.querySelector('video'); let fired = false; const fire = () => { if (fired) return; fired = true; clearTimeout(tm); show(); };
@@ -2082,7 +2145,7 @@ function closeRoom(byRoute) {
 }
 function renderJourney() {
   const r = $('#room'); const { g, i } = room; const name = nameOf(g.emoji);
-  const page = (body, foot) => '<div class="room-page">' + art(SCENES.journey[i], 'rart') + '<div class="rhead">' + (i ? '<button id="rj-back" aria-label="back">‹</button>' : '<span style="width:40px"></span>') + '<span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="rj-x" aria-label="close">×</button></div><div class="rbody">' + body + '</div><div class="rfoot">' + foot + '</div></div>';
+  const page = (body, foot) => '<div class="room-page">' + art(sceneList('journey')[i % sceneList('journey').length], 'rart') + '<div class="rhead">' + (i ? '<button id="rj-back" aria-label="back">‹</button>' : '<span style="width:40px"></span>') + '<span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="rj-x" aria-label="close">×</button></div><div class="rbody">' + body + '</div><div class="rfoot">' + foot + '</div></div>';
   const emojiHero = '<span class="orb xl lit" style="--h:#F2C97D;font-size:76px;width:150px;height:150px;justify-self:center"><span>' + esc(g.emoji) + '</span></span>';
   let html = '';
   if (i === 0) html = page('<span class="kicker">A kinder world grows here.</span><h1>A Gratus Gift<br>For You</h1><span class="kicker mint">Someone grew this with gratitude.</span>', '<button class="btn mint wide" id="rj-next">Unwrap ›</button><span class="kicker">Gratitude moves worlds.</span>');
@@ -3024,7 +3087,34 @@ function kickerDots() {
   }));
   cut.forEach((d) => d.classList.add('cut'));
 }
+// THE DAYS RISE. When a ceremony that showed the seed head ends, its seeds leave for the sky: each
+// light starts where its seed stood in the ring and flies to its own place. It shows, without a
+// word, that the lights over every room are the days kept. The seeds are read before the ceremony
+// is cleared; the flight is a layer of its own over the page. The lights leave one after another,
+// the oldest day first and today's last, each taking nearly three seconds, and the sky fades in
+// under them as they arrive. Under reduced motion the sky is simply there.
+function skySeeds(root) {
+  if (!motionOk()) return null;
+  return [...root.querySelectorAll('.jr-head circle')].map((c) => { const b = c.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2, on: b.width > 0 }; }).filter((q) => q.on);
+}
+function skyRise(seeds) {
+  const sky = $('.stars'); if (!sky || !seeds || !seeds.length || !motionOk()) return;
+  stars();   // the day just kept has its light before anything flies
+  const lights = [...sky.children]; const n = Math.min(lights.length, seeds.length, 60); if (!n) return;
+  const rise = document.createElement('div'); rise.className = 'stars rise'; rise.setAttribute('aria-hidden', 'true');
+  let html = '';
+  for (let i = 0; i < n; i++) {
+    const l = lights[lights.length - 1 - i], from = seeds[seeds.length - 1 - i]; const b = l.getBoundingClientRect(); const x = b.left + b.width / 2, y = b.top + b.height / 2;
+    html += '<i' + (l.classList.contains('now') ? ' class="now"' : '') + ' style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px;--fx:' + (from.x - x).toFixed(1) + 'px;--fy:' + (from.y - y).toFixed(1) + 'px;--w:' + ((n - 1 - i) * 22) + 'ms"></i>';
+  }
+  rise.innerHTML = html; document.body.appendChild(rise);
+  sky.classList.add('wait');
+  setTimeout(() => sky.classList.remove('wait'), 1900 + n * 11);
+  setTimeout(() => rise.remove(), 3100 + n * 22);
+}
 function wire() {
+  document.documentElement.dataset.look = look();
+  stars();
   watchVisibility();
   watchMark();
   setFeel(() => !!(S && S.feel));

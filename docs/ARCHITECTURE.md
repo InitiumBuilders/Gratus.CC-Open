@@ -42,6 +42,16 @@ G47 walks all of it with the phone’s own back and forward, and counts any step
 
 `SCENES` maps each page to a list of scene names. `scene(key, i)` picks one by the number of opens, so the app changes every time it is opened and still feels the same. Home leads with the long zoom of the Gate; every list leads with a video.
 
+Since v56 the lists come from the world the clock is in. `LOOKS` (plain JSON between `/*looks*/` and `/*end looks*/`, so G52 can read it) holds three worlds, `night`, `golden` and `day`, each with a list for every page. `lookAt(hour)` gives night from 20:00 to 04:59, golden from 05:00 to 08:59 and from 17:00 to 19:59, and day between. `look()` takes `?look=night|golden|day` first and keeps it for the visit (session storage), because the app's own steps drop the query; an automated browser (`navigator.webdriver`) sees day unless the address says `?look=auto`, so the gates are the same at any hour. `sceneList(key)` falls back to `SCENES` for a page a world leaves out, and `wire()` writes the world to `<html data-look>` on every paint. Each scene layer carries `data-scene` with the painting's name.
+
+The finish lives at the end of `galaxy.css`: a filter on `#scene .layer` (saturation, contrast, brightness from `--g-sat`, `--g-con`, `--g-bri`), a vignette in `#scene::after`, and a grain in `#scene::before`, an SVG noise (`assets/css/grain.svg`) at `--g-grain` opacity in overlay. Each world sets those and its own `--violet-text`.
+
+The scene moves. A painting (`.back` and `img.fore`) runs `scene-breathe`, 48 seconds each way in 288 steps, written as `scale` and `translate` because the desktop puts its own `transform` on both layers; a film keeps its own motion. A drifting painting is larger than its layer, so `.layer` clips (`overflow: clip`). The grain runs `grain-run`, six positions a second. Stepping matters: every glass surface blurs what is behind it, and a scene that changes on every frame makes each of them blur again on every frame. Under reduced motion neither runs.
+
+`stars()` draws the sky from the journal: one `<i>` in `.stars` for each of the newest `SKY_MAX` (120) kept days, placed by a hash of the day's own date so it never moves, sized and lit by its age. Today's carries `.now` and breathes, one in three carries `.lit` and twinkles, the rest (`.held`) are still. It runs on every paint and does nothing unless the days or the date changed. The front page keeps its own scattered stars.
+
+When a ceremony ends, `finish()` reads where the seeds of its seed head stood (`skySeeds`) before it clears the card, and `skyRise` flies one light from each seed to its place in the sky: a second `.stars.rise` layer over the page, each light animated with `translate` from its seed to nothing, while the sky itself carries `.wait` and fades in as they arrive. The lights leave 22 ms apart, the oldest day first and today's last, each taking 2.8 seconds; the layer removes itself when the last has landed. A ceremony with no seed head, and reduced motion, do nothing.
+
 ## State
 
 One object in `localStorage` under `gratus.galaxy.v1`:

@@ -253,7 +253,7 @@ html.landed .room-page .rart { opacity: 1; animation: none; }
 #scene .layer { position: absolute; inset: 0; opacity: 0; }
 #scene .layer.in { opacity: 1; }
 #scene video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
-#scene::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5, 9, 18, .10) 0%, rgba(5, 9, 18, .04) 35%, rgba(5, 9, 18, .46) 100%); pointer-events: none; }
+#scene::after { content: ""; position: absolute; inset: 0; background: radial-gradient(130% 95% at 50% 38%, transparent 58%, rgba(3, 5, 12, .5) 100%), linear-gradient(180deg, rgba(5, 9, 18, .10) 0%, rgba(5, 9, 18, .04) 35%, rgba(5, 9, 18, .46) 100%); pointer-events: none; }
 .stars { opacity: .5; z-index: 1; }
 .hero .art { display: none; }
 .hero::after { display: none; }
@@ -1400,3 +1400,50 @@ textarea.field:focus { box-shadow: var(--margin-light), inset 0 0 16px rgba(110,
 @keyframes room-in { from { opacity: 0; transform: translateY(10px); } }
 .arrive { animation: room-in .34s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--k, 0) * 28ms); }
 @media (prefers-reduced-motion: reduce) { .arrive { animation: none; } }
+
+/* ═══ v56 · THE LIGHT OF YOUR DAY ═══
+   One finish over every scene, so the paintings read as one series instead of separate
+   pictures: a little less saturation, deeper shadows, a vignette (#scene::after) and a fine
+   grain (grain.svg beside this file: a few hundred bytes, drawn by the browser). Each world sets
+   its own finish and its
+   own light for the words that carry the accent: ice at night, pearl at the golden hours,
+   mint by day, so gold keeps meaning giving in every world. The world itself is chosen in
+   galaxy.js (look). */
+#scene .layer { filter: saturate(var(--g-sat, .9)) contrast(var(--g-con, 1.04)) brightness(var(--g-bri, .95)); }
+#scene::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: var(--g-grain, .08); mix-blend-mode: overlay;
+  background: url("/assets/css/grain.svg") 0 0 / 160px 160px repeat; }
+html[data-look="night"] { --g-sat: .94; --g-con: 1.06; --g-bri: .94; --g-grain: .07; --violet-text: #CFF3FF; }
+html[data-look="golden"] { --g-sat: .86; --g-con: 1.05; --g-bri: .9; --g-grain: .09; --violet-text: #FFEFD6; }
+html[data-look="day"] { --g-sat: .8; --g-con: 1.05; --g-bri: .9; --g-grain: .08; }
+/* The world is alive. A painting drifts as slowly as a camera at rest (six parts in a hundred
+   and back, over 48 seconds); a film keeps its own motion. The grain runs a few frames a second,
+   the way film does. The drift is written as scale and translate, so the transforms the desktop
+   puts on these layers stay. Both move six times a second in steps too small to see (a fifth of
+   a pixel), because glass over a scene that changes on every frame is blurred again on every
+   frame. Under reduced motion the world is still. */
+#scene .layer .back, #scene .layer img.fore { animation: scene-breathe 48s steps(288) infinite alternate; transform-origin: 50% 40%; }
+@keyframes scene-breathe { from { scale: 1.01; translate: 0 0; } to { scale: 1.07; translate: 0 -1%; } }
+#scene .layer { overflow: clip; }   /* a drifting painting is larger than its layer, and the layer holds it */
+#scene::before { inset: -12%; animation: grain-run 1s steps(1) infinite; }
+@keyframes grain-run { 0% { transform: translate3d(0, 0, 0); } 17% { transform: translate3d(-4%, 3%, 0); } 33% { transform: translate3d(3%, -4%, 0); } 50% { transform: translate3d(-3%, -2%, 0); } 67% { transform: translate3d(4%, 2%, 0); } 83% { transform: translate3d(-2%, 4%, 0); } 100% { transform: translate3d(0, 0, 0); } }
+@media (prefers-reduced-motion: reduce) { #scene .layer .back, #scene .layer img.fore, #scene::before { animation: none; } }
+/* Your sky: one light for each day kept (stars() in galaxy.js). Each world lights them in its
+   own colour. One in three twinkles, today's breathes, the rest hold still. */
+html[data-look] .stars { opacity: 1; }
+html[data-look] .stars i { width: 2px; height: 2px; background: var(--sky, #FFF7D6); box-shadow: 0 0 6px 1px var(--sky-glow, rgba(255, 247, 214, .5)); opacity: var(--o, .7); transform: scale(var(--s, 1)); animation: sky-twinkle var(--tw, 5s) ease-in-out infinite; animation-delay: var(--d, 0s); }
+html[data-look] .stars i.held { animation: none; }
+html[data-look] .stars i.now { width: 4px; height: 4px; margin: -1px 0 0 -1px; opacity: 1; box-shadow: 0 0 10px 2px var(--sky-glow, rgba(255, 247, 214, .5)), 0 0 26px 8px var(--sky-far, rgba(255, 247, 214, .2)); animation: sky-now 3.6s ease-in-out infinite; }
+@keyframes sky-twinkle { 0%, 100% { opacity: calc(var(--o, .7) * .4); } 50% { opacity: var(--o, .7); } }
+@keyframes sky-now { 0%, 100% { transform: scale(1); opacity: .82; } 50% { transform: scale(1.4); opacity: 1; } }
+html[data-look="night"] { --sky: #EAF8FF; --sky-glow: rgba(190, 235, 255, .55); --sky-far: rgba(150, 215, 255, .22); }
+html[data-look="golden"] { --sky: #FFEDC2; --sky-glow: rgba(255, 214, 140, .55); --sky-far: rgba(255, 190, 110, .22); }
+html[data-look="day"] { --sky: #F2FFE9; --sky-glow: rgba(200, 255, 225, .45); --sky-far: rgba(170, 255, 215, .18); }
+/* The days rise: when a ceremony that showed the seed head ends, its seeds fly from the ring to
+   their places in the sky (skyRise in galaxy.js). The flight is its own layer over the page; the
+   sky waits unseen and fades in as the lights arrive. */
+html[data-look] .stars { transition: opacity 1.2s ease; }
+html[data-look] .stars.wait { opacity: 0; transition: none; }
+html[data-look] .stars.rise { z-index: 44; opacity: 1; transition: none; }
+html[data-look] .stars.rise i { width: 4px; height: 4px; margin: -2px 0 0 -2px; opacity: 1; transform: none; background: var(--sky, #FFF7D6); box-shadow: 0 0 10px 3px var(--sky-glow, rgba(255, 247, 214, .5)), 0 0 22px 6px var(--sky-far, rgba(255, 247, 214, .2)); animation: sky-rise 2.8s cubic-bezier(.33, 0, .15, 1) var(--w, 0ms) both; }
+html[data-look] .stars.rise i.now { width: 6px; height: 6px; margin: -3px 0 0 -3px; box-shadow: 0 0 14px 4px var(--sky-glow, rgba(255, 247, 214, .5)), 0 0 36px 12px var(--sky-far, rgba(255, 247, 214, .2)); }
+@keyframes sky-rise { 0% { translate: var(--fx, 0) var(--fy, 0); scale: 1.9; opacity: 0; } 8% { opacity: 1; } 84% { opacity: 1; } 100% { translate: 0 0; scale: 1; opacity: 0; } }

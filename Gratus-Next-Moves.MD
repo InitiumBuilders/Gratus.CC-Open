@@ -2,9 +2,9 @@
 
 The roadmap, the open questions, and the answers already given. Updated with every ship. Newest thinking at the top of each list.
 
-## Where it stands (v51, 2026-11-21)
+## Where it stands (v56, 2026-11-24)
 
-Gratus is a gratitude journal first, and the journal is solid now. Half an entry survives the phone ending the page, a restore takes back any export, and a journal kept for years opens in about a second. The phone's back gesture walks rooms, sheets and the gift's pages the way it walks any app. Every surface ends in soft light, with nothing drawn as a line. The gates (G1 to G51), most of them with controls that prove they still bite, hold all of it.
+Gratus is a gratitude journal first, and the journal is solid now. Half an entry survives the phone ending the page, a restore takes back any export, and a journal kept for years opens in about a second. The phone's back gesture walks rooms, sheets and the gift's pages the way it walks any app. Every surface ends in soft light, with nothing drawn as a line. The gates (G1 to G52), most of them with controls that prove they still bite, hold all of it. Since v54 they stand on their own: they keep the two web fonts after the first fetch, and G28 counts every picture a phone downloads, each file once. Since v55 the type is set more finely: a hyphen closes up, a number in a sentence reads like the words around it, and a line never ends or starts on a dot. Since v56 the world follows the light of the day: three worlds by the phone's clock (night, the golden hours, day), one finish over every scene, a sky that holds one light for each day kept, and a scene that drifts and breathes.
 
 Two things are not known yet: how it behaves on an iPhone in Safari, where nothing since v46 has been walked, and why so few people write a second day. Very few people use it so far; [/trax](https://www.gratus.cc/trax) keeps the count.
 

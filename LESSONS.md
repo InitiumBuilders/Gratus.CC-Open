@@ -83,3 +83,15 @@
 - Restore has to accept what export writes. Export had moved on to version 5 while restore still asked for version 1, so every export made for a new phone was refused. A gate now takes a month out and puts it back.
 - Never push to the history while answering a popstate: phone browsers then skip the page's own steps. Writes wait until the app's own step back has landed.
 - Every Playwright `page.evaluate` counts as a user gesture. To test what happens without a touch, set a timer inside the page and read nothing until it has fired.
+
+## v54 to v56 (2026-11-24)
+- A measurement's window decides what it counts. G28 counted what had arrived 3.5 seconds after a page loaded, so a picture asked for a moment later was counted on some runs and left out on others, and ceilings had been set on counts that left the front page's scene picture out. Wait until the page has finished fetching on its own, then count each file once.
+- A test server's headers are part of the measurement. The gate server sends no-store, so Chrome fetched the logo again every time a view drew it, and the gate counted two downloads where a phone, with the site's day of caching, makes one.
+- A room that turns its painting is weighed with the heaviest one it can show. G28 weighed whichever painting the fixture's count of opens landed on, so a ceiling of 0.35 MB sat over a home that could weigh 0.50.
+- A setting applied to all text reaches characters nobody had in mind. Tabular figures were set everywhere so columns would line up; in Inter they also give the hyphen and the brackets a digit's width, and "real-world" read as "real - world" for months. Set figures to a fixed width only where they stand in a column.
+- A check that asks one question about a fix passes a fix that moves the problem. The first kicker fix moved the dot from the end of one line to the front of the next, and G37 passed it because it only looked at line ends. Write the check against the problem (a dot at a break), and show it failing on the broken version before the fix goes in.
+- Walk the first visit with nothing skipped. Every gate opened the app with the tour switched off, so nobody saw that each lit step of the tour blurred the thing it pointed at.
+- An animation written as `transform` replaces every transform already on the element. The first drift shoved the desktop's painting 225 pixels off centre; `scale` and `translate` leave `transform` alone.
+- Glass over a moving scene is blurred again on every frame it changes. A drift that steps six times a second, a fifth of a pixel at a time, looks continuous and asks a tenth of the work.
+- One finish over many pictures does more for a look than choosing among them. Less saturation, deeper shadows, a vignette and a grain made thirty paintings read as one series, and grouping them by the light of the day gave each room one world at a time.
+- When WSL stops answering, Windows has run out of memory. Every session on the machine shares it; a second browser beside a running suite was the last push on 2026-11-23. Count the browsers and the free memory before starting one, and a suite that ran through the starvation counts for nothing.

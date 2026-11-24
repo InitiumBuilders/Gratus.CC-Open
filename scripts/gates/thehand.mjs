@@ -314,11 +314,11 @@ for (const garden of [false, true]) {
 // seven. Re-measured this way on v54: every room of the app came out where v53 measured it. The
 // front page came out at 0.44 MB, because the old count never reached the picture behind its scene
 // (135 KB), which arrives after the doorway. Its ceiling is 0.47, 5% above, rounded up.
-const BUDGET = { '/': 0.47, '/app': 0.35, '/app/grow': 0.30, '/app/book': 0.28, '/app/goals': 0.40, '/app/give': 0.38, '/app/giveth': 0.44, '/app/vibes': 0.40, '/app/guides': 0.50 };
+const BUDGET = { '/': 0.47, '/app': 0.43, '/app/grow': 0.42, '/app/book': 0.38, '/app/goals': 0.41, '/app/give': 0.47, '/app/giveth': 0.47, '/app/vibes': 0.41, '/app/guides': 0.50 };
 const TEXT = /^(text\/|application\/(javascript|json|manifest\+json|xml)|image\/svg\+xml)/;
 const FILM = /\.(mp4|webm|mov|m4a|mp3|ogg|wav)([?#]|$)/i;
 const FLOOR = { '/': 7000 };
-async function weigh(route, bloat) {
+async function weigh(route, bloat, world) {
   const ctx = await b.newContext(PHONE);
   await ctx.addInitScript(() => { try { Object.defineProperty(navigator, 'connection', { configurable: true, get: () => ({ effectiveType: '4g', saveData: false, rtt: 100, downlink: 10, addEventListener() {}, removeEventListener() {} }) }); } catch (e) {} });
   if (bloat) await ctx.route('**/assets/js/galaxy.js*', async (r) => { const res = await r.fetch(); const body = (await res.text()) + '\n/* ' + crypto.randomBytes(90000).toString('base64') + ' */\n'; return r.fulfill({ response: res, body }); });
@@ -332,7 +332,7 @@ async function weigh(route, bloat) {
     if (!TEXT.test(type)) return;
     try { const body = await r.body(); texts.set(r.url(), zlib.gzipSync(body, { level: 6 }).length); } catch (e) {}
   });
-  await page.goto(route === '/' ? base + '/' : base + route + '?nosplash=1&dev=1', { waitUntil: 'load' });
+  await page.goto(route === '/' ? base + '/' : base + route + '?nosplash=1&dev=1' + (world ? '&look=' + world : ''), { waitUntil: 'load' });
   // until nothing but a film has been in flight for a second, and never past fifteen
   const t0 = Date.now(); let still = 0;
   while (Date.now() - t0 < 15000 && (still < 1000 || Date.now() - t0 < (FLOOR[route] || 3500))) { await page.waitForTimeout(100); still = busy.size ? 0 : still + 100; }
@@ -342,16 +342,44 @@ async function weigh(route, bloat) {
     out.push([location.href, (d && (d.transferSize || d.encodedBodySize)) || 0]);
     return out;
   });
+  const scene = await page.evaluate(() => { const ls = document.querySelectorAll('#scene .layer'); return ls.length ? ls[ls.length - 1].dataset.scene || '' : ''; }).catch(() => '');
   await ctx.close();
   let sent = 0; const once = new Set();
   for (const [url, n] of entries) { if (FILM.test(url) || once.has(url)) continue; once.add(url); sent += texts.has(url) ? texts.get(url) : n; }
-  return sent / 1048576;
+  return { mb: sent / 1048576, scene };
+}
+// Since v56 a room's painting follows the clock (G52) and turns with each open, so a room's weight
+// depends on which painting is up. Each room is weighed in all three worlds, and for each world the
+// painting that was up is taken out and the heaviest one that world can put behind the room is put
+// in its place. The heaviest of the three is held to the ceiling, so the ceiling holds at any hour
+// and on any open. Until v55 a room was weighed with whichever painting the fixture's count of
+// opens happened to land on, so its ceiling held one place in a rotation: with the lists before
+// v56 the heaviest home was 0.50 MB, the heaviest Give 0.53 and the heaviest journal 0.44, under
+// ceilings of 0.35, 0.38 and 0.28. With v56's lists the heaviest are 0.40, 0.44 and 0.36, and
+// night shows no film at all. The ceilings below are those heaviest cases, 5% above, rounded up;
+// two stand where they stood. Run with --exact to print four decimals for setting one. The front page
+// has its own scene and is weighed as it is.
+const LOOKS = (() => { try { return JSON.parse(fs.readFileSync(path.join(root, 'assets/js/galaxy.js'), 'utf8').match(/\/\*looks\*\/([\s\S]*?)\/\*end looks\*\//)[1]); } catch (e) { return null; } })();
+const ROOM = { '/app': 'home', '/app/grow': 'grow', '/app/book': 'book', '/app/goals': 'vibes', '/app/give': 'give', '/app/giveth': 'giveth', '/app/vibes': 'vibes', '/app/guides': 'guides' };
+const sizeOf = (n) => { try { return fs.statSync(path.join(root, 'assets/art/gfx', (/^[vd]/.test(n) ? n + '-poster' : n) + '.webp')).size / 1048576; } catch (e) { return 0; } };
+say(!!LOOKS, 'the worlds can be read from the app');
+async function heaviest(route, bloat) {
+  const each = [];
+  for (const w of Object.keys(LOOKS)) {
+    const r = await weigh(route, bloat, w);
+    const list = LOOKS[w][ROOM[route]] || [];
+    const heavy = list.slice().sort((a, c) => sizeOf(c) - sizeOf(a))[0] || '';
+    const known = list.includes(r.scene);
+    each.push({ w, heavy, known, worst: known ? r.mb - sizeOf(r.scene) + sizeOf(heavy) : r.mb });
+  }
+  return { each, top: each.slice().sort((a, c) => c.worst - a.worst)[0] };
 }
 for (const [route, cap] of Object.entries(BUDGET)) {
-  const mb = await weigh(route);
-  say(mb <= cap, route.padEnd(13) + mb.toFixed(2) + ' MB sent   ceiling ' + cap.toFixed(2));
+  if (route === '/' || !LOOKS) { const r = await weigh(route); say(r.mb <= cap, route.padEnd(13) + r.mb.toFixed(2) + ' MB sent   ceiling ' + cap.toFixed(2)); continue; }
+  const { each, top } = await heaviest(route, false);
+  say(each.every((x) => x.known) && top.worst <= cap, route.padEnd(13) + top.worst.toFixed(process.argv.includes('--exact') ? 4 : 2) + ' MB sent   ceiling ' + cap.toFixed(2) + '   (' + each.map((x) => x.w + ' ' + x.worst.toFixed(2) + ' with ' + (x.known ? x.heavy : 'a scene outside its world')).join(' · ') + ')');
 }
-{ const mb = await weigh('/app', true); say(mb > BUDGET['/app'], 'the control: 120 KB of text that will not compress, added to the script, is seen  (' + mb.toFixed(2) + ' MB on /app)'); }
+{ const mb = LOOKS ? (await heaviest('/app', true)).top.worst : (await weigh('/app', true)).mb; say(mb > BUDGET['/app'], 'the control: 120 KB of text that will not compress, added to the script, is seen  (' + mb.toFixed(2) + ' MB on /app)'); }
 
 // ── 9 · his pictures are still his ──
 {
