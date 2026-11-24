@@ -64,6 +64,39 @@ setTimeout(placeScene, 6000);
 const acts = Array.from(document.querySelectorAll('.act, .foot'));
 if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) e.target.classList.add('on'); }), { threshold: .25 }); acts.forEach((s) => io.observe(s)); }
 setTimeout(() => acts.forEach((s) => s.classList.add('on')), 1400);
+// A line of things set apart by dots never ends or starts a line on a dot. The front page's
+// kicker read "PEOPLE · PROJECTS · A BRIGHTER" over "PLANET" on a phone, and the links at its
+// foot ended a line on a dot. Each dot holds to the word before it, a kicker's phrases never
+// split, and the dot where a line breaks becomes the break (galaxy.css). The app does the same
+// for its kickers (kickerDots in galaxy.js).
+const dotLines = [];
+const escText = (t) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+document.querySelectorAll('.kicker').forEach((k) => {
+  if (k.children.length || !k.textContent.includes(' · ')) return;
+  k.innerHTML = k.textContent.split(' · ').map((t, i) => (i ? '<span class="kd">\u00a0·</span> ' : '') + '<span class="kw">' + escText(t) + '</span>').join('');
+  dotLines.push(k);
+});
+document.querySelectorAll('.foot span').forEach((line) => {
+  const seps = [...line.childNodes].filter((c) => c.nodeType === 3 && c.nodeValue === ' · ');
+  if (!seps.length) return;
+  seps.forEach((c) => { const d = document.createElement('span'); d.className = 'kd'; d.textContent = '\u00a0·'; c.replaceWith(d, document.createTextNode(' ')); });
+  dotLines.push(line);
+});
+function cutDots() {
+  dotLines.forEach((l) => l.querySelectorAll('.kd.cut').forEach((d) => d.classList.remove('cut')));
+  const cut = [];
+  dotLines.forEach((l) => l.querySelectorAll('.kd').forEach((d) => {
+    const a = d.previousElementSibling, b = d.nextElementSibling; if (!a || !b) return;
+    const ar = a.getClientRects(), br = b.getClientRects(); if (!ar.length || !br.length) return;
+    if (br[0].top > ar[ar.length - 1].top + 2) cut.push(d);
+  }));
+  cut.forEach((d) => d.classList.add('cut'));
+}
+cutDots();
+let cutRaf = 0;
+addEventListener('resize', () => { cancelAnimationFrame(cutRaf); cutRaf = requestAnimationFrame(() => cutDots()); });
+if (document.fonts) document.fonts.ready.then(() => cutDots());
+
 // a kicker that ends a sentence reads as a sentence
 document.querySelectorAll('.kicker').forEach((k) => { if (/[.!?]$/.test(k.textContent.trim())) k.classList.add('say'); });
 const st = document.querySelector('.stars'); let s = '';

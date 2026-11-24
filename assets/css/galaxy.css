@@ -888,6 +888,9 @@ body.touring { overflow: hidden; }
 
 /* the opening and closing cards carry their own dark; the lit steps get theirs from the spot */
 #tour:has(.tourcard.mid) { background: rgba(3, 6, 14, .93); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+/* a lit step shows what it points at: the blur above is for the opening card, and while it
+   stayed on, every step blurred the box, the emoji and the button it was pointing at */
+#tour:has(.spot) { -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 /* the four headings on Earth carry real Giveth category names now, which are longer than
    the words that used to be there, so the row wraps rather than running off a small screen */
@@ -1168,6 +1171,10 @@ html.wrapped .tabs .star span.lbl { color: #FFD98A; }
 .hm-line { font-family: var(--display); font-size: 24px; line-height: 29px; color: #FFF7D6; text-shadow: 0 1px 10px rgba(0, 0, 0, .8);
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
 .hm-words .kicker { letter-spacing: .12em; }
+/* a dot that falls where a line breaks becomes the break (kickerDots in galaxy.js, the front
+   page's own in landing.js); a dotted kicker in a hero or an act breaks only at a dot */
+.kd.cut { display: block; height: 0; overflow: hidden; }
+.hero .kicker .kw, .act .kicker .kw { white-space: nowrap; }
 .hm-more { justify-self: center; min-height: 44px; padding: 0 14px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--violet-text); }
 .hero14 .hm-today + .gpill { margin-top: 12px; }
 

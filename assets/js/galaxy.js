@@ -3004,6 +3004,26 @@ function arrive() {
   clearTimeout(arriveT);
   arriveT = setTimeout(() => els.forEach((el) => { el.classList.remove('arrive'); el.style.removeProperty('--k'); }), 900);
 }
+// A kicker that wraps never ends a line on its dot. "People · Projects · A Brighter Planet" broke
+// after its second dot on a phone, and a line that ends on a dot reads as a list cut short. A
+// kicker with dots is set as words and dots. Each dot holds to the word before it, so a line can
+// only break after a dot, and where a line breaks there the dot becomes the break (galaxy.css).
+// Measured again when the width or the fonts change.
+let kdRaf = 0;
+function kickerDots() {
+  const ks = [...document.querySelectorAll('.kicker')].filter((k) => k.dataset.dots || (!k.children.length && k.textContent.includes(' · ')));
+  ks.forEach((k) => {
+    if (!k.dataset.dots) { k.dataset.dots = '1'; k.innerHTML = k.textContent.split(' · ').map((t, i) => (i ? '<span class="kd">\u00a0·</span> ' : '') + '<span class="kw">' + esc(t) + '</span>').join(''); }
+    k.querySelectorAll('.kd.cut').forEach((d) => d.classList.remove('cut'));
+  });
+  const cut = [];
+  ks.forEach((k) => k.querySelectorAll('.kd').forEach((d) => {
+    const a = d.previousElementSibling, b = d.nextElementSibling; if (!a || !b) return;
+    const ar = a.getClientRects(), br = b.getClientRects(); if (!ar.length || !br.length) return;
+    if (br[0].top > ar[ar.length - 1].top + 2) cut.push(d);
+  }));
+  cut.forEach((d) => d.classList.add('cut'));
+}
 function wire() {
   watchVisibility();
   watchMark();
@@ -3013,7 +3033,12 @@ function wire() {
   tourMaybe();
   billCheck();
   { const here = tab + '/' + (sub || ''); if (here !== viewWas) { const was = viewWas; viewWas = here; beat('view'); if (was) arrive(); } }
-  if (!wiredOnce) { wiredOnce = true; watchTime(); }
+  kickerDots();
+  if (!wiredOnce) {
+    wiredOnce = true; watchTime();
+    addEventListener('resize', () => { cancelAnimationFrame(kdRaf); kdRaf = requestAnimationFrame(() => kickerDots()); });
+    if (document.fonts) document.fonts.ready.then(() => kickerDots());
+  }
   $$('[data-p]').forEach((b) => {
     const of = () => S.plants.find((x) => x.id === b.dataset.p);
     b.addEventListener('click', () => { const p = of(); if (p) arcSheet(face(p)); });

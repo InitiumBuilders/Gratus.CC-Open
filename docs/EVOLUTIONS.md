@@ -2,6 +2,18 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v55 · Figures set like letters (2026-11-23)
+
+- **A hyphen closes up, and eleven reads as eleven.** Every figure in the app was set at one fixed width so that columns of numbers would line up. The face's fixed-width set gives the hyphen and the brackets a digit's width too, so "real-world" read as "real - world" and "Zero-fee" as "Zero - fee" on the Galaxy, the World and Heal Places, and 11 read as 1 1 in every date and count. Figures are set like the letters around them now. The time log, whose times and minutes stand in columns, and the Giveth figures that count up keep one width per figure.
+- **A kicker never ends or starts a line on its dot.** "People · Projects · A Brighter Planet" broke after its second dot on a phone, and a line that ends on a dot reads as a list cut short. Each dot now holds to the word before it, and wherever a kicker's line breaks at a dot, the dot gives way to the break, at any width. His words are unchanged. G37 reads the two kickers that wrap at five widths and counts a dot at either end of a line, with a control that puts the dot back. The first try moved the dot to the front of the next line, and a check that only asked about line ends passed it; the check fails that try now. The front page does the same for its kicker, which also stops splitting "A Brighter Planet" across two lines, and for the links at its foot.
+- **The tour shows what it points at.** Walked as a first visit on a fresh phone, every lit step of the tour blurred the very thing it was pointing at: the writing box, the emoji, the Plant button. The blur meant for the opening card stayed on while each step lit its target. A lit step carries its own dark and has no blur now, and G41 checks it with a control.
+
+## v54 · The gates stand on their own (2026-11-23)
+
+- **The gates keep their fonts.** The app's two web fonts come from Google. On 2026-11-23 a slow moment there held a page past a gate's twenty seconds, twice, at different checks, and stopped a ship. The first gate to ask for a font now fetches it once and keeps it, and every gate after that is served the kept copy. Nothing changes for a person using the site.
+- **G28 counts every picture a phone downloads, each once.** It counted what had arrived 3.5 seconds after a page loaded, so a picture asked for a moment later was counted on some runs and left out on others, and some ceilings had been set on counts that left one out. It now waits until the page has finished fetching on its own and counts each file once (the site keeps a picture for a day, so a phone fetches it once). Films stay with G8. Every room of the app came out where v53 measured it. The front page weighs 0.44 MB: the old count never reached the picture behind its scene, 135 KB, which arrives after the doorway. Its ceiling is 0.47.
+- **A page that loads slowly on a busy machine is opened once more** before G51 reads it, so a slow moment is never taken for a missing page.
+
 ## v53 · The weight a phone carries (2026-11-23)
 
 - **G28 weighs what a phone downloads.** Its ceilings counted raw bytes, while the host sends every text file compressed: galaxy.js is 269 KB on disk and 80 KB on the wire. Code and comments weighed three to four times what a phone receives, and v52 had to trim comments to fit. Each HTML, CSS, JS, JSON or SVG file now counts at its gzip size (setting 6, within about 1% of what the site sends), each picture and film at its own bytes. The ceilings were measured again on v52 and set 5% above each route, and a control adds 120 KB of text that will not compress and must be seen.

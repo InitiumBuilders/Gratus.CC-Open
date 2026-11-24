@@ -101,5 +101,10 @@ html.anim:not(.landed) .in { opacity: 0; transform: translateY(12px); animation:
    Cormorant Garamond ships oldstyle figures by default, so 1 renders as a small
    capital I and 0 as an O. "1 plant · 0 ready to give" read as "I plant · O ready
    to give" in the garden, the journal summary and every stat. Lining figures
-   everywhere; tabular so columns of numbers line up. */
-html, body { font-variant-numeric: lining-nums tabular-nums; font-feature-settings: "lnum" 1, "tnum" 1; }
+   everywhere.
+   v55: they were tabular everywhere too, and Inter's tabular set gives the hyphen and the
+   brackets a digit's width: "real-world" read as "real - world" and 11 as 1 1. A figure
+   keeps one width only where it stands in a column (the time log here, the counters that
+   count up in galaxy.css); everywhere else it is set like the letters around it. */
+html, body { font-variant-numeric: lining-nums; font-feature-settings: "lnum" 1; }
+.jr-rows { font-variant-numeric: lining-nums tabular-nums; font-feature-settings: "lnum" 1, "tnum" 1; }

@@ -8,6 +8,7 @@
 //
 // It fails closed. If there is no browser it says so and exits non-zero, because
 // a gate that cannot look is not a gate that passed.
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import http from 'node:http';
 import os from 'node:os';
@@ -80,6 +81,36 @@ function chromiumCandidates() {
   return out.concat(['/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome']);
 }
 
+// A gate never waits on a server it does not run. The app's two web fonts come from Google, and
+// on 2026-11-23 a slow moment there held a page's stylesheet, and with it the whole page, past
+// open()'s twenty seconds, twice, at different checks. The first gate to ask for a font fetches
+// it once and keeps it here; every gate after that is served the kept copy. The fonts are never
+// blocked, because G37 measures real letters.
+const FONTS = path.join(os.homedir(), '.cache', 'gratus-gates', 'fonts');
+async function keptFont(route) {
+  const url = route.request().url();
+  const file = path.join(FONTS, crypto.createHash('sha1').update(url).digest('hex'));
+  try {
+    const meta = JSON.parse(fs.readFileSync(file + '.json', 'utf8'));
+    return await route.fulfill({ status: 200, contentType: meta.type, headers: { 'access-control-allow-origin': '*' }, body: fs.readFileSync(file) });
+  } catch (e) { /* not kept yet */ }
+  try {
+    const res = await route.fetch({ timeout: 20000 });
+    const body = await res.body();
+    if (res.ok()) {
+      fs.mkdirSync(FONTS, { recursive: true });
+      fs.writeFileSync(file, body);
+      fs.writeFileSync(file + '.json', JSON.stringify({ url, type: res.headers()['content-type'] || '' }));
+    }
+    return await route.fulfill({ response: res, body });
+  } catch (e) { return route.abort().catch(() => null); }
+}
+function keepFonts(br) {
+  const make = br.newContext.bind(br);
+  br.newContext = async (...a) => { const ctx = await make(...a); await ctx.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, keptFont); return ctx; };
+  return br;
+}
+
 export async function browser() {
   let pw;
   try { pw = await import('playwright'); } catch (e) {
@@ -89,10 +120,10 @@ export async function browser() {
     process.exit(1);
   }
   const errs = [];
-  try { return await pw.chromium.launch(); } catch (e) { errs.push(e.message.split('\n')[0]); }
+  try { return keepFonts(await pw.chromium.launch()); } catch (e) { errs.push(e.message.split('\n')[0]); }
   for (const exe of chromiumCandidates()) {
     if (!fs.existsSync(exe)) continue;
-    try { return await pw.chromium.launch({ executablePath: exe }); } catch (e) { errs.push(e.message.split('\n')[0]); }
+    try { return keepFonts(await pw.chromium.launch({ executablePath: exe })); } catch (e) { errs.push(e.message.split('\n')[0]); }
   }
   console.log('  no browser: playwright is installed but no chromium would start.');
   console.log('  run:  npx playwright install chromium');

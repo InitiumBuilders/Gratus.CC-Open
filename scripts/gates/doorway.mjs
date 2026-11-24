@@ -12,7 +12,9 @@
 // has to see the doorway. A detector that sees nothing makes every absence pass.
 //
 //   node scripts/gates/doorway.mjs
-import { serve, browser, PHONE } from './lib/harness.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { serve, browser, PHONE, ROOT } from './lib/harness.mjs';
 
 let fails = 0;
 const say = (ok, m) => { if (!ok) fails++; console.log('  ' + (ok ? 'pass  ' : 'FAIL  ') + m); };
@@ -143,6 +145,30 @@ const started = (p) => p.evaluate(() => { const v = document.getElementById('vie
   say(new URL(page.url()).pathname === '/app/give', 'into Give  (' + new URL(page.url()).pathname + ')');
   await ctx.close();
 }
+
+// ── a lit step of the tour shows what it points at ──
+// Walked on 2026-11-23: every lit step blurred the very thing it pointed at (the box, the emoji,
+// the Plant button), because the whole-screen blur meant for the opening card stayed on while the
+// spot lit its hole. The spot carries its own dark, so a lit step has no blur. The control puts
+// the blur back and must see it.
+const GALCSS = fs.readFileSync(path.join(ROOT, 'assets/css/galaxy.css'), 'utf8');
+const CLEAR = '#tour:has(.spot) { -webkit-backdrop-filter: none; backdrop-filter: none; }\n';
+const blurred = GALCSS.split(CLEAR).length === 2 ? GALCSS.replace(CLEAR, () => '') : null;
+say(!!blurred, 'the clear-step control has its line to change');
+async function stepBlur(gal) {
+  const ctx = await fresh();
+  if (gal) await ctx.route('**/assets/css/galaxy.css*', (r) => r.fulfill({ status: 200, contentType: 'text/css; charset=utf-8', body: gal }));
+  const page = await ctx.newPage();
+  await page.goto(srv.base + '/app?nosplash=1', { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1500);
+  await page.click('#tour-go');
+  await page.waitForTimeout(1400);
+  const r = await page.evaluate(() => { const t = document.getElementById('tour'); const c = getComputedStyle(t); return { spot: !!t.querySelector('.spot'), f: c.backdropFilter || c.webkitBackdropFilter || 'none' }; });
+  await ctx.close();
+  return r;
+}
+{ const r = await stepBlur(); say(r.spot && r.f === 'none', 'a lit step of the tour shows what it points at, with nothing blurred over it  (' + r.f + ')'); }
+if (blurred) { const r = await stepBlur(blurred); say(r.spot && r.f !== 'none', 'the control: with the blur left on, the step is blurred  (' + r.f + ')'); }
 
 await b.close(); await srv.close();
 console.log('G41 one doorway: ' + (fails ? 'FAIL · ' + fails : 'PASS'));

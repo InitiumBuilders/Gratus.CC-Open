@@ -301,20 +301,41 @@ for (const garden of [false, true]) {
 // about 1% of what www.gratus.cc sends), each picture and film at its own bytes. Re-measured on
 // v52 and set 5% above each route, rounded up: a new picture still trips it, a few releases of
 // code do not. The control adds 120 KB of text that will not compress to the app's script.
-const BUDGET = { '/': 0.33, '/app': 0.35, '/app/grow': 0.30, '/app/book': 0.28, '/app/goals': 0.40, '/app/give': 0.38, '/app/giveth': 0.44, '/app/vibes': 0.40, '/app/guides': 0.50 };
+// 2026-11-23, v54: the count is taken once the page has finished fetching on its own, and each
+// file is counted once. Until v53 it was taken 3.5 s after the page loaded, so a picture the
+// browser asked for a moment later was counted on some runs and left out on others. When the gates
+// began keeping their fonts, pages laid out sooner and three routes went over ceilings that had
+// been set on counts that left a picture out. A phone downloads those pictures, so they count.
+// The gate server sends no-store, which made Chrome fetch the logo again whenever a view drew it
+// a second time; www.gratus.cc keeps it for a day, so a phone fetches it once and so does this.
+// Films are left out because G8 weighs them. The page is told it is on 4G: that decides whether
+// the front page plays its doorway, and Chrome's own guess moved with how slow Google had been
+// earlier in the run. The front page places its scene within six seconds, so it is weighed after
+// seven. Re-measured this way on v54: every room of the app came out where v53 measured it. The
+// front page came out at 0.44 MB, because the old count never reached the picture behind its scene
+// (135 KB), which arrives after the doorway. Its ceiling is 0.47, 5% above, rounded up.
+const BUDGET = { '/': 0.47, '/app': 0.35, '/app/grow': 0.30, '/app/book': 0.28, '/app/goals': 0.40, '/app/give': 0.38, '/app/giveth': 0.44, '/app/vibes': 0.40, '/app/guides': 0.50 };
 const TEXT = /^(text\/|application\/(javascript|json|manifest\+json|xml)|image\/svg\+xml)/;
+const FILM = /\.(mp4|webm|mov|m4a|mp3|ogg|wav)([?#]|$)/i;
+const FLOOR = { '/': 7000 };
 async function weigh(route, bloat) {
   const ctx = await b.newContext(PHONE);
+  await ctx.addInitScript(() => { try { Object.defineProperty(navigator, 'connection', { configurable: true, get: () => ({ effectiveType: '4g', saveData: false, rtt: 100, downlink: 10, addEventListener() {}, removeEventListener() {} }) }); } catch (e) {} });
   if (bloat) await ctx.route('**/assets/js/galaxy.js*', async (r) => { const res = await r.fetch(); const body = (await res.text()) + '\n/* ' + crypto.randomBytes(90000).toString('base64') + ' */\n'; return r.fulfill({ response: res, body }); });
   const page = await ctx.newPage();
-  const texts = new Map();
+  const texts = new Map(); const busy = new Set();
+  page.on('request', (r) => { if (!FILM.test(r.url())) busy.add(r); });
+  page.on('requestfinished', (r) => busy.delete(r));
+  page.on('requestfailed', (r) => busy.delete(r));
   page.on('response', async (r) => {
     const type = (r.headers()['content-type'] || '').split(';')[0].trim();
     if (!TEXT.test(type)) return;
     try { const body = await r.body(); texts.set(r.url(), zlib.gzipSync(body, { level: 6 }).length); } catch (e) {}
   });
   await page.goto(route === '/' ? base + '/' : base + route + '?nosplash=1&dev=1', { waitUntil: 'load' });
-  await page.waitForTimeout(3500);
+  // until nothing but a film has been in flight for a second, and never past fifteen
+  const t0 = Date.now(); let still = 0;
+  while (Date.now() - t0 < 15000 && (still < 1000 || Date.now() - t0 < (FLOOR[route] || 3500))) { await page.waitForTimeout(100); still = busy.size ? 0 : still + 100; }
   const entries = await page.evaluate(() => {
     const out = performance.getEntriesByType('resource').map((e) => [e.name, e.transferSize || e.encodedBodySize || 0]);
     const d = performance.getEntriesByType('navigation')[0];
@@ -322,8 +343,8 @@ async function weigh(route, bloat) {
     return out;
   });
   await ctx.close();
-  let sent = 0;
-  for (const [url, n] of entries) sent += texts.has(url) ? texts.get(url) : n;
+  let sent = 0; const once = new Set();
+  for (const [url, n] of entries) { if (FILM.test(url) || once.has(url)) continue; once.add(url); sent += texts.has(url) ? texts.get(url) : n; }
   return sent / 1048576;
 }
 for (const [route, cap] of Object.entries(BUDGET)) {

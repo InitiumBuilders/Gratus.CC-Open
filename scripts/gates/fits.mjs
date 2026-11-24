@@ -92,6 +92,55 @@ const hb = await header();
 say(hb.every(([, g]) => g !== null && g >= 2), 'the mark and the name sit between the header buttons at every width  (' + hb.map(([w, g]) => w + ': ' + g + 'px').join(', ') + ')');
 if (fixed) { const hc = await header(fixed); say(hc.some(([, g]) => g !== null && g < 0), 'the control: fixed sizes run under a button  (' + hc.map(([w, g]) => w + ': ' + g + 'px').join(', ') + ')'); }
 
+// A kicker that wraps never ends or starts a line on its dot: "PEOPLE · PROJECTS ·" over "A
+// BRIGHTER PLANET" read as a list cut short, and the first try at a fix moved the dot to the
+// front of the next line, which this check let through while it only asked about line ends. Where a
+// line breaks at a dot, the dot becomes the break. The two
+// kickers with dots that wrap on a phone are read at five widths; the control turns the
+// setting off and the dot is seen at the end of a line.
+const APP = fs.readFileSync(path.join(ROOT, 'assets/js/galaxy.js'), 'utf8');
+const KD = 'function kickerDots() {\n';
+const loose = APP.split(KD).length === 2 ? APP.replace(KD, () => KD + '  return;\n') : null;
+say(!!loose, 'the kicker control has its line to change');
+const LAND = fs.readFileSync(path.join(ROOT, 'assets/js/landing.js'), 'utf8');
+const CD = 'function cutDots() {\n';
+const looseLand = LAND.split(CD).length === 2 ? LAND.replace(CD, () => CD + '  return;\n') : null;
+say(!!looseLand, 'the front page control has its line to change');
+async function kickers(js, land) {
+  let ends = 0, wraps = 0; const at = [];
+  for (const w of [320, 360, 375, 412, 430]) for (const route of ['/app/world', '/app/galaxy', '/']) {
+    const ctx = await b.newContext({ viewport: { width: w, height: 800 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce', serviceWorkers: 'block' });
+    await ctx.route('**/api/**', (r) => r.fulfill({ status: 204, body: '' }));
+    if (js) await ctx.route('**/assets/js/galaxy.js*', (r) => r.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8', body: js }));
+    if (land) await ctx.route('**/assets/js/landing.js*', (r) => r.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8', body: land }));
+    const page = await ctx.newPage();
+    await page.goto(srv.base + route + '?nosplash=1&notour=1&dev=1', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1500);
+    const n = await page.evaluate(() => {
+      let e = 0, wr = 0;
+      for (const k of document.querySelectorAll('.kicker, .foot span')) {
+        if (!k.textContent.includes('·')) continue;
+        const ch = []; const tw = document.createTreeWalker(k, NodeFilter.SHOW_TEXT); let t;
+        while ((t = tw.nextNode())) {
+          if (!t.parentElement.getBoundingClientRect().height) continue;
+          for (let i = 0; i < t.length; i++) if (t.data[i].trim()) { const r = document.createRange(); r.setStart(t, i); r.setEnd(t, i + 1); ch.push([t.data[i], r.getBoundingClientRect().top]); }
+        }
+        if (new Set(ch.map((c) => Math.round(c[1]))).size > 1) wr++;
+        for (let i = 0; i < ch.length; i++) if (ch[i][0] === '·' && ((i + 1 < ch.length && ch[i + 1][1] > ch[i][1] + 2) || (i > 0 && ch[i][1] > ch[i - 1][1] + 2))) e++;
+        // and a dotted kicker in a hero or an act never splits a phrase across two lines
+        if (k.closest('.hero, .act') && k.classList.contains('kicker')) for (const w of k.querySelectorAll('.kw')) if (w.getClientRects().length > 1) e++;
+      }
+      return { e, wr };
+    });
+    ends += n.e; wraps += n.wr; if (n.e) at.push(route + ' at ' + w);
+    await ctx.close();
+  }
+  return { ends, wraps, at };
+}
+const kk = await kickers();
+say(kk.ends === 0 && kk.wraps > 0, 'a kicker that wraps never ends or starts a line on its dot  (' + kk.wraps + ' wrapped, ' + kk.ends + ' dots where a line breaks' + (kk.at.length ? ': ' + kk.at.slice(0, 3).join(', ') : '') + ')');
+if (loose && looseLand) { const kc = await kickers(loose, looseLand); say(kc.ends > 0, 'the control: without the setting, a dot falls where a line breaks  (' + kc.ends + ')'); }
+
 await b.close(); await srv.close();
 console.log('G37 everything fits: ' + (fails ? 'FAIL - ' + fails : 'PASS'));
 process.exit(fails ? 1 : 0);

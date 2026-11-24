@@ -51,7 +51,10 @@ async function context(o = {}) {
   return ctx;
 }
 async function arrive(page, route) {
-  await page.goto(srv.base + route + (route.includes('?') ? '&' : '?') + 'nosplash=1&notour=1&dev=1', { waitUntil: 'domcontentloaded' }).catch(() => null);
+  const url = srv.base + route + (route.includes('?') ? '&' : '?') + 'nosplash=1&notour=1&dev=1';
+  // a page that has not parsed in time on a busy machine is opened once more before anything is read from it
+  const late = await page.goto(url, { waitUntil: 'domcontentloaded' }).then(() => false, () => true);
+  if (late) await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => null);
   await page.waitForTimeout(1600);
   for (let i = 0; i < 30; i++) { const up = await page.evaluate(() => { const r = document.getElementById('ceremony'); return !!r && !r.hidden; }).catch(() => false); if (!up) break; await page.keyboard.press('Escape'); await page.waitForTimeout(200); }
 }
