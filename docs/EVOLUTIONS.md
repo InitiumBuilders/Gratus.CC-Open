@@ -2,6 +2,11 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v53 · The weight a phone carries (2026-11-23)
+
+- **G28 weighs what a phone downloads.** Its ceilings counted raw bytes, while the host sends every text file compressed: galaxy.js is 269 KB on disk and 80 KB on the wire. Code and comments weighed three to four times what a phone receives, and v52 had to trim comments to fit. Each HTML, CSS, JS, JSON or SVG file now counts at its gzip size (setting 6, within about 1% of what the site sends), each picture and film at its own bytes. The ceilings were measured again on v52 and set 5% above each route, and a control adds 120 KB of text that will not compress and must be seen.
+- **The front page shows the app as it is today.** Its three photographs were retaken from the current app. The script that takes them dated its garden by the UTC calendar while the app reads the local one, so a photograph taken on an American evening put the newest entry on tomorrow, above Today. It keeps the local calendar now.
+
 ## v52 · A room arrives (2026-11-21)
 
 - **A room arrives.** A room used to appear all at once while its world crossfaded in behind it, so the page landed in two ways at the same moment. Its first blocks rise into place now, a few hundredths of a second apart, and can be touched from the first frame. A repaint a moment later never plays it twice, and under reduced motion nothing moves.

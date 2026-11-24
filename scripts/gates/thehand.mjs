@@ -14,6 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { serve, browser, PHONE, open } from './lib/harness.mjs';
 
@@ -293,21 +294,43 @@ for (const garden of [false, true]) {
 // 2 KB under its ceiling and went 1 KB over it, so its ceiling was 0.81 for v48 to v50.
 // v51 took out the border colours that v49's no-line rule makes dead (2 KB), and the room
 // weighs 0.799 again, so its ceiling is back at 0.80.
-const BUDGET = { '/': 0.55, '/app': 0.75, '/app/grow': 0.72, '/app/book': 0.70, '/app/goals': 0.80, '/app/give': 0.75, '/app/giveth': 0.80, '/app/vibes': 0.80, '/app/guides': 0.90 };
-for (const [route, cap] of Object.entries(BUDGET)) {
+// 2026-11-23: these ceilings counted raw bytes, but the host sends every text file compressed
+// (galaxy.js is 269 KB on disk and 80 KB on the wire), so code and comments weighed three to
+// four times what a phone receives, and v52 had to trim comments to fit. The weight is now what
+// a phone downloads: each HTML, CSS, JS, JSON or SVG file at its gzip size (setting 6, within
+// about 1% of what www.gratus.cc sends), each picture and film at its own bytes. Re-measured on
+// v52 and set 5% above each route, rounded up: a new picture still trips it, a few releases of
+// code do not. The control adds 120 KB of text that will not compress to the app's script.
+const BUDGET = { '/': 0.33, '/app': 0.35, '/app/grow': 0.30, '/app/book': 0.28, '/app/goals': 0.40, '/app/give': 0.38, '/app/giveth': 0.44, '/app/vibes': 0.40, '/app/guides': 0.50 };
+const TEXT = /^(text\/|application\/(javascript|json|manifest\+json|xml)|image\/svg\+xml)/;
+async function weigh(route, bloat) {
   const ctx = await b.newContext(PHONE);
+  if (bloat) await ctx.route('**/assets/js/galaxy.js*', async (r) => { const res = await r.fetch(); const body = (await res.text()) + '\n/* ' + crypto.randomBytes(90000).toString('base64') + ' */\n'; return r.fulfill({ response: res, body }); });
   const page = await ctx.newPage();
+  const texts = new Map();
+  page.on('response', async (r) => {
+    const type = (r.headers()['content-type'] || '').split(';')[0].trim();
+    if (!TEXT.test(type)) return;
+    try { const body = await r.body(); texts.set(r.url(), zlib.gzipSync(body, { level: 6 }).length); } catch (e) {}
+  });
   await page.goto(route === '/' ? base + '/' : base + route + '?nosplash=1&dev=1', { waitUntil: 'load' });
   await page.waitForTimeout(3500);
-  const mb = await page.evaluate(() => {
-    let t = 0;
-    for (const e of performance.getEntriesByType('resource')) t += e.transferSize || e.encodedBodySize || 0;
+  const entries = await page.evaluate(() => {
+    const out = performance.getEntriesByType('resource').map((e) => [e.name, e.transferSize || e.encodedBodySize || 0]);
     const d = performance.getEntriesByType('navigation')[0];
-    return (t + ((d && (d.transferSize || d.encodedBodySize)) || 0)) / 1048576;
+    out.push([location.href, (d && (d.transferSize || d.encodedBodySize)) || 0]);
+    return out;
   });
-  say(mb <= cap, route.padEnd(13) + mb.toFixed(2) + ' MB   ceiling ' + cap.toFixed(2));
   await ctx.close();
+  let sent = 0;
+  for (const [url, n] of entries) sent += texts.has(url) ? texts.get(url) : n;
+  return sent / 1048576;
 }
+for (const [route, cap] of Object.entries(BUDGET)) {
+  const mb = await weigh(route);
+  say(mb <= cap, route.padEnd(13) + mb.toFixed(2) + ' MB sent   ceiling ' + cap.toFixed(2));
+}
+{ const mb = await weigh('/app', true); say(mb > BUDGET['/app'], 'the control: 120 KB of text that will not compress, added to the script, is seen  (' + mb.toFixed(2) + ' MB on /app)'); }
 
 // ── 9 · his pictures are still his ──
 {

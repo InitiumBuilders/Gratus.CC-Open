@@ -24,8 +24,11 @@ const DAY = 86400000;
 // The last kept day is TODAY, so the garden in the picture is one somebody tended this
 // morning rather than one they walked away from a week ago. It makes the shot move with
 // the calendar, which is correct: these are photographs, retaken whenever the app changes.
-const END = Date.parse(new Date().toISOString().slice(0, 10) + 'T12:00:00Z');
-const day = (n) => new Date(END - n * DAY).toISOString().slice(0, 10);
+// Noon on this machine's own calendar, which is the one the app reads: taken from the UTC
+// date, an evening in the Americas put the newest entry on tomorrow, above Today.
+const NOW = new Date();
+const END = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate(), 12).getTime();
+const day = (n) => { const d = new Date(END - n * DAY); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const kept = (from, to) => { const out = []; for (let i = from; i >= to; i--) out.push(day(i)); return out; };
 
 const GARDEN = {
