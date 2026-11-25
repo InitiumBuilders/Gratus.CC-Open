@@ -175,6 +175,62 @@ async function stepBlur(gal) {
   if (thin) { const r = await stepBlur(thin); say(!r.solid, 'the control: a card the page shows through is seen  (' + r.bg + ')'); } }
 if (blurred) { const r = await stepBlur(blurred); say(r.spot && r.f !== 'none', 'the control: with the blur left on, the step is blurred  (' + r.f + ')'); }
 
+// ── the lit frame never runs through words ──
+// Walked on 2026-11-24: on the tour's second step the frame's top edge ran through the label
+// above the emoji, which sat inside the frame's margin. The label is lit with the thing it
+// names now. Each lit step is read for any line of the page's words that an edge of the frame
+// crosses. The control leaves the label out and must find the cut.
+const GALJS = fs.readFileSync(path.join(ROOT, 'assets/js/galaxy.js'), 'utf8');
+const LABEL = "const l = lab && lab.matches('.kicker') ? lab.getBoundingClientRect() : null;";
+const unlabelled = GALJS.split(LABEL).length === 2 ? GALJS.replace(LABEL, () => 'const l = null;') : null;
+say(!!unlabelled, 'the label control has its line to change');
+async function frames(js, gal) {
+  const ctx = await fresh();
+  if (js) await ctx.route('**/assets/js/galaxy.js*', (r) => r.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8', body: js }));
+  if (gal) await ctx.route('**/assets/css/galaxy.css*', (r) => r.fulfill({ status: 200, contentType: 'text/css; charset=utf-8', body: gal }));
+  const page = await ctx.newPage();
+  await page.goto(srv.base + '/app?nosplash=1', { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1500);
+  await page.click('#tour-go');
+  const out = [];
+  for (let i = 0; i < 3; i++) {
+    await page.waitForTimeout(1500);
+    out.push(await page.evaluate(() => {
+      const s = document.querySelector('#tour .spot');
+      const k = ((document.querySelector('#tour .tourcard .kicker') || {}).textContent || '').trim();
+      if (!s) return { k, spot: false, cuts: [] };
+      const r = s.getBoundingClientRect(); const cuts = [];
+      const w = document.createTreeWalker(document.getElementById('view'), NodeFilter.SHOW_TEXT);
+      for (let n = w.nextNode(); n; n = w.nextNode()) {
+        if (!n.nodeValue.trim()) continue;
+        const g = document.createRange(); g.selectNodeContents(n);
+        for (const q of g.getClientRects()) {
+          if (q.width < 1 || q.height < 1) continue;
+          const across = q.right > r.left && q.left < r.right, down = q.bottom > r.top && q.top < r.bottom;
+          if ((across && [r.top, r.bottom].some((y) => y > q.top + 2 && y < q.bottom - 2)) ||
+              (down && [r.left, r.right].some((x) => x > q.left + 2 && x < q.right - 2))) { cuts.push(n.nodeValue.trim().slice(0, 32)); break; }
+        }
+      }
+      // a ring is a shadow with no blur and a small spread: a line drawn round the frame
+      const re = /(rgba?\([^)]*\)|#[0-9a-f]{3,8})\s+(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\s+(-?[\d.]+)px/gi; let m, ring = '';
+      const sh = getComputedStyle(s).boxShadow;
+      while ((m = re.exec(sh))) if (Number(m[4]) === 0 && Number(m[5]) > 0 && Number(m[5]) < 100) ring = m[0];
+      return { k, spot: true, cuts, ring };
+    }));
+    if (i < 2) await page.click('#tour-next').catch(() => null);
+  }
+  await ctx.close();
+  return out;
+}
+{ const steps = await frames();
+  for (const st of steps) say(st.spot && !st.cuts.length, 'the frame on "' + st.k + '" runs through no words' + (st.cuts.length ? '  (' + st.cuts.join(' | ') + ')' : ''));
+  if (unlabelled) { const c = await frames(unlabelled); say(c.some((st) => st.cuts.length), 'the control: with the label left out, the cut is found  (' + c.map((st) => st.cuts.join(' | ') || '-').join(' / ') + ')'); }
+  say(steps.length && steps.every((st) => st.spot && !st.ring), 'every lit frame is light, with no line drawn round it' + (steps.some((st) => st.ring) ? '  (' + steps.map((st) => st.ring || '-').join(' / ') + ')' : '')); }
+{ const LIT = "  box-shadow: var(--glow), 0 0 0 9999px rgba(3, 6, 14, .9);\n";
+  const ringed = GALCSS.split(LIT).length === 2 ? GALCSS.replace(LIT, () => "  box-shadow: 0 0 0 9999px rgba(3, 6, 14, .9), 0 0 0 2px var(--violet-text), var(--glow);\n") : null;
+  say(!!ringed, 'the frame-line control has its line to change');
+  if (ringed) { const c = await frames(null, ringed); say(c.some((st) => st.ring), 'the control: the old frame with its ring is seen  (' + (c.find((st) => st.ring) || {}).ring + ')'); } }
+
 await b.close(); await srv.close();
 console.log('G41 one doorway: ' + (fails ? 'FAIL · ' + fails : 'PASS'));
 process.exit(fails ? 1 : 0);

@@ -12,7 +12,7 @@
 // is not ours is in none, walks every room in every world and reads the painting that is up,
 // moves the clock through the day and reads the world, and reads the finish and the grain.
 // It reads the sky (one light for each day kept) and the motion (a painting drifts, the grain
-// runs, nothing moves under reduced motion, and on a desk the painting stays centred while it
+// holds still, nothing moves under reduced motion, and on a desk the painting stays centred while it
 // drifts). It plants a first day in a new garden and watches the day rise: when the ceremony
 // ends, its seed flies to its place in the sky. Six controls must be seen: rooms that ignore the
 // world, a clock that never turns, a scene with no finish, lights scattered at random, a drift
@@ -149,7 +149,8 @@ const scattered = APP.split(SK).length === 2 ? APP.replace(SK, () => "  const da
 say(!!scattered, 'the sky control has its line to change');
 if (scattered) { const r = await sky(scattered); say(r[0].n !== Math.min(KEPT, 120) || r[0].first !== r[1].first, 'the control: seventy lights scattered at random are seen  (' + r[0].n + ')'); }
 
-// the world is alive: a painting drifts and the grain runs; under reduced motion nothing moves; and
+// the world is alive and quiet: a painting drifts and the grain holds still; under reduced motion
+// nothing moves; and
 // on a desk the painting stays centred while it drifts (the drift is scale and translate, so the
 // transform that centres it there is left alone)
 async function alive(gal, o = {}) {
@@ -169,7 +170,11 @@ async function alive(gal, o = {}) {
   await ctx.close();
   return r;
 }
-{ const r = await alive(); say(!r.none && r.drift === 'scene-breathe' && r.grain === 'grain-run', 'a painting drifts and the grain runs  (' + r.drift + ', ' + r.grain + ')'); }
+{ const r = await alive(); say(!r.none && r.drift === 'scene-breathe' && r.grain === 'none', 'a painting drifts and the grain holds still  (' + r.drift + ', ' + r.grain + ')'); }
+{ const STILL = '/* The grain holds still.';
+  const running = GAL.split(STILL).length === 2 ? GAL.replace(STILL, () => '#scene::before { animation: grain-run 1s steps(1) infinite; }\n@keyframes grain-run { 0% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(-3%, -2%, 0); } 100% { transform: translate3d(0, 0, 0); } }\n' + STILL) : null;
+  say(!!running, 'the still-grain control has its line to change');
+  if (running) { const r = await alive(running); say(!r.none && r.grain === 'grain-run', 'the control: a grain that runs is seen  (' + r.grain + ')'); } }
 { const r = await alive(null, { still: true }); say(!r.none && r.drift === 'none' && r.grain === 'none', 'under reduced motion the world is still  (' + r.drift + ', ' + r.grain + ')'); }
 { const r = await alive(null, { desk: true }); say(!r.none && r.drift === 'scene-breathe' && Math.abs(r.off) <= 3, 'on a desk the painting stays centred while it drifts  (' + r.off + 'px off centre)'); }
 const KF = '@keyframes scene-breathe { from { scale: 1.01; translate: 0 0; } to { scale: 1.07; translate: 0 -1%; } }\n';

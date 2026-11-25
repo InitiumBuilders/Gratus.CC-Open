@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 // docs/ used to be skipped and .md was not an extension this gate read, so
@@ -22,8 +23,22 @@ function walk(dir, out) {
   }
   return out;
 }
-const files = walk(root, []);
 const rel = (p) => path.relative(root, p).replace(/\\/g, '/');
+// A vendored file is someone else's code, copied byte for byte (engine/vendor/README.md records its hash). Its
+// comments are not our copy and cannot be edited here, so it is skipped, but only while it is exactly the copy
+// the README names. An edited copy is scanned like any other file.
+const VENDORED = (() => {
+  const ok = new Set();
+  try {
+    const readme = fs.readFileSync(path.join(root, 'engine/vendor/README.md'), 'utf8');
+    for (const m of readme.matchAll(/^## ([\w.-]+)[\s\S]*?sha256: `([0-9a-f]{64})`/gm)) {
+      const f = path.join(root, 'engine/vendor', m[1]);
+      if (fs.existsSync(f) && createHash('sha256').update(fs.readFileSync(f)).digest('hex') === m[2]) ok.add(rel(f));
+    }
+  } catch (e) { /* no vendored files: nothing is skipped */ }
+  return ok;
+})();
+const files = walk(root, []).filter((p) => !VENDORED.has(rel(p)));
 
 // config/copy.json -> voice.forbidden is this house's own list of words it never
 // ships, and until now it was read by nothing: this gate carried its own copy of

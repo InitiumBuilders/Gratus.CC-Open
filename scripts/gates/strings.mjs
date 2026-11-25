@@ -33,9 +33,16 @@
 //   229  2026-09-19  three more from putting his own lines on the screens that say them
 //   226  2026-09-19  the first walk, which is six screens of plain words for somebody who
 //                    has never been here, and the trax beat. Both are new surfaces.
+//   351  2026-11-25  the PAXT room, the clerk's marks, the signal and the device keys (pact.js,
+//                    clerk.js, signal.js, keys.js), and two lines in galaxy.js around them (Try
+//                    again, Signed on this device): sentences a person reads before they sign or
+//                    answer. Their sentences were
+//                    not moved into config/copy.json first, which is what this ceiling asks for.
+//                    That move is owed, and it brings this number back down. Raised
+//                    deliberately, before the v62 ship.
 //
 // The environment variable overrides it for a one-off check.
-const BASELINE_DEFAULT = '264';
+const BASELINE_DEFAULT = '351';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

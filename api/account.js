@@ -21,7 +21,7 @@
 // WHAT IS PUBLIC
 //   Only a profile somebody chose to publish: a handle, a name, a line, and the shape of
 //   their garden. Never an entry, never an email, never a day of anybody's writing.
-import { put, list } from '@vercel/blob';
+import { put, list, del } from '@vercel/blob';
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 
 const TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
@@ -30,7 +30,11 @@ const PEPPER = process.env.GRATUS_SALT || sha('gratus/acct/' + String(TOKEN)).sl
 
 const ACCT = (id) => 'gratus/acct/' + id + '.json';
 const VAULT = (id) => 'gratus/vault/' + id + '.json';
-const HANDLE = (h) => 'gratus/handle/' + h + '.json';
+// A handle is public, so the path to its record must not be: anyone who ever learned the
+// store's address could otherwise walk from a handle to the account and its sealed vault.
+// The path is a keyed hash of the handle; the key is the pepper, which stays in the environment.
+const HANDLE = (h) => 'gratus/handle/' + createHmac('sha256', PEPPER).update('handle·' + h).digest('hex').slice(0, 32) + '.json';
+const HANDLE_BEFORE = (h) => 'gratus/handle/' + h + '.json';   // where a handle was kept until v60
 const RATE = () => 'gratus/acct/_tries/' + new Date().toISOString().slice(0, 10) + '.json';
 
 const clip = (v, n) => (typeof v === 'string' ? v : '').replace(/[<>]/g, '').trim().slice(0, n);
@@ -98,6 +102,24 @@ async function tries(req, add) {
   return true;
 }
 
+// A handle's record, wherever it is kept. One left at the old path is moved: the new copy is
+// written first, and only then is the old one taken away. Only production moves it: a preview
+// reads the same store, and a move made there would hide the handle from the build still live.
+async function handleOf(h) {
+  const now = await readJson(HANDLE(h));
+  if (now) return now;
+  const before = await readJson(HANDLE_BEFORE(h));
+  if (!before) return null;
+  if (process.env.VERCEL_ENV !== 'production') return before;
+  try {
+    await writeJson(HANDLE(h), before);
+    const { blobs } = await list({ prefix: HANDLE_BEFORE(h), token: TOKEN });
+    const b = blobs.find((x) => x.pathname === HANDLE_BEFORE(h));
+    if (b) await del(b.url, { token: TOKEN });
+  } catch (e) { /* the old path still answers, and the next read moves it */ }
+  return before;
+}
+
 const publicProfile = (rec) => ({
   handle: rec.handle, name: rec.profile && rec.profile.name ? rec.profile.name : rec.handle,
   line: (rec.profile && rec.profile.line) || '', garden: (rec.profile && rec.profile.garden) || null,
@@ -112,7 +134,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       const h = clip(req.query.handle, 24).toLowerCase();   // however it was typed
       if (!handleOk(h)) { res.status(400).json({ error: 'not a handle' }); return; }
-      const map = await readJson(HANDLE(h));
+      const map = await handleOf(h);
       if (!map || !map.id) { res.status(404).json({ error: 'no such profile' }); return; }
       const rec = await readJson(ACCT(map.id));
       if (!rec || !rec.profile || rec.profile.published !== true) { res.status(404).json({ error: 'no such profile' }); return; }
@@ -127,7 +149,7 @@ export default async function handler(req, res) {
       const h = clip(body.handle, 24).toLowerCase();
       if (!handleOk(h)) { res.status(200).json({ free: false, why: 'Three to twenty-four letters, numbers or hyphens.' }); return; }
       if (RESERVED.has(h)) { res.status(200).json({ free: false, why: 'That one is spoken for.' }); return; }
-      res.status(200).json({ free: !(await readJson(HANDLE(h))) });
+      res.status(200).json({ free: !(await handleOf(h)) });
       return;
     }
 
@@ -141,7 +163,7 @@ export default async function handler(req, res) {
       if (!handleOk(h) || RESERVED.has(h)) { res.status(400).json({ error: 'that handle is not available' }); return; }
       const id = idOf(email);
       if (await readJson(ACCT(id))) { res.status(409).json({ error: 'there is already an account for that address' }); return; }
-      if (await readJson(HANDLE(h))) { res.status(409).json({ error: 'that handle is taken' }); return; }
+      if (await handleOf(h)) { res.status(409).json({ error: 'that handle is taken' }); return; }
       const salt = randomBytes(16).toString('hex');
       const rec = {
         id, salt, pw: hashPw(pw, salt), handle: h, made: new Date().toISOString(),
@@ -210,7 +232,7 @@ export default async function handler(req, res) {
       const list = Array.isArray(rec.friends) ? rec.friends.slice(0, 200) : [];
       const out = [];
       for (const h of list) {
-        const map = await readJson(HANDLE(h));
+        const map = await handleOf(h);
         const them = map && map.id ? await readJson(ACCT(map.id)) : null;
         if (!them || !them.profile || them.profile.published !== true) { out.push({ handle: h, gone: true }); continue; }
         out.push(Object.assign(publicProfile(them), {
@@ -226,7 +248,7 @@ export default async function handler(req, res) {
       if (h === rec.handle) { res.status(400).json({ error: 'you already have yourself' }); return; }
       rec.friends = Array.isArray(rec.friends) ? rec.friends : [];
       if (act === 'friend-add') {
-        const map = await readJson(HANDLE(h));
+        const map = await handleOf(h);
         const them = map && map.id ? await readJson(ACCT(map.id)) : null;
         if (!them) { res.status(404).json({ error: 'there is nobody at that handle' }); return; }
         if (!them.profile || them.profile.published !== true) { res.status(404).json({ error: 'that page is private, so there is nothing to keep' }); return; }

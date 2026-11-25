@@ -6,8 +6,10 @@
 // shape of a garden and never a word from inside it.
 //
 //   node --import ./scripts/gates/lib/loader.mjs scripts/gates/account.mjs
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { __MEM as MEM } from './lib/blob-stub.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -84,6 +86,37 @@ const shown = await call(acct, get({ handle: 'a-gardener' }));
 say(shown.code === 200 && shown.body.profile.garden.days === 33, 'a published page carries the shape  (' + shown.code + ')');
 say(!JSON.stringify(shown.body).includes(WORDS), 'and never a word from inside the garden');
 say(!JSON.stringify(shown.body).includes(EMAIL), 'and never the address behind it');
+
+// a handle is public, so the path to its record must not be (v60): anyone who learned the
+// store's address could otherwise walk from a handle to the account and its sealed vault
+const keys = () => [...MEM.keys()];
+say(!keys().some((k) => k.split('/').pop() === 'a-gardener.json'), 'no path in the store is a handle, so a handle leads nowhere without the secret');
+const oldUp = await call(acct, post({ act: 'signup', email: 'old@example.org', password: PW, handle: 'old-one' }, '10.0.0.7'));
+const nowKey = keys().find((k) => k.startsWith('gratus/handle/') && (JSON.parse(MEM.get(k)) || {}).handle === 'old-one');
+if (nowKey) { MEM.set('gratus/handle/old-one.json', MEM.get(nowKey)); MEM.delete(nowKey); }
+const ENV = process.env.VERCEL_ENV;
+process.env.VERCEL_ENV = 'preview';
+const onPreview = await call(acct, post({ act: 'handle-free', handle: 'old-one' }));
+say(oldUp.code === 200 && !!nowKey && onPreview.body.free === false, 'a handle kept the old way still counts as taken');
+say(MEM.has('gratus/handle/old-one.json') && !MEM.has(nowKey), 'and a preview, which reads the live store, leaves it where it is');
+process.env.VERCEL_ENV = 'production';
+const inProduction = await call(acct, post({ act: 'handle-free', handle: 'old-one' }));
+say(inProduction.body.free === false && !MEM.has('gratus/handle/old-one.json') && !!nowKey && MEM.has(nowKey), 'production reads it, moves it to its hidden path and takes the old one away');
+if (ENV === undefined) delete process.env.VERCEL_ENV; else process.env.VERCEL_ENV = ENV;
+{
+  const src = fs.readFileSync(path.join(root, 'api/account.js'), 'utf8');
+  const LINE = "const HANDLE = (h) => 'gratus/handle/' + createHmac('sha256', PEPPER).update('handle·' + h).digest('hex').slice(0, 32) + '.json';";
+  const ok = src.split(LINE).length === 2;
+  say(ok, 'the hidden-path control has its line to change');
+  if (ok) {
+    const tmp = path.join(os.tmpdir(), 'gratus-account-control-' + process.pid + '.mjs');
+    fs.writeFileSync(tmp, src.replace(LINE, () => "const HANDLE = (h) => 'gratus/handle/' + h + '.json';"));
+    const ctl = (await import(pathToFileURL(tmp).href)).default;
+    await call(ctl, post({ act: 'signup', email: 'control@example.org', password: PW, handle: 'control-one' }, '10.0.0.8'));
+    say(MEM.has('gratus/handle/control-one.json'), 'the control: with the handle as the path, the handle is found in the store');
+    fs.unlinkSync(tmp);
+  }
+}
 
 let refused = 0;
 for (let i = 0; i < 26; i++) {

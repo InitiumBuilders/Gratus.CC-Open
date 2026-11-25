@@ -2,6 +2,25 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v61 · The quiet (2026-11-25)
+
+- **The grain holds still.** Since v56 the grain over every painting ran six positions a second, the way film does. It lies on the painting like the grain of the film it was shot on now, and holds still: a grain that crawls is something going on where nothing should be, and the one light on each screen is easier to see in a quiet room. The painting still breathes, once every 48 seconds each way.
+- **No halo round the glass.** v49 gave the glass cards, the home header plate, the journal's pages, a goal of one's own and the bar a faint halo of gold (and the bar one of mint) outside their edges. Each was faint; together they were a haze of gold over every screen. They come off. Each surface keeps the light inside its edge, so it is still a soft-edged thing, and light outside an edge is kept for what is lit: a card that is done, the active tab, the button to press. The glow on the home cards and the gold line under the bar are from his drawing and stay.
+- **The gate.** G52 reads the grain still while the painting drifts, and its control sets the grain running again and has to see it.
+
+## v60 · A handle leads nowhere (2026-11-25)
+
+- **A handle no longer names the path to its account.** Account records and sealed vaults sit in the store at paths nobody can guess, but the small record that maps a public handle to its account was kept at a path made of the handle itself. Anyone who ever learned the store's address could have walked from a handle to the account record (an unpublished profile, a list of friends) and on to the sealed vault. Nothing the app sends shows that address; this closes the path in case it ever leaks. The path is a keyed hash of the handle now, and the key never leaves the environment. A record left at the old path is written to its new one, and only then is the old one taken away. Only production moves a record: a preview reads the same store, and a move made there would hide the handle from the build still live. A record that has moved cannot be read by v59 or earlier, so going back past v60 would need the move undone first.
+- **`npm test` runs the tests again.** It pointed the test runner at the folder, which the current Node answers with one failure and no tests. It names the test files now, as the ship script always did.
+- **The gate.** G30 checks that no path in the store is a handle, and that a handle kept the old way still counts as taken and is moved when it is read. Its control puts the handle back in the path and has to find it.
+
+## v59 · Light instead of lines (2026-11-24)
+
+- **A label is lit with the thing it names.** On the tour's second step the frame around the emoji ran its top edge through the label above them, "The emoji you are planting", because the label sat inside the frame's 10px margin. The frame now takes in a label that sits just above what it lights. Found by looking again at the photographs from the night walk.
+- **The frame is light, not a line.** It was meant to carry an ice ring and a glow, but the dark around it was painted on top of both, so they showed as a dull grey line round the hole. The glow now sits over the dark, and the light spills softly out of what the step is pointing at.
+- **A field answers focus with light.** A text field shows its focus whenever a finger touches it, so the 2px ring meant for keyboards drew a hard line around the writing box on every visit. Every field already glows when it has focus; the ring is gone from fields and stays on buttons and links, where only a keyboard brings it out.
+- **The gates.** G41 reads every lit step for a line of the page's words that an edge of the frame crosses, and for a ring drawn round the frame. Its controls leave the label out and put the old ring back, and each has to be found. G51 taps the writing box and reads its focus: light and no ring, with a control that puts the ring back.
+
 ## v58 · No line under any edge (2026-11-24)
 
 - **The last drawn lines are gone.** Since v49 a border has width and no colour. A gradient behind it still started at the padding edge, so under the border it started again, and its first colour showed as a one-pixel line along the bottom of the bar, the journal's pages, the writing box and every primary button: thirteen kinds of surface. No check for borders could see it. A background starts at the border's outer edge now. Photographed with and without the rule in the same loaded page on six views, only those edge rows change, and the garden's two hairline dividers move by a pixel.

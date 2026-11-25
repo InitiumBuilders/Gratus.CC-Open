@@ -122,7 +122,7 @@ PAGE = """<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css?v=37">
+<link rel="stylesheet" href="/assets/css/tokens.css?v=%(tokens)s">
 <link rel="stylesheet" href="/assets/css/page.css?v=2">
 </head>
 <body class="doc guide">
@@ -155,6 +155,8 @@ PAGE = """<!doctype html>
 """
 
 files = sorted(glob.glob(R + 'docs/guides/*.md'))
+# the stylesheet's version comes from app.html, so a guide built today never asks for an older copy than the app
+TOKENS = re.search(r'tokens\.css\?v=([0-9a-z]+)', io.open(R + 'app.html', encoding='utf-8').read()).group(1)
 guides = []
 for f in files:
     text = io.open(f, encoding='utf-8').read()
@@ -181,6 +183,7 @@ for n, g in enumerate(guides):
         'body': md(g['body']),
         'next': nextblock,
         'count': len(guides),
+        'tokens': TOKENS,
     }
     t = OUT + g['slug'] + '.html.tmp'
     io.open(t, 'w', encoding='utf-8', newline='\n').write(page)

@@ -31,22 +31,22 @@
 <main class="wrap guidebody">
 <p><strong>Your journal stays on your device.</strong> Entries, photos, recordings, and the time each entry was written live in your browser's own storage.</p>
 <p>These travel, each only because you chose it:</p>
-<ul><li><strong>A gift.</strong> Everything is inside the link: the emoji, its days, your message, and one line from your journal for each phase it passed. You decide who gets it.</li><li><strong>A seed.</strong> Words written to a project you gave to. Public only if you publish them.</li><li><strong>A goal.</strong> One line on a public stream. The app says so before you post.</li><li><strong>A word in a room.</strong> Read by whoever holds the room's code.</li><li><strong>An account</strong>, if you make one. A copy of your garden, encrypted on your device before it is sent. Nobody else can read it, and a lost password cannot be reset.</li></ul>
-<p><strong>What the server keeps.</strong> Seeds, room posts, goals, account records and counters. Counters are keyed by a salted hash of an address, never an address.</p>
+<ul><li><strong>A gift.</strong> Everything is inside the link: the emoji, its days, your message, and one line from your journal for each phase it passed. You decide who gets it.</li><li><strong>A seed.</strong> Words written to a project you gave to. Public only if you publish them.</li><li><strong>A goal.</strong> One line on a public stream. The app says so before you post.</li><li><strong>A word in a room.</strong> Read by whoever holds the room's code.</li><li><strong>A PAXT you open or join.</strong> The text and every signed line, with the name you chose (or none), readable by anyone with its link. The key that signs stays on your device.</li><li><strong>An answer to a signal.</strong> One choice per device, kept under a token your device makes for that signal alone. The app shows counts and never who chose what, though in a small group the final counts can show how someone chose.</li><li><strong>An account</strong>, if you make one. A copy of your garden, encrypted on your device before it is sent. Nobody else can read it, and a lost password cannot be reset.</li></ul>
+<p><strong>What the server keeps.</strong> Seeds, room posts, goals, account records, PAXT records, signal answers and counters. Counters are keyed by a salted hash of an address, never an address. Each answer and each PAXT line also leaves a marker under that hash for the day's limits. Someone holding both the store and our secret could match a marker's time to what was sent and work out which network sent it. Markers from earlier days are deleted with the first call of each new day.</p>
 <p><strong>Voice</strong> sends one recording at the moment you make it, to be turned into text. It is not kept there.</p>
 <p><strong>Clearing your browser's storage erases the garden.</strong> Export from the You sheet for a copy you keep.</p>
 </main>
 
 <nav class="wrap gnext">
   <a class="gnextcard" href="/docs/when-something-goes-wrong"><span class="kick">Next guide</span><b>When something goes wrong</b><span>anyone · 3 min</span></a>
-  <a class="gback" href="/docs">All 25 guides</a>
+  <a class="gback" href="/docs">All 26 guides</a>
 </nav>
 
 <footer class="docfoot">
   <p class="tags">#GrowTheDifference &nbsp; #GrowWithGratus</p>
   <p class="presented">Gratus.CC presented by Outlier.Systems</p>
   <nav><a href="/the-story">The story</a> · <a href="/give-and-grow">Give and grow</a> · <a href="/docs">Docs</a> · <a href="/app">The app</a></nav>
-  <p class="mit">Checked against v46, 2026-11-20 · <a href="https://github.com/InitiumBuilders/Gratus.CC-Open/blob/main/docs/guides/what-leaves-your-device.md">the source of this page</a></p>
+  <p class="mit">Checked against next/paxt, 2026-11-25 · <a href="https://github.com/InitiumBuilders/Gratus.CC-Open/blob/main/docs/guides/what-leaves-your-device.md">the source of this page</a></p>
 </footer>
 </body>
 </html>

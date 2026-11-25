@@ -153,6 +153,9 @@ body.room .tabs { display: none; }
 .scrim { position: fixed; inset: 0; z-index: 30; background: var(--scrim); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fade var(--t-fast) var(--ease); }
 .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; max-height: calc(100dvh - 32px - var(--sat)); overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 20px calc(24px + var(--sab)); border-radius: 28px 28px 0 0; background: var(--chrome); border-top: 1px solid; display: grid; gap: 16px; align-content: start; animation: sheet-in var(--t) var(--ease); scrollbar-width: none; margin: 0 auto; max-width: 560px; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
 .sheet::-webkit-scrollbar { display: none; }
+/* A room page (40) covers the app, and a sheet opened from inside it must sit above it, under the tour and the toast. */
+body.room .scrim { z-index: 41; }
+body.room .sheet { z-index: 42; }
 .sheet .grabber { border-radius: 2px; background: var(--hair-2); }
 .sheet.out { animation: sheet-out var(--t-fast) var(--ease) forwards; }
 .sheet .hero-sm { display: grid; place-items: center; gap: 8px; text-align: center; }
@@ -752,8 +755,8 @@ body.deep #scene .layer.in { opacity: .5; transform: scale(1.055); }
 /* A control may look whatever size the design asks it to. What a thumb has to find is
    never smaller than 44, so the target grows underneath the mark instead of the mark
    growing. His small round buttons stay small and round; the reach around them opens. */
-.top .you, .top .back, .top .sound, .chip, .btn.sm { position: relative; }
-.top .you::after, .top .back::after, .top .sound::after, .chip::after, .btn.sm::after {
+.top .you, .top .back, .top .sound, .chip, .btn.sm, .room-page .rhead button { position: relative; }
+.top .you::after, .top .back::after, .top .sound::after, .chip::after, .btn.sm::after, .room-page .rhead button::after {
   content: ""; position: absolute; left: 50%; top: 50%;
   width: max(100%, 46px); height: max(100%, 46px);
   transform: translate(-50%, -50%); border-radius: 999px;
@@ -862,9 +865,10 @@ textarea.field {
 }
 textarea.field::placeholder, .pillform input::placeholder { color: rgba(246, 235, 216, .55); }
 
-/* the guided tour: one lit thing at a time, and a way out on every step */
+/* the guided tour: one lit thing at a time, and a way out on every step. The frame is light, not a
+   line: its glow sits over the dark around it (a 2px ring under the dark drew a grey line round it). */
 .spot { position: fixed; border-radius: 20px; pointer-events: none; z-index: 1;
-  box-shadow: 0 0 0 9999px rgba(3, 6, 14, .9), 0 0 0 2px var(--violet-text), var(--glow);
+  box-shadow: var(--glow), 0 0 0 9999px rgba(3, 6, 14, .9);
   transition: all .28s cubic-bezier(.22,1,.36,1); }
 .tourcard.near { position: fixed; left: 50%; transform: translateX(-50%); z-index: 2;
   width: min(360px, calc(100vw - 32px)); text-align: left; padding: 18px 18px calc(16px + var(--sab)); }
@@ -1269,14 +1273,20 @@ button.together { width: 100%; font: inherit; color: inherit; cursor: pointer; }
    and every button (thirteen kinds of surface), and its last colour along the top. Written
    with the same weight as the rule above because the background shorthand resets it. */
 *, *::before, *::after { background-origin: border-box !important; }
+/* A field answers focus with light. A text field shows its focus whenever a finger touches it,
+   so the 2px ring drew a hard line around the writing box on every visit; the field's own glow
+   already says where the typing goes. Buttons and links keep the ring, which only a keyboard
+   brings out. */
+.field:focus-visible { outline: none; }
 
-/* glass, and the plates on the home page */
-.glass { box-shadow: 0 0 18px rgba(242, 201, 125, .08), var(--rim-gold), var(--lit-rest); }
-.hh, .together, .home14 .stream { box-shadow: 0 0 22px rgba(242, 201, 125, .07), var(--rim-gold); }
+/* glass, and the plates on the home page. The light sits inside the edge; a halo of gold round
+   every card was a haze over the whole screen (v61), so light outside an edge is kept for what is lit. */
+.glass { box-shadow: var(--rim-gold), var(--lit-rest); }
+.hh, .together, .home14 .stream { box-shadow: var(--rim-gold); }
 .glass.lit, .recipe.made { box-shadow: var(--rim-mint), var(--lit-rest), var(--glow); }
 .choice.on { box-shadow: var(--rim-mint), var(--glow); }
 .mrow.on { box-shadow: var(--rim-mint), var(--lit-rest), inset 0 -7px 11px rgba(110, 217, 192, .14); }
-.goal.mine { box-shadow: 0 0 18px rgba(242, 201, 125, .08), var(--rim-mint), var(--lit-rest); }
+.goal.mine { box-shadow: var(--rim-mint), var(--lit-rest); }
 #toast { box-shadow: var(--rim), 0 12px 30px rgba(0, 0, 0, .45); }
 .trace3 span { box-shadow: inset 0 0 12px rgba(242, 201, 125, .16); }
 .sample .vpost { box-shadow: inset 0 0 14px rgba(185, 255, 228, .14); }
@@ -1288,7 +1298,7 @@ button.together { width: 100%; font: inherit; color: inherit; cursor: pointer; }
   transition: box-shadow var(--t) var(--ease); }
 
 /* the paper: its margin is a warm light along the left edge */
-.entry, .entrycard { box-shadow: var(--margin-light), 0 0 18px rgba(242, 201, 125, .06), var(--rim-gold); }
+.entry, .entrycard { box-shadow: var(--margin-light), var(--rim-gold); }
 input.field, select.field { box-shadow: inset 0 0 14px rgba(255, 255, 255, .16), inset 0 10px 14px -12px rgba(255, 255, 255, .26), inset 0 2px 8px rgba(0, 0, 0, .3); }
 textarea.field { box-shadow: var(--margin-light), inset 0 0 14px rgba(242, 201, 125, .08), inset 0 2px 8px rgba(0, 0, 0, .3); }
 input.field:focus, select.field:focus { box-shadow: inset 0 0 16px rgba(110, 217, 192, .24), var(--glow); }
@@ -1337,7 +1347,7 @@ textarea.field:focus { box-shadow: var(--margin-light), inset 0 0 16px rgba(110,
 .hairline { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .16), transparent); }
 
 /* the bar, and the mark at its centre, which sits in a soft dark that fades into the bar */
-.tabs .bar { box-shadow: 0 -10px 40px rgba(0, 0, 0, .55), 0 0 26px rgba(242, 201, 125, .1), 0 0 40px rgba(110, 217, 192, .08), inset 0 0 16px rgba(242, 201, 125, .2), inset 0 12px 16px -12px rgba(255, 236, 190, .38); }
+.tabs .bar { box-shadow: 0 -10px 40px rgba(0, 0, 0, .55), inset 0 0 16px rgba(242, 201, 125, .2), inset 0 12px 16px -12px rgba(255, 236, 190, .38); }
 .tabs .star .core { box-shadow: 0 0 8px 5px rgba(5, 9, 18, .85), inset 0 0 12px rgba(242, 201, 125, .5), inset 0 10px 12px -10px rgba(255, 236, 190, .45), 0 0 24px rgba(242, 201, 125, .6), 0 0 60px rgba(242, 201, 125, .3); }
 .tabs .star.on .core { box-shadow: 0 0 8px 4px rgba(5, 9, 18, .88), inset 0 0 12px rgba(255, 217, 138, .55), inset 0 10px 12px -10px rgba(255, 255, 255, .4), inset 0 -8px 16px rgba(120, 90, 255, .28), 0 0 26px rgba(255, 217, 138, .78), 0 0 64px rgba(185, 255, 228, .4); }
 /* the light that travels round the mark is a soft band, brightest just inside its edge */
@@ -1432,8 +1442,8 @@ html[data-look="day"] { --g-sat: .8; --g-con: 1.05; --g-bri: .9; --g-grain: .08;
 #scene .layer .back, #scene .layer img.fore { animation: scene-breathe 48s steps(288) infinite alternate; transform-origin: 50% 40%; }
 @keyframes scene-breathe { from { scale: 1.01; translate: 0 0; } to { scale: 1.07; translate: 0 -1%; } }
 #scene .layer { overflow: clip; }   /* a drifting painting is larger than its layer, and the layer holds it */
-#scene::before { inset: -12%; animation: grain-run 1s steps(1) infinite; }
-@keyframes grain-run { 0% { transform: translate3d(0, 0, 0); } 17% { transform: translate3d(-4%, 3%, 0); } 33% { transform: translate3d(3%, -4%, 0); } 50% { transform: translate3d(-3%, -2%, 0); } 67% { transform: translate3d(4%, 2%, 0); } 83% { transform: translate3d(-2%, 4%, 0); } 100% { transform: translate3d(0, 0, 0); } }
+/* The grain holds still. It lies on the painting like the grain of the film it was shot on, and
+   a grain that crawled six times a second was something going on where nothing should be. */
 @media (prefers-reduced-motion: reduce) { #scene .layer .back, #scene .layer img.fore, #scene::before { animation: none; } }
 /* Your sky: one light for each day kept (stars() in galaxy.js). Each world lights them in its
    own colour. One in three twinkles, today's breathes, the rest hold still. */

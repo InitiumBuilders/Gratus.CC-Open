@@ -140,7 +140,14 @@ function migrate() {
     S.name = S.name || v2.name || '';
   }
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('Storage is full. Export, then start over.'); } }
+// The PAXT room keeps a list of lines it has already checked (pact.js PASSED_KEY). It is only a saving of work, so
+// when the journal does not fit, that list goes first and the save is tried again.
+function save() {
+  const v = JSON.stringify(S);
+  try { localStorage.setItem(KEY, v); } catch (e) {
+    try { localStorage.removeItem('gratus-paxt-passed'); localStorage.setItem(KEY, v); } catch (x) { toast('Storage is full. Export, then start over.'); }
+  }
+}
 const daysOf = (p) => (p.kept || []).length + (p.carried || 0);
 const face = (p) => E.currentEmoji(p.emoji, daysOf(p), C.evo);
 const nameOf = (e) => (C.names || {})[e] || e;
@@ -304,7 +311,8 @@ function stepOut(n) {
 const deadStep = () => { const s = history.state; return !!(s && s.g && s.ov && !over.some((o) => o.id === s.ov)); };
 // after a step of our own lands, the address says where the app is
 function syncAddress() {
-  if (room || !inApp() || location.pathname.endsWith('.html')) return;
+  // an open PAXT room keeps its own address, /app/pact/<id>, so a reload or a copied link lands in it; its close puts the address back
+  if (room || $('#room .pact-room') || !inApp() || location.pathname.endsWith('.html')) return;
   if (location.pathname !== pathOf(tab, sub)) history.replaceState(stepNow(), '', pathOf(tab, sub));
 }
 // something opened over the page takes a step, if a touch opened it
@@ -329,6 +337,27 @@ function stepOff(o) {
   settle(() => { if (o.held && stepNow().ov === o.id) stepOut(); });
 }
 // every sheet in the app is one of these
+// "Start over" keeps its word: the voice recordings (gratus-keep) and the keys this device made for PAXTs
+// (gratus-keys) live in IndexedDB, not localStorage, so they are deleted too. keys.js closes its connection when a
+// delete asks it to, in every tab, so the delete goes through at once. Every other Gratus tab is told to reload,
+// so what it still holds in memory is not written back over the cleared storage. The page moves on after a short
+// wait either way.
+function startOverStores() {
+  try { if (resetChannel) resetChannel.postMessage('start-over'); } catch (e) {}
+  const gone = (name) => new Promise((ok) => {
+    try { const r = indexedDB.deleteDatabase(name); r.onsuccess = r.onerror = r.onblocked = () => ok(); } catch (e) { ok(); }
+  });
+  return Promise.race([
+    Promise.all(['gratus-keep', 'gratus-keys'].map(gone)),
+    new Promise((ok) => setTimeout(ok, 1500)),
+  ]);
+}
+// "Start over" pressed in another tab: this tab reloads, so it reads the cleared storage instead of keeping its own.
+let resetChannel = null;
+try {
+  resetChannel = new BroadcastChannel('gratus-reset');
+  resetChannel.onmessage = (ev) => { if (ev && ev.data === 'start-over') location.reload(); };
+} catch (e) { resetChannel = null; }
 function sheet(html, opts) {
   const o = Object.assign({}, opts || {}); const mine = o.onClose; let step = null;
   o.onClose = (result) => { stepOff(step); if (mine) mine(result); };
@@ -572,6 +601,9 @@ function viewVibes() {
         '<span class="cap">' + plural(v.count, 'gratitude') + ' · ' + plural(v.voices, 'voice') + ' · code <b class="mono">' + esc(v.code) + '</b></span></div>' +
         '<div class="actions"><button class="btn sm" id="vb-share">Share the code</button><button class="btn sm" id="vb-bring">Bring somebody in</button><button class="btn sm" id="vb-passage">Share what grew</button><button class="btn sm quiet" id="vb-leave">Leave this room</button></div></div>' +
       (roomField(v.posts).length ? '<div class="eyebrow"><h2>What this room grew</h2><span class="more">' + plural(roomField(v.posts).length, 'kind') + '</span></div><div class="roomfield">' + roomField(v.posts).map((x) => '<span class="rf"><span class="orb sm"><span>' + esc(x[0]) + '</span></span><b>' + x[1] + '</b></span>').join('') + '</div>' : '') +
+      // PAXTs and signals: pact.js and signal.js fill these slots, loaded only once a room is open
+      '<div id="vb-paxts"></div><div class="actions"><button class="btn sm" id="vb-paxt-new">Write a PAXT for this room</button></div>' +
+      '<div class="glass card"><span class="kicker mint">Signals</span><div id="vb-signals"></div><div class="actions"><button class="btn sm" id="vb-ask">Ask the room</button></div></div>' +
       '<div class="glass card"><span class="kicker mint">Say one true thing</span>' +
       '<textarea class="field" id="vb-text" rows="2" maxlength="280" placeholder="What are you grateful for, right now..." aria-label="your gratitude"></textarea>' +
       '<div class="pick">' + palette().slice(0, 8).map((e) => '<button class="orb" data-vpick="' + esc(e) + '" aria-label="' + esc(nameOf(e)) + '"><span>' + esc(e) + '</span></button>').join('') + '</div>' +
@@ -700,6 +732,94 @@ async function openProjectPage(slug) {
     '<p class="statement quiet" style="text-align:center">\u201cThe capital funds the work. The seed funds the morale.\u201d</p>' +
     '</div></div>';
   $('#pp-x', root).addEventListener('click', () => { root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); location.href = '/app/giveth'; });
+}
+// ══ A PAXT · one plain text a group joins by each signing a line on their own device ══════════
+// pact.js holds the room and the sheet that writes one. It loads the first time somebody asks for it,
+// so the journal pays nothing for it until then.
+let pactMod = null, pactCssAsked = null;
+function pactCss() {
+  return pactCssAsked ||= new Promise((done) => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/assets/css/pact.css?v=1';
+    const t = setTimeout(done, 2500);   // a stylesheet that never arrives must not keep the room shut
+    l.onload = l.onerror = () => { clearTimeout(t); done(); };
+    document.head.appendChild(l);
+  });
+}
+function pacts() {
+  pactMod ||= Promise.all([import('./pact.js?v=1'), pactCss()])
+    .then(([m]) => { m.setSheet(sheet); m.setGo((path, id) => openPact(id)); return m; })
+    .catch((e) => { pactMod = null; throw e; });   // a failed load is tried again on the next tap
+  return pactMod;
+}
+async function openPact(id) {
+  const root = $('#room'); if (!root) return;
+  // the room opens at once, inside the tap, so the phone's back step belongs to it; the module fills it after
+  root.innerHTML = '<div class="room-page passage pact-room">' + art(scene('vibes')) +
+    '<div class="rhead"><span class="brand"><img src="' + LOGO + '" alt="">Gratus.CC</span><button id="px-x" aria-label="close">✕</button></div>' +
+    '<div class="rbody"><div class="page pact" data-pact="' + esc(id) + '"><p class="cap">Opening it...</p></div></div></div>';
+  root.hidden = false; document.body.classList.add('room');
+  let step = null;
+  // Once the room is closed, by hand or by the phone's back step, an address still naming the PAXT goes back to
+  // /app. Closed by hand, its own step lands first (settle waits for it).
+  const close = () => { stepOff(step); root.hidden = true; root.innerHTML = ''; document.body.classList.remove('room'); settle(() => { if (/^\/app\/pact\//.test(location.pathname)) history.replaceState(stepNow(), '', '/app'); }); };
+  step = stepIn(close);
+  // opened from inside the app, the step carries the room's own address, so a reload or a copied link lands here
+  if (step) settle(() => { if (!step.gone) history.replaceState(history.state, '', '/app/pact/' + encodeURIComponent(id)); });
+  $('#px-x', root).addEventListener('click', close);
+  await fillPact(root, id);
+}
+// pact.js loads and fills the room; a load that fails offers Try again, which loads it once more
+async function fillPact(root, id) {
+  let P = null;
+  try { P = await pacts(); } catch (e) {
+    const h = $('[data-pact]', root); if (!h) return;
+    h.innerHTML = '<p class="body">It could not be opened. Check the connection and try again.</p><div class="actions"><button class="btn" id="px-retry">Try again</button></div>';
+    $('#px-retry', h).addEventListener('click', () => { h.innerHTML = '<p class="cap">Opening it...</p>'; fillPact(root, id); });
+    return;
+  }
+  const host = $('[data-pact]', root); if (!host) return;   // closed while it loaded
+  host.outerHTML = P.pactView(id);
+  P.wirePact($('[data-pact]', root), id);
+}
+// the PAXTs this device joined, and the door to write one
+function pactsSheet() {
+  pacts().catch(() => null);   // start the load at intent, so "Write a PAXT" opens at once
+  let mine = {}; try { mine = JSON.parse(localStorage.getItem('gratus-paxt-mine') || '{}') || {}; } catch (e) {}
+  const ids = Object.keys(mine).filter((id) => /^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/.test(id));
+  // this device's last line in each: a join line lists it as joined, and a leave line, or none noted, as signed
+  const joinedHere = (id) => !!(mine[id] && mine[id].entry && / join /.test(String(mine[id].entry.line)));
+  const row = (id) => '<button class="glass opt" data-px="' + esc(id) + '"><span class="ico">◈</span><span class="grow"><b>' + esc(id) + '</b></span><span class="arrow">›</span></button>';
+  const list = (label, xs) => (xs.length ? '<span class="kicker">' + label + '</span><div class="rows">' + xs.map(row).join('') + '</div>' : '');
+  const sh = sheet('<div class="hero-sm"><span class="orb lg lit"><span>◈</span></span><h2>' + esc(T('menu.paxt', 'Gratus PAXTs')) + '</h2>' +
+    '<span class="kicker mint">Agreements you sign together</span></div>' +
+    '<p class="body">A PAXT is one plain text. Each person joins by signing one line with a key made on their own device, and anyone can check every signature and count again.</p>' +
+    list('Joined on this device', ids.filter(joinedHere)) + list('Signed on this device', ids.filter((id) => !joinedHere(id))) +
+    '<div class="actions"><button class="btn mint" id="px-new">Write a PAXT</button></div>');
+  $$('[data-px]', sh.el).forEach((b) => b.addEventListener('click', () => { sh.close(); openPact(b.dataset.px); }));
+  $('#px-new', sh.el).addEventListener('click', () => { sh.close(); pacts().then((P) => P.openDraft(), () => toast('It could not be opened. Check the connection and try again.')); });
+}
+// A Vibe room's PAXTs and signals. pact.js and signal.js load here, when a room is open, and never for the journal.
+let signalMod = null;
+// a post's answer carries the room without its PAXT list, so the last list each room sent is kept here
+const roomPaxts = {};
+function signals() {
+  signalMod ||= Promise.all([import('./signal.js?v=1'), pactCss()])
+    .then(([m]) => { m.setSheet(sheet); return m; })
+    .catch((e) => { signalMod = null; throw e; });   // a failed load is tried again on the next look
+  return signalMod;
+}
+function wireRoomExtras(v) {
+  const code = v.code, ps = $('#vb-paxts'), sg = $('#vb-signals');
+  // only the device that made the room holds its keeper key, and only there can a PAXT be taken off it
+  const keeper = (S.vibes.find((x) => x.code === code) || {}).keeper || '';
+  if (Array.isArray(v.paxts)) roomPaxts[code] = v.paxts;
+  const onChange = (ids) => { if (!Array.isArray(ids)) return; roomPaxts[code] = ids; if (vibeNow && vibeNow.code === code) { vibeNow.paxts = ids; if (sub === 'vibes') render(); } };
+  const failed = () => toast('It could not be opened. Check the connection and try again.');
+  if (ps) pacts().then((P) => { if (ps.isConnected) P.mountStrip(ps, { code, ids: roomPaxts[code] || [], keeper, onChange }); }, () => null);
+  if (sg) signals().then((G) => { if (sg.isConnected) G.mountSignals(sg, { code }); },
+    () => { if (sg.isConnected) sg.innerHTML = '<p class="cap">The signals could not be opened. Check the connection and try again.</p>'; });
+  const nw = $('#vb-paxt-new'); if (nw) nw.addEventListener('click', () => pacts().then((P) => P.openDraft({ room: code, onAttach: onChange }), failed));
+  const ak = $('#vb-ask'); if (ak) ak.addEventListener('click', () => signals().then((G) => G.ask(code), failed));
 }
 // ══ HARMONIC ALCHEMY · a mark needs both halves: what you gave, and what you tended ══════════
 function alchemyState() {
@@ -1406,6 +1526,7 @@ function viewTogether() {
     '<button class="glass opt" id="tg-vibes"><span class="ico">\u2726</span><span class="grow"><b>' + esc(M('vibes')) + '</b></span><span class="arrow">\u203a</span></button>' +
     '<button class="glass opt" id="tg-people"><span class="ico">\u273f</span><span class="grow"><b>' + esc(M('people')) + '</b></span><span class="arrow">\u203a</span></button>' +
     '<button class="glass opt" id="tg-galaxy"><span class="ico">\u2726</span><span class="grow"><b>' + esc(M('galaxy')) + '</b></span><span class="arrow">\u203a</span></button>' +
+    '<button class="glass opt" id="tg-paxt"><span class="ico">\u25c8</span><span class="grow"><b>' + esc(T('menu.paxt', 'Gratus PAXTs')) + '</b></span><span class="arrow">\u203a</span></button>' +
     '</div>';
 }
 
@@ -2295,7 +2416,7 @@ function youSheet() {
     // the same upgrade a stored journal gets on opening, so an older file arrives as this version
     const next = Object.assign(upgrade(o), { opens: (S.opens || 0), migrated: true }); for (const k of Object.keys(S)) delete S[k]; Object.assign(S, next); save(); sh.close(); render(); toast('Restored'); };
     rd.readAsText(f); });
-  $('#you-reset', sh.el).addEventListener('click', () => { if (confirm('Start over on this device? Everything here will be gone. Export first if you want it.')) { for (const k of Object.keys(localStorage)) if (k.startsWith('gratus.')) localStorage.removeItem(k); location.href = location.pathname.endsWith('.html') ? location.pathname : '/app'; } });
+  $('#you-reset', sh.el).addEventListener('click', () => { if (confirm('Start over on this device? Everything here will be gone. Export first if you want it.')) { for (const k of Object.keys(localStorage)) if (k.startsWith('gratus.') || k.startsWith('gratus-')) localStorage.removeItem(k); startOverStores().then(() => { location.href = location.pathname.endsWith('.html') ? location.pathname : '/app'; }); } });
 }
 function promptInstall() { if (installEvt) { installEvt.prompt(); installEvt = null; return; } const ios = /iphone|ipad|ipod/i.test(navigator.userAgent); sheet('<h2>Add Gratus to your phone</h2><p class="body">' + (ios ? 'In Safari, tap Share, then “Add to Home Screen”.' : 'In Chrome, open the menu (⋮) and choose “Add to Home screen” or “Install app”. Gratus then opens full screen, offline, like any app.') + '</p>'); }
 function openLaws() {
@@ -2832,8 +2953,16 @@ function tourPaint(step) {
   if (!el) { tourNext(); return; }                      // nothing to light: move on quietly
   el.scrollIntoView({ block: 'center', behavior: motionOk() ? 'smooth' : 'auto' });
   setTimeout(() => {
-    const b = el.getBoundingClientRect();
-    if (!b.width || !b.height) { tourNext(); return; }
+    const t = el.getBoundingClientRect();
+    if (!t.width || !t.height) { tourNext(); return; }
+    // The label that names the lit thing is lit with it: the emoji's label sat just above the
+    // grid, inside the frame's margin, and the frame's top edge ran through its words.
+    const lab = el.previousElementSibling;
+    const l = lab && lab.matches('.kicker') ? lab.getBoundingClientRect() : null;
+    const b = l && l.height && t.top - l.bottom < 24
+      ? { left: Math.min(t.left, l.left), top: l.top, right: Math.max(t.right, l.right), bottom: t.bottom }
+      : { left: t.left, top: t.top, right: t.right, bottom: t.bottom };
+    b.width = b.right - b.left; b.height = b.bottom - b.top;
     const pad = 10;
     const below = b.bottom + 200 < innerHeight;
     root.hidden = false;
@@ -2861,6 +2990,9 @@ function tourPaint(step) {
 
 
 let tourTimer = 0;
+// A shared Vibe room, opened from its link or from the list. The tour's steps would light the room's own box and
+// its Say it button, so it waits for a visit to the journal.
+const inSharedRoom = () => sub === 'vibes' && (!!vibeNow || new URLSearchParams(location.search).has('code'));
 function tourMaybe() {
   if (S.tour === 'seen') return;
   if (S.plants.length || S.entries.length) { S.tour = 'seen'; save(); return; }
@@ -2868,7 +3000,7 @@ function tourMaybe() {
   // They came through the footer for the laws; the tour waits for their next visit.
   if (location.pathname === '/app/laws') return;
   clearTimeout(tourTimer);
-  tourTimer = setTimeout(() => { if (S.tour !== 'seen' && !receiving() && !$('#tour .tourcard')) tourOpen(); }, 700);
+  tourTimer = setTimeout(() => { if (S.tour !== 'seen' && !receiving() && !inSharedRoom() && !$('#tour .tourcard')) tourOpen(); }, 700);
 }
 function tourAgain() { S.tour = ''; save(); tourAt = -1; tourOpen(); }
 
@@ -3143,7 +3275,7 @@ function wire() {
   const oj = $('#open-journal'); if (oj) oj.addEventListener('click', () => go('gratus', 'book'));
   const ogd = $('#open-garden'); if (ogd) ogd.addEventListener('click', () => go('gratus', 'garden'));
   { const ot = $('#open-together'); if (ot) ot.addEventListener('click', () => go('gratus', 'goals')); }
-  { const tv = $('#tg-vibes'); if (tv) tv.addEventListener('click', () => go('gratus', 'vibes')); const tp = $('#tg-people'); if (tp) tp.addEventListener('click', () => (Acct.signedIn() ? friendsSheet() : accountSheet())); const tx = $('#tg-galaxy'); if (tx) tx.addEventListener('click', () => go('gratus', 'galaxy')); }
+  { const tv = $('#tg-vibes'); if (tv) tv.addEventListener('click', () => go('gratus', 'vibes')); const tp = $('#tg-people'); if (tp) tp.addEventListener('click', () => (Acct.signedIn() ? friendsSheet() : accountSheet())); const tx = $('#tg-galaxy'); if (tx) tx.addEventListener('click', () => go('gratus', 'galaxy')); const tk = $('#tg-paxt'); if (tk) tk.addEventListener('click', pactsSheet); }
   const ogf = $('#open-gifts'); if (ogf) ogf.addEventListener('click', (ev) => { if (ev.target.closest('#send-gift')) return; go('give'); });
   const sg = $('#send-gift'); if (sg) sg.addEventListener('click', (ev) => { ev.stopPropagation(); go('give'); setTimeout(() => giveSheet(null), 400); });
   const ob = $('#open-book'); if (ob) ob.addEventListener('click', () => go('gratus', 'growth'));
@@ -3219,13 +3351,14 @@ function wire() {
   $$('[data-vopen]').forEach((b) => b.addEventListener('click', () => loadVibe(b.dataset.vopen)));
   $$('[data-note]').forEach((b) => b.addEventListener('click', () => { const v = b.dataset.note; if (v === 'given') soundGiven(); else soundPhase(Number(v)); }));
   { const vp = $('#vb-passage'); if (vp && vibeNow) vp.addEventListener('click', () => vibePassageSheet(vibeNow)); }
+  if (vibeNow && $('#vb-paxts')) wireRoomExtras(vibeNow);
   { const mk = $('#vb-make'); if (mk) mk.addEventListener('click', makeVibeSheet);
     const ga = $('#gv-again'); if (ga) ga.addEventListener('click', () => { gvStatsState = 'idle'; loadGivethStats(); render(); });
     wireMotus();
     const jn = $('#vb-join'); if (jn) jn.addEventListener('click', () => { const c = ($('#vb-code').value || '').trim().toUpperCase(); if (!c) { toast('A code.'); return; } if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '✦' }); save(); } loadVibe(c); });
     const sv = $('#vb-share'); if (sv && vibeNow) sv.addEventListener('click', () => shareOrCopy('Come into ' + vibeNow.name, 'A Gratus Vibe. The code is ' + vibeNow.code, location.origin + '/app/vibes?code=' + vibeNow.code).then((ok) => toast(ok === 'shared' ? 'Shared' : 'Link copied')));
     const bg = $('#vb-bring'); if (bg && vibeNow) bg.addEventListener('click', () => bringSheet(vibeNow));
-    const lv = $('#vb-leave'); if (lv && vibeNow) lv.addEventListener('click', () => { S.vibes = S.vibes.filter((x) => x.code !== vibeNow.code); save(); vibeNow = null; vibeState = 'idle'; render(); toast('Left the room. The code still works.'); });
+    const lv = $('#vb-leave'); if (lv && vibeNow) lv.addEventListener('click', () => { const gone = vibeNow.code; S.vibes = S.vibes.filter((x) => x.code !== gone); save(); signals().then((G) => G.forgetRoom(gone), () => null); vibeNow = null; vibeState = 'idle'; render(); toast('Left the room. The code still works.'); });
     let vEmoji = null;
     $$('[data-vpick]').forEach((b) => b.addEventListener('click', () => { vEmoji = vEmoji === b.dataset.vpick ? null : b.dataset.vpick; $$('[data-vpick]').forEach((x) => x.classList.toggle('on', x.dataset.vpick === vEmoji)); }));
     const po = $('#vb-post'); if (po) po.addEventListener('click', async () => {
@@ -3263,10 +3396,12 @@ async function boot() {
   const isGift = location.pathname === '/gift' || location.pathname.endsWith('gift.html') || location.hash.startsWith('#gift');
   const isPassage = location.pathname === '/passage';
   const projPage = /^\/p\/([a-z0-9:-]+)/.exec(location.pathname);
+  const pactPage = /^\/app\/pact\/([a-z0-9-]+)/.exec(location.pathname);
   try { const k = JSON.parse(localStorage.getItem(GVK) || 'null'); if (k) { conSlug = k.slug || ''; conKey = k.key || ''; } } catch (e) {}
   const start = () => { render(); booted = true; setTimeout(checkBloom, 1500); setTimeout(checkBloom, 12000); setTimeout(checkReturns, 2600);
     if (isPassage) { const c = location.hash.replace(/^#/, ''); const g = c ? decodeGift(c) : null; if (g) { openPassage(g, false); return; } toast('That Passage link is incomplete.'); }
     if (projPage) { openProjectPage(projPage[1]); return; }
+    if (pactPage) { openPact(pactPage[1]); return; }
     if (want === 'laws') openLaws();
     const vc = new URLSearchParams(location.search).get('code');
     if (vc && sub === 'vibes') { const c = vc.trim().toUpperCase(); if (!S.vibes.some((x) => x.code === c)) { S.vibes.push({ code: c, name: c, emoji: '\u2726' }); save(); } loadVibe(c); }

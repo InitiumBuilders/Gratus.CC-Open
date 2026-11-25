@@ -30,13 +30,17 @@ const NAMED = [
   ['api/trace.js', 'who can read a seed', /\bSeed\b/],
   ['api/echo.js', 'what the person who receives a gift can send back', /\barrived\b/i],
   ['api/giveth.js', 'that Giveth is read', /\bGiveth\b/],
+  ['api/paxt.js', 'that a PAXT keeps every signed line where anyone with its link can read it', /\bPAXT\b/],
+  // a list of patterns means the page has to make every one of those claims
+  ['api/signal.js', 'what a signal keeps, that nobody is shown who chose what, what counts can show in a small group, and how asking and answering are limited',
+    [/signal[^.]*kept on our server/i, /who chose what/i, /small group/i, /asking[^.]*salted hash/i]],
 ];
 // true once, and not since
 const AGED = [/\bno accounts\b/i, /\bno server\b/i, /do not run analytics/i, /when a backend arrives/i, /free,? while it is being built/i, /shown as imagined/i];
 
 function judge(privacy, terms) {
   const out = [];
-  for (const [file, what, re] of NAMED) if (has(file) && !re.test(privacy)) out.push('privacy.html does not say ' + what + '  (' + file + ' is in the tree)');
+  for (const [file, what, re] of NAMED) if (has(file) && ![].concat(re).every((r) => r.test(privacy))) out.push('privacy.html does not say ' + what + '  (' + file + ' is in the tree)');
   for (const re of AGED) {
     if (re.test(privacy)) out.push('privacy.html still says ' + re.source.replace(/\\b/g, ''));
     if (re.test(terms)) out.push('terms.html still says ' + re.source.replace(/\\b/g, ''));
@@ -57,6 +61,14 @@ const WAS = 'Your gratitude entries are stored in your browser on your device. T
   + 'We do not run analytics, ads or trackers. When a backend arrives, this page will change before it does.';
 const control = judge(WAS, 'It is offered as is, free, while it is being built. Project and partner cards are shown as imagined.');
 say(control.length >= 10, 'the control: the pages as they stood until 2026-11-20 are refused  (' + control.length + ' findings)');
+
+// the signal paragraph cut down to one sentence names the word and none of the claims, and has to be refused
+const raw = fs.readFileSync(path.join(root, 'privacy.html'), 'utf8');
+const para = /<p class="body">A signal[\s\S]*?<\/p>/;
+const cut = raw.replace(para, '<p class="body">A signal is a quick read of a room.</p>');
+const cutFound = judge(cut.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' '), words('terms.html'));
+say(para.test(raw) && cutFound.some((f) => f.includes('api/signal.js')),
+  'the control: the page with its signal paragraph cut to one sentence is refused  (' + cutFound.length + ' finding' + (cutFound.length === 1 ? '' : 's') + ')');
 
 console.log('G45 the policy: ' + (fails ? 'FAIL - ' + fails : 'PASS'));
 process.exit(fails ? 1 : 0);

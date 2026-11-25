@@ -268,16 +268,16 @@ for (const garden of [false, true]) {
   });
   say(!r.none && r.shadow && r.shadow !== 'none', 'focusing the goal field shows where the focus is');
   await o.close();
-  // and the page the app is for: the box somebody writes their day into
+  // and the page the app is for: the box somebody writes their day into. Since v59 a field answers focus with its
+  // own glow and never a ring (edges.mjs 3b holds the no-ring half), so the focus shows as light on the box.
   const w = await open(b, base, '/app/grow');
   const f = await w.page.evaluate(() => {
     const box = document.getElementById('write');
     if (!box) return { none: true };
     box.focus();
-    const c = getComputedStyle(box);
-    return { style: c.outlineStyle, width: parseFloat(c.outlineWidth) };
+    return { shadow: getComputedStyle(box).boxShadow };
   });
-  say(!f.none && f.style !== 'none' && f.width >= 2, 'and so does the journal\'s own page  (' + (f.none ? 'no box' : f.style + ' ' + f.width + 'px') + ')');
+  say(!f.none && f.shadow && f.shadow !== 'none', 'and so does the journal\'s own page, with its own glow  (' + (f.none ? 'no box' : f.shadow === 'none' ? 'no glow' : 'glowing') + ')');
   await w.close();
 }
 

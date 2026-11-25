@@ -54,7 +54,7 @@ test('every evolution stage has a name', () => {
 });
 test('the first emoji is taken whole', () => {
   assert.equal(Gr.firstEmoji('a \u{1F44D}\u{1F3FD} day'), '\u{1F44D}\u{1F3FD}', 'skin tone kept');
-  assert.equal(Gr.firstEmoji('\u{1F469}\u{1F3FD}‍\u{1F4BB}'), '\u{1F469}\u{1F3FD}‍\u{1F4BB}', 'joiner sequence kept');
+  assert.equal(Gr.firstEmoji('\u{1F469}\u{1F3FD}\u{200D}\u{1F4BB}'), '\u{1F469}\u{1F3FD}\u{200D}\u{1F4BB}', 'joiner sequence kept');
   assert.equal(Gr.firstEmoji('\u{1F1FA}\u{1F1F8}'), '\u{1F1FA}\u{1F1F8}', 'flag kept');
   assert.equal(Gr.firstEmoji('no emoji here'), null);
 });

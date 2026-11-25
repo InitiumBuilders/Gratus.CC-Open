@@ -7,8 +7,17 @@
 // One JSON document per vibe in Vercel Blob: gratus/vibes/<code>.json = { name, about, emoji, made, posts[] }.
 // Writes are last-writer-wins, and Blob is not read-after-write consistent (measured: ~5 seconds),
 // so nothing here depends on an immediate re-read.
-import { put, list } from '@vercel/blob';
-import { createHash, randomBytes } from 'node:crypto';
+//
+// A room can also hold up to 12 PAXTs. Each link is its own blob, written once, under a directory keyed with the
+// secret: <base>vibe-paxt/<HMAC(code)>/<sha256(id)>.json = { id, at }. The room code is never in that path, and
+// <base> is gratus/ in production and gratus/preview/ everywhere else, so a preview never adds to a live room.
+// Only a PAXT that exists can be linked. The 12 are twelve places, <base>vibe-paxt/_slots/<HMAC(code)>/<i>.json,
+// each written once, so links sent in the same moment cannot pass twelve. Each connection gets 12 tries a day,
+// counted the same way, and the room's keeper key can take a link down.
+import { put, list, head, del } from '@vercel/blob';
+import { createHash, createHmac, randomBytes } from 'node:crypto';
+import { paxtKey, netOf } from './paxt.js';
+import { sweepDays } from './_sweep.js';
 
 const TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 const KEY = (code) => 'gratus/vibes/' + code + '.json';
@@ -28,6 +37,26 @@ const DEDUPE = 120000;
 // the environment, so a counter document can never be read back as a list of addresses.
 const SALT = process.env.GRATUS_SALT || sha('gratus/vibes/' + String(TOKEN)).slice(0, 32);
 const whoOf = (req) => sha(String(req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '').split(',')[0].trim() + '\u00b7' + SALT).slice(0, 16);
+
+// a room's PAXTs: the id form api/paxt.js takes, and paths read from VERCEL_ENV at every call
+const PAXT_ID = /^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/;
+const CAP_PAXTS = 12;
+const base = () => (process.env.VERCEL_ENV === 'production' ? 'gratus/' : 'gratus/preview/');
+const keyed = (s) => createHmac('sha256', SALT).update(s).digest('hex').slice(0, 32);
+const LINKS = (code) => base() + 'vibe-paxt/' + keyed('vibe-paxt\u00b7' + code) + '/';
+const linkPath = (code, id) => LINKS(code) + sha(id) + '.json';
+const LINK_SLOTS = (code) => base() + 'vibe-paxt/_slots/' + keyed('vibe-paxt-slots\u00b7' + code) + '/';
+const CAP_ATTACH = 12;   // tries one connection may make at linking a PAXT to a room in a day
+// Counted by network, as api/paxt.js and api/signal.js count: an IPv6 home or phone holds a whole /64 and can take
+// a new address in it for every call, so the /64 is the connection.
+const netWho = (req) => sha(netOf(String(req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '').split(',')[0]) + '\u00b7' + SALT).slice(0, 16);
+const dayNow = () => new Date(Date.now()).toISOString().slice(0, 10);
+const ATTACHES_ROOT = () => base() + 'vibe-paxt/_calls/';
+// Each try is written in the same moment as the link it adds, so a day's tries are kept only for that day: the first
+// calls of a new day delete every earlier day's (api/_sweep.js), as api/paxt.js and api/signal.js do with theirs.
+const ATTACHES = (req) => { const d = dayNow(); return ATTACHES_ROOT() + d + '/' + keyed('vibe-paxt-calls\u00b7' + d + '\u00b7' + netWho(req)) + '/'; };
+// Where a PAXT's record is kept is asked of api/paxt.js itself (paxtKey), so the two files cannot name different
+// paths. A preview room links only a PAXT opened in a preview, and a live room only a live one. Read only.
 
 // no ambiguous glyphs: a code is read aloud and typed by hand
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -95,6 +124,54 @@ function allow(doc, who, cap) {
 
 const write = (code, doc) => put(KEY(code), JSON.stringify(doc), { access: 'public', token: TOKEN, contentType: 'application/json', addRandomSuffix: false, allowOverwrite: true, cacheControlMaxAge: 0 });
 
+// Written once. The store refuses a second write to the same path, so the same link sent twice stays one.
+async function writeOnce(key, body) {
+  try {
+    await put(key, body, { access: 'public', token: TOKEN, contentType: 'application/json', addRandomSuffix: false, allowOverwrite: false });
+    return true;
+  } catch (e) {
+    if (/exist/i.test(String(e && e.message))) return false;
+    throw e;
+  }
+}
+
+// Whether a blob is there. head asks the store for the one blob, so it does not wait out the list's lag.
+async function exists(key) {
+  try {
+    return !!(await head(key, { token: TOKEN }));
+  } catch (e) {
+    if (/not ?found|does not exist/i.test(String(e && (e.name + ' ' + e.message)))) return false;
+    throw e;
+  }
+}
+const pick = (n) => randomBytes(4).readUInt32BE(0) % n;
+// Takes one of `cap` numbered names under `dir`, written once with `body`, and gives back its path, or null when
+// none can be created. The list only says which names to try first; the write-once create decides.
+async function claimSlot(dir, cap, body = '{}') {
+  const taken = new Set((await list({ prefix: dir, token: TOKEN })).blobs.map((b) => b.pathname));
+  const free = [...Array(cap).keys()].map((n) => dir + n + '.json').filter((p) => !taken.has(p));
+  for (let i = free.length - 1; i > 0; i--) { const j = pick(i + 1); [free[i], free[j]] = [free[j], free[i]]; }
+  for (const p of free) if (await writeOnce(p, body)) return p;
+  return null;
+}
+
+// The room's PAXT ids, in the order they were added, twelve at most. A blob whose name does not match the id
+// inside it was moved in the store, and is left out.
+async function paxtsOf(code) {
+  const { blobs } = await list({ prefix: LINKS(code), token: TOKEN });
+  const rows = await Promise.all(blobs.slice(0, CAP_PAXTS).map(async (b) => {
+    try {
+      const r = await fetch(b.url + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) return null;
+      const o = await r.json();
+      return o && typeof o.id === 'string' && PAXT_ID.test(o.id) && b.pathname === linkPath(code, o.id) ? o : null;
+    } catch (e) { return null; }
+  }));
+  return rows.filter(Boolean)
+    .sort((a, b) => (String(a.at) < String(b.at) ? -1 : String(a.at) > String(b.at) ? 1 : a.id < b.id ? -1 : 1))
+    .map((o) => o.id).slice(0, CAP_PAXTS);
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (!TOKEN) { res.status(503).json({ error: 'the vibes are not connected yet' }); return; }
@@ -104,7 +181,10 @@ export default async function handler(req, res) {
       if (!code) { res.status(400).json({ error: 'a code' }); return; }
       const doc = await read(code);
       if (!doc) { res.status(404).json({ error: 'no vibe with that code' }); return; }
-      res.status(200).json({ vibe: pubVibe(doc, code) });
+      // the room still opens if its PAXT list cannot be read
+      let paxts = [];
+      try { paxts = await paxtsOf(code); } catch (e) {}
+      res.status(200).json({ vibe: Object.assign(pubVibe(doc, code), { paxts }) });
       return;
     }
     if (req.method !== 'POST') { res.status(405).json({ error: 'GET or POST' }); return; }
@@ -153,7 +233,60 @@ export default async function handler(req, res) {
       res.status(200).json({ vibe: pubVibe(doc, code) });
       return;
     }
-    res.status(400).json({ error: 'make, post or take-down' });
+    if (act === 'paxt-attach') {
+      const id = typeof body.id === 'string' ? body.id : '';
+      if (!PAXT_ID.test(id)) { res.status(400).json({ error: 'that is not a PAXT id' }); return; }
+      try {
+        await sweepDays(ATTACHES_ROOT(), dayNow(), TOKEN);
+        // every try counts, the refused ones too, so the check below cannot be used to guess PAXT ids
+        if (!(await claimSlot(ATTACHES(req), CAP_ATTACH))) {
+          res.status(429).json({ error: CAP_ATTACH + ' tries at adding a PAXT to a room have come from this connection today, the most for one day. You can try again tomorrow.' });
+          return;
+        }
+        if (!(await exists(paxtKey(id)))) { res.status(404).json({ error: 'There is no PAXT with that id.' }); return; }
+        const at = linkPath(code, id);
+        let had = await exists(at);
+        if (!had) {
+          const place = await claimSlot(LINK_SLOTS(code), CAP_PAXTS, JSON.stringify({ id }));
+          if (!place) { res.status(409).json({ error: 'This room is full at ' + CAP_PAXTS + ' PAXTs.' }); return; }
+          // the same PAXT sent twice in one moment: one link is kept, and the other call gives its place back
+          if (!(await writeOnce(at, JSON.stringify({ id, at: new Date().toISOString() })))) { had = true; await del(place, { token: TOKEN }); }
+        }
+        const paxts = await paxtsOf(code);
+        // the store can be a few seconds behind the write
+        if (!paxts.includes(id)) paxts.push(id);
+        res.status(200).json(Object.assign({ vibe: Object.assign(pubVibe(doc, code), { paxts }) }, had ? { already: true } : {}));
+      } catch (e) {
+        // the error stays here: its message could carry a path made with the secret
+        res.status(500).json({ error: 'The room could not be reached. Nothing was added.' });
+      }
+      return;
+    }
+    if (act === 'paxt-detach') {
+      const key = clip(body.keeper, 64);
+      if (!doc.keeper || doc.keeper !== sha(key)) { res.status(403).json({ error: 'that key does not keep this vibe' }); return; }
+      const id = typeof body.id === 'string' ? body.id : '';
+      if (!PAXT_ID.test(id)) { res.status(400).json({ error: 'that is not a PAXT id' }); return; }
+      try {
+        const at = linkPath(code, id);
+        if (!(await exists(at))) { res.status(404).json({ error: 'That PAXT is not in this room.' }); return; }
+        // the link goes first: a place left behind only makes the room smaller, never larger than twelve
+        await del(at, { token: TOKEN });
+        const { blobs } = await list({ prefix: LINK_SLOTS(code), token: TOKEN });
+        for (const b of blobs) {
+          try {
+            const r = await fetch(b.url + '?t=' + Date.now(), { cache: 'no-store' });
+            const o = r.ok ? await r.json() : null;
+            if (o && o.id === id) await del(b.pathname, { token: TOKEN });
+          } catch (e) {}
+        }
+        res.status(200).json({ vibe: Object.assign(pubVibe(doc, code), { paxts: (await paxtsOf(code)).filter((x) => x !== id) }) });
+      } catch (e) {
+        res.status(500).json({ error: 'The room could not be reached. Nothing was taken down.' });
+      }
+      return;
+    }
+    res.status(400).json({ error: 'make, post, take-down, paxt-attach or paxt-detach' });
   } catch (e) {
     res.status(500).json({ error: 'the vibes could not be reached', detail: String(e.message || e).slice(0, 120) });
   }

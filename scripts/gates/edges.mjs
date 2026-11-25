@@ -28,6 +28,7 @@ const CALL = 'if (was) arrive();';
 const LAW = '*, *::before, *::after { border-color: transparent !important; }';
 const ORIGIN = '*, *::before, *::after { background-origin: border-box !important; }\n';
 const FOCUS = 'outline: 2px solid var(--violet-text); outline-offset: 3px; }';
+const RING = '.field:focus-visible { outline: none; }\n';
 const PRESS = ':is(.opt, .together, .jr-row, .doorcard, .entry, button.hcard, .hm-kept):active { scale: .985; }';
 const WASH = /\.hero::before \{ -webkit-mask-image: linear-gradient\(180deg, #000 calc\(100% - 72px\), transparent\); mask-image: linear-gradient\(180deg, #000 calc\(100% - 72px\), transparent\); \}\n/;
 const once = (s, part) => s.split(part).length === 2;
@@ -36,6 +37,7 @@ const controls = {
   under: once(GAL, ORIGIN) ? GAL.replace(ORIGIN, () => '') : null,
   square: once(TOK, FOCUS) ? TOK.replace(FOCUS, () => 'outline: 2px solid var(--violet-text); outline-offset: 3px; border-radius: var(--r-6); }') : null,
   still: once(GAL, PRESS) ? GAL.replace(PRESS, () => '') : null,
+  ring: once(GAL, RING) ? GAL.replace(RING, () => '') : null,
   seam: WASH.test(GAL) ? GAL.replace(WASH, () => '') : null,
   appears: once(APP, CALL) ? APP.replace(CALL, () => '') : null,
 };
@@ -164,6 +166,23 @@ async function shape(tok) {
 const s1 = await shape();
 say(!s1.none && s1.after && s1.after === s1.before, 'a keyboard focus ring leaves Write Today its own shape  (' + s1.before + ', focused ' + (s1.after || 'never reached') + ')');
 if (controls.square) { const s2 = await shape(controls.square); say(s2.after && s2.after !== s2.before, 'the control: a focus rule that squares the corners is seen  (' + s2.before + ' to ' + s2.after + ')'); }
+
+// 3b · a field answers focus with light, never a ring: a text field shows its focus whenever a
+// finger touches it, and the 2px ring drew a hard line around the writing box on every visit
+async function ring(gal) {
+  const ctx = await context({ gal }); const page = await ctx.newPage(); await arrive(page, '/app/grow');
+  const el = page.locator('#write');
+  if (!(await el.count())) { await ctx.close(); return { id: '', ring: '', glow: false }; }
+  await el.tap().catch(() => el.click());
+  await page.waitForTimeout(300);
+  const r = await page.evaluate(() => { const a = document.activeElement; const c = getComputedStyle(a);
+    return { id: a.id, ring: c.outlineStyle !== 'none' && parseFloat(c.outlineWidth) > 0 ? c.outlineWidth + ' ' + c.outlineColor : '', glow: c.boxShadow !== 'none' }; });
+  await ctx.close();
+  return r;
+}
+const f1 = await ring();
+say(f1.id === 'write' && !f1.ring && f1.glow, 'a touch on the writing box lights it and draws no ring  (' + (f1.ring || 'no ring') + (f1.glow ? ', glowing' : ', no glow') + ')');
+if (controls.ring) { const f2 = await ring(controls.ring); say(!!f2.ring, 'the control: with the ring put back, it is seen  (' + (f2.ring || 'not seen') + ')'); }
 
 // 4 · a press gives under the finger and springs back; under reduced motion it changes nothing
 async function press(motion, gal) {

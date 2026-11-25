@@ -1,0 +1,406 @@
+{
+  "note": "Made by suites.test.mjs. Any implementation of these suites must accept each accepted entry and refuse each refused one. The keys behind them are published test keys: never send anything to these accounts.",
+  "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+  "suites": {
+    "eip191": [
+      {
+        "account": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+        "signature": "0x567a62a7da7db4a748af8ffc3f8eb35f0530b346a17891de1f2cbd4e4a4933354fbf0f1b78c10ca4134ff90f51fbca587c68ec645ea642189c83927c76dd80d61c",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "0x567a62a7da7db4a748af8ffc3f8eb35f0530b346a17891de1f2cbd4e4a4933354fbf0f1b78c10ca4134ff90f51fbca587c68ec645ea642189c83927c76dd80d61c"
+          },
+          {
+            "why": "another account",
+            "account": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "0x567a62a7da7db4a748af8ffc3f8eb35f0530b346a17891de1f2cbd4e4a4933354fbf0f1b78c10ca4134ff90f51fbca587c68ec645ea642189c83927c76dd80d61c"
+          },
+          {
+            "why": "an altered signature",
+            "account": "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "0x567a62a7da7db4a7480f8ffc3f8eb35f0530b346a17891de1f2cbd4e4a4933354fbf0f1b78c10ca4134ff90f51fbca587c68ec645ea642189c83927c76dd80d61c"
+          }
+        ]
+      },
+      {
+        "account": "0xf28d2e27579b9a5093bc0221d93a6d0e9dd16259",
+        "signature": "0xccbf7f1747e8a5e706d3aa9753b8ef4d398c6a31fbe1a5a6e2f780d6ea65ab5a114949ad44c877564e6500aee7454fe45ff4ff10db89d6b6e688051dd7a237c71c",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "0xf28d2e27579b9a5093bc0221d93a6d0e9dd16259",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "0xccbf7f1747e8a5e706d3aa9753b8ef4d398c6a31fbe1a5a6e2f780d6ea65ab5a114949ad44c877564e6500aee7454fe45ff4ff10db89d6b6e688051dd7a237c71c"
+          },
+          {
+            "why": "another account",
+            "account": "0x6813eb9362372eef6200f3b1dbc3f819671cba69",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "0xccbf7f1747e8a5e706d3aa9753b8ef4d398c6a31fbe1a5a6e2f780d6ea65ab5a114949ad44c877564e6500aee7454fe45ff4ff10db89d6b6e688051dd7a237c71c"
+          },
+          {
+            "why": "an altered signature",
+            "account": "0xf28d2e27579b9a5093bc0221d93a6d0e9dd16259",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "0xccbf7f1747e8a5e70603aa9753b8ef4d398c6a31fbe1a5a6e2f780d6ea65ab5a114949ad44c877564e6500aee7454fe45ff4ff10db89d6b6e688051dd7a237c71c"
+          }
+        ]
+      }
+    ],
+    "bip137:bitcoin": [
+      {
+        "account": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH",
+        "signature": "H3dzthLUWN2Rqku+EEunUHospamJfhsQCIsabLkq6HgFYFb4IEjmRjDiNiWO4VikHwOL93k2/rWwjLlusyuAWvs=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "H3dzthLUWN2Rqku+EEunUHospamJfhsQCIsabLkq6HgFYFb4IEjmRjDiNiWO4VikHwOL93k2/rWwjLlusyuAWvs="
+          },
+          {
+            "why": "another account",
+            "account": "1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H3dzthLUWN2Rqku+EEunUHospamJfhsQCIsabLkq6HgFYFb4IEjmRjDiNiWO4VikHwOL93k2/rWwjLlusyuAWvs="
+          },
+          {
+            "why": "an altered signature",
+            "account": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H3dzthLUWN2Rqkq+EEunUHospamJfhsQCIsabLkq6HgFYFb4IEjmRjDiNiWO4VikHwOL93k2/rWwjLlusyuAWvs="
+          }
+        ]
+      },
+      {
+        "account": "1BeecWtcKrCURnLd3E8kRkC3w51oqaFznT",
+        "signature": "H2vZYft/TL7EJ1a65PrHHwNmYKtRhlMfu+78qHtf8TUyFZPpD/LhKKLAn2WSkN2YLKX1A291pEbYHfSC5kYOQ4Y=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "1BeecWtcKrCURnLd3E8kRkC3w51oqaFznT",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "H2vZYft/TL7EJ1a65PrHHwNmYKtRhlMfu+78qHtf8TUyFZPpD/LhKKLAn2WSkN2YLKX1A291pEbYHfSC5kYOQ4Y="
+          },
+          {
+            "why": "another account",
+            "account": "1CUNEBjYrCn2y1SdiUMohaKUi4wpP326Lb",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H2vZYft/TL7EJ1a65PrHHwNmYKtRhlMfu+78qHtf8TUyFZPpD/LhKKLAn2WSkN2YLKX1A291pEbYHfSC5kYOQ4Y="
+          },
+          {
+            "why": "an altered signature",
+            "account": "1BeecWtcKrCURnLd3E8kRkC3w51oqaFznT",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H2vZYft/TL7EJ1e65PrHHwNmYKtRhlMfu+78qHtf8TUyFZPpD/LhKKLAn2WSkN2YLKX1A291pEbYHfSC5kYOQ4Y="
+          }
+        ]
+      }
+    ],
+    "bip137:litecoin": [
+      {
+        "account": "LVuDpNCSSj6pQ7t9Pv6d6sUkLKoqDEVUnJ",
+        "signature": "IJ9n9xEnsCOIka0AVYEB0UdH0PbDvFqgHioDduWukAngaXe+6TfqGuIowoRp0m1Sf5VKyRamwL83lKTRaJCH/G0=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "LVuDpNCSSj6pQ7t9Pv6d6sUkLKoqDEVUnJ",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "IJ9n9xEnsCOIka0AVYEB0UdH0PbDvFqgHioDduWukAngaXe+6TfqGuIowoRp0m1Sf5VKyRamwL83lKTRaJCH/G0="
+          },
+          {
+            "why": "another account",
+            "account": "LWhKVQ3Nvs26Dp8ntcM6ybPEvHK6Y4VWZU",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "IJ9n9xEnsCOIka0AVYEB0UdH0PbDvFqgHioDduWukAngaXe+6TfqGuIowoRp0m1Sf5VKyRamwL83lKTRaJCH/G0="
+          },
+          {
+            "why": "an altered signature",
+            "account": "LVuDpNCSSj6pQ7t9Pv6d6sUkLKoqDEVUnJ",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "IJ9n9xEnsCOIkawAVYEB0UdH0PbDvFqgHioDduWukAngaXe+6TfqGuIowoRp0m1Sf5VKyRamwL83lKTRaJCH/G0="
+          }
+        ]
+      },
+      {
+        "account": "LVsbsjCSQWSXgb2nDN83hmFp9HP5rfbLDX",
+        "signature": "H3yhTk91GUNc48II7rZYDMLiiWFHGUlG/uU5h1nEmjysFuR5dd6VFA7FmaAkxEbOgU+/l/rgFw6Th9WxRWdFO0s=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "LVsbsjCSQWSXgb2nDN83hmFp9HP5rfbLDX",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "H3yhTk91GUNc48II7rZYDMLiiWFHGUlG/uU5h1nEmjysFuR5dd6VFA7FmaAkxEbOgU+/l/rgFw6Th9WxRWdFO0s="
+          },
+          {
+            "why": "another account",
+            "account": "LWhKVQ3Nvs26Dp8ntcM6ybPEvHK6Y4VWZU",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H3yhTk91GUNc48II7rZYDMLiiWFHGUlG/uU5h1nEmjysFuR5dd6VFA7FmaAkxEbOgU+/l/rgFw6Th9WxRWdFO0s="
+          },
+          {
+            "why": "an altered signature",
+            "account": "LVsbsjCSQWSXgb2nDN83hmFp9HP5rfbLDX",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H3yhTk91GUNc48MI7rZYDMLiiWFHGUlG/uU5h1nEmjysFuR5dd6VFA7FmaAkxEbOgU+/l/rgFw6Th9WxRWdFO0s="
+          }
+        ]
+      }
+    ],
+    "bip137:dogecoin": [
+      {
+        "account": "DFpN6QqFfUm3gKNaxN6tNcab1FArL9cZLE",
+        "signature": "IN5m4N8Jk17cArcC7p1FRifHq1eWkdBESdlebKtbx+wVPro9i08CT7VQosjDhGoftfgBk85tdViRQql7uM9dO/w=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "DFpN6QqFfUm3gKNaxN6tNcab1FArL9cZLE",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "IN5m4N8Jk17cArcC7p1FRifHq1eWkdBESdlebKtbx+wVPro9i08CT7VQosjDhGoftfgBk85tdViRQql7uM9dO/w="
+          },
+          {
+            "why": "another account",
+            "account": "DGcTmSgC9cgKW1dET4MNFLV5bCg7em2Bds",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "IN5m4N8Jk17cArcC7p1FRifHq1eWkdBESdlebKtbx+wVPro9i08CT7VQosjDhGoftfgBk85tdViRQql7uM9dO/w="
+          },
+          {
+            "why": "an altered signature",
+            "account": "DFpN6QqFfUm3gKNaxN6tNcab1FArL9cZLE",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "IN5m4N8Jk17cArYC7p1FRifHq1eWkdBESdlebKtbx+wVPro9i08CT7VQosjDhGoftfgBk85tdViRQql7uM9dO/w="
+          }
+        ]
+      },
+      {
+        "account": "DFnk9mqFdG6kxnXDmp8JyWMepCk75PX8dr",
+        "signature": "H8nE3GWL7OinlG8cI8hb8cwu0tI8P+ZxLXQNQnrVftiUEPXSfbsegEx/6Oo9b64VK2FA8nZhpT5I53cgVjFvt58=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "DFnk9mqFdG6kxnXDmp8JyWMepCk75PX8dr",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "H8nE3GWL7OinlG8cI8hb8cwu0tI8P+ZxLXQNQnrVftiUEPXSfbsegEx/6Oo9b64VK2FA8nZhpT5I53cgVjFvt58="
+          },
+          {
+            "why": "another account",
+            "account": "DGcTmSgC9cgKW1dET4MNFLV5bCg7em2Bds",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H8nE3GWL7OinlG8cI8hb8cwu0tI8P+ZxLXQNQnrVftiUEPXSfbsegEx/6Oo9b64VK2FA8nZhpT5I53cgVjFvt58="
+          },
+          {
+            "why": "an altered signature",
+            "account": "DFnk9mqFdG6kxnXDmp8JyWMepCk75PX8dr",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H8nE3GWL7OinlG4cI8hb8cwu0tI8P+ZxLXQNQnrVftiUEPXSfbsegEx/6Oo9b64VK2FA8nZhpT5I53cgVjFvt58="
+          }
+        ]
+      }
+    ],
+    "bip137:dash": [
+      {
+        "account": "XmN7PQYWKn5MJFna5fRYgP6mxT2F7xpekE",
+        "signature": "IE7XEx7TChpxWCoZty0CvgBr/10RYpJf+GTt6TEU7dTWDCMOV3mxqVWreys8jBJBKu59hL1gt3swyqartk1U82U=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "XmN7PQYWKn5MJFna5fRYgP6mxT2F7xpekE",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "IE7XEx7TChpxWCoZty0CvgBr/10RYpJf+GTt6TEU7dTWDCMOV3mxqVWreys8jBJBKu59hL1gt3swyqartk1U82U="
+          },
+          {
+            "why": "another account",
+            "account": "XnAD4SPSouzd7x3DaMg2Z71GYQXWQi1eZA",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "IE7XEx7TChpxWCoZty0CvgBr/10RYpJf+GTt6TEU7dTWDCMOV3mxqVWreys8jBJBKu59hL1gt3swyqartk1U82U="
+          },
+          {
+            "why": "an altered signature",
+            "account": "XmN7PQYWKn5MJFna5fRYgP6mxT2F7xpekE",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "IE7XEx7TChpxWCsZty0CvgBr/10RYpJf+GTt6TEU7dTWDCMOV3mxqVWreys8jBJBKu59hL1gt3swyqartk1U82U="
+          }
+        ]
+      },
+      {
+        "account": "XmLVSmYWHZR4aiwCu7SyHGsqmQbVoNarha",
+        "signature": "H/ru8b2lNKMjDs0Evh8ECpsJAiZWu3FrFTTTrhiaWnFkWxMU8reEjt7yBNRbe8NnvE4VirxZNDrgrK1BA1ag40E=",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "XmLVSmYWHZR4aiwCu7SyHGsqmQbVoNarha",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "H/ru8b2lNKMjDs0Evh8ECpsJAiZWu3FrFTTTrhiaWnFkWxMU8reEjt7yBNRbe8NnvE4VirxZNDrgrK1BA1ag40E="
+          },
+          {
+            "why": "another account",
+            "account": "XnAD4SPSouzd7x3DaMg2Z71GYQXWQi1eZA",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H/ru8b2lNKMjDs0Evh8ECpsJAiZWu3FrFTTTrhiaWnFkWxMU8reEjt7yBNRbe8NnvE4VirxZNDrgrK1BA1ag40E="
+          },
+          {
+            "why": "an altered signature",
+            "account": "XmLVSmYWHZR4aiwCu7SyHGsqmQbVoNarha",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "H/ru8b2lNKMjDswEvh8ECpsJAiZWu3FrFTTTrhiaWnFkWxMU8reEjt7yBNRbe8NnvE4VirxZNDrgrK1BA1ag40E="
+          }
+        ]
+      }
+    ],
+    "solana-raw": [
+      {
+        "account": "8Qvu59e2MGngqK37S5Dji8gYRdCv6ZsLw2J3NEGtk1tw",
+        "signature": "55Avvq3yUxiKUA7rYvt1whWQRuXeqrwTYHV8jimamnjKj1adEkAHPuHABXY7tq6xit4BBmCGfjKe5A5PEe9kn6ke",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "8Qvu59e2MGngqK37S5Dji8gYRdCv6ZsLw2J3NEGtk1tw",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "55Avvq3yUxiKUA7rYvt1whWQRuXeqrwTYHV8jimamnjKj1adEkAHPuHABXY7tq6xit4BBmCGfjKe5A5PEe9kn6ke"
+          },
+          {
+            "why": "another account",
+            "account": "BxXdR4RemssnrEUoVSwMMr1CkpzZreobEq5xAp6EhCBP",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "55Avvq3yUxiKUA7rYvt1whWQRuXeqrwTYHV8jimamnjKj1adEkAHPuHABXY7tq6xit4BBmCGfjKe5A5PEe9kn6ke"
+          },
+          {
+            "why": "an altered signature",
+            "account": "8Qvu59e2MGngqK37S5Dji8gYRdCv6ZsLw2J3NEGtk1tw",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "55Avvq3yeGxoEnfzG53U9U8bebf9f8UKtfgsGRt53q2tLMPcMMEvRj1X5iQ22UwNzqQMTzCVdAWssVeBxP1JuLUN"
+          }
+        ]
+      },
+      {
+        "account": "HNYsU7ALaevFDzrq6TRt7P6PWhy5v51yHDikruujeL65",
+        "signature": "59NDF3WkCNecJwCtuFiRyKMujhcFiv9iRGzfRcKDkrPtwkbCsteJfJ7NCh8bKfWb55s4DHKtgW6yP11NvuTLdzeC",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "HNYsU7ALaevFDzrq6TRt7P6PWhy5v51yHDikruujeL65",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "59NDF3WkCNecJwCtuFiRyKMujhcFiv9iRGzfRcKDkrPtwkbCsteJfJ7NCh8bKfWb55s4DHKtgW6yP11NvuTLdzeC"
+          },
+          {
+            "why": "another account",
+            "account": "BxXdR4RemssnrEUoVSwMMr1CkpzZreobEq5xAp6EhCBP",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "59NDF3WkCNecJwCtuFiRyKMujhcFiv9iRGzfRcKDkrPtwkbCsteJfJ7NCh8bKfWb55s4DHKtgW6yP11NvuTLdzeC"
+          },
+          {
+            "why": "an altered signature",
+            "account": "HNYsU7ALaevFDzrq6TRt7P6PWhy5v51yHDikruujeL65",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "59NDF3WkMgu65Zm2cPstB5z6xPjkYBgamfCPxKRi2thTZ6QBzViwh7qj6szVTKM1M3DEVWL7dwJDBLaBeeJtmEMv"
+          }
+        ]
+      }
+    ],
+    "did-key:ed25519": [
+      {
+        "account": "z6MkqzvX7Dd8a8Trf8xetoo2U28fRtBCWd5PKWtWcEgmoHLr",
+        "signature": "qzRp-kJW-mXnlUAkv2TETkhxBBfP12XdRBgiPEwgESJS-0DBrJjA1Wz3MAf9K-4hfOJ0L7G1bPlG4QM6w63bBg",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "z6MkqzvX7Dd8a8Trf8xetoo2U28fRtBCWd5PKWtWcEgmoHLr",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "qzRp-kJW-mXnlUAkv2TETkhxBBfP12XdRBgiPEwgESJS-0DBrJjA1Wz3MAf9K-4hfOJ0L7G1bPlG4QM6w63bBg"
+          },
+          {
+            "why": "another account",
+            "account": "z6MkhnBgUo1ZoCgyT45s18S8eYQPBdRdg32CSYpuZmGbN5eA",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "qzRp-kJW-mXnlUAkv2TETkhxBBfP12XdRBgiPEwgESJS-0DBrJjA1Wz3MAf9K-4hfOJ0L7G1bPlG4QM6w63bBg"
+          },
+          {
+            "why": "an altered signature",
+            "account": "z6MkqzvX7Dd8a8Trf8xetoo2U28fRtBCWd5PKWtWcEgmoHLr",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "qzRp-kJX-mXnlUAkv2TETkhxBBfP12XdRBgiPEwgESJS-0DBrJjA1Wz3MAf9K-4hfOJ0L7G1bPlG4QM6w63bBg"
+          }
+        ]
+      },
+      {
+        "account": "z6Mkud6RZkS27ryegLhhEus4f6JVPr9KGgbspYiwfLLBfa1f",
+        "signature": "-nDfLqD_7E34lHSpMdnGtQxSTG6gBip2FTWZO188yeE8UhG8NgtSeKMbhM18GZ3UZRqxckYLNUi-ImYqobLqBA",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "z6Mkud6RZkS27ryegLhhEus4f6JVPr9KGgbspYiwfLLBfa1f",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "-nDfLqD_7E34lHSpMdnGtQxSTG6gBip2FTWZO188yeE8UhG8NgtSeKMbhM18GZ3UZRqxckYLNUi-ImYqobLqBA"
+          },
+          {
+            "why": "another account",
+            "account": "z6MksJvHT5tFNVqu61ZebSwPg9jXc9w12fB5VzgbfBmsR7Zt",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "-nDfLqD_7E34lHSpMdnGtQxSTG6gBip2FTWZO188yeE8UhG8NgtSeKMbhM18GZ3UZRqxckYLNUi-ImYqobLqBA"
+          },
+          {
+            "why": "an altered signature",
+            "account": "z6Mkud6RZkS27ryegLhhEus4f6JVPr9KGgbspYiwfLLBfa1f",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "-nDfLqD-7E34lHSpMdnGtQxSTG6gBip2FTWZO188yeE8UhG8NgtSeKMbhM18GZ3UZRqxckYLNUi-ImYqobLqBA"
+          }
+        ]
+      }
+    ],
+    "did-key:p256": [
+      {
+        "account": "zDnaeksZRSDGQffneY31UVMvquRkx5RDhWSw9omTgEzD1bm55",
+        "signature": "INTfnJw8vK8DdUgrtdTB-AqEa3hB8uJyI_ZN_doq3gsWoSyLxjuqD6NAyGw-8HIazAPnJr-l_DO--aaPkHj-6A",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "zDnaeksZRSDGQffneY31UVMvquRkx5RDhWSw9omTgEzD1bm55",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "INTfnJw8vK8DdUgrtdTB-AqEa3hB8uJyI_ZN_doq3gsWoSyLxjuqD6NAyGw-8HIazAPnJr-l_DO--aaPkHj-6A"
+          },
+          {
+            "why": "another account",
+            "account": "zDnaepHykqybZx1E1Xm8XMcm743mUFXvzSVPJg63iAFgk5FYz",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "INTfnJw8vK8DdUgrtdTB-AqEa3hB8uJyI_ZN_doq3gsWoSyLxjuqD6NAyGw-8HIazAPnJr-l_DO--aaPkHj-6A"
+          },
+          {
+            "why": "an altered signature",
+            "account": "zDnaeksZRSDGQffneY31UVMvquRkx5RDhWSw9omTgEzD1bm55",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "INTfnJw8vK8DdUgrtdTB-AqEa3hB8uJyI_ZN_doq3gsWoSyLxjuqD6JAyGw-8HIazAPnJr-l_DO--aaPkHj-6A"
+          }
+        ]
+      },
+      {
+        "account": "zDnaeZRTpgwdQdUhdJAatTi4MBuoicdtEUZgdESMyw66cvr7r",
+        "signature": "Gbh3c25dKJ7eOkrSjeiqcFmlmY6yel6oLomK8IWMLqRByn_MSsspEU-2wzgZiiOXkCf5_q0Z5ZDOp4slvOhc9Q",
+        "refuse": [
+          {
+            "why": "a changed line",
+            "account": "zDnaeZRTpgwdQdUhdJAatTi4MBuoicdtEUZgdESMyw66cvr7r",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a #2",
+            "signature": "Gbh3c25dKJ7eOkrSjeiqcFmlmY6yel6oLomK8IWMLqRByn_MSsspEU-2wzgZiiOXkCf5_q0Z5ZDOp4slvOhc9Q"
+          },
+          {
+            "why": "another account",
+            "account": "zDnaexvRqykyroVrCWmxbQSXmkyMfGdsNAW7vSVWzUkhoE8kU",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "Gbh3c25dKJ7eOkrSjeiqcFmlmY6yel6oLomK8IWMLqRByn_MSsspEU-2wzgZiiOXkCf5_q0Z5ZDOp4slvOhc9Q"
+          },
+          {
+            "why": "an altered signature",
+            "account": "zDnaeZRTpgwdQdUhdJAatTi4MBuoicdtEUZgdESMyw66cvr7r",
+            "line": "paxt1 keys-apart join 4a1a92da01d880fdae75d623c17f3f5a",
+            "signature": "Gbh3c25dKJ7eOkrSjeiqcFmlmY6yel6oLomK8IWMLqRByn_MSsspEU62wzgZiiOXkCf5_q0Z5ZDOp4slvOhc9Q"
+          }
+        ]
+      }
+    ]
+  }
+}
