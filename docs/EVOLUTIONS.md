@@ -2,6 +2,12 @@
 
 Every version of Gratus.CC, what changed and why. The full working record is in [DECISIONS.md](../DECISIONS.md), [BUILD-NOTES.md](../BUILD-NOTES.md) and [LESSONS.md](../LESSONS.md).
 
+## v58 · No line under any edge (2026-11-24)
+
+- **The last drawn lines are gone.** Since v49 a border has width and no colour. A gradient behind it still started at the padding edge, so under the border it started again, and its first colour showed as a one-pixel line along the bottom of the bar, the journal's pages, the writing box and every primary button: thirteen kinds of surface. No check for borders could see it. A background starts at the border's outer edge now. Photographed with and without the rule in the same loaded page on six views, only those edge rows change, and the garden's two hairline dividers move by a pixel.
+- **The tour's card is solid.** v55 took the blur off the tour's lit steps so each shows what it points at. Without the blur the step's card, at 92%, let the page's words show through it. Found by walking a first visit at night on the new build.
+- **The gates.** G51 walks every view for a background that starts again under a border, and G41 reads the lit step's card, each with a control.
+
 ## v57 · The front page shows the night (2026-11-24)
 
 - **The front page's photographs are of the app as it is now.** Its three photographs of the app (the writing screen, the journal and the garden) were taken before v56, in the green of the old look. They are retaken at night, the world of his mockups: the writing screen under an arc of light, the journal's pages over the night, and the garden's five plants on their island under a crescent moon. They are lighter too: 277 KB together before, 193 KB now.

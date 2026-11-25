@@ -891,6 +891,8 @@ body.touring { overflow: hidden; }
 /* a lit step shows what it points at: the blur above is for the opening card, and while it
    stayed on, every step blurred the box, the emoji and the button it was pointing at */
 #tour:has(.spot) { -webkit-backdrop-filter: none; backdrop-filter: none; }
+/* with the blur gone the step's card must be solid: at 92% the page's words showed through it */
+.tourcard.near { background: linear-gradient(180deg, #161B2E, #060912); }
 
 /* the four headings on Earth carry real Giveth category names now, which are longer than
    the words that used to be there, so the row wraps rather than running off a small screen */
@@ -1261,6 +1263,12 @@ button.together { width: 100%; font: inherit; color: inherit; cursor: pointer; }
   --spring: cubic-bezier(.34, 1.36, .64, 1);
 }
 *, *::before, *::after { border-color: transparent !important; }
+/* And a background starts at the border's outer edge. A border still has its width, and a
+   gradient that starts at the padding edge starts again underneath it: its first colour
+   showed as a one-pixel line along the bottom of the bar, the journal's pages, the writing box
+   and every button (thirteen kinds of surface), and its last colour along the top. Written
+   with the same weight as the rule above because the background shorthand resets it. */
+*, *::before, *::after { background-origin: border-box !important; }
 
 /* glass, and the plates on the home page */
 .glass { box-shadow: 0 0 18px rgba(242, 201, 125, .08), var(--rim-gold), var(--lit-rest); }

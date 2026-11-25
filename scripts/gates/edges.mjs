@@ -26,12 +26,14 @@ const TOK = fs.readFileSync(path.join(ROOT, 'assets/css/tokens.css'), 'utf8');
 const APP = fs.readFileSync(path.join(ROOT, 'assets/js/galaxy.js'), 'utf8');
 const CALL = 'if (was) arrive();';
 const LAW = '*, *::before, *::after { border-color: transparent !important; }';
+const ORIGIN = '*, *::before, *::after { background-origin: border-box !important; }\n';
 const FOCUS = 'outline: 2px solid var(--violet-text); outline-offset: 3px; }';
 const PRESS = ':is(.opt, .together, .jr-row, .doorcard, .entry, button.hcard, .hm-kept):active { scale: .985; }';
 const WASH = /\.hero::before \{ -webkit-mask-image: linear-gradient\(180deg, #000 calc\(100% - 72px\), transparent\); mask-image: linear-gradient\(180deg, #000 calc\(100% - 72px\), transparent\); \}\n/;
 const once = (s, part) => s.split(part).length === 2;
 const controls = {
   lines: once(GAL, LAW) ? GAL.replace(LAW, () => '') : null,
+  under: once(GAL, ORIGIN) ? GAL.replace(ORIGIN, () => '') : null,
   square: once(TOK, FOCUS) ? TOK.replace(FOCUS, () => 'outline: 2px solid var(--violet-text); outline-offset: 3px; border-radius: var(--r-6); }') : null,
   still: once(GAL, PRESS) ? GAL.replace(PRESS, () => '') : null,
   seam: WASH.test(GAL) ? GAL.replace(WASH, () => '') : null,
@@ -97,6 +99,39 @@ if (controls.lines) {
   const c = await linesOn([['give', '/app/give'], ['grow', '/app/grow']], controls.lines);
   say(c.length > 10, 'the control: without the law, the lines are seen  (' + c.length + ')');
 }
+
+// 1b · no background starts again under a border. A border has width and no colour; a gradient
+// that starts at the padding edge repeats underneath it, and its first colour draws a one-pixel
+// line along the bottom edge that no border check can see. Walked on 2026-11-24 it was on thirteen
+// kinds of surface. The control takes the rule away and must find them again.
+function seams() {
+  const out = []; const stops = (bg) => (bg.match(/rgba?\([^)]*\)/g) || []);
+  for (const el of document.querySelectorAll('body *')) {
+    const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+    for (const ps of [null, '::before', '::after']) {
+      const c = getComputedStyle(el, ps);
+      if (ps && (c.content === 'none' || c.content === 'normal')) continue;
+      if (c.visibility === 'hidden' || c.display === 'none') continue;
+      if (!Math.max(parseFloat(c.borderTopWidth) || 0, parseFloat(c.borderBottomWidth) || 0) || !/linear-gradient/.test(c.backgroundImage)) continue;
+      if (!/padding-box/.test(c.backgroundOrigin) || !/border-box/.test(c.backgroundClip) || /^no-repeat/.test(c.backgroundRepeat)) continue;
+      const st = stops(c.backgroundImage.split('gradient(')[1] || ''); if (st.length < 2 || st[0] === st[st.length - 1]) continue;
+      out.push(el.tagName.toLowerCase() + '.' + String(el.className).split(' ').filter(Boolean).slice(0, 2).join('.') + (ps || ''));
+    }
+  }
+  return out;
+}
+async function seamsOn(routes, gal) {
+  const ctx = await context({ gal }); const kinds = new Set();
+  for (const [, route] of routes) {
+    const page = await ctx.newPage(); await arrive(page, route);
+    for (const k of await page.evaluate(seams).catch(() => [])) kinds.add(k);
+    await page.close();
+  }
+  await ctx.close();
+  return [...kinds];
+}
+{ const k = await seamsOn(routes); say(k.length === 0, 'no background starts again under a border  (' + routes.length + ' views' + (k.length ? '; ' + k.slice(0, 4).join(' · ') : '') + ')'); }
+if (controls.under) { const k = await seamsOn([['home', '/app'], ['grow', '/app/grow'], ['book', '/app/book']], controls.under); say(k.length >= 3, 'the control: without the rule, the lines under the edges are found  (' + k.length + ' kinds)'); }
 
 // 2 · the wash over a room's picture lets go where the page begins
 async function wash(gal) {

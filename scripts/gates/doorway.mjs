@@ -163,11 +163,16 @@ async function stepBlur(gal) {
   await page.waitForTimeout(1500);
   await page.click('#tour-go');
   await page.waitForTimeout(1400);
-  const r = await page.evaluate(() => { const t = document.getElementById('tour'); const c = getComputedStyle(t); return { spot: !!t.querySelector('.spot'), f: c.backdropFilter || c.webkitBackdropFilter || 'none' }; });
+  const r = await page.evaluate(() => { const t = document.getElementById('tour'); const c = getComputedStyle(t); const card = t.querySelector('.tourcard.near'); const bg = card ? getComputedStyle(card).backgroundImage : '';
+    return { spot: !!t.querySelector('.spot'), f: c.backdropFilter || c.webkitBackdropFilter || 'none', solid: !!bg && !/rgba\(/.test(bg), bg: bg.slice(0, 70) }; });
   await ctx.close();
   return r;
 }
-{ const r = await stepBlur(); say(r.spot && r.f === 'none', 'a lit step of the tour shows what it points at, with nothing blurred over it  (' + r.f + ')'); }
+{ const r = await stepBlur(); say(r.spot && r.f === 'none', 'a lit step of the tour shows what it points at, with nothing blurred over it  (' + r.f + ')');
+  say(r.solid, 'and its card is solid, so the page does not show through it  (' + r.bg + ')'); }
+{ const SOLID = '.tourcard.near { background: linear-gradient(180deg, #161B2E, #060912); }\n'; const thin = GALCSS.split(SOLID).length === 2 ? GALCSS.replace(SOLID, () => '') : null;
+  say(!!thin, 'the solid-card control has its line to change');
+  if (thin) { const r = await stepBlur(thin); say(!r.solid, 'the control: a card the page shows through is seen  (' + r.bg + ')'); } }
 if (blurred) { const r = await stepBlur(blurred); say(r.spot && r.f !== 'none', 'the control: with the blur left on, the step is blurred  (' + r.f + ')'); }
 
 await b.close(); await srv.close();
